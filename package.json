@@ -26,7 +26,7 @@
     "!**/.*"
   ],
   "scripts": {
-    "example": "yarn workspace @mj-studio/react-native-kakao-share-example",
+    "example": "yarn workspace kakao-share-example",
     "test": "jest",
     "typecheck": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
@@ -41,7 +41,7 @@
     "codegen": "yarn codegen:android && yarn codegen:ios",
     "studio": "studio $(pwd)/android",
     "studio:example": "studio $(pwd)/example/android",
-    "xcode": "open $(pwd)/example/ios/ReactNativeKakaoShareExample.xcworkspace",
+    "xcode": "open $(pwd)/example/ios/KakaoShareExample.xcworkspace",
     "pod:old": "cd example/ios && bundle install && bundle exec pod install",
     "pod:new": "cd example/ios && bundle install && RCT_NEW_ARCH_ENABLED=1 bundle exec pod install",
     "prepack": "yarn build:expo-config-plugin && yarn build:docs && bob build",

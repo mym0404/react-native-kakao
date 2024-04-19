@@ -1,6 +1,6 @@
-#import "KakaoShare.h"
+#import "RNCKakaoShare.h"
 
-@implementation KakaoShare
+@implementation RNCKakaoShare
 RCT_EXPORT_MODULE()
 
 // Example method
@@ -13,6 +13,10 @@ RCT_EXPORT_METHOD(multiply
   NSNumber* result = @(a * b);
 
   resolve(result);
+}
+
+- (NSNumber*)add:(double)a b:(double)b {
+  return @(a + b);
 }
 
 // Don't compile this code when we build for the old architecture.

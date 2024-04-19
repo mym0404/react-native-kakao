@@ -10,7 +10,7 @@ const LINKING_ERROR =
 const isTurboModuleEnabled = global.__turboModuleProxy != null;
 
 const KakaoShareModule = isTurboModuleEnabled
-  ? require('./NativeKakaoShare').default
+  ? require('./spec/NativeKakaoShare').default
   : NativeModules.KakaoShare;
 
 const KakaoShare = KakaoShareModule
@@ -26,4 +26,8 @@ const KakaoShare = KakaoShareModule
 
 export function multiply(a: number, b: number): Promise<number> {
   return KakaoShare.multiply(a, b);
+}
+
+export function add(a: number, b: number): number {
+  return KakaoShare.add(a, b);
 }
