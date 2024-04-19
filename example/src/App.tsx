@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { StyleSheet, View, Text } from 'react-native';
-import { multiply } from 'kakao-share';
+import { multiply } from '@mj-studio/react-native-kakao-share';
 
 export default function App() {
   const [result, setResult] = React.useState<number | undefined>();

@@ -1,7 +1,7 @@
 {
   "name": "@mj-studio/react-native-kakao-share",
   "version": "0.1.0",
-  "description": "리액트 네이티브 카카오 공유 SDK",
+  "description": "리액트 네이티브 카카오 공유하기 SDK",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
   "types": "lib/typescript/src/index.d.ts",

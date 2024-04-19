@@ -5,4 +5,4 @@ export interface Spec extends TurboModule {
   multiply(a: number, b: number): Promise<number>;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('KakaoShare');
+export default TurboModuleRegistry.getEnforcing<Spec>('RNCKakaoShare');
