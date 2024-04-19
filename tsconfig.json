@@ -2,8 +2,9 @@
   "compilerOptions": {
     "rootDir": ".",
     "paths": {
-      "@mj-studio/react-native-kakao-share": ["./src/index"]
+      "@react-native-kakao/*": ["./packages/*/src"]
     },
+    "composite": true,
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
     "esModuleInterop": true,
@@ -25,5 +26,5 @@
     "target": "esnext",
     "verbatimModuleSyntax": true
   },
-  "exclude": ["./expo-config-plugin", "./docs"]
+  "exclude": ["packages/*/lib"]
 }

@@ -1,13 +1,14 @@
 import * as React from 'react';
 
 import { StyleSheet, View, Text } from 'react-native';
-import { add } from '@mj-studio/react-native-kakao-share';
+import { add } from '@react-native-kakao/share';
 
+// console.log(M);
 export default function App() {
   const [result, setResult] = React.useState<number | undefined>();
 
   React.useEffect(() => {
-    setResult(add(3, 7) + add(1, 2));
+    setResult(add(3, 7) + add(1, 222));
   }, []);
 
   return (

@@ -1,0 +1,9 @@
+{
+  "extends": "../tsconfig",
+  "references": [
+    { "path": "../packages/share" },
+  ],
+  "compilerOptions": {
+    // Avoid expo-cli auto-generating a tsconfig
+  }
+}

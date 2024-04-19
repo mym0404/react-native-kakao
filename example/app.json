@@ -1,4 +1,58 @@
 {
-  "name": "KakaoShareExample",
-  "displayName": "KakaoShareExample"
+  "name": "KakaoExample",
+  "displayName": "KakaoExample",
+  "expo": {
+    "name": "Kakao Example",
+    "owner": "react-native-kakao",
+    "slug": "react-native-kakao-example",
+    "description": "Demonstrates the functionality and various capabilities of React Native Kakao",
+    "privacy": "public",
+    "version": "1.0.0",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FEE500"
+    },
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.rnkakao.example"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#FEE500"
+      },
+      "package": "com.rnkakao.example"
+    },
+    "web": {
+      "bundler": "metro",
+      "favicon": "./assets/favicon.png"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "scheme": "kakao-example",
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "extraMavenRepos": [
+              "https://repository.map.naver.com/archive/maven",
+              "https://devrepo.kakao.com/nexus/content/groups/public/"
+            ],
+            "newArchEnabled": true
+          },
+          "ios": {
+            "newArchEnabled": true
+          }
+        }
+      ]
+    ]
+  }
 }
