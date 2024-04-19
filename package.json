@@ -1,7 +1,7 @@
 {
-  "name": "kakao-share",
+  "name": "@mj-studio/react-native-kakao-share",
   "version": "0.1.0",
-  "description": "리액트 네이티브 카카오 공유하기 SDK",
+  "description": "리액트 네이티브 카카오 공유 SDK",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
   "types": "lib/typescript/src/index.d.ts",
@@ -26,13 +26,27 @@
     "!**/.*"
   ],
   "scripts": {
-    "example": "yarn workspace kakao-share-example",
+    "example": "yarn workspace @mj-studio/react-native-kakao-share-example",
     "test": "jest",
     "typecheck": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
+    "format:clang": "./script/clang-format.sh",
+    "lint:clang": "./script/clang-lint.sh",
+    "t": "yarn lint && yarn typecheck && yarn lint:clang",
     "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build lib",
-    "prepare": "bob build",
-    "release": "release-it"
+    "prepare": "husky",
+    "release": "./script/release.sh",
+    "codegen:android": "cd example/android && ./gradlew generateCodegenArtifactsFromSchema",
+    "codegen:ios": "node example/node_modules/react-native/scripts/generate-codegen-artifacts.js --path example/ --outputPath example/ios",
+    "codegen": "yarn codegen:android && yarn codegen:ios",
+    "studio": "studio $(pwd)/android",
+    "studio:example": "studio $(pwd)/example/android",
+    "xcode": "open $(pwd)/example/ios/ReactNativeKakaoShareExample.xcworkspace",
+    "pod:old": "cd example/ios && bundle install && bundle exec pod install",
+    "pod:new": "cd example/ios && bundle install && RCT_NEW_ARCH_ENABLED=1 bundle exec pod install",
+    "prepack": "yarn build:expo-config-plugin && yarn build:docs && bob build",
+    "build:expo-config-plugin": "tsc --project ./expo-config-plugin",
+    "build:docs": "rm -rf docs && typedoc"
   },
   "keywords": [
     "react-native",
@@ -54,7 +68,6 @@
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^17.0.2",
-    "@evilmartians/lefthook": "^1.5.0",
     "@react-native/eslint-config": "^0.73.1",
     "@release-it/conventional-changelog": "^5.0.0",
     "@types/jest": "^29.5.5",
@@ -64,14 +77,15 @@
     "eslint": "^8.51.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.1",
+    "husky": "^9.0.11",
     "jest": "^29.7.0",
     "prettier": "^3.0.3",
     "react": "18.2.0",
     "react-native": "0.73.7",
-    "react-native-builder-bob": "^0.23.2",
+    "react-native-builder-bob": "^0.20.0",
     "release-it": "^15.0.0",
     "turbo": "^1.10.7",
-    "typescript": "^5.2.2"
+    "typescript": "5.1.6"
   },
   "resolutions": {
     "@types/react": "^18.2.44"
@@ -83,7 +97,7 @@
   "workspaces": [
     "example"
   ],
-  "packageManager": "yarn@3.6.1",
+  "packageManager": "yarn@4.1.1",
   "jest": {
     "preset": "react-native",
     "modulePathIgnorePatterns": [
@@ -98,7 +112,7 @@
   },
   "release-it": {
     "git": {
-      "commitMessage": "chore: release ${version}",
+      "commitMessage": "chore: release ${version} [skip-ci]",
       "tagName": "v${version}"
     },
     "npm": {
@@ -109,39 +123,48 @@
     },
     "plugins": {
       "@release-it/conventional-changelog": {
-        "preset": "angular"
+        "preset": {
+          "name": "conventionalcommits",
+          "types": [
+            {
+              "type": "feat",
+              "section": "Features"
+            },
+            {
+              "type": "fix",
+              "section": "Bug Fixes"
+            },
+            {
+              "type": "chore",
+              "section": "Chores"
+            },
+            {
+              "type": "docs",
+              "section": "Documentation"
+            },
+            {
+              "type": "style",
+              "section": "Style Code"
+            },
+            {
+              "type": "refactor",
+              "section": "Refactor"
+            },
+            {
+              "type": "perf",
+              "section": "Performance Enhance"
+            },
+            {
+              "type": "test",
+              "section": "Tests"
+            }
+          ]
+        },
+        "writerOpts": {
+          "groupBy": "scope"
+        }
       }
     }
-  },
-  "eslintConfig": {
-    "root": true,
-    "extends": [
-      "@react-native",
-      "prettier"
-    ],
-    "rules": {
-      "prettier/prettier": [
-        "error",
-        {
-          "quoteProps": "consistent",
-          "singleQuote": true,
-          "tabWidth": 2,
-          "trailingComma": "es5",
-          "useTabs": false
-        }
-      ]
-    }
-  },
-  "eslintIgnore": [
-    "node_modules/",
-    "lib/"
-  ],
-  "prettier": {
-    "quoteProps": "consistent",
-    "singleQuote": true,
-    "tabWidth": 2,
-    "trailingComma": "es5",
-    "useTabs": false
   },
   "react-native-builder-bob": {
     "source": "src",
@@ -158,8 +181,8 @@
     ]
   },
   "codegenConfig": {
-    "name": "RNKakaoShareSpec",
-    "type": "modules",
+    "name": "RNCKakaoShareSpec",
+    "type": "all",
     "jsSrcsDir": "src"
   }
 }

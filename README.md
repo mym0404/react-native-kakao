@@ -1,17 +1,17 @@
-# kakao-share
+# @mj-studio/react-native-kakao-share
 
-리액트 네이티브 카카오 공유하기 SDK
+리액트 네이티브 카카오 공유 SDK
 
 ## Installation
 
 ```sh
-npm install kakao-share
+npm install @mj-studio/react-native-kakao-share
 ```
 
 ## Usage
 
 ```js
-import { multiply } from 'kakao-share';
+import { multiply } from '@mj-studio/react-native-kakao-share';
 
 // ...
 
