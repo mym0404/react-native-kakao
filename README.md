@@ -24,6 +24,8 @@ React Native Kakao is built with four key principles in mind;
   - first class support for Typescript included
 - 📄 **Well documented**
   - full reference & installation documentation alongside detailed guides and FAQs
+- 🚀 **Wide supportability**
+  - first class supports for New Architecture, Old Architecture, even Expo
 
 ## Kakao Modules
 

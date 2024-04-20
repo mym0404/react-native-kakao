@@ -23,11 +23,3 @@ const Native = Module
         },
       }
     );
-
-export function multiply(a: number, b: number): Promise<number> {
-  return Native.multiply(a, b);
-}
-
-export function add(a: number, b: number): number {
-  return Native.add(a, b);
-}

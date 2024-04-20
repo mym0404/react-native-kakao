@@ -1,7 +1,6 @@
 import * as React from 'react';
 
 import { StyleSheet, View, Text } from 'react-native';
-import { add } from '@react-native-kakao/share';
 import { initializeKakaoSDK } from '@react-native-kakao/core';
 
 // console.log(M);
@@ -10,7 +9,7 @@ export default function App() {
 
   React.useEffect(() => {
     initializeKakaoSDK('5a9383961eadba5496cb4ff895e91a89');
-    setResult(add(3, 7) + add(1, 222));
+    setResult(5);
   }, []);
 
   return (

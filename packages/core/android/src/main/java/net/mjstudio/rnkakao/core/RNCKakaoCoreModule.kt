@@ -5,18 +5,18 @@ import com.facebook.react.bridge.ReactMethod
 import com.kakao.sdk.common.KakaoSdk
 
 class RNCKakaoCoreModule internal constructor(context: ReactApplicationContext) :
-  KakaoCoreSpec(context) {
+    KakaoCoreSpec(context) {
 
-  override fun getName(): String {
-    return NAME
-  }
+    override fun getName(): String {
+        return NAME
+    }
 
-  @ReactMethod
-  override fun initializeKakaoSDK(appKey: String) {
-    KakaoSdk.init(context = reactApplicationContext, appKey = appKey)
-  }
+    @ReactMethod
+    override fun initializeKakaoSDK(appKey: String) {
+        KakaoSdk.init(context = reactApplicationContext, appKey = appKey)
+    }
 
-  companion object {
-    const val NAME = "RNCKakaoCore"
-  }
+    companion object {
+        const val NAME = "RNCKakaoCore"
+    }
 }
