@@ -28,9 +28,11 @@
     "prepare": "husky",
     "build": "lerna run prepack",
     "pbulish": "lerna publish",
+    "gen:android": "yarn example prebuild -p android",
+    "gen:ios": "yarn example prebuild -p ios",
     "studio": "studio $(pwd)/example/android",
     "xcode": "open $(pwd)/example/ios/KakaoExample.xcworkspace",
-    "pod:old": "cd example/ios && bundle install && bundle exec pod install",
+    "pod:old": "cd example/ios && bundle install && RCT_NEW_ARCH_ENABLED=0 bundle exec pod install",
     "pod:new": "cd example/ios && bundle install && RCT_NEW_ARCH_ENABLED=1 bundle exec pod install",
     "build:docs": "rm -rf docs && typedoc"
   },

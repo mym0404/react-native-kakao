@@ -5,7 +5,6 @@
     "packages/*"
   ],
   "npmClient": "yarn",
-  "useWorkspaces": true,
   "command": {
     "publish": {
       "graphType": "all",
