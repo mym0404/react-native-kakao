@@ -20,7 +20,8 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.rnkakao.example"
+      "bundleIdentifier": "com.rnkakao.example",
+      "icon": "./assets/icon.png"
     },
     "android": {
       "adaptiveIcon": {

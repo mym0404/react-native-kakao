@@ -3,6 +3,7 @@
   "private": true,
   "workspaces": [
     "example",
+    "docs",
     "packages/*"
   ],
   "publishConfig": {
@@ -28,8 +29,11 @@
     "prepare": "husky",
     "build": "lerna run prepack",
     "pbulish": "lerna publish",
-    "gen:android": "yarn example prebuild -p android",
-    "gen:ios": "yarn example prebuild -p ios",
+    "android": "yarn example android",
+    "ios": "yarn example ios",
+    "dev": "yarn example start",
+    "gen:android": "rm -rf example/android && yarn example prebuild -p android",
+    "gen:ios": "rm -rf example/ios && yarn example prebuild -p ios && cd example/ios && echo $(cat .xcode.env) > .xcode.env.local",
     "studio": "studio $(pwd)/example/android",
     "xcode": "open $(pwd)/example/ios/KakaoExample.xcworkspace",
     "pod:old": "cd example/ios && bundle install && RCT_NEW_ARCH_ENABLED=0 bundle exec pod install",

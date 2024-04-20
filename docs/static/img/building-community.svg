@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="82px" height="75px" viewBox="0 0 82 75" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>marketing-and-sales / building-community</title>
+    <defs>
+        <circle id="path-1" cx="12" cy="70" r="3"></circle>
+        <circle id="path-2" cx="3" cy="18" r="3"></circle>
+        <circle id="path-3" cx="62" cy="50" r="3"></circle>
+        <circle id="path-4" cx="40" cy="11" r="3"></circle>
+        <circle id="path-5" cx="77" cy="62" r="3"></circle>
+        <circle id="path-6" cx="40" cy="56" r="3"></circle>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Dark-Previews-13" transform="translate(-731.000000, -2347.000000)">
+            <g id="marketing-and-sales-/-building-community" transform="translate(732.000000, 2348.000000)">
+                <rect id="Rectangle" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" x="3" y="50" width="37" height="20" rx="1"></rect>
+                <rect id="Rectangle" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" x="8" y="44" width="9" height="6"></rect>
+                <rect id="Rectangle-Copy" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" x="26" y="44" width="9" height="6"></rect>
+                <rect id="Rectangle" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" x="40" y="50" width="37" height="20" rx="1"></rect>
+                <rect id="Rectangle" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" x="40" y="30" width="37" height="20" rx="1"></rect>
+                <rect id="Rectangle" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" x="45" y="24" width="9" height="6"></rect>
+                <rect id="Rectangle-Copy" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" x="63" y="24" width="9" height="6"></rect>
+                <rect id="Rectangle" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" x="3" y="6" width="37" height="20" rx="1"></rect>
+                <rect id="Rectangle" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" x="8" y="0" width="9" height="6"></rect>
+                <rect id="Rectangle-Copy" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" x="26" y="0" width="9" height="6"></rect>
+                <g id="nucleus" transform="translate(12.000000, 70.000000) rotate(-90.000000) translate(-12.000000, -70.000000) " stroke="currentColor">
+                    <circle stroke-width="1.5" stroke-linejoin="round" fill="#818181" fill-rule="evenodd" cx="12" cy="70" r="2.25"></circle>
+                    <use stroke-width="1" xlink:href="#path-1"></use>
+                </g>
+                <g id="nucleus" transform="translate(3.000000, 18.000000) rotate(-90.000000) translate(-3.000000, -18.000000) " stroke="currentColor">
+                    <circle stroke-width="1.5" stroke-linejoin="round" fill="#818181" fill-rule="evenodd" cx="3" cy="18" r="2.25"></circle>
+                    <use stroke-width="1" xlink:href="#path-2"></use>
+                </g>
+                <g id="nucleus" transform="translate(62.000000, 50.000000) rotate(-90.000000) translate(-62.000000, -50.000000) " stroke="currentColor">
+                    <circle stroke-width="1.5" stroke-linejoin="round" fill="#818181" fill-rule="evenodd" cx="62" cy="50" r="2.25"></circle>
+                    <use stroke-width="1" xlink:href="#path-3"></use>
+                </g>
+                <g id="nucleus" transform="translate(40.000000, 11.000000) rotate(-90.000000) translate(-40.000000, -11.000000) " stroke="currentColor">
+                    <circle stroke-width="1.5" stroke-linejoin="round" fill="#818181" fill-rule="evenodd" cx="40" cy="11" r="2.25"></circle>
+                    <use stroke-width="1" xlink:href="#path-4"></use>
+                </g>
+                <g id="nucleus" transform="translate(77.000000, 62.000000) rotate(-90.000000) translate(-77.000000, -62.000000) " stroke="currentColor">
+                    <circle stroke-width="1.5" stroke-linejoin="round" fill="#818181" fill-rule="evenodd" cx="77" cy="62" r="2.25"></circle>
+                    <use stroke-width="1" xlink:href="#path-5"></use>
+                </g>
+                <g id="nucleus" transform="translate(40.000000, 56.000000) rotate(-90.000000) translate(-40.000000, -56.000000) " stroke="currentColor">
+                    <circle stroke-width="1.5" stroke-linejoin="round" fill="#818181" fill-rule="evenodd" cx="40" cy="56" r="2.25"></circle>
+                    <use stroke-width="1" xlink:href="#path-6"></use>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

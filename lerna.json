@@ -16,6 +16,7 @@
       "changelogIncludeCommitsClientLogin": " - by @%l",
       "message": "chore: publish",
       "preId": "alpha",
+      "private": false,
       "preDistTag": "next",
       "ignoreChanges": [
         "**/__fixtures__/**",
