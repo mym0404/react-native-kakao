@@ -8,25 +8,27 @@ import RNCKakaoCore
 @objc public class RNCKakaoUserManager: NSObject {
   @objc public static let shared = RNCKakaoUserManager()
 
-  @objc(isKakaoTalkLoginUrl:) public static func isKakaoTalkLoginUrl(url: URL) -> Bool {
+  @objc public static func isKakaoTalkLoginUrl(_ url: URL) -> Bool {
     guard let _ = try? KakaoSDK.shared.appKey() else { return false }
     return AuthApi.isKakaoTalkLoginUrl(url)
   }
 
-  @objc(handleOpenUrl:) public static func handleOpenUrl(url: URL) -> Bool {
+  @objc public static func handleOpenUrl(_ url: URL) -> Bool {
     guard let _ = try? KakaoSDK.shared.appKey() else { return false }
     return AuthController.handleOpenUrl(url: url)
   }
 
-  @objc(isKakaoTalkLoginAvailable:reject:) public func isKakaoTalkLoginAvailable(
-    resolve: @escaping RCTPromiseResolveBlock,
+  @objc public func isKakaoTalkLoginAvailable(
+    _ resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
     resolve(UserApi.isKakaoTalkLoginAvailable())
   }
 
-  @objc(loginWithKakaoTalk:resolve:reject:) public func loginWithKakaoTalk(
-    serviceTerms: [String]? = nil,
+  @objc public func login(
+    _ serviceTerms: [String],
+    prompts: [String],
+    useKakaoAccountLoginIos: Bool,
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
@@ -34,8 +36,69 @@ import RNCKakaoCore
       RNCKakaoUtil.reject(reject, "KakaoSdk is not initialized")
       return
     }
-    if UserApi.isKakaoTalkLoginAvailable() {
-      UserApi.shared.loginWithKakaoTalk(serviceTerms: serviceTerms) { token, error in
+    if UserApi.isKakaoTalkLoginAvailable(), !useKakaoAccountLoginIos {
+      UserApi.shared
+        .loginWithKakaoTalk(serviceTerms: emptyArrayToNil(serviceTerms)) { token, error in
+          if let error {
+            RNCKakaoUtil.reject(reject, error)
+          } else if let token {
+            resolve([
+              "accessToken": token.accessToken,
+              "refreshToken": token.refreshToken,
+              "tokenType": token.tokenType,
+              "idToken": token.idToken as Any,
+              "accessTokenExpiresAt": token.expiredAt.timeIntervalSince1970,
+              "refreshTokenExpiresAt": token.refreshTokenExpiredAt.timeIntervalSince1970,
+              "accessTokenExpiresIn": token.expiresIn,
+              "refreshTokenExpiresIn": token.refreshTokenExpiresIn,
+              "scopes": token.scopes ?? []
+            ])
+          } else {
+            RNCKakaoUtil.reject(reject, "token not found")
+          }
+        }
+    } else {
+      loginWithKakaoAccount(
+        serviceTerms: serviceTerms,
+        prompts: prompts,
+        resolve: resolve,
+        reject: reject
+      )
+    }
+  }
+
+  private func loginWithKakaoAccount(
+    serviceTerms: [String]? = [],
+    prompts: [String]? = [],
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    guard let _ = try? KakaoSDK.shared.appKey() else {
+      RNCKakaoUtil.reject(reject, "KakaoSdk is not initialized")
+      return
+    }
+    var _prompts: [Prompt] = []
+    if let prompts {
+      prompts.forEach { p in
+        if p == "Login" {
+          _prompts.append(.Login)
+        }
+        if p == "Cert" {
+          _prompts.append(.Cert)
+        }
+        if p == "Create" {
+          _prompts.append(.Create)
+        }
+        if p == "UnifyDaum" {
+          _prompts.append(.UnifyDaum)
+        }
+      }
+    }
+    UserApi.shared
+      .loginWithKakaoAccount(
+        prompts: emptyArrayToNil(_prompts),
+        serviceTerms: emptyArrayToNil(serviceTerms)
+      ) { token, error in
         if let error {
           RNCKakaoUtil.reject(reject, error)
         } else if let token {
@@ -44,64 +107,67 @@ import RNCKakaoCore
             "refreshToken": token.refreshToken,
             "tokenType": token.tokenType,
             "idToken": token.idToken as Any,
-            "accessTokenExpiresAt": token.expiredAt,
-            "refreshTokenExpiresAt": token.refreshTokenExpiredAt,
+            "accessTokenExpiresAt": token.expiredAt.timeIntervalSince1970,
+            "refreshTokenExpiresAt": token.refreshTokenExpiredAt.timeIntervalSince1970,
             "accessTokenExpiresIn": token.expiresIn,
-            "refreshTokenExpiresIn": token.refreshTokenExpiresIn
+            "refreshTokenExpiresIn": token.refreshTokenExpiresIn,
+            "scopes": token.scopes ?? []
           ])
         } else {
           RNCKakaoUtil.reject(reject, "token not found")
         }
       }
-    } else {
-      RNCKakaoUtil.reject(reject, "isKakaoTalkLoginAvailable returns false")
+  }
+
+  @objc public func logout(
+    _ resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    UserApi.shared.logout { error in
+      if let error {
+        RNCKakaoUtil.reject(reject, error)
+      } else {
+        resolve(42)
+      }
     }
   }
 
-  @objc(loginWithKakaoAccount:resolve:reject:) public func loginWithKakaoAccount(
-    prompts: [String]? = nil,
-    resolve: @escaping RCTPromiseResolveBlock,
+  @objc public func unlink(
+    _ resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
-    guard let _ = try? KakaoSDK.shared.appKey() else {
-      RNCKakaoUtil.reject(reject, "KakaoSdk is not initialized")
-      return
-    }
-    var _prompts: [Prompt]? = nil
-    if let prompts {
-      _prompts = []
-      prompts.forEach { p in
-        if p == "Login" {
-          _prompts!.append(.Login)
-        }
-        if p == "Cert" {
-          _prompts!.append(.Cert)
-        }
-        if p == "Create" {
-          _prompts!.append(.Create)
-        }
-        if p == "UnifyDaum" {
-          _prompts!.append(.UnifyDaum)
-        }
-      }
-    }
-    UserApi.shared.loginWithKakaoAccount(prompts: _prompts) { token, error in
+    UserApi.shared.unlink { error in
       if let error {
         RNCKakaoUtil.reject(reject, error)
-      } else if let token {
-        resolve([
-          "accessToken": token.accessToken,
-          "refreshToken": token.refreshToken,
-          "tokenType": token.tokenType,
-          "idToken": token.idToken as Any,
-          "accessTokenExpiresAt": token.expiredAt,
-          "refreshTokenExpiresAt": token.refreshTokenExpiredAt,
-          "accessTokenExpiresIn": token.expiresIn,
-          "refreshTokenExpiresIn": token.refreshTokenExpiresIn
-        ])
       } else {
-        RNCKakaoUtil.reject(reject, "token not found")
+        resolve(nil)
       }
     }
+  }
+
+  @objc public func isLogined(
+    _ resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    if AuthApi.hasToken() {
+      UserApi.shared.accessTokenInfo { _, error in
+        if let error {
+          if let sdkError = error as? SdkError, sdkError.isInvalidTokenError() == true {
+            resolve(false)
+          } else {
+            RNCKakaoUtil.reject(reject, error)
+          }
+        } else {
+          resolve(true)
+        }
+      }
+    } else {
+      resolve(false)
+    }
+  }
+
+  private func emptyArrayToNil<T>(_ arr: [T]?) -> [T]? {
+    if arr == nil || arr?.isEmpty == true { return nil }
+    return arr
   }
 }

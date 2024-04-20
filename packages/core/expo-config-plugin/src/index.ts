@@ -1,4 +1,4 @@
-import type { ConfigPlugin } from '@expo/config-plugins';
+import { type ConfigPlugin, createRunOncePlugin } from '@expo/config-plugins';
 
 import { withAndroid } from './android';
 import { withIos } from './ios';
@@ -26,4 +26,6 @@ const withKakao: ConfigPlugin<{
   return config;
 };
 
-export default withKakao;
+// @ts-ignore
+const pkg = require('@react-native-kakao/core/package.json');
+export default createRunOncePlugin(withKakao, pkg.name, pkg.version);

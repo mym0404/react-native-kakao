@@ -26,14 +26,27 @@ const Native: Spec = Module
       },
     );
 
-export function loginWithKakaoTalk({ serviceTerms }: { serviceTerms?: string[] } = {}) {
-  return Native.loginWithKakaoTalk(serviceTerms);
-}
-
-export function loginWithKakaoAccount({
+export type KakaoLoginToken = {
+  accessToken: string;
+  refreshToken: string;
+  tokenType: string;
+  idToken?: string;
+  accessTokenExpiresAt: number;
+  refreshTokenExpiresAt: number;
+  accessTokenExpiresIn: number;
+  refreshTokenExpiresIn: number;
+  scopes: string[];
+};
+export function login({
+  serviceTerms,
   prompts,
-}: { prompts?: ('Create' | 'Cert' | 'Login' | 'UnifyDaum')[] } = {}) {
-  return Native.loginWithKakaoAccount(prompts);
+  useKakaoAccountLoginIos,
+}: {
+  serviceTerms?: string[];
+  prompts?: string[];
+  useKakaoAccountLoginIos?: boolean;
+} = {}): Promise<KakaoLoginToken> {
+  return Native.login(serviceTerms ?? [], prompts ?? [], useKakaoAccountLoginIos ?? false);
 }
 
 export function isKakaoTalkLoginAvailable(): Promise<boolean> {

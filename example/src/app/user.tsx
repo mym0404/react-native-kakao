@@ -1,10 +1,7 @@
 import { useState } from 'react';
+import { formatJson } from '@mj-studio/js-util';
 import { useMount } from '@mj-studio/react-util';
-import {
-  isKakaoTalkLoginAvailable,
-  loginWithKakaoAccount,
-  loginWithKakaoTalk,
-} from '@react-native-kakao/user';
+import { isKakaoTalkLoginAvailable, login } from '@react-native-kakao/user';
 
 import { Btn } from '../component/Btn';
 import { StyledScrollView } from '../component/StyledScrollView';
@@ -12,6 +9,7 @@ import { Txt } from '../component/Txt';
 
 export default function Page() {
   const [isKakaoTalkEnable, setKakaoTalkEnable] = useState(false);
+  const [result, setResult] = useState<object>();
 
   useMount(() => {
     isKakaoTalkLoginAvailable().then(setKakaoTalkEnable);
@@ -24,17 +22,14 @@ export default function Page() {
     >
       <Txt>{`Kakao Talk Available: ${isKakaoTalkEnable}`}</Txt>
       <Btn
-        title={'Login With Kakao Talk'}
+        title={'Login'}
         onPress={() => {
-          loginWithKakaoTalk();
+          login().then((ret) => setResult(ret));
         }}
       />
-      <Btn
-        title={'Login With Kakao Account'}
-        onPress={() => {
-          loginWithKakaoAccount();
-        }}
-      />
+      <Btn title={'Log Out'} onPress={() => {}} />
+      <Btn title={'Deelte Token'} onPress={() => {}} />
+      <Txt>{formatJson(result)}</Txt>
     </StyledScrollView>
   );
 }

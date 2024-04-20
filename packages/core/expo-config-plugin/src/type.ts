@@ -1,4 +1,6 @@
 export type KakaoAndroidConfig = {
   authCodeHandlerActivity?: boolean;
 };
-export type KakaoIosConfig = {};
+export type KakaoIosConfig = {
+  handleKakaoOpenUrl?: boolean;
+};

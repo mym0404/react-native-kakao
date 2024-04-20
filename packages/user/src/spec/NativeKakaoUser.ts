@@ -1,10 +1,17 @@
 import type { TurboModule } from 'react-native';
 import { TurboModuleRegistry } from 'react-native';
+import type { KakaoLoginToken } from '@react-native-kakao/user';
 
 export interface Spec extends TurboModule {
   isKakaoTalkLoginAvailable(): Promise<boolean>;
-  loginWithKakaoTalk(serviceTerms?: string[]): Promise<void>;
-  loginWithKakaoAccount(prompts?: string[]): Promise<void>;
+  login(
+    serviceTerms: string[],
+    prompts: string[],
+    useKakaoAccountLoginIos: boolean,
+  ): Promise<KakaoLoginToken>;
+  logout(): Promise<void>;
+  unlink(): Promise<void>;
+  isLogined(): Promise<boolean>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('RNCKakaoUser');

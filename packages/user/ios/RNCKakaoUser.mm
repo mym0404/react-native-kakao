@@ -3,14 +3,6 @@
 
 @implementation RNCKakaoUser
 
-+ (BOOL)isKakaoTalkLoginUrl:(NSURL*)url {
-  return [RNCKakaoUserManager isKakaoTalkLoginUrl:url];
-}
-
-+ (BOOL)handleOpenUrl:(NSURL*)url {
-  return [RNCKakaoUserManager handleOpenUrl:url];
-}
-
 - (RNCKakaoUserManager*)manager {
   return [RNCKakaoUserManager shared];
 }
@@ -23,18 +15,31 @@ RCT_EXPORT_METHOD(isKakaoTalkLoginAvailable
   [[self manager] isKakaoTalkLoginAvailable:resolve reject:reject];
 }
 
-RCT_EXPORT_METHOD(loginWithKakaoTalk
-                  : (NSArray*)serviceTerms resolve
+RCT_EXPORT_METHOD(login
+                  : (NSArray*)serviceTerms prompts
+                  : (NSArray*)prompts useKakaoAccountLoginIos
+                  : (BOOL)useKakaoAccountLoginIos resolve
                   : (RCTPromiseResolveBlock)resolve reject
                   : (RCTPromiseRejectBlock)reject) {
-  [[self manager] loginWithKakaoTalk:serviceTerms resolve:resolve reject:reject];
+  [[self manager] login:serviceTerms
+                      prompts:prompts
+      useKakaoAccountLoginIos:useKakaoAccountLoginIos
+                      resolve:resolve
+                       reject:reject];
 }
 
-RCT_EXPORT_METHOD(loginWithKakaoAccount
-                  : (NSArray*)prompts resolve
+RCT_EXPORT_METHOD(logout : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
+  [[self manager] logout:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(unlink : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
+  [[self manager] unlink:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(isLogined
                   : (RCTPromiseResolveBlock)resolve reject
                   : (RCTPromiseRejectBlock)reject) {
-  [[self manager] loginWithKakaoAccount:prompts resolve:resolve reject:reject];
+  [[self manager] isLogined:resolve reject:reject];
 }
 
 // Don't compile this code when we build for the old architecture.
