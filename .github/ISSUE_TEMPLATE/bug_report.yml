@@ -1,0 +1,112 @@
+name: Bug Report
+description: File a bug report
+title: '[BUG]: '
+labels: ['bug']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: checkboxes
+    attributes:
+      label: Is there an existing issue for this?
+      description: Please search to see if an issue already exists for the bug you encountered.
+      options:
+        - label: I have searched the existing issues
+          required: true
+  - type: input
+    id: package-version
+    attributes:
+      label: Name, Version of @react-native-kakao/*
+      description: What name and version of package are you running?
+      placeholder: ex. core, 1.0.0
+    validations:
+      required: true
+  - type: input
+    id: rn-version
+    attributes:
+      label: Version of react-native
+      description: What version of react-native are you running?
+      placeholder: ex. 0.73.6
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: What os are you seeing the problem on?
+      multiple: true
+      options:
+        - Android
+        - iOS
+        - Web
+    validations:
+      required: true
+  - type: dropdown
+    id: device-type
+    attributes:
+      label: What device types are you seeing the problem on?
+      multiple: true
+      options:
+        - Simulator
+        - Physcial Device
+    validations:
+      required: true
+  - type: dropdown
+    id: architecture
+    attributes:
+      label: What architecture types of react native are you seeing the problem on?
+      multiple: true
+      options:
+        - Old Architecture(Bridge)
+        - New Architecture(Fabric)
+    validations:
+      required: true
+  - type: input
+    id: device-version
+    attributes:
+      label: Version of device(android API, iOS OS version, etc...)
+      description: What version of Device Version are you running?
+      placeholder: ex. Android 34, iOS 17.4
+  - type: checkboxes
+    attributes:
+      label: Expo App
+      description: Are you using Expo?
+      options:
+        - label: I am using Expo
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Also tell us, what did you expect to happen?
+      placeholder: Tell us what you see!
+      value: 'A bug happened!'
+    validations:
+      required: true
+  - type: textarea
+    id: package-json
+    attributes:
+      label: Relevant a package.json.
+      description: Please copy and pates your package.json.
+      render: json
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output, if any.
+      render: shell
+  #  - type: input
+  #    id: sample
+  #    attributes:
+  #      label: Reproducible Sample Repository
+  #      description: Repository url of reproducible sample
+  #      placeholder: ex. https://github.com/user/repo
+  #    validations:
+  #      required: true
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/mj-studio-library/react-native-kakao/blob/main/CODE_OF_CONDUCT.md)
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true
