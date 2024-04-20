@@ -28,7 +28,7 @@
     "clean": "lerna run clean",
     "prepare": "husky",
     "build": "lerna run prepack",
-    "publish": "lerna publish",
+    "release": "lerna publish",
     "android": "yarn example android",
     "ios": "yarn example ios",
     "dev": "yarn example start",
