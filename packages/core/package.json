@@ -1,0 +1,103 @@
+{
+  "name": "@react-native-kakao/core",
+  "description": "React Native Kakao Core SDK",
+  "version": "0.1.0",
+  "main": "lib/commonjs/index",
+  "module": "lib/module/index",
+  "types": "lib/typescript/src/index.d.ts",
+  "react-native": "src/index",
+  "source": "src/index",
+  "files": [
+    "src",
+    "lib",
+    "android",
+    "ios",
+    "cpp",
+    "*.podspec",
+    "!ios/build",
+    "!android/build",
+    "!android/gradle",
+    "!android/gradlew",
+    "!android/gradlew.bat",
+    "!android/local.properties",
+    "!**/__tests__",
+    "!**/__fixtures__",
+    "!**/__mocks__",
+    "!**/.*"
+  ],
+  "author": "MJ Studio <mym0404@gmail.com> (https://github.com/mym0404)",
+  "homepage": "https://github.com/mj-studio-library/react-native-kakao.git",
+  "scripts": {
+    "test": "jest",
+    "prepare": "husky",
+    "release": "./script/release.sh",
+    "codegen:android": "cd ../../example/android && ./gradlew generateCodegenArtifactsFromSchema",
+    "codegen:ios": "node ../../example/node_modules/react-native/scripts/generate-codegen-artifacts.js --path example/ --outputPath ../../example/ios",
+    "codegen": "yarn codegen:android && yarn codegen:ios",
+    "build:expo-config-plugin": "tsc --project ./expo-config-plugin",
+    "prepack": "bob build",
+    "clean": "del-cli android/ lib"
+  },
+  "keywords": [
+    "react-native",
+    "kakao",
+    "kakao-sdk",
+    "typescript",
+    "javascript",
+    "react",
+    "expo"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mj-studio-library/react-native-kakao.git",
+    "directory": "packages/core"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.5",
+    "@types/react": "^18.2.44",
+    "del-cli": "^5.1.0",
+    "jest": "^29.7.0",
+    "react": "18.2.0",
+    "react-native": "0.73.7",
+    "react-native-builder-bob": "^0.20.0",
+    "typescript": "5.1.6"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
+  "workspaces": [
+    "example",
+    "packages/*"
+  ],
+  "jest": {
+    "preset": "react-native",
+    "modulePathIgnorePatterns": [
+      "<rootDir>/lib/"
+    ]
+  },
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      "commonjs",
+      "module",
+      [
+        "typescript",
+        {
+          "project": "tsconfig.build.json"
+        }
+      ]
+    ]
+  },
+  "codegenConfig": {
+    "name": "RNCKakaoCoreSpec",
+    "type": "all",
+    "jsSrcsDir": "src"
+  }
+}

@@ -32,12 +32,12 @@
     "android": "yarn example android",
     "ios": "yarn example ios",
     "dev": "yarn example start",
-    "gen:android": "rm -rf example/android && yarn example prebuild -p android",
-    "gen:ios": "rm -rf example/ios && yarn example prebuild -p ios && cd example/ios && echo $(cat .xcode.env) > .xcode.env.local",
+    "gen:android": "yarn example prebuild:android",
+    "gen:ios": "yarn example prebuild:ios",
     "studio": "studio $(pwd)/example/android",
     "xcode": "open $(pwd)/example/ios/KakaoExample.xcworkspace",
-    "pod:old": "cd example/ios && bundle install && RCT_NEW_ARCH_ENABLED=0 bundle exec pod install",
-    "pod:new": "cd example/ios && bundle install && RCT_NEW_ARCH_ENABLED=1 bundle exec pod install",
+    "pod:old": "yarn example pod:old",
+    "pod:new": "yarn example pod:new",
     "build:docs": "rm -rf docs && typedoc"
   },
   "devDependencies": {

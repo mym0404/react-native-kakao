@@ -4381,6 +4381,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native-kakao/core@workspace:packages/core":
+  version: 0.0.0-use.local
+  resolution: "@react-native-kakao/core@workspace:packages/core"
+  dependencies:
+    "@types/jest": "npm:^29.5.5"
+    "@types/react": "npm:^18.2.44"
+    del-cli: "npm:^5.1.0"
+    jest: "npm:^29.7.0"
+    react: "npm:18.2.0"
+    react-native: "npm:0.73.7"
+    react-native-builder-bob: "npm:^0.20.0"
+    typescript: "npm:5.1.6"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  languageName: unknown
+  linkType: soft
+
 "@react-native-kakao/share@workspace:packages/share":
   version: 0.0.0-use.local
   resolution: "@react-native-kakao/share@workspace:packages/share"
