@@ -1,10 +1,14 @@
 #import "RNCKakaoShare.h"
+#import "RNCKakaoShare-Swift.h"
 
 @implementation RNCKakaoShare
+
+- (RNCKakaoShareManager*)manager {
+  return [RNCKakaoShareManager shared];
+}
+
 RCT_EXPORT_MODULE()
 
-// Example method
-// See // https://reactnative.dev/docs/native-modules-ios
 RCT_EXPORT_METHOD(multiply
                   : (double)a b
                   : (double)b resolve
@@ -13,10 +17,6 @@ RCT_EXPORT_METHOD(multiply
   NSNumber* result = @(a * b);
 
   resolve(result);
-}
-
-- (NSNumber*)add:(double)a b:(double)b {
-  return @(a + b);
 }
 
 // Don't compile this code when we build for the old architecture.

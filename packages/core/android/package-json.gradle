@@ -1,0 +1,34 @@
+/* groovylint-disable CatchException, CompileStatic, DuplicateStringLiteral, JavaIoPackageAccess */
+import groovy.json.JsonSlurper
+
+String fileName = 'package.json'
+String jsonRoot = 'react-native'
+
+File _corePkg = file('../../core/package.json')
+File _pkg = file('../package.json')
+
+if (!_corePkg.exists()) {
+    throw new GradleException('Could not find the react-native-kakao/core package, have you installed it?')
+}
+if (!_pkg.exists()) {
+    throw new GradleException('Could not find the package.json')
+}
+
+rootProject.logger.info ":${project.name} ${fileName} found at ${_corePkg}"
+
+Object corePkg, pkg
+
+try {
+    corePkg = new JsonSlurper().parse(_corePkg)
+    ext.RNCKakaoSdkVersions = corePkg.sdkVersions.android
+    ext.RNCKakaoCorePkg = corePkg
+} catch (Exception ignored) {
+    throw new GradleException(":${project.name} failed to parse ${fileName} found at ${_corePkg}.")
+}
+
+try {
+    pkg = new JsonSlurper().parse(_pkg)
+    ext.RNCKakaoPkg = pkg
+} catch (Exception ignored) {
+    throw new GradleException(":${project.name} failed to parse ${fileName} found at ${_pkg}.")
+}

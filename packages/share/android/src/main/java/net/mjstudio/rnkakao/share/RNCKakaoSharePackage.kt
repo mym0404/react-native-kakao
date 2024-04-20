@@ -1,4 +1,4 @@
-package com.kakaoshare
+package net.mjstudio.rnkakao.share
 
 import com.facebook.react.TurboReactPackage
 import com.facebook.react.bridge.ReactApplicationContext
@@ -7,10 +7,10 @@ import com.facebook.react.module.model.ReactModuleInfoProvider
 import com.facebook.react.module.model.ReactModuleInfo
 import java.util.HashMap
 
-class KakaoSharePackage : TurboReactPackage() {
+class RNCKakaoSharePackage : TurboReactPackage() {
   override fun getModule(name: String, reactContext: ReactApplicationContext): NativeModule? {
-    return if (name == KakaoShareModule.NAME) {
-      KakaoShareModule(reactContext)
+    return if (name == RNCKakaoShareModule.NAME) {
+      RNCKakaoShareModule(reactContext)
     } else {
       null
     }
@@ -20,9 +20,9 @@ class KakaoSharePackage : TurboReactPackage() {
     return ReactModuleInfoProvider {
       val moduleInfos: MutableMap<String, ReactModuleInfo> = HashMap()
       val isTurboModule: Boolean = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
-      moduleInfos[KakaoShareModule.NAME] = ReactModuleInfo(
-        KakaoShareModule.NAME,
-        KakaoShareModule.NAME,
+      moduleInfos[RNCKakaoShareModule.NAME] = ReactModuleInfo(
+        RNCKakaoShareModule.NAME,
+        RNCKakaoShareModule.NAME,
         false,  // canOverrideExistingModule
         false,  // needsEagerInit
         true,  // hasConstants

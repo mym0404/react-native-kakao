@@ -98,6 +98,9 @@
   "codegenConfig": {
     "name": "RNCKakaoShareSpec",
     "type": "all",
-    "jsSrcsDir": "src"
+    "jsSrcsDir": "src",
+    "android": {
+      "javaPackageName": "net.mjstudio.rnkakao.share"
+    }
   }
 }

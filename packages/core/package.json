@@ -103,13 +103,25 @@
   "codegenConfig": {
     "name": "RNCKakaoCoreSpec",
     "type": "all",
-    "jsSrcsDir": "src"
+    "jsSrcsDir": "src",
+    "android": {
+      "javaPackageName": "net.mjstudio.rnkakao.core"
+    }
   },
   "sdkVersions": {
     "ios": {
       "core": "2.14.0",
       "share": "2.14.0"
     },
-    "android": {}
+    "android": {
+      "minSdk": 21,
+      "targetSdk": 33,
+      "compileSdk": 33,
+      "kotlin": "1.7.0",
+      "ndk": "21.4.7075529",
+      "androidGradlePlugin": "7.2.1",
+      "core": "2.20.1",
+      "share": "2.20.1"
+    }
   }
 }

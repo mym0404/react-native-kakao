@@ -1,4 +1,6 @@
 node_modules/
-lib/
-expo-config-plugin/
+**/lib/
+**/expo-config-plugin/
 docs/
+**/.gradle/
+**/build

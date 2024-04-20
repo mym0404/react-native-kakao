@@ -1,13 +1,5 @@
 apply from: file('./../../core/android/package-json.gradle')
 def Versions = project.ext.RNCKakaoSdkVersions
-def coreProject
-if (findProject(':@react-native-kakao_core')) {
-    coreProject = project(':@react-native-kakao_core')
-} else if (findProject(':react-native-kakao_core')) {
-    coreProject = project(':react-native-kakao_core')
-} else {
-    throw new GradleException('Could not find the react-native-kakao/core package, have you installed it?')
-}
 
 buildscript {
     // Buildscript is evaluated before everything else so we can't use getExtOrDefault
@@ -47,7 +39,7 @@ def supportsNamespace() {
 
 android {
     if (supportsNamespace()) {
-        namespace "net.mjstudio.rnkakao.share"
+        namespace "net.mjstudio.rnkakao.core"
 
         sourceSets {
             main {
@@ -83,15 +75,12 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-
     sourceSets {
         main {
             if (isNewArchitectureEnabled()) {
-                java.srcDirs += [
-                        "src/newarch",
-                        // This is needed to build Kotlin project with NewArch enabled
-                        "${project.buildDir}/generated/source/codegen/java"
-                ]
+                java.srcDirs += ["src/newarch",
+                                 // This is needed to build Kotlin project with NewArch enabled
+                                 "${project.buildDir}/generated/source/codegen/java"]
             } else {
                 java.srcDirs += ["src/oldarch"]
             }
@@ -111,14 +100,13 @@ dependencies {
     implementation "com.facebook.react:react-native:+"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:${Versions.kotlin}"
 
-    api coreProject
-    implementation "com.kakao.sdk:v2-share:${Versions.share}"
+    implementation "com.kakao.sdk:v2-common:${Versions.core}"
 }
 
 if (isNewArchitectureEnabled()) {
     react {
         jsRootDir = file("../src/")
-        libraryName = "RNCKakaoShare"
-        codegenJavaPackageName = "net.mjstudio.rnkakao.share"
+        libraryName = "RNCKakaoCore"
+        codegenJavaPackageName = "net.mjstudio.rnkakao.core"
     }
 }
