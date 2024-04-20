@@ -2,12 +2,12 @@ require "json"
 
 package = JSON.parse(File.read(File.join(__dir__, "package.json")))
 corePackage = JSON.parse(File.read(File.join(__dir__, "..", "core", "package.json")))
-sdk_version = corePackage['sdkVersions']['ios']['share']
+sdk_version = corePackage['sdkVersions']['ios']['core']
 
 folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
 
 Pod::Spec.new do |s|
-  s.name         = "RNCKakaoShare"
+  s.name         = "RNCKakaoCore"
   s.version      = package["version"]
   s.summary      = package["description"]
   s.homepage     = package["homepage"]
@@ -43,11 +43,11 @@ Pod::Spec.new do |s|
   end
 
   # Override Version by User
-  if defined?($KakaoShareSDKVersion)
-    Pod::UI.puts "#{s.name}: Using user specified Firebase SDK version '#{$KakaoShareSDKVersion}'"
-    sdk_version = $KakaoShareSDKVersion
+  if defined?($KakaoCoreSDKVersion)
+    Pod::UI.puts "#{s.name}: Using user specified Firebase SDK version '#{$KakaoCoreSDKVersion}'"
+    sdk_version = $KakaoCoreSDKVersion
   end
 
   # Kakao dependencies
-  s.dependency          'KakaoSDKShare', sdk_version
+  s.dependency          'KakaoSDKCommon', sdk_version
 end

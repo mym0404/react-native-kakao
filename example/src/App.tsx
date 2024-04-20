@@ -2,14 +2,14 @@ import * as React from 'react';
 
 import { StyleSheet, View, Text } from 'react-native';
 import { add } from '@react-native-kakao/share';
-import { core } from '@react-native-kakao/core';
+import { initKakaoSDK } from '@react-native-kakao/core';
 
 // console.log(M);
 export default function App() {
   const [result, setResult] = React.useState<number | undefined>();
 
   React.useEffect(() => {
-    core();
+    initKakaoSDK();
     setResult(add(3, 7) + add(1, 222));
   }, []);
 

@@ -22,7 +22,11 @@
         "**/__fixtures__/**",
         "**/__tests__/**",
         "**/*.md",
-        "**/example/**"
+        "**/example/**",
+        "**/docs/**",
+        "**/.github/**",
+        "**/e2e/**",
+        "**/tests/**"
       ]
     }
   },
@@ -83,6 +87,5 @@
     "commitUrlFormat": "{{host}}/{{owner}}/{{repository}}/commit/{{hash}}",
     "compareUrlFormat": "{{host}}/{{owner}}/{{repository}}/compare/{{previousTag}}...{{currentTag}}",
     "userUrlFormat": "{{host}}/{{user}}"
-  },
-  "ignoreChanges": ["**/docs/**", "**/.github/**", "**/e2e/**", "**/tests/**"]
+  }
 }
