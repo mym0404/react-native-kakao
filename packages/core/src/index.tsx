@@ -10,7 +10,7 @@ const LINKING_ERROR =
 const isTurboModuleEnabled = global.__turboModuleProxy != null;
 
 const Module = isTurboModuleEnabled
-  ? require('./spec/NativeKakaoShare').default
+  ? require('./spec/NativeKakaoCore').default
   : NativeModules.KakaoShare;
 
 const Native = Module
@@ -24,6 +24,6 @@ const Native = Module
       }
     );
 
-export function initKakaoSDK() {
-  Native.init();
+export function initializeKakaoSDK(appKey: string) {
+  Native.initializeKakaoSDK(appKey);
 }
