@@ -1,26 +1,13 @@
 <p align="center">
   <a href="https://rnfirebase.io">
-    <img width="160px" src="https://i.imgur.com/JIyBtKW.png"><br/>
+    <img width="160px" src="https://raw.githubusercontent.com/mym0404/image-archive/master/202404201234177.webp"><br/>
   </a>
-  <h2 align="center">React Native Kakao</h2>
-</p>
-
-<p align="center">
-  <a href="https://www.npmjs.com/package/@react-native-firebase/app"><img src="https://img.shields.io/npm/dm/@react-native-firebase/app.svg?style=flat-square" alt="NPM downloads"></a>
-  <a href="https://www.npmjs.com/package/@react-native-firebase/app"><img src="https://img.shields.io/npm/v/@react-native-firebase/app.svg?style=flat-square" alt="NPM version"></a>
-  <a href="/LICENSE"><img src="https://img.shields.io/npm/l/@react-native-firebase/app.svg?style=flat-square" alt="License"></a>
-  <a href="https://lerna.js.org/"><img src="https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg?style=flat-square" alt="Maintained with Lerna"></a>
-</p>
-
-<p align="center">
-  <a href="https://invertase.link/discord"><img src="https://img.shields.io/discord/295953187817521152.svg?style=flat-square&colorA=7289da&label=Chat%20on%20Discord" alt="Chat on Discord"></a>
-  <a href="https://twitter.com/rnfirebase"><img src="https://img.shields.io/twitter/follow/rnfirebase.svg?style=flat-square&colorA=1da1f2&colorB=&label=Follow%20on%20Twitter" alt="Follow on Twitter"></a>
-  <a href="https://www.facebook.com/groups/rnfirebase"><img src="https://img.shields.io/badge/Follow%20on%20Facebook-4172B8?logo=facebook&style=flat-square&logoColor=fff" alt="Follow on Facebook"></a>
+  <h1 align="center">React Native Kakao</h1>
 </p>
 
 ---
 
-**React Native Firebase** is a collection of official React Native modules connecting you to Firebase services; each module is a light-weight JavaScript layer connecting you to the native Firebase SDKs for both iOS and Android.
+**React Native Kakao** is a collection of official React Native modules connecting you to Firebase services; each module is a light-weight JavaScript layer connecting you to the native Firebase SDKs for both iOS and Android.
 
 React Native Firebase is built with four key principles in mind;
 
@@ -34,7 +21,7 @@ React Native Firebase is built with four key principles in mind;
   - functions as a drop-in replacement for the Firebase Web SDK in React Native
   - maximizes cross-platform code re-usability e.g. re-using code on web platforms
 
-## Firebase Modules
+## Kakao Modules
 
 This is the root of the mono-repo for React Native Firebase, if you're looking for a specific package please select the package link from below.
 
