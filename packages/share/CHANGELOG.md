@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.0](https://github.com/mj-studio-library/react-native-kakao/compare/v0.4.0...v0.5.0) (2024-04-20)
+
+### Features
+
+- **user:** ios impl ([f6c0232](https://github.com/mj-studio-library/react-native-kakao/commit/f6c0232da9c60c589b3fdca3648dc56a2e960271))
+
+### Bug Fixes
+
+- **android:** fix spec old arch type ([e18d9a1](https://github.com/mj-studio-library/react-native-kakao/commit/e18d9a15fd7c59f1265b443955a3f2ecb55aa402))
+
 ## 0.4.0 (2024-04-20)
 
 ### Features
