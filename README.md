@@ -45,11 +45,10 @@ please select the package link from below.
 
 ## Contributing
 
-- [Contributing](https://github.com/invertase/react-native-kakao/blob/main/CONTRIBUTING.md)
+- [Contributing](https://github.com/mj-studio-library/react-native-kakao/blob/main/CONTRIBUTING.md)
 - [Issues](https://github.com/invertase/react-native-kakao/issues)
 - [PRs](https://github.com/invertase/react-native-kakao/pulls)
 - [Documentation](https://mj-studio-library.github.io/react-native-kakao/)
-- [Community](https://github.com/invertase/react-native-kakao/blob/main/CONTRIBUTING.md)
 - [Code of Conduct](https://github.com/mj-studio-library/react-native-kakao/blob/main/CODE_OF_CONDUCT.md)
 
 ## License
