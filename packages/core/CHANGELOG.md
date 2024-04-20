@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.0](https://github.com/mj-studio-library/react-native-kakao/compare/@react-native-kakao/core@0.2.0...@react-native-kakao/core@0.3.0) (2024-04-20)
+
+### Features
+
+- **core:** initializeSdk API ([0b39b37](https://github.com/mj-studio-library/react-native-kakao/commit/0b39b3738a252e844322634217875a527c402e5f))
+
+### Miscellaneous Chores
+
+- changelog format ([c4891c0](https://github.com/mj-studio-library/react-native-kakao/commit/c4891c0c192f296de7095a3cffeff25a4568a0ec))
+
 # 0.2.0 (2024-04-20)
 
 ### Features
