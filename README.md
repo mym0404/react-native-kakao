@@ -68,10 +68,15 @@ The main package that you interface with is `App` (`@react-native-firebase/app`)
 ---
 
 <p align="center">
-  <a href="https://invertase.io/?utm_source=readme&utm_medium=footer&utm_campaign=react-native-firebase">
-    <img width="75px" src="https://static.invertase.io/assets/invertase/invertase-rounded-avatar.png">
+  <a href="https://mjstudio.net/">
+    <img width="75px" src="https://raw.githubusercontent.com/mym0404/image-archive/master/202404201239152.webp">
   </a>
   <p align="center">
-    Built and maintained by <a href="https://invertase.io/?utm_source=readme&utm_medium=footer&utm_campaign=react-native-firebase">Invertase</a>.
+    Built and maintained by <a href="https://mjstudio.net/">MJ Studio</a>.
   </p>
 </p>
+
+---
+
+>[!NOTE]
+>README.md template is highly inspired by [react-native-firebase](https://github.com/invertase/react-native-firebase)
