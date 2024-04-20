@@ -51,35 +51,43 @@
       },
       {
         "type": "revert",
-        "section": "Reverts"
+        "section": "Reverts",
+        "hidden": true
       },
       {
         "type": "docs",
-        "section": "Documentation"
+        "section": "Documentation",
+        "hidden": true
       },
       {
         "type": "style",
-        "section": "Styles"
+        "section": "Styles",
+        "hidden": true
       },
       {
         "type": "chore",
-        "section": "Miscellaneous Chores"
+        "section": "Miscellaneous Chores",
+        "hidden": true
       },
       {
         "type": "refactor",
-        "section": "Code Refactoring"
+        "section": "Code Refactoring",
+        "hidden": true
       },
       {
         "type": "test",
-        "section": "Tests"
+        "section": "Tests",
+        "hidden": true
       },
       {
         "type": "build",
-        "section": "Build System"
+        "section": "Build System",
+        "hidden": true
       },
       {
         "type": "ci",
-        "section": "Continuous Integration"
+        "section": "Continuous Integration",
+        "hidden": true
       }
     ],
     "commitUrlFormat": "{{host}}/{{owner}}/{{repository}}/commit/{{hash}}",
