@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.1](https://github.com/mj-studio-library/react-native-kakao/compare/v0.5.0...v0.5.1) (2024-04-20)
+
+**Note:** Version bump only for package @react-native-kakao/user
+
 ## [0.5.0](https://github.com/mj-studio-library/react-native-kakao/compare/v0.4.0...v0.5.0) (2024-04-20)
 
 ### Features
