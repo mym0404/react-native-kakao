@@ -1,6 +1,5 @@
 import * as React from 'react';
-
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { initializeKakaoSDK } from '@react-native-kakao/core';
 
 // console.log(M);
@@ -14,8 +13,14 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Text>Result: {result}</Text>
-      <Text>Result: {result}</Text>
+      <Text>
+        {'Result: '}
+        {result}
+      </Text>
+      <Text>
+        {'Result: '}
+        {result}
+      </Text>
     </View>
   );
 }

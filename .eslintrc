@@ -1,20 +1,26 @@
 {
   "root": true,
   "extends": [
-    "@react-native",
-    "prettier"
+    "prettier",
+    "@mj-studio/eslint-config-react",
+    "@react-native"
   ],
+  "plugins": ["jest"],
   "rules": {
+    "react-native/no-inline-styles": "off",
+    "@typescript-eslint/no-shadow": "off",
+    "comma-dangle": ["error", "always-multiline"],
     "prettier/prettier": [
       "error",
       {
-        "quoteProps": "consistent",
+        "trailingComma": "all",
+        "arrowParens": "always",
         "singleQuote": true,
-        "tabWidth": 2,
-        "trailingComma": "es5",
-        "useTabs": false
+        "jsxSingleQuote": false,
+        "quoteProps": "consistent",
+        "printWidth": 100
       }
     ],
-    "react-native/no-inline-styles": "off"
+    "quotes": ["error", "single", { "avoidEscape": true }]
   }
 }

@@ -1,6 +1,7 @@
-import App from './src/App';
 import React from 'react';
 import { registerRootComponent } from 'expo';
+
+import App from './src/App';
 
 registerRootComponent(() => (
   <React.StrictMode>

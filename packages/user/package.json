@@ -1,6 +1,6 @@
 {
-  "name": "@react-native-kakao/core",
-  "description": "React Native Kakao Core SDK",
+  "name": "@react-native-kakao/user",
+  "description": "React Native Kakao User SDK",
   "version": "0.4.0",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -23,9 +23,7 @@
     "!**/__tests__",
     "!**/__fixtures__",
     "!**/__mocks__",
-    "!**/.*",
-    "expo-config-plugin/build/index.js",
-    "app.plugin.js"
+    "!**/.*"
   ],
   "author": "MJ Studio <mym0404@gmail.com> (https://github.com/mym0404)",
   "homepage": "https://github.com/mj-studio-library/react-native-kakao.git",
@@ -36,8 +34,7 @@
     "codegen:android": "cd ../../example/android && ./gradlew generateCodegenArtifactsFromSchema",
     "codegen:ios": "node ../../example/node_modules/react-native/scripts/generate-codegen-artifacts.js --path example/ --outputPath ../../example/ios",
     "codegen": "yarn codegen:android && yarn codegen:ios",
-    "build:expo-config-plugin": "tsc --project ./expo-config-plugin",
-    "prepack": "yarn build:expo-config-plugin && bob build",
+    "prepack": "bob build",
     "clean": "del-cli android/ lib"
   },
   "keywords": [
@@ -47,12 +44,17 @@
     "typescript",
     "javascript",
     "react",
-    "expo"
+    "expo",
+    "kakao-user",
+    "kakao-login",
+    "social-login",
+    "login",
+    "auth"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/mj-studio-library/react-native-kakao.git",
-    "directory": "packages/core"
+    "directory": "packages/user"
   },
   "license": "MIT",
   "publishConfig": {
@@ -72,9 +74,6 @@
   "peerDependencies": {
     "react": "*",
     "react-native": "*"
-  },
-  "optionalDependencies": {
-    "@expo/config-plugins": "7.8.4"
   },
   "workspaces": [
     "example",
@@ -101,29 +100,11 @@
     ]
   },
   "codegenConfig": {
-    "name": "RNCKakaoCoreSpec",
+    "name": "RNCKakaoUserSpec",
     "type": "all",
     "jsSrcsDir": "src",
     "android": {
-      "javaPackageName": "net.mjstudio.rnkakao.core"
-    }
-  },
-  "sdkVersions": {
-    "ios": {
-      "core": "2.14.0",
-      "share": "2.14.0",
-      "user": "2.14.0"
-    },
-    "android": {
-      "minSdk": 21,
-      "targetSdk": 33,
-      "compileSdk": 33,
-      "kotlin": "1.7.0",
-      "ndk": "21.4.7075529",
-      "androidGradlePlugin": "7.2.1",
-      "core": "2.20.1",
-      "share": "2.20.1",
-      "user": "2.20.1"
+      "javaPackageName": "net.mjstudio.rnkakao.user"
     }
   }
 }

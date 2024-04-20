@@ -3,6 +3,7 @@
   "references": [
     { "path": "../packages/core" },
     { "path": "../packages/share" },
+    { "path": "../packages/user" },
   ],
   "compilerOptions": {
     // Avoid expo-cli auto-generating a tsconfig
