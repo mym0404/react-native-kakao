@@ -7,7 +7,7 @@
 
 import Foundation
 
-func debugE(_ msg : Any...){
+public func debugE(_ msg : Any...){
 #if DEBUG
   if msg.count == 0{
     print("🧩",msg,"🧩")

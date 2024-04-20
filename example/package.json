@@ -2,7 +2,7 @@
   "name": "kakao-example",
   "version": "0.0.1",
   "private": true,
-  "main": "index.js",
+  "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
@@ -14,15 +14,24 @@
     "prebuild:ios:clean": "expo prebuild -p ios --clean && echo $(cat ios/.xcode.env) > ios/.xcode.env.local",
     "prebuild": "yarn prebuild:android && yarn prebuild:ios",
     "typecheck": "tsc --noEmit",
-    "theme:gen": "generate-theme-type src/Theme.ts",
+    "theme:gen": "generate-theme-type src/design/AppTheme.ts ./../node_modules/@react-native-styled-system/core/lib/typescript/src/@types/ThemedTypings.d.ts",
     "pod:old": "cd ios && bundle install && RCT_NEW_ARCH_ENABLED=0 bundle exec pod install",
     "pod:new": "cd ios && bundle install && RCT_NEW_ARCH_ENABLED=1 bundle exec pod install"
   },
   "dependencies": {
+    "@mj-studio/js-util": "^1.0.34",
+    "@mj-studio/react-util": "^0.0.20",
+    "@react-native-styled-system/core": "^1.0.3",
     "expo": "^50.0.17",
+    "expo-constants": "~15.4.6",
     "expo-dev-client": "~3.3.11",
+    "expo-linking": "~6.2.2",
+    "expo-router": "~3.4.8",
+    "expo-status-bar": "~1.11.1",
     "react": "18.2.0",
-    "react-native": "0.73.7"
+    "react-native": "0.73.7",
+    "react-native-safe-area-context": "4.8.2",
+    "react-native-screens": "~3.29.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

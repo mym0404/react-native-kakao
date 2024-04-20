@@ -21,6 +21,7 @@
         "printWidth": 100
       }
     ],
-    "quotes": ["error", "single", { "avoidEscape": true }]
+    "quotes": ["error", "single", { "avoidEscape": true }],
+    "react/react-in-jsx-scope": "off"
   }
 }

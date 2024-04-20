@@ -11,7 +11,7 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#FEE500"
+      "backgroundColor": "#000000"
     },
     "platforms": [
       "ios",
@@ -26,7 +26,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon.png",
-        "backgroundColor": "#FEE500"
+        "backgroundColor": "#000000"
       },
       "package": "com.rnkakao.example"
     },
@@ -62,7 +62,8 @@
             "authCodeHandlerActivity": true
           }
         }
-      ]
+      ],
+      "expo-router"
     ]
   }
 }
