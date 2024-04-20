@@ -3,6 +3,7 @@
     <img width="160px" src="https://raw.githubusercontent.com/mym0404/image-archive/master/202404201234177.webp"><br/>
   </a>
   <h1 align="center">React Native Kakao</h1>
+  <h3 align="center">React Native Kakao</h3>
 </p>
 
 ---
@@ -49,19 +50,16 @@ The main package that you interface with is `App` (`@react-native-firebase/app`)
 
 ## Documentation
 
-- [Quick Start](https://rnfirebase.io/)
-- [Reference API](https://rnfirebase.io/reference)
-
-Looking for the Version 5 documentation? [View legacy documentation](https://v5.rnfirebase.io).
+- [Quick Start](https://mj-studio-library.github.io/react-native-kakao/)
 
 ## Contributing
 
-- [Overview](https://github.com/invertase/react-native-firebase/blob/main/CONTRIBUTING.md)
-- [Issues](https://github.com/invertase/react-native-firebase/issues)
-- [PRs](https://github.com/invertase/react-native-firebase/pulls)
-- [Documentation](https://rnfirebase.io)
-- [Community](https://github.com/invertase/react-native-firebase/blob/main/CONTRIBUTING.md)
-- [Code of Conduct](https://github.com/invertase/meta/blob/main/CODE_OF_CONDUCT.md)
+- [Contributing](https://github.com/invertase/react-native-kakao/blob/main/CONTRIBUTING.md)
+- [Issues](https://github.com/invertase/react-native-kakao/issues)
+- [PRs](https://github.com/invertase/react-native-kakao/pulls)
+- [Documentation](https://mj-studio-library.github.io/react-native-kakao/)
+- [Community](https://github.com/invertase/react-native-kakao/blob/main/CONTRIBUTING.md)
+- [Code of Conduct](https://github.com/mj-studio-library/react-native-kakao/blob/main/CODE_OF_CONDUCT.md)
 
 ## License
 
