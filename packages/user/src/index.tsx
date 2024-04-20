@@ -49,6 +49,18 @@ export function login({
   return Native.login(serviceTerms ?? [], prompts ?? [], useKakaoAccountLoginIos ?? false);
 }
 
+export function logout() {
+  return Native.logout();
+}
+
+export function unlink() {
+  return Native.unlink();
+}
+
+export function isLogined() {
+  return Native.isLogined();
+}
+
 export function isKakaoTalkLoginAvailable(): Promise<boolean> {
   return Native.isKakaoTalkLoginAvailable();
 }

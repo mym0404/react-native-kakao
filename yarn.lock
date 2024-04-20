@@ -14840,6 +14840,7 @@ __metadata:
     expo-status-bar: "npm:~1.11.1"
     react: "npm:18.2.0"
     react-native: "npm:0.73.7"
+    react-native-flash-message: "npm:^0.4.2"
     react-native-safe-area-context: "npm:4.8.2"
     react-native-screens: "npm:~3.29.0"
   languageName: unknown
@@ -19528,6 +19529,29 @@ __metadata:
   bin:
     bob: bin/bob
   checksum: 10/20f28c400906627acd7e4b8d2bd20ea68b0e8c8a7ce7ed7ca6f0f4785358307153b4ac347a1169cc0d1485202b1d056a1703756cb642259ea949f2476789c542
+  languageName: node
+  linkType: hard
+
+"react-native-flash-message@npm:^0.4.2":
+  version: 0.4.2
+  resolution: "react-native-flash-message@npm:0.4.2"
+  dependencies:
+    prop-types: "npm:^15.8.1"
+    react-native-iphone-screen-helper: "npm:^2.0.2"
+  peerDependencies:
+    prop-types: ^15.0 || ^16.0
+    react: "*"
+    react-native: "*"
+  checksum: 10/c3c2dbfe81a58f9d0d08c0d731389c3c67e51300179e22f1d68062d3b0910ca4cd56c617131939d618ccac07014a1527367ae1b4b06e114e37822dbeed8fb1df
+  languageName: node
+  linkType: hard
+
+"react-native-iphone-screen-helper@npm:^2.0.2":
+  version: 2.1.1
+  resolution: "react-native-iphone-screen-helper@npm:2.1.1"
+  peerDependencies:
+    react-native: ">=0.42.0"
+  checksum: 10/1acbff415fcade41b0f191ea644bc1ef84c7b10b617ca8e82db586f2f3a371a867cca81f39f1971db7b582a42ffbbf804d6b132424635b03d28eeecf4698e84d
   languageName: node
   linkType: hard
 

@@ -14,6 +14,8 @@ const Btn = forwardRef((props: BtnProps, ref: Ref<TouchableOpacity>) => {
       bg: 'primary600',
       p: 2,
       borderRadius: 4,
+      justifyContent: 'center',
+      alignItems: 'center',
     },
   });
 

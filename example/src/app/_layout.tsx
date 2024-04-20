@@ -1,4 +1,5 @@
 import { Image } from 'react-native';
+import FlashMessage from 'react-native-flash-message';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useMount } from '@mj-studio/react-util';
 import { initializeKakaoSDK } from '@react-native-kakao/core';
@@ -33,6 +34,7 @@ export default function RootLayout() {
         </Link>
         <Slot />
       </Box>
+      <FlashMessage position={'top'} />
     </StyledSystemProvider>
   );
 }
