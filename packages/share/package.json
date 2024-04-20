@@ -102,5 +102,6 @@
     "android": {
       "javaPackageName": "net.mjstudio.rnkakao.share"
     }
-  }
+  },
+  "gitHead": "57203ed1725b209e814da7cfbb71b36f52d24210"
 }
