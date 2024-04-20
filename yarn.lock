@@ -3750,9 +3750,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mj-studio/eslint-config-node@npm:1.0.4":
-  version: 1.0.4
-  resolution: "@mj-studio/eslint-config-node@npm:1.0.4"
+"@mj-studio/eslint-config-node@npm:1.0.6":
+  version: 1.0.6
+  resolution: "@mj-studio/eslint-config-node@npm:1.0.6"
   dependencies:
     "@typescript-eslint/eslint-plugin": "npm:latest"
     "@typescript-eslint/parser": "npm:latest"
@@ -3763,21 +3763,21 @@ __metadata:
   peerDependencies:
     eslint: ">=7"
     prettier: "*"
-  checksum: 10/5a4f427c303fe0c4e0c7619c02319ce83b191d007e5d0713ec8dcaf061b757d9d075e5406b899b82d964307c2ee745b2be0ee558fbddb8ca8695e42aab4219bb
+  checksum: 10/4f8aa750c426e499004a91203071b414b25bff51622fbae1da5b363cf16566232df24539f574059b595cbe4d256f550006185b078a64035924f91296a1a8b5cb
   languageName: node
   linkType: hard
 
-"@mj-studio/eslint-config-react@npm:^1.0.4":
-  version: 1.0.4
-  resolution: "@mj-studio/eslint-config-react@npm:1.0.4"
+"@mj-studio/eslint-config-react@npm:^1.0.6":
+  version: 1.0.6
+  resolution: "@mj-studio/eslint-config-react@npm:1.0.6"
   dependencies:
-    "@mj-studio/eslint-config-node": "npm:1.0.4"
+    "@mj-studio/eslint-config-node": "npm:1.0.6"
     eslint-plugin-react: "npm:latest"
     eslint-plugin-react-hooks: "npm:*"
   peerDependencies:
     eslint: ">=7"
     prettier: "*"
-  checksum: 10/3bee253180182e09332953916694f685dc2249ee519888d4f0a643d167fdd11e219ee237a389f8b3d54738137e9fc08a1ccab90e30ad94515390aefc3260e455
+  checksum: 10/da3b04f43e8b8ceee8b218d56e78eaca96facd3c134f89c031d02d5513d071afd0f5e373f2011f985d7b2fbd6f5bd3ba5cf15c4740a8f12024044f685c0b08bc
   languageName: node
   linkType: hard
 
@@ -19954,7 +19954,7 @@ __metadata:
   resolution: "root-workspace-0b6124@workspace:."
   dependencies:
     "@commitlint/config-conventional": "npm:^17.0.2"
-    "@mj-studio/eslint-config-react": "npm:^1.0.4"
+    "@mj-studio/eslint-config-react": "npm:^1.0.6"
     "@react-native/eslint-config": "npm:^0.73.1"
     "@types/jest": "npm:^29.5.5"
     "@types/react": "npm:^18.2.44"
