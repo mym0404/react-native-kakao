@@ -1,6 +1,7 @@
 {
   "extends": "../tsconfig",
   "references": [
+    { "path": "../packages/core" },
     { "path": "../packages/share" },
   ],
   "compilerOptions": {

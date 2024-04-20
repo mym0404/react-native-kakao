@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "outDir": "build",
+    "rootDir": "src",
+    "rootDirs": ["."],
+    "skipLibCheck": true
+  },
+  "include": ["./src"],
+  "exclude": ["**/__mocks__/*", "**/__tests__/*"]
+}

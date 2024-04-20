@@ -34,7 +34,6 @@
     "codegen:android": "cd ../../example/android && ./gradlew generateCodegenArtifactsFromSchema",
     "codegen:ios": "node ../../example/node_modules/react-native/scripts/generate-codegen-artifacts.js --path example/ --outputPath ../../example/ios",
     "codegen": "yarn codegen:android && yarn codegen:ios",
-    "build:expo-config-plugin": "tsc --project ./expo-config-plugin",
     "prepack": "bob build",
     "clean": "del-cli android/ lib"
   },

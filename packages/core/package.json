@@ -23,7 +23,9 @@
     "!**/__tests__",
     "!**/__fixtures__",
     "!**/__mocks__",
-    "!**/.*"
+    "!**/.*",
+    "expo-config-plugin/build/index.js",
+    "app.plugin.js"
   ],
   "author": "MJ Studio <mym0404@gmail.com> (https://github.com/mym0404)",
   "homepage": "https://github.com/mj-studio-library/react-native-kakao.git",
@@ -35,7 +37,7 @@
     "codegen:ios": "node ../../example/node_modules/react-native/scripts/generate-codegen-artifacts.js --path example/ --outputPath ../../example/ios",
     "codegen": "yarn codegen:android && yarn codegen:ios",
     "build:expo-config-plugin": "tsc --project ./expo-config-plugin",
-    "prepack": "bob build",
+    "prepack": "yarn build:expo-config-plugin && bob build",
     "clean": "del-cli android/ lib"
   },
   "keywords": [
@@ -70,6 +72,9 @@
   "peerDependencies": {
     "react": "*",
     "react-native": "*"
+  },
+  "optionalDependencies": {
+    "@expo/config-plugins": "7.8.4"
   },
   "workspaces": [
     "example",
