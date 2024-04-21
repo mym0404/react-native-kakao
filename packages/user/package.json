@@ -62,6 +62,7 @@
     "access": "public"
   },
   "devDependencies": {
+    "@types/invariant": "^2",
     "@types/jest": "^29.5.5",
     "@types/react": "^18.2.44",
     "del-cli": "^5.1.0",
@@ -72,6 +73,7 @@
     "typescript": "5.1.6"
   },
   "peerDependencies": {
+    "@react-native-kakao/core": "0.7.1",
     "react": "*",
     "react-native": "*"
   },
@@ -107,5 +109,9 @@
       "javaPackageName": "net.mjstudio.rnkakao.user"
     }
   },
-  "gitHead": "57203ed1725b209e814da7cfbb71b36f52d24210"
+  "gitHead": "57203ed1725b209e814da7cfbb71b36f52d24210",
+  "dependencies": {
+    "@mj-studio/js-util": "^1.0.34",
+    "invariant": "^2.2.4"
+  }
 }

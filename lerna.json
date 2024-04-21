@@ -25,7 +25,9 @@
         "**/.github/**",
         "**/e2e/**",
         "**/tests/**"
-      ]
+      ],
+      "allow-peer-dependencies-update": true,
+      "changelog-include-commits-client-login": true
     }
   },
   "changelogPreset": {
