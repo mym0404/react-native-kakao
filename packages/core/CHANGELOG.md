@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.10.0](https://github.com/mj-studio-library/react-native-kakao/compare/v0.9.1...v0.10.0) (2024-04-21)
+
+### Features
+
+* **user:** 로그인 함수로 추가 동의 항목 받기 ([fecc2bc](https://github.com/mj-studio-library/react-native-kakao/commit/fecc2bc103504496ca9e9d90c471e421b9ae654b))
+
 ## [0.9.0](https://github.com/mj-studio-library/react-native-kakao/compare/v0.7.1...v0.9.0) (2024-04-21)
 
 **Note:** Version bump only for package @react-native-kakao/core
