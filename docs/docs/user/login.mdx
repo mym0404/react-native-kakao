@@ -33,7 +33,7 @@ login()
 
 - `prompts`: 로그인 과정을 플래그를 전달해 제어할 수 있습니다.
 
-`Login`, `Create`, `Cert`을 `string[]`으로 전달할 수 있습니다.
+`Login`, `Create`, `Cert`, `UnifyDaum`, `SelectAccount(Android only)`을 `string[]`으로 전달할 수 있습니다.
 
 각각이 의미하는 자세한 설명은 [공식 문서](https://developers.kakao.com/docs/latest/ko/kakaologin/ios#request-code-re-authentication)를 참고해주세요.
 
@@ -41,7 +41,7 @@ login()
 카카오톡이 아닌 카카오 계정으로 로그인이 시도될 때 전달됩니다.
 :::
 
-- `useKakaoAccountLoginIos`: iOS에서 항상 카카오톡이 아닌 카카오 계정으로 로그인을 시도합니다.
+- `useKakaoAccountLogin`: 항상 카카오톡이 아닌 카카오 계정으로 로그인을 시도합니다.
 
 ### 응답
 
@@ -53,7 +53,7 @@ login()
 {
   accessToken: string;
   refreshToken: string;
-  tokenType: string;
+  tokenType?: string;
   idToken?: string;
   accessTokenExpiresAt: number; // unix
   refreshTokenExpiresAt: number; // unix
