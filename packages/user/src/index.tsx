@@ -29,7 +29,7 @@ const Native: Spec = Module
 export type KakaoLoginToken = {
   accessToken: string;
   refreshToken: string;
-  tokenType: string;
+  tokenType?: string;
   idToken?: string;
   accessTokenExpiresAt: number;
   refreshTokenExpiresAt: number;
@@ -102,13 +102,13 @@ export type KakaoUser = {
 export function login({
   serviceTerms,
   prompts,
-  useKakaoAccountLoginIos,
+  useKakaoAccountLogin,
 }: {
   serviceTerms?: string[];
-  prompts?: string[];
-  useKakaoAccountLoginIos?: boolean;
+  prompts?: ('Loign' | 'Create' | 'Cert' | 'UnifyDaum' | 'SelectAccount')[];
+  useKakaoAccountLogin?: boolean;
 } = {}): Promise<KakaoLoginToken> {
-  return Native.login(serviceTerms ?? [], prompts ?? [], useKakaoAccountLoginIos ?? false);
+  return Native.login(serviceTerms ?? [], prompts ?? [], useKakaoAccountLogin ?? false);
 }
 
 export function logout() {

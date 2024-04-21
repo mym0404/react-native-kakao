@@ -28,7 +28,7 @@ import RNCKakaoCore
   @objc public func login(
     _ serviceTerms: [String],
     prompts: [String],
-    useKakaoAccountLoginIos: Bool,
+    useKakaoAccountLogin: Bool,
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
@@ -36,7 +36,7 @@ import RNCKakaoCore
       RNCKakaoUtil.reject(reject, "KakaoSdk is not initialized")
       return
     }
-    if UserApi.isKakaoTalkLoginAvailable(), !useKakaoAccountLoginIos {
+    if UserApi.isKakaoTalkLoginAvailable(), !useKakaoAccountLogin {
       UserApi.shared
         .loginWithKakaoTalk(serviceTerms: emptyArrayToNil(serviceTerms)) { token, error in
           if let error {
@@ -174,8 +174,8 @@ import RNCKakaoCore
     UserApi.shared.scopes(scopes: emptyArrayToNil(scopes)) { scopeInfo, error in
       if let error {
         RNCKakaoUtil.reject(reject, error)
-      } else if let scopeInfo {
-        resolve(scopeInfo.scopes?.map { s in
+      } else if let scopes = scopeInfo?.scopes {
+        resolve(scopes.map { s in
           [
             "id": s.id,
             "displayName": s.displayName,
@@ -185,9 +185,9 @@ import RNCKakaoCore
             "agreed": s.agreed,
             "revocable": s.revocable as Any
           ]
-        } ?? [])
+        })
       } else {
-        RNCKakaoUtil.reject(reject, "scopeInfo not found")
+        RNCKakaoUtil.reject(reject, "scopes not found")
       }
     }
   }

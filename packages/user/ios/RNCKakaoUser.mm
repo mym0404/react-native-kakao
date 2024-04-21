@@ -18,14 +18,14 @@ RCT_EXPORT_METHOD(isKakaoTalkLoginAvailable
 RCT_EXPORT_METHOD(login
                   : (NSArray*)serviceTerms prompts
                   : (NSArray*)prompts useKakaoAccountLoginIos
-                  : (BOOL)useKakaoAccountLoginIos resolve
+                  : (BOOL)useKakaoAccountLogin resolve
                   : (RCTPromiseResolveBlock)resolve reject
                   : (RCTPromiseRejectBlock)reject) {
   [[self manager] login:serviceTerms
-                      prompts:prompts
-      useKakaoAccountLoginIos:useKakaoAccountLoginIos
-                      resolve:resolve
-                       reject:reject];
+                   prompts:prompts
+      useKakaoAccountLogin:useKakaoAccountLogin
+                   resolve:resolve
+                    reject:reject];
 }
 
 RCT_EXPORT_METHOD(logout : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
