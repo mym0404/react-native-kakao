@@ -16,8 +16,8 @@
 ---
 
 > [!IMPORTANT]
-> We are glad to introduce our first working package **User
-**([Docs](https://mj-studio-library.github.io/react-native-kakao/docs/user/intro)) ❤️
+> We are glad to introduce our first working package **User**
+> ([Docs](https://mj-studio-library.github.io/react-native-kakao/docs/user/intro)) ❤️
 >
 > Documentations are also prepared.
 >
