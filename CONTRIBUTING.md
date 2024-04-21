@@ -35,10 +35,12 @@ The `package.json` file contains various scripts for common tasks:
 - `yarn studio`: open Android Studio in example/android
 - `yarn xcode`: open Xcode in example/ios
 
-**Cocoapods**
+**Architecture Convert**
 
 - `pod:old`: install old architecture pod for example project
 - `pod:new`: install new architecture pod for example project
+- `gradle:old`: disable new architecture for example project
+- `gradle:new`: enable new architecture for example project
 
 **Codegen**
 
