@@ -1,0 +1,26 @@
+---
+sidebar_position: 4
+---
+
+# Expo 설정
+
+## Android, iOS 설정
+
+`app.json`에 다음과 같이 추가합니다.
+
+```json title='app.json'
+[
+  "@react-native-kakao/core",
+  {
+    "nativeAppKey": "5a9383961eadba5496cb4ff895e91a89",
+    "android": {
+// highlight-next-line
+      "authCodeHandlerActivity": true
+    },
+    "ios": {
+// highlight-next-line
+      "handleKakaoOpenUrl": true
+    }
+  }
+],
+```
