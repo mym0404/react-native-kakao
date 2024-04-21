@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.0](https://github.com/mj-studio-library/react-native-kakao/compare/v0.6.0...v0.7.0) (2024-04-21)
+
+### Features
+
+- **user:** android impl ([e74dc27](https://github.com/mj-studio-library/react-native-kakao/commit/e74dc271df43653d38179e2f7224167e3198c2a2))
+- **user:** android impl+ ([d616e50](https://github.com/mj-studio-library/react-native-kakao/commit/d616e50beb7cb61a17c609f04a4f63d5b8f375b6))
+
+### Bug Fixes
+
+- **core:** fix expo plugin ([51cb026](https://github.com/mj-studio-library/react-native-kakao/commit/51cb026131e3cd707a1cc7437bbf45ef5b17f4a1))
+
 ## [0.6.0](https://github.com/mj-studio-library/react-native-kakao/compare/v0.5.1...v0.6.0) (2024-04-21)
 
 **Note:** Version bump only for package @react-native-kakao/core

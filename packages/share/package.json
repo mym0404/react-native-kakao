@@ -1,7 +1,7 @@
 {
   "name": "@react-native-kakao/share",
   "description": "React Native Kakao Share SDK",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
   "types": "lib/typescript/src/index.d.ts",
