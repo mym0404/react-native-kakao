@@ -38,7 +38,7 @@ please select the package link from below.
 |--------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------:|--------| 
 | [Core](/packages/core)   |  [![badge](https://img.shields.io/npm/dm/@react-native-kakao/core.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-kakao/core)  | ✅      |
 | [Share](/packages/share) | [![badge](https://img.shields.io/npm/dm/@react-native-kakao/share.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-kakao/share) | 🔥     |
-| [User](/packages/user)   |  [![badge](https://img.shields.io/npm/dm/@react-native-kakao/user.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-kakao/user)  | 📦     |
+| [User](/packages/user)   |  [![badge](https://img.shields.io/npm/dm/@react-native-kakao/user.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-kakao/user)  | ✅      |
 | [Map](/packages/map)     |   [![badge](https://img.shields.io/npm/dm/@react-native-kakao/map.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-kakao/map)   | 📦     |
 | [Talk](/packages/talk)   |  [![badge](https://img.shields.io/npm/dm/@react-native-kakao/talk.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-kakao/talk)  | 📦     |
 
