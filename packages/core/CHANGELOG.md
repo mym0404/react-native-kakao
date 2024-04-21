@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.0](https://github.com/mj-studio-library/react-native-kakao/compare/v0.10.0...v1.0.0) (2024-04-21)
+
+### Features
+
+* **share:** impl customShare ([b728f44](https://github.com/mj-studio-library/react-native-kakao/commit/b728f441023eda0cdf22f26e8b77e79d3d77ad75))
+* **share:** impl shareCustom ([7f85810](https://github.com/mj-studio-library/react-native-kakao/commit/7f858107c30352adefc1fe632d57902feb1dfd14))
+
 ## [0.10.0](https://github.com/mj-studio-library/react-native-kakao/compare/v0.9.1...v0.10.0) (2024-04-21)
 
 ### Features
