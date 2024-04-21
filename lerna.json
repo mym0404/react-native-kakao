@@ -1,7 +1,9 @@
 {
   "$schema": "node_modules/lerna/schemas/lerna-schema.json",
-  "version": "0.7.1",
-  "packages": ["packages/*"],
+  "version": "0.9.0",
+  "packages": [
+    "packages/*"
+  ],
   "npmClient": "yarn",
   "command": {
     "publish": {
@@ -33,7 +35,9 @@
   "changelogPreset": {
     "name": "conventionalcommits",
     "issueUrlFormat": "{{host}}/{{owner}}/{{repository}}/issues/{{id}}",
-    "issuePrefixes": ["#"],
+    "issuePrefixes": [
+      "#"
+    ],
     "types": [
       {
         "type": "feat",
