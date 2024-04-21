@@ -73,7 +73,7 @@
     "typescript": "5.1.6"
   },
   "peerDependencies": {
-    "@react-native-kakao/core": "0.7.1",
+    "@react-native-kakao/core": "workspace:0.7.1",
     "react": "*",
     "react-native": "*"
   },
