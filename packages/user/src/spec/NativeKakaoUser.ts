@@ -7,6 +7,7 @@ import type {
   KakaoScopeInfo,
   KakaoServiceTerms,
   KakaoShippingAddressResult,
+  KakaoUser,
 } from '..';
 
 export interface Spec extends TurboModule {
@@ -26,6 +27,7 @@ export interface Spec extends TurboModule {
     appServiceTerms?: KakaoAppServiceTerms[];
   }>;
   shippingAddresses(): Promise<KakaoShippingAddressResult>;
+  me(): Promise<KakaoUser>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('RNCKakaoUser');

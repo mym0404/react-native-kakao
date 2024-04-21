@@ -7,6 +7,7 @@ import {
   isLogined,
   login,
   logout,
+  me,
   scopes,
   serviceTerms,
   shippingAddresses,
@@ -24,6 +25,7 @@ export default function Page() {
   const [scopesResult, setScopesResult] = useState<object>();
   const [serviceTermsResult, setServiceTermsResult] = useState<object>();
   const [shippingResult, setShippingResult] = useState<object>();
+  const [meResult, setMeResult] = useState<object>();
 
   useMount(() => {
     isKakaoTalkLoginAvailable().then(setKakaoTalkEnable);
@@ -173,6 +175,27 @@ export default function Page() {
             });
         }}
       />
+      <Btn
+        minW={px(240)}
+        title={'Get Profile'}
+        onPress={() => {
+          me()
+            .then((ret) => {
+              showMessage({
+                type: 'success',
+                message: 'Success',
+              });
+              setMeResult(ret);
+            })
+            .catch((e) => {
+              console.log(e);
+              showMessage({
+                type: 'warning',
+                message: e.message,
+              });
+            });
+        }}
+      />
       <Txt mt={6}>{'Login Result'}</Txt>
       <Txt w={'100%'} t={'c2'} p={4} borderWidth={1} borderColor={'text'} color={'primary100'}>
         {!result ? 'No data' : formatJson(result)}
@@ -188,6 +211,10 @@ export default function Page() {
       <Txt>{'Shipping Addresses Result'}</Txt>
       <Txt w={'100%'} t={'c2'} p={4} borderWidth={1} borderColor={'text'} color={'primary100'}>
         {!shippingResult ? 'No data' : formatJson(shippingResult)}
+      </Txt>
+      <Txt>{'Get Profile Result'}</Txt>
+      <Txt w={'100%'} t={'c2'} p={4} borderWidth={1} borderColor={'text'} color={'primary100'}>
+        {!meResult ? 'No data' : formatJson(meResult)}
       </Txt>
     </StyledScrollView>
   );

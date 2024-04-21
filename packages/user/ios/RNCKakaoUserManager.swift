@@ -273,6 +273,45 @@ import RNCKakaoCore
     }
   }
 
+  @objc public func me(
+    _ resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    UserApi.shared.me { user, error in
+      if let error {
+        RNCKakaoUtil.reject(reject, error)
+      } else if let user {
+        resolve([
+          "id": user.id as Any,
+          "name": user.kakaoAccount?.name as Any,
+          "email": user.kakaoAccount?.email as Any,
+          "nickname": user.kakaoAccount?.profile?.nickname as Any,
+          "profileImageUrl": user.kakaoAccount?.profile?.profileImageUrl?.absoluteString as Any,
+          "thumbnailImageUrl": user.kakaoAccount?.profile?.thumbnailImageUrl?.absoluteString as Any,
+          "phoneNumber": user.kakaoAccount?.phoneNumber as Any,
+          "ageRange": user.kakaoAccount?.ageRange?.rawValue as Any,
+          "birthday": user.kakaoAccount?.birthday as Any,
+          "birthdayType": user.kakaoAccount?.birthdayType as Any,
+          "birthyear": user.kakaoAccount?.birthyear as Any,
+          "gender": user.kakaoAccount?.gender?.rawValue as Any,
+          "isEmailValid": user.kakaoAccount?.isEmailValid as Any,
+          "isEmailVerified": user.kakaoAccount?.isEmailVerified as Any,
+          "isKorean": user.kakaoAccount?.isKorean as Any,
+          "ageRangeNeedsAgreement": user.kakaoAccount?.ageRangeNeedsAgreement as Any,
+          "birthdayNeedsAgreement": user.kakaoAccount?.birthdayNeedsAgreement as Any,
+          "birthyearNeedsAgreement": user.kakaoAccount?.birthyearNeedsAgreement as Any,
+          "emailNeedsAgreement": user.kakaoAccount?.emailNeedsAgreement as Any,
+          "genderNeedsAgreement": user.kakaoAccount?.genderNeedsAgreement as Any,
+          "isKoreanNeedsAgreement": user.kakaoAccount?.isKoreanNeedsAgreement as Any,
+          "phoneNumberNeedsAgreement": user.kakaoAccount?.phoneNumberNeedsAgreement as Any,
+          "profileNeedsAgreement": user.kakaoAccount?.profileNeedsAgreement as Any
+        ])
+      } else {
+        RNCKakaoUtil.reject(reject, "user not found")
+      }
+    }
+  }
+
   private func emptyArrayToNil<T>(_ arr: [T]?) -> [T]? {
     if arr == nil || arr?.isEmpty == true { return nil }
     return arr

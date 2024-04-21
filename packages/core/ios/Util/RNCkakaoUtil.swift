@@ -13,6 +13,7 @@
 /// limitations under the License.
 ///
 
+import KakaoSDKCommon
 import React
 
 private let DEFAULT_APP_DISPLAY_NAME = "RNKakao"
@@ -38,16 +39,26 @@ public class RNCKakaoUtil {
 
   public class func reject(_ reject: RCTPromiseRejectBlock, _ error: Error) {
     var userInfo = [String: Any]()
-
     userInfo["fatal"] = false
     userInfo["code"] = "unknown"
     userInfo["message"] = error.localizedDescription
     userInfo["nativeErrorCode"] = -1
     userInfo["nativeErrorMessage"] = error.localizedDescription
-
-    let newErrorWithUserInfo = NSError(domain: RNCKakaoErrorDomain, code: 444, userInfo: userInfo)
-
-    reject("unknown", error.localizedDescription, newErrorWithUserInfo)
+    if let kakaoError = error as? SdkError {
+      userInfo["isApiFailed"] = kakaoError.isApiFailed
+      userInfo["isAuthFailed"] = kakaoError.isAuthFailed
+      userInfo["isClientFailed"] = kakaoError.isClientFailed
+      userInfo["isInvalidTokenError"] = kakaoError.isInvalidTokenError()
+      let newErrorWithUserInfo = NSError(domain: RNCKakaoErrorDomain, code: 444, userInfo: userInfo)
+      reject(
+        kakaoError.asAFError?.failureReason ?? "unknown",
+        kakaoError.localizedDescription,
+        newErrorWithUserInfo
+      )
+    } else {
+      let newErrorWithUserInfo = NSError(domain: RNCKakaoErrorDomain, code: 444, userInfo: userInfo)
+      reject("unknown", error.localizedDescription, newErrorWithUserInfo)
+    }
   }
 
   public class func reject(_ reject: RCTPromiseRejectBlock, _ message: String) {

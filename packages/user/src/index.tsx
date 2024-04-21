@@ -74,6 +74,31 @@ export type KakaoShippingAddress = {
   zoneNumber?: string;
   zipCode?: string;
 };
+export type KakaoUser = {
+  id: number;
+  email: string;
+  name: string;
+  nickname: string;
+  profileImageUrl: string;
+  thumbnailImageUrl: string;
+  phoneNumber: string;
+  ageRange: string;
+  birthday: string;
+  birthdayType: string;
+  birthyear: string;
+  gender: string;
+  isEmailValid: boolean;
+  isEmailVerified: boolean;
+  isKorean: boolean;
+  ageRangeNeedsAgreement?: boolean;
+  birthdayNeedsAgreement?: boolean;
+  birthyearNeedsAgreement?: boolean;
+  emailNeedsAgreement?: boolean;
+  genderNeedsAgreement?: boolean;
+  isKoreanNeedsAgreement?: boolean;
+  phoneNumberNeedsAgreement?: boolean;
+  profileNeedsAgreement?: boolean;
+};
 export function login({
   serviceTerms,
   prompts,
@@ -119,4 +144,8 @@ export function serviceTerms(): Promise<{
 
 export function shippingAddresses(): Promise<KakaoShippingAddressResult> {
   return Native.shippingAddresses();
+}
+
+export function me(): Promise<KakaoUser> {
+  return Native.me();
 }
