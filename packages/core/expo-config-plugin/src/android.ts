@@ -47,7 +47,9 @@ const withAndroid: ConfigPlugin<{
       } satisfies ManifestActivity;
 
       mainApplication.activity = [
-        ...(mainApplication.activity || []).filter((a) => a.$['android:name'] === name),
+        ...(mainApplication.activity || []).filter(
+          (a) => a && a.$ && a.$['android:name'] !== name && a.$['android:name'],
+        ),
         activity,
       ];
     }
