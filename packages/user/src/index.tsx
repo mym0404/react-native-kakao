@@ -14,7 +14,6 @@ const isTurboModuleEnabled = global.__turboModuleProxy != null;
 const Module = isTurboModuleEnabled
   ? require('./spec/NativeKakaoUser').default
   : NativeModules.RNCKakaoUser;
-console.log(NativeModules.RNCKakaoUser);
 
 const Native: Spec = Module
   ? Module

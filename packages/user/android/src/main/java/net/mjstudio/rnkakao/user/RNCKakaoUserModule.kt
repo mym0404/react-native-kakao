@@ -2,6 +2,7 @@ package net.mjstudio.rnkakao.user
 
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableArray
 import com.kakao.sdk.auth.AuthApiClient
 import com.kakao.sdk.auth.model.OAuthToken
@@ -27,6 +28,7 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
         return NAME
     }
 
+    @ReactMethod
     override fun login(
         serviceTerms: ReadableArray?,
         prompts: ReadableArray?,
@@ -90,10 +92,12 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
         }
     }
 
+    @ReactMethod
     override fun isKakaoTalkLoginAvailable(promise: Promise) {
         promise.resolve(UserApiClient.instance.isKakaoTalkLoginAvailable(reactApplicationContext))
     }
 
+    @ReactMethod
     override fun logout(promise: Promise) {
         UserApiClient.instance.logout {
             if (it != null) {
@@ -104,6 +108,7 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
         }
     }
 
+    @ReactMethod
     override fun unlink(promise: Promise) {
         UserApiClient.instance.unlink {
             if (it != null) {
@@ -114,6 +119,7 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
         }
     }
 
+    @ReactMethod
     override fun isLogined(promise: Promise) {
         if (AuthApiClient.instance.hasToken()) {
             UserApiClient.instance.accessTokenInfo { _, error ->
@@ -132,6 +138,7 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
         }
     }
 
+    @ReactMethod
     override fun scopes(scopes: ReadableArray?, promise: Promise) {
         UserApiClient.instance.scopes { scopeInfo, error ->
             if (error != null) {
@@ -156,6 +163,7 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
         }
     }
 
+    @ReactMethod
     override fun revokeScopes(scopes: ReadableArray, promise: Promise) {
         UserApiClient.instance.revokeScopes(
             scopes = scopes.filterIsInstance<String>() ?: listOf()
@@ -170,6 +178,7 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
         }
     }
 
+    @ReactMethod
     override fun serviceTerms(promise: Promise) {
         UserApiClient.instance.serviceTerms { serviceTerms, error ->
             if (error != null) {
@@ -191,6 +200,7 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
         }
     }
 
+    @ReactMethod
     override fun shippingAddresses(promise: Promise) {
         UserApiClient.instance.shippingAddresses { addrs, error ->
             if (error != null) {
@@ -224,6 +234,7 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
         }
     }
 
+    @ReactMethod
     override fun me(promise: Promise) {
         UserApiClient.instance.me { user, error ->
             if (error != null) {
