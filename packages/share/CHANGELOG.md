@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.1](https://github.com/mj-studio-library/react-native-kakao/compare/v1.0.0...v1.0.1) (2024-04-21)
+
+### Features
+
+* **share:** fix android build ([e3ec351](https://github.com/mj-studio-library/react-native-kakao/commit/e3ec35102c2e442e8729f2ac8d51f8b7d5be77af))
+
 ## [1.0.0](https://github.com/mj-studio-library/react-native-kakao/compare/v0.10.0...v1.0.0) (2024-04-21)
 
 ### Features
