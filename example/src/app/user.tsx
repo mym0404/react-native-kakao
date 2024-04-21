@@ -8,6 +8,7 @@ import {
   login,
   logout,
   scopes,
+  serviceTerms,
   shippingAddresses,
   unlink,
 } from '@react-native-kakao/user';
@@ -21,6 +22,7 @@ export default function Page() {
   const [isKakaoTalkEnable, setKakaoTalkEnable] = useState(false);
   const [result, setResult] = useState<object>();
   const [scopesResult, setScopesResult] = useState<object>();
+  const [serviceTermsResult, setServiceTermsResult] = useState<object>();
   const [shippingResult, setShippingResult] = useState<object>();
 
   useMount(() => {
@@ -132,6 +134,26 @@ export default function Page() {
       />
       <Btn
         minW={px(240)}
+        title={'Service Terms'}
+        onPress={() => {
+          serviceTerms()
+            .then((ret) => {
+              showMessage({
+                type: 'success',
+                message: 'Success',
+              });
+              setServiceTermsResult(ret);
+            })
+            .catch((e) =>
+              showMessage({
+                type: 'warning',
+                message: e.message,
+              }),
+            );
+        }}
+      />
+      <Btn
+        minW={px(240)}
         title={'Shipping Addresses'}
         onPress={() => {
           shippingAddresses()
@@ -158,6 +180,10 @@ export default function Page() {
       <Txt>{'Scopes Result'}</Txt>
       <Txt w={'100%'} t={'c2'} p={4} borderWidth={1} borderColor={'text'} color={'primary100'}>
         {!scopesResult ? 'No data' : formatJson(scopesResult)}
+      </Txt>
+      <Txt>{'Service Terms Result'}</Txt>
+      <Txt w={'100%'} t={'c2'} p={4} borderWidth={1} borderColor={'text'} color={'primary100'}>
+        {!serviceTermsResult ? 'No data' : formatJson(serviceTermsResult)}
       </Txt>
       <Txt>{'Shipping Addresses Result'}</Txt>
       <Txt w={'100%'} t={'c2'} p={4} borderWidth={1} borderColor={'text'} color={'primary100'}>

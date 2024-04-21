@@ -4,4 +4,49 @@ sidebar_position: 6
 
 # 배송지
 
-## 배송지
+## 배송지 불러오기
+
+[공식 문서](https://developers.kakao.com/docs/latest/ko/kakaologin/ios#shipping-address-get)
+
+`shippingAddresses()`를 이용해 사용자의 배송지 정보를 불러올 수 있습니다.
+
+:::warning
+`shipping_address`권한을 사용자에게 동의받은 비즈니스앱에서만 사용 가능합니다.
+:::
+
+응답은 다음과 같습니다.
+
+```tsx
+Promise<KakaoShippingAddressResult>
+```
+
+타입들은 다음과 같이 정의되어있습니다.
+
+```tsx
+export type KakaoShippingAddressResult = {
+  userId?: number;
+  needsAgreement?: boolean;
+  shippingAddresses: KakaoShippingAddress[];
+};
+
+export type KakaoShippingAddress = {
+  id: number;
+  name?: string;
+  isDefault: boolean;
+  updatedAt?: number;
+  type?: string;
+  baseAddress?: string;
+  detailAddress?: string;
+  receiverName?: string;
+  receiverPhoneNumber1?: string;
+  receiverPhoneNumber2?: string;
+  zoneNumber?: string;
+  zipCode?: string;
+};
+```
+
+### 예시
+
+```tsx
+shippingAddresses()
+```
