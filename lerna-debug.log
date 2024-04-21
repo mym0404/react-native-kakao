@@ -1,0 +1,10 @@
+65 error Error: Command failed with exit code 1: yarn install --mode update-lockfile
+65 error ➤ YN0000: · Yarn 4.1.1
+65 error ➤ YN0000: ┌ Resolution step
+65 error ➤ YN0082: │ @react-native-kakao/core@npm:0.7.1: No candidates found
+65 error ➤ YN0000: └ Completed in 2s 159ms
+65 error ➤ YN0000: · Failed with errors in 2s 166ms
+65 error     at makeError (file:///Users/mj/Desktop/react-native-kakao/node_modules/@lerna-lite/core/node_modules/execa/lib/error.js:60:11)
+65 error     at handlePromise (file:///Users/mj/Desktop/react-native-kakao/node_modules/@lerna-lite/core/node_modules/execa/index.js:124:26)
+65 error     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+65 error     at async runInstallLockFileOnly (file:///Users/mj/Desktop/react-native-kakao/node_modules/@lerna-lite/version/dist/lib/update-lockfile-version.js:100:17)

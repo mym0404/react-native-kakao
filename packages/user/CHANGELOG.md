@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.0](https://github.com/mj-studio-library/react-native-kakao/compare/v0.7.1...v0.8.0) (2024-04-21)
+
+### Features
+
+* **user:** add more kakao user me() needsAgreements type response ([f83bf4f](https://github.com/mj-studio-library/react-native-kakao/commit/f83bf4fcb459fbfcd495497a19c74bdffc5b8f56))
+* **user:** update devDependencies ([2fc3d03](https://github.com/mj-studio-library/react-native-kakao/commit/2fc3d03ab13fe8f0f79c912cd7d1f12afd8a388d))
+
 ## [0.7.1](https://github.com/mj-studio-library/react-native-kakao/compare/v0.7.0...v0.7.1) (2024-04-21)
 
 ### Bug Fixes

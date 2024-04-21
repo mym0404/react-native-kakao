@@ -26,7 +26,8 @@
         "**/tests/**"
       ],
       "allow-peer-dependencies-update": true,
-      "changelog-include-commits-git-author": " (by _%a_)"
+      "changelog-include-commits-client-login": " by @%l",
+      "remote-client": "github"
     }
   },
   "changelogPreset": {
