@@ -62,6 +62,7 @@
     "access": "public"
   },
   "devDependencies": {
+    "@react-native-kakao/core": "0.7.1",
     "@types/invariant": "^2",
     "@types/jest": "^29.5.5",
     "@types/react": "^18.2.44",
@@ -73,7 +74,7 @@
     "typescript": "5.1.6"
   },
   "peerDependencies": {
-    "@react-native-kakao/core": "workspace:0.7.1",
+    "@react-native-kakao/core": "0.7.1",
     "react": "*",
     "react-native": "*"
   },
