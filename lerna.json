@@ -27,7 +27,7 @@
         "**/tests/**"
       ],
       "allow-peer-dependencies-update": true,
-      "changelog-include-commits-client-login": true
+      "changelog-include-commits-git-author": " (by _%a_)"
     }
   },
   "changelogPreset": {
