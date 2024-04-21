@@ -42,7 +42,6 @@
     "xcode": "open $(pwd)/example/ios/KakaoExample.xcworkspace",
     "pod:old": "yarn example pod:old",
     "pod:new": "yarn example pod:new",
-    "build:docs": "rm -rf docs && typedoc",
     "codegen:android": "cd example/android && ./gradlew generateCodegenArtifactsFromSchema",
     "codegen:ios": "node node_modules/react-native/scripts/generate-codegen-artifacts.js --path example/ --outputPath example/ios",
     "codegen": "yarn codegen:android && yarn codegen:ios"
