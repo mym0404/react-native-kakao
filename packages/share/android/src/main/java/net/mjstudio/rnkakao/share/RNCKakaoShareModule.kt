@@ -19,7 +19,7 @@ class RNCKakaoShareModule internal constructor(context: ReactApplicationContext)
 
     @ReactMethod
     override fun shareCustom(
-        templateId: Int,
+        templateId: Double,
         useWebBrowserIfKakaoTalkNotAvailable: Boolean,
         templateArgs: ReadableMap?,
         serverCallbackArgs: ReadableMap?,

@@ -8,7 +8,7 @@ import com.facebook.react.bridge.ReadableMap
 abstract class KakaoShareSpec internal constructor(context: ReactApplicationContext) :
     ReactContextBaseJavaModule(context) {
     abstract fun shareCustom(
-        templateId: Int,
+        templateId: Double,
         useWebBrowserIfKakaoTalkNotAvailable: Boolean,
         templateArgs: ReadableMap?,
         serverCallbackArgs: ReadableMap?,

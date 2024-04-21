@@ -44,6 +44,8 @@
     "new:pod": "script/arch-convert.sh true true",
     "old": "script/arch-convert.sh false false",
     "new": "script/arch-convert.sh true false",
+    "old:clean": "script/arch-convert.sh true false true",
+    "new:clean": "script/arch-convert.sh true false true",
     "codegen:android": "cd example/android && ./gradlew generateCodegenArtifactsFromSchema",
     "codegen:ios": "node node_modules/react-native/scripts/generate-codegen-artifacts.js --path example/ --outputPath example/ios",
     "codegen": "yarn codegen:android && yarn codegen:ios"

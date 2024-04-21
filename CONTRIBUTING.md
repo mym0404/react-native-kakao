@@ -41,6 +41,8 @@ The `package.json` file contains various scripts for common tasks:
 - `old`: convert example project to old architecture
 - `new:pod`: convert example project to new architecture with pod install
 - `old:pod`: convert example project to old architecture with pod install
+- `old:clean`: convert example project to old architecture with clean project, pod install
+- `new:clean`: convert example project to old architecture with clean project, pod install
 
 **Codegen**
 

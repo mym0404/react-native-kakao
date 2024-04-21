@@ -6,6 +6,7 @@ PROPERTY="newArchEnabled"
 # New value from first command line argument
 NEW_VALUE="$1"
 POD="$2"
+CLEAN="$3"
 
 # Validate new value is either "true" or "false"
 if [ "${NEW_VALUE}" != "true" ] && [ "${NEW_VALUE}" != "false" ]; then
@@ -26,6 +27,10 @@ JSON="example/app.json"
 sed -i '' -e "s/\"newArchEnabled\": true/\"newArchEnabled\": ${NEW_VALUE}/g" $JSON
 sed -i '' -e "s/\"newArchEnabled\": false/\"newArchEnabled\": ${NEW_VALUE}/g" $JSON
 
+if [[ $CLEAN == 'true' ]]; then
+yes | yarn gen:android:clean
+yes | yarn gen:ios:clean
+else
 yarn gen:android
 yarn gen:ios
 
@@ -36,3 +41,7 @@ else
   yarn pod:old
 fi
 fi
+fi
+
+
+
