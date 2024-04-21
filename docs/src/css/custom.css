@@ -29,6 +29,18 @@
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
 
+:root {
+  --docusaurus-highlighted-code-line-bg: rgb(72, 77, 91);
+}
+
+/* If you have a different syntax highlighting theme for dark mode. */
+[data-theme='dark'] {
+  /* Color which works with dark mode syntax highlighting theme */
+  --docusaurus-highlighted-code-line-bg: rgb(80,82,80, 0.4);
+}
+
+
+
 [data-theme='light'] .DocSearch {
   /* --docsearch-primary-color: var(--ifm-color-primary); */
   /* --docsearch-text-color: var(--ifm-font-color-base); */
