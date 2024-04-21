@@ -1,0 +1,51 @@
+---
+sidebar_position: 2
+---
+
+# Android 설정
+
+:::info
+이 문서는 Expo를 사용한다면 건너뛰어야합니다.
+:::
+
+## 커스텀 URL 스킴 설정
+
+사용자가 카카오톡 메시지의 버튼을 통해 앱을 실행할 수 있도록 하려면 `AndroidManifest.xml`
+파일에 커스텀 URL 스킴(Custom URL Scheme) 설정을 해야 합니다.
+
+Android 12(API 31) 이상을 타깃으로 하는 앱인 경우,
+`exported` 요소를 반드시 `true`로 선언해야 합니다. 다음 예제를 참고합니다.
+
+```xml title='AndroidManifest.xml'
+<activity
+    android:name=".${YOUR_ACTIVITY_NAME}"
+    android:exported="true">
+    <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+
+        <!-- "kakao${YOUR_NATIVE_APP_KEY}://kakaolink" 형식의 앱 실행 스킴을 설정하는데 사용 -->
+        <data android:host="kakaolink"
+                android:scheme="kakao${YOUR_NATIVE_APP_KEY}" />
+    </intent-filter>
+</activity>
+```
+
+### 앱 실행 시 추가 정보 전달
+
+네이티브 앱의 경우, 커스텀 URL 스킴을 통한 앱 실행 시 서비스의 필요에 따라 추가 정보를 전달할 수 있습니다.
+`androidExecutionParams`, `iosExecutionParams` 파라미터로 앱 실행 시 전달할 키와 값을 설정할 수 있습니다.
+해당 파라미터 사용 시, 카카오톡 공유 메시지에서 앱을 실행하는 버튼을 클릭하면 아래와 같은 스킴이 호출됩니다.
+
+```
+kakao${YOUR_NATIVE_APP_KEY}://kakaolink?${androidExecutionParams}
+kakao${YOUR_NATIVE_APP_KEY}://kakaolink?${iosExecutionParams}
+// 예시
+kakao${YOUR_NATIVE_APP_KEY}://kakaolink?key1=value1&key2=value2&key3=value3
+```
+
+
+:::note
+더 자세한 내용은 [공식 문서](https://developers.kakao.com/docs/latest/ko/message/android-link#custom-scheme)를 참고해주세요.
+:::

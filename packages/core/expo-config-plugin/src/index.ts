@@ -1,8 +1,8 @@
 import { type ConfigPlugin, createRunOncePlugin } from '@expo/config-plugins';
 
-import { withAndroid } from './android';
-import { withIos } from './ios';
 import type { KakaoAndroidConfig, KakaoIosConfig } from './type';
+import { withAndroid } from './withAndroid';
+import { withIos } from './withIos';
 
 const withKakao: ConfigPlugin<{
   nativeAppKey: string;

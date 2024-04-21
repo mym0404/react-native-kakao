@@ -64,7 +64,8 @@
         {
           "nativeAppKey": "5a9383961eadba5496cb4ff895e91a89",
           "android": {
-            "authCodeHandlerActivity": true
+            "authCodeHandlerActivity": true,
+            "forwardKakaoLinkIntentFilterToMainActivity": true
           },
           "ios": {
             "handleKakaoOpenUrl": true

@@ -4,7 +4,6 @@ sidebar_position: 1
 
 
 
-
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
@@ -32,13 +31,3 @@ import TabItem from '@theme/TabItem';
     ```
   </TabItem>
 </Tabs>
-
-## SDK 초기화하기
-
-`index.js`나 `App.tsx`등 앱이 실행되고 Kakao SDK를 어떤 것도 쓰기 전에 `initializeKakaoSDK` 함수를 호출해줍니다.
-
-```tsx title='index.js'
-import { initializeKakaoSDK } from '@react-native-kakao/core';
-
-initializeKakaoSDK('{{ native app key }}');
-```

@@ -1,0 +1,19 @@
+---
+sidebar_position: 2
+---
+
+# SDK 초기화하기
+
+## SDK 초기화하기
+
+`index.js`나 `App.tsx`등 앱이 실행되고 Kakao SDK를 어떤 것도 쓰기 전에 `initializeKakaoSDK` 함수를 호출해줍니다.
+
+```tsx title='index.js'
+import { initializeKakaoSDK } from '@react-native-kakao/core';
+
+initializeKakaoSDK('{{ native app key }}');
+```
+
+:::info
+항상 모든 카카오 API가 불리기 전에 이 함수가 먼저 호출되어야 합니다.
+:::
