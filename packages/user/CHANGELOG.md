@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.1](https://github.com/mj-studio-library/react-native-kakao/compare/v0.7.0...v0.7.1) (2024-04-21)
+
+### Bug Fixes
+
+- **user:** export android method with @ReactMethod. old arch supporting is so toooooooooooooooooough ([9502d47](https://github.com/mj-studio-library/react-native-kakao/commit/9502d47de7193f0533ba04590e18a7b2da2eb4c0))
+
 ## [0.7.0](https://github.com/mj-studio-library/react-native-kakao/compare/v0.6.0...v0.7.0) (2024-04-21)
 
 ### Features
