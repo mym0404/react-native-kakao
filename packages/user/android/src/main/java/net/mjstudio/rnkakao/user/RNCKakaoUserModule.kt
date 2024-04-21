@@ -18,7 +18,6 @@ import net.mjstudio.rnkakao.core.util.putBooleanIfNotNull
 import net.mjstudio.rnkakao.core.util.putDoubleIfNotNull
 import net.mjstudio.rnkakao.core.util.putIntIfNotNull
 import net.mjstudio.rnkakao.core.util.rejectWith
-import net.mjstudio.rnkakao.share.KakaoUserSpec
 import java.util.*
 
 class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) :
@@ -250,36 +249,28 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
                     putBooleanIfNotNull("isEmailVerified", user.kakaoAccount?.isEmailVerified)
                     putBooleanIfNotNull("isKorean", user.kakaoAccount?.isKorean)
                     putBooleanIfNotNull(
-                        "ageRangeNeedsAgreement",
-                        user.kakaoAccount?.ageRangeNeedsAgreement
+                        "ageRangeNeedsAgreement", user.kakaoAccount?.ageRangeNeedsAgreement
                     )
                     putBooleanIfNotNull(
-                        "birthdayNeedsAgreement",
-                        user.kakaoAccount?.birthdayNeedsAgreement
+                        "birthdayNeedsAgreement", user.kakaoAccount?.birthdayNeedsAgreement
                     )
                     putBooleanIfNotNull(
-                        "birthyearNeedsAgreement",
-                        user.kakaoAccount?.birthyearNeedsAgreement
+                        "birthyearNeedsAgreement", user.kakaoAccount?.birthyearNeedsAgreement
                     )
                     putBooleanIfNotNull(
-                        "emailNeedsAgreement",
-                        user.kakaoAccount?.emailNeedsAgreement
+                        "emailNeedsAgreement", user.kakaoAccount?.emailNeedsAgreement
                     )
                     putBooleanIfNotNull(
-                        "genderNeedsAgreement",
-                        user.kakaoAccount?.genderNeedsAgreement
+                        "genderNeedsAgreement", user.kakaoAccount?.genderNeedsAgreement
                     )
                     putBooleanIfNotNull(
-                        "isKoreanNeedsAgreement",
-                        user.kakaoAccount?.isKoreanNeedsAgreement
+                        "isKoreanNeedsAgreement", user.kakaoAccount?.isKoreanNeedsAgreement
                     )
                     putBooleanIfNotNull(
-                        "phoneNumberNeedsAgreement",
-                        user.kakaoAccount?.phoneNumberNeedsAgreement
+                        "phoneNumberNeedsAgreement", user.kakaoAccount?.phoneNumberNeedsAgreement
                     )
                     putBooleanIfNotNull(
-                        "profileNeedsAgreement",
-                        user.kakaoAccount?.profileNeedsAgreement
+                        "profileNeedsAgreement", user.kakaoAccount?.profileNeedsAgreement
                     )
                 })
             }

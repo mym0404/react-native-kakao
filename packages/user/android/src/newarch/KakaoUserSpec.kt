@@ -1,4 +1,4 @@
-package net.mjstudio.rnkakao.share
+package net.mjstudio.rnkakao.user
 
 import com.facebook.react.bridge.ReactApplicationContext
 import net.mjstudio.rnkakao.user.NativeKakaoUserSpec

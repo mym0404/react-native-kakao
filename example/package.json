@@ -2,7 +2,7 @@
   "name": "kakao-example",
   "version": "0.0.1",
   "private": true,
-  "main": "expo-router/entry",
+  "main": "src/index.js",
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
@@ -13,6 +13,7 @@
     "prebuild:ios": "expo prebuild -p ios && echo $(cat ios/.xcode.env) > ios/.xcode.env.local",
     "prebuild:ios:clean": "expo prebuild -p ios --clean && echo $(cat ios/.xcode.env) > ios/.xcode.env.local",
     "prebuild": "yarn prebuild:android && yarn prebuild:ios",
+    "prebuild:clean": "yarn prebuild:android:clean && yarn prebuild:ios:clean",
     "typecheck": "tsc --noEmit",
     "theme:gen": "generate-theme-type src/design/AppTheme.ts ./../node_modules/@react-native-styled-system/core/lib/typescript/src/@types/ThemedTypings.d.ts",
     "pod:old": "cd ios && bundle install && RCT_NEW_ARCH_ENABLED=0 bundle exec pod install",

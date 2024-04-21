@@ -28,7 +28,12 @@
         "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#000000"
       },
-      "package": "com.rnkakao.example"
+      "package": "com.rnkakao.example",
+      "splash": {
+        "resizeMode": "contain",
+        "image": "./assets/icon.png",
+        "backgroundColor": "#000000"
+      }
     },
     "web": {
       "bundler": "metro",
@@ -47,10 +52,10 @@
               "https://repository.map.naver.com/archive/maven",
               "https://devrepo.kakao.com/nexus/content/groups/public/"
             ],
-            "newArchEnabled": true
+            "newArchEnabled": false
           },
           "ios": {
-            "newArchEnabled": true
+            "newArchEnabled": false
           }
         }
       ],

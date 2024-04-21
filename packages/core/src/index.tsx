@@ -1,5 +1,7 @@
 import { NativeModules, Platform } from 'react-native';
 
+import type { Spec } from './spec/NativeKakaoCore';
+
 const LINKING_ERROR =
   "The package '@react-native-kakao/core' doesn't seem to be linked. Make sure: \n\n" +
   Platform.select({ ios: "- You have run 'pod install'\n", default: '' }) +
@@ -11,9 +13,9 @@ const isTurboModuleEnabled = global.__turboModuleProxy != null;
 
 const Module = isTurboModuleEnabled
   ? require('./spec/NativeKakaoCore').default
-  : NativeModules.KakaoShare;
+  : NativeModules.RNCKakaoCore;
 
-const Native = Module
+const Native: Spec = Module
   ? Module
   : new Proxy(
       {},

@@ -7,7 +7,7 @@ private fun debugE(message: Any?) {
     if (BuildConfig.DEBUG) Log.e("RNCKakao", "⭐️" + message.toString())
 }
 
-internal fun debugE(vararg message: Any?) {
+fun debugE(vararg message: Any?) {
     var str = ""
     for (i in message) {
         str += i.toString() + ", "
