@@ -29,7 +29,7 @@
     "clean": "lerna run clean",
     "prepare": "husky",
     "build": "lerna run prepack",
-    "release": "yarn t && yarn build && lerna publish --force-publish",
+    "release": "yarn t && yarn build && lerna publish --force-publish --changelog-include-commits-client-login by @%l --remote-clint github --allow-peer-dependencies-update",
     "android": "yarn example android",
     "ios": "yarn example ios",
     "dev": "yarn example start",
