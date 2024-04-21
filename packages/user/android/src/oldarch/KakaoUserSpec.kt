@@ -11,6 +11,7 @@ abstract class KakaoUserSpec internal constructor(context: ReactApplicationConte
         serviceTerms: ReadableArray?,
         prompts: ReadableArray?,
         useKakaoAccountLogin: Boolean,
+        scopes: ReadableArray?,
         promise: Promise
     )
 

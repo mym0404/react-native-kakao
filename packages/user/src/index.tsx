@@ -1,4 +1,6 @@
 import { NativeModules, Platform } from 'react-native';
+import { is } from '@mj-studio/js-util';
+import { kAssert } from '@react-native-kakao/core';
 
 import type { Spec } from './spec/NativeKakaoUser';
 
@@ -108,12 +110,29 @@ export function login({
   serviceTerms,
   prompts,
   useKakaoAccountLogin,
+  scopes,
 }: {
   serviceTerms?: string[];
   prompts?: ('Loign' | 'Create' | 'Cert' | 'UnifyDaum' | 'SelectAccount')[];
+  scopes?: string[];
   useKakaoAccountLogin?: boolean;
 } = {}): Promise<KakaoLoginToken> {
-  return Native.login(serviceTerms ?? [], prompts ?? [], useKakaoAccountLogin ?? false);
+  kAssert(
+    !useKakaoAccountLogin ? !is.notEmptyArray(prompts) && !is.notEmptyArray(scopes) : true,
+    '[login] `prompts` and `scopes` cannot be passed if useKakaoAccountLogin is false.',
+  );
+
+  kAssert(
+    is.notEmptyArray(scopes) ? !is.notEmptyArray(prompts) && !is.notEmptyArray(serviceTerms) : true,
+    '[login] `scopes` cannot be passed with `prompts` or `serviceTerms`',
+  );
+
+  return Native.login(
+    serviceTerms ?? [],
+    prompts ?? [],
+    useKakaoAccountLogin ?? false,
+    scopes ?? [],
+  );
 }
 
 export function logout() {

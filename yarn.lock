@@ -4579,7 +4579,6 @@ __metadata:
     "@types/jest": "npm:^29.5.5"
     "@types/react": "npm:^18.2.44"
     del-cli: "npm:^5.1.0"
-    invariant: "npm:^2.2.4"
     jest: "npm:^29.7.0"
     react: "npm:18.2.0"
     react-native: "npm:0.73.7"

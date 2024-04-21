@@ -41,8 +41,8 @@ fun Promise.rejectWith(s: String) {
     })
 }
 
-inline fun <reified T> ReadableArray.filterIsInstance(): List<T>? {
-    return toArrayList()?.filterIsInstance<T>()
+inline fun <reified T> ReadableArray.filterIsInstance(): List<T> {
+    return toArrayList().filterIsInstance<T>()
 }
 
 fun WritableArray.pushStringList(list: List<String>) = list.forEach(::pushString)

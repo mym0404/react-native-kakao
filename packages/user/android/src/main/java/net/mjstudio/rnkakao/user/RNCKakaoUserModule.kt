@@ -6,7 +6,11 @@ import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableArray
 import com.kakao.sdk.auth.AuthApiClient
 import com.kakao.sdk.auth.model.OAuthToken
-import com.kakao.sdk.auth.model.Prompt
+import com.kakao.sdk.auth.model.Prompt.CERT
+import com.kakao.sdk.auth.model.Prompt.CREATE
+import com.kakao.sdk.auth.model.Prompt.LOGIN
+import com.kakao.sdk.auth.model.Prompt.SELECT_ACCOUNT
+import com.kakao.sdk.auth.model.Prompt.UNIFY_DAUM
 import com.kakao.sdk.common.model.KakaoSdkError
 import com.kakao.sdk.user.UserApiClient
 import net.mjstudio.rnkakao.core.util.RNCKakaoUtil
@@ -33,6 +37,7 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
         serviceTerms: ReadableArray?,
         prompts: ReadableArray?,
         useKakaoAccountLogin: Boolean,
+        scopes: ReadableArray?,
         promise: Promise
     ) {
         val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
@@ -67,26 +72,34 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
             }
         }
 
-        if (UserApiClient.instance.isKakaoTalkLoginAvailable(reactApplicationContext) && !useKakaoAccountLogin) {
+        if (scopes?.filterIsInstance<String>()?.isEmpty() == false) {
+            UserApiClient.instance.loginWithNewScopes(
+                reactApplicationContext,
+                scopes = scopes.filterIsInstance<String>(),
+                callback = callback
+            )
+        } else if (UserApiClient.instance.isKakaoTalkLoginAvailable(reactApplicationContext) && !useKakaoAccountLogin && scopes?.filterIsInstance<String>()
+                ?.isEmpty() == true
+        ) {
             UserApiClient.instance.loginWithKakaoTalk(
                 reactApplicationContext,
-                serviceTerms = serviceTerms?.filterIsInstance<String>(),
+                serviceTerms = serviceTerms?.filterIsInstance<String>()?.ifEmpty { null },
                 callback = callback
             )
         } else {
             UserApiClient.instance.loginWithKakaoAccount(
                 reactApplicationContext,
-                prompts = prompts?.filterIsInstance<String>()?.map {
+                prompts = prompts?.filterIsInstance<String>()?.mapNotNull {
                     when (it) {
-                        "Login" -> Prompt.LOGIN
-                        "Create" -> Prompt.CREATE
-                        "Cert" -> Prompt.CERT
-                        "UnifyDaum" -> Prompt.UNIFY_DAUM
-                        "SelectAccount" -> Prompt.SELECT_ACCOUNT
+                        "Login" -> LOGIN
+                        "Create" -> CREATE
+                        "Cert" -> CERT
+                        "UnifyDaum" -> UNIFY_DAUM
+                        "SelectAccount" -> SELECT_ACCOUNT
                         else -> null
                     }
-                }?.filterNotNull(),
-                serviceTerms = serviceTerms?.filterIsInstance<String>(),
+                }?.ifEmpty { null },
+                serviceTerms = serviceTerms?.filterIsInstance<String>()?.ifEmpty { null },
                 callback = callback
             )
         }
@@ -166,7 +179,7 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
     @ReactMethod
     override fun revokeScopes(scopes: ReadableArray, promise: Promise) {
         UserApiClient.instance.revokeScopes(
-            scopes = scopes.filterIsInstance<String>() ?: listOf()
+            scopes = scopes.filterIsInstance<String>()
         ) { scopeInfo, error ->
             if (error != null) {
                 promise.rejectWith(error)
@@ -293,10 +306,12 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
                         "profileImageNeedsAgreement", user.kakaoAccount?.profileImageNeedsAgreement
                     )
                     putBooleanIfNotNull(
-                        "profileNicknameNeedsAgreement", user.kakaoAccount?.profileNicknameNeedsAgreement
+                        "profileNicknameNeedsAgreement",
+                        user.kakaoAccount?.profileNicknameNeedsAgreement
                     )
                     putBooleanIfNotNull(
-                        "legalBirthDateNeedsAgreement", user.kakaoAccount?.legalBirthDateNeedsAgreement
+                        "legalBirthDateNeedsAgreement",
+                        user.kakaoAccount?.legalBirthDateNeedsAgreement
                     )
                 })
             }
