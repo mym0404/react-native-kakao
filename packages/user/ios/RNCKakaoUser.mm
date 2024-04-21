@@ -42,6 +42,32 @@ RCT_EXPORT_METHOD(isLogined
   [[self manager] isLogined:resolve reject:reject];
 }
 
+RCT_EXPORT_METHOD(scopes
+                  : (NSArray*)scopes resolve
+                  : (RCTPromiseResolveBlock)resolve reject
+                  : (RCTPromiseRejectBlock)reject) {
+  [[self manager] scopes:scopes resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(revokeScopes
+                  : (NSArray*)scopes resolve
+                  : (RCTPromiseResolveBlock)resolve reject
+                  : (RCTPromiseRejectBlock)reject) {
+  [[self manager] revokeScopes:scopes resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(serviceTerms
+                  : (RCTPromiseResolveBlock)resolve reject
+                  : (RCTPromiseRejectBlock)reject) {
+  [[self manager] serviceTerms:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(shippingAddresses
+                  : (RCTPromiseResolveBlock)resolve reject
+                  : (RCTPromiseRejectBlock)reject) {
+  [[self manager] shippingAddresses:resolve reject:reject];
+}
+
 // Don't compile this code when we build for the old architecture.
 #ifdef RCT_NEW_ARCH_ENABLED
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:

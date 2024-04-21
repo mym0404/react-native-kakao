@@ -4,10 +4,49 @@ sidebar_position: 5
 
 # Expo 설정
 
-모노레포의 구성이며 모든 패키지는 `@react-native-kakao/core` 패키지에 의존성을 가집니다.
+## Expo 설정
 
-다음과 같이 설치할 수 있습니다.
+Expo는 간편하게 미리 구성된 [config plugin](https://docs.expo.dev/config-plugins/introduction/)를 사용할 수 있습니다.
 
+:::tip
+해당 패키지에서 제공하는 기능 외에 config plugin의 구성요소가 더 필요하다면
+[Android 설정](/docs/install-android)과 [iOS 설정](/docs/install-ios)를 참고하여 직접 작성해 사용할 수 있습니다.
+:::
 
-다른 패키지들은 `core` 패키지에 peer dependency를 가지며 이는 `@react-native-kakao/core`는 항상
-같이 설치가 되어야 함을 의미합니다.
+## expo-build-properties 설치
+
+```shell
+npx expo install expo-build-properties
+```
+
+## app.json 설정
+
+처음에 설정할 것은 많지 않지만, 다른 패키지들을 사용하면서 `android`와 `ios`에 필요한 설정을 추가하는 방식입니다.
+
+```json title='app.json'
+"plugins": [
+  [
+    "expo-build-properties",
+    {
+      "android": {
+        "extraMavenRepos": [
+          "https://repository.map.naver.com/archive/maven",
+          "https://devrepo.kakao.com/nexus/content/groups/public/"
+        ]
+      }
+    }
+  ],
+  [
+    "@react-native-kakao/core",
+    {
+      "nativeAppKey": "{{native app key}}",
+      "android": {
+        ...
+      },
+      "ios": {
+        ...
+      }
+    }
+  ]
+]
+```

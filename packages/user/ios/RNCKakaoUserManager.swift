@@ -166,6 +166,113 @@ import RNCKakaoCore
     }
   }
 
+  @objc public func scopes(
+    _ scopes: [String]? = nil,
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    UserApi.shared.scopes(scopes: emptyArrayToNil(scopes)) { scopeInfo, error in
+      if let error {
+        RNCKakaoUtil.reject(reject, error)
+      } else if let scopeInfo {
+        resolve(scopeInfo.scopes?.map { s in
+          [
+            "id": s.id,
+            "displayName": s.displayName,
+            "type": s.type.rawValue,
+            "using": s.using,
+            "delegated": s.delegated as Any,
+            "agreed": s.agreed,
+            "revocable": s.revocable as Any
+          ]
+        } ?? [])
+      } else {
+        RNCKakaoUtil.reject(reject, "scopeInfo not found")
+      }
+    }
+  }
+
+  @objc public func revokeScopes(
+    _ scopes: [String],
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    UserApi.shared.revokeScopes(scopes: scopes) { info, error in
+      if let error {
+        RNCKakaoUtil.reject(reject, error)
+      } else if info != nil {
+        resolve(42)
+      } else {
+        RNCKakaoUtil.reject(reject, "scopeInfo not found")
+      }
+    }
+  }
+
+  @objc public func serviceTerms(
+    _ resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    UserApi.shared.serviceTerms { serviceTerms, error in
+      if let error {
+        RNCKakaoUtil.reject(reject, error)
+      } else if let serviceTerms {
+        resolve(
+          [
+            "allowedServiceTerms": serviceTerms.allowedServiceTerms?.map {
+              [
+                "tag": $0.tag,
+                "agreedAt": $0.agreedAt.timeIntervalSince1970
+              ]
+            },
+            "appServiceTerms": serviceTerms.appServiceTerms?.map {
+              [
+                "tag": $0.tag,
+                "createdAt": $0.createdAt.timeIntervalSince1970,
+                "updatedAt": $0.updatedAt.timeIntervalSince1970
+              ]
+            }
+          ]
+        )
+      } else {
+        RNCKakaoUtil.reject(reject, "serviceTerms not found")
+      }
+    }
+  }
+
+  @objc public func shippingAddresses(
+    _ resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    UserApi.shared.shippingAddresses { s, error in
+      if let error {
+        RNCKakaoUtil.reject(reject, error)
+      } else if let s {
+        resolve([
+          "userId": s.userId as Any,
+          "needsAgreement": s.needsAgreement as Any,
+          "shippingAddresses": s.shippingAddresses?.map {
+            [
+              "id": $0.id,
+              "name": $0.name as Any,
+              "isDefault": $0.isDefault,
+              "updatedAt": $0.updatedAt?.timeIntervalSince1970 as Any,
+              "type": $0.type?.rawValue as Any,
+              "baseAddress": $0.baseAddress as Any,
+              "detailAddress": $0.detailAddress as Any,
+              "receiverName": $0.receiverName as Any,
+              "receiverPhoneNumber1": $0.receiverPhoneNumber1 as Any,
+              "receiverPhoneNumber2": $0.receiverPhoneNumber2 as Any,
+              "zoneNumber": $0.zoneNumber as Any,
+              "zipCode": $0.zipCode as Any
+            ]
+          } ?? []
+        ])
+      } else {
+        RNCKakaoUtil.reject(reject, "shipping addresses not found")
+      }
+    }
+  }
+
   private func emptyArrayToNil<T>(_ arr: [T]?) -> [T]? {
     if arr == nil || arr?.isEmpty == true { return nil }
     return arr

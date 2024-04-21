@@ -1,7 +1,13 @@
 import type { TurboModule } from 'react-native';
 import { TurboModuleRegistry } from 'react-native';
 
-import type { KakaoLoginToken } from '..';
+import type {
+  KakaoAppServiceTerms,
+  KakaoLoginToken,
+  KakaoScopeInfo,
+  KakaoServiceTerms,
+  KakaoShippingAddressResult,
+} from '..';
 
 export interface Spec extends TurboModule {
   isKakaoTalkLoginAvailable(): Promise<boolean>;
@@ -13,6 +19,13 @@ export interface Spec extends TurboModule {
   logout(): Promise<void>;
   unlink(): Promise<void>;
   isLogined(): Promise<boolean>;
+  scopes(scopes?: string[]): Promise<KakaoScopeInfo[]>;
+  revokeScopes(scopes: string[]): Promise<void>;
+  serviceTerms(): Promise<{
+    allowedServiceTerms?: KakaoServiceTerms[];
+    appServiceTerms?: KakaoAppServiceTerms[];
+  }>;
+  shippingAddresses(): Promise<KakaoShippingAddressResult>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('RNCKakaoUser');

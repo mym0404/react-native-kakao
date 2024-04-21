@@ -7,6 +7,8 @@ import {
   isLogined,
   login,
   logout,
+  scopes,
+  shippingAddresses,
   unlink,
 } from '@react-native-kakao/user';
 
@@ -18,6 +20,8 @@ import { px } from '../util/px';
 export default function Page() {
   const [isKakaoTalkEnable, setKakaoTalkEnable] = useState(false);
   const [result, setResult] = useState<object>();
+  const [scopesResult, setScopesResult] = useState<object>();
+  const [shippingResult, setShippingResult] = useState<object>();
 
   useMount(() => {
     isKakaoTalkLoginAvailable().then(setKakaoTalkEnable);
@@ -44,7 +48,7 @@ export default function Page() {
             .catch((e) =>
               showMessage({
                 type: 'warning',
-                message: `Login Failed - ${e.message}`,
+                message: e.message,
               }),
             );
         }}
@@ -63,7 +67,7 @@ export default function Page() {
             .catch((e) =>
               showMessage({
                 type: 'warning',
-                message: `Logout Failed - ${e.message}`,
+                message: e.message,
               }),
             );
         }}
@@ -82,7 +86,7 @@ export default function Page() {
             .catch((e) =>
               showMessage({
                 type: 'warning',
-                message: `Unlink Failed - ${e.message}`,
+                message: e.message,
               }),
             );
         }}
@@ -101,13 +105,63 @@ export default function Page() {
             .catch((e) =>
               showMessage({
                 type: 'warning',
-                message: `isLogined Failed - ${e.message}`,
+                message: `Failed - ${e.message}`,
               }),
             );
         }}
       />
+      <Btn
+        minW={px(240)}
+        title={'Scopes'}
+        onPress={() => {
+          scopes()
+            .then((ret) => {
+              showMessage({
+                type: 'success',
+                message: 'Success',
+              });
+              setScopesResult(ret);
+            })
+            .catch((e) =>
+              showMessage({
+                type: 'warning',
+                message: e.message,
+              }),
+            );
+        }}
+      />
+      <Btn
+        minW={px(240)}
+        title={'Shipping Addresses'}
+        onPress={() => {
+          shippingAddresses()
+            .then((ret) => {
+              showMessage({
+                type: 'success',
+                message: 'Success',
+              });
+              setShippingResult(ret);
+            })
+            .catch((e) => {
+              console.log(e);
+              showMessage({
+                type: 'warning',
+                message: e.message,
+              });
+            });
+        }}
+      />
+      <Txt mt={6}>{'Login Result'}</Txt>
       <Txt w={'100%'} t={'c2'} p={4} borderWidth={1} borderColor={'text'} color={'primary100'}>
         {!result ? 'No data' : formatJson(result)}
+      </Txt>
+      <Txt>{'Scopes Result'}</Txt>
+      <Txt w={'100%'} t={'c2'} p={4} borderWidth={1} borderColor={'text'} color={'primary100'}>
+        {!scopesResult ? 'No data' : formatJson(scopesResult)}
+      </Txt>
+      <Txt>{'Shipping Addresses Result'}</Txt>
+      <Txt w={'100%'} t={'c2'} p={4} borderWidth={1} borderColor={'text'} color={'primary100'}>
+        {!shippingResult ? 'No data' : formatJson(shippingResult)}
       </Txt>
     </StyledScrollView>
   );

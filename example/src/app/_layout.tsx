@@ -34,7 +34,7 @@ export default function RootLayout() {
         </Link>
         <Slot />
       </Box>
-      <FlashMessage position={'top'} />
+      <FlashMessage position={'top'} duration={5000} type={'success'} />
     </StyledSystemProvider>
   );
 }

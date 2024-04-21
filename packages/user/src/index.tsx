@@ -37,6 +37,43 @@ export type KakaoLoginToken = {
   refreshTokenExpiresIn: number;
   scopes: string[];
 };
+export type KakaoScopeInfo = {
+  id: string;
+  agreed: boolean;
+  displayName: string;
+  revocable?: boolean;
+  using: boolean;
+  delegated?: boolean;
+  type: string;
+};
+export type KakaoServiceTerms = {
+  tag: string;
+  agreedAt: number;
+};
+export type KakaoAppServiceTerms = {
+  tag: string;
+  createdAt: number;
+  updatedAt: number;
+};
+export type KakaoShippingAddressResult = {
+  userId?: number;
+  needsAgreement?: boolean;
+  shippingAddresses: KakaoShippingAddress[];
+};
+export type KakaoShippingAddress = {
+  id: number;
+  name?: string;
+  isDefault: boolean;
+  updatedAt?: number;
+  type?: string;
+  baseAddress?: string;
+  detailAddress?: string;
+  receiverName?: string;
+  receiverPhoneNumber1?: string;
+  receiverPhoneNumber2?: string;
+  zoneNumber?: string;
+  zipCode?: string;
+};
 export function login({
   serviceTerms,
   prompts,
@@ -63,4 +100,23 @@ export function isLogined() {
 
 export function isKakaoTalkLoginAvailable(): Promise<boolean> {
   return Native.isKakaoTalkLoginAvailable();
+}
+
+export function scopes(scopes?: string[]): Promise<KakaoScopeInfo[]> {
+  return Native.scopes(scopes);
+}
+
+export function revokeScopes(scopes: string[]): Promise<void> {
+  return Native.revokeScopes(scopes);
+}
+
+export function serviceTerms(): Promise<{
+  allowedServiceTerms?: KakaoServiceTerms[];
+  appServiceTerms?: KakaoAppServiceTerms[];
+}> {
+  return Native.serviceTerms();
+}
+
+export function shippingAddresses(): Promise<KakaoShippingAddressResult> {
+  return Native.shippingAddresses();
 }
