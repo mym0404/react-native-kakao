@@ -304,7 +304,12 @@ import RNCKakaoCore
           "genderNeedsAgreement": user.kakaoAccount?.genderNeedsAgreement as Any,
           "isKoreanNeedsAgreement": user.kakaoAccount?.isKoreanNeedsAgreement as Any,
           "phoneNumberNeedsAgreement": user.kakaoAccount?.phoneNumberNeedsAgreement as Any,
-          "profileNeedsAgreement": user.kakaoAccount?.profileNeedsAgreement as Any
+          "profileNeedsAgreement": user.kakaoAccount?.profileNeedsAgreement as Any,
+          "ciNeedsAgreement": user.kakaoAccount?.ciNeedsAgreement as Any,
+          "nameNeedsAgreement": user.kakaoAccount?.nameNeedsAgreement as Any,
+          "profileImageNeedsAgreement": user.kakaoAccount?.profileImageNeedsAgreement as Any,
+          "profileNicknameNeedsAgreement": user.kakaoAccount?.profileNicknameNeedsAgreement as Any,
+          "legalBirthDateNeedsAgreement": user.kakaoAccount?.legalBirthDateNeedsAgreement as Any
         ])
       } else {
         RNCKakaoUtil.reject(reject, "user not found")

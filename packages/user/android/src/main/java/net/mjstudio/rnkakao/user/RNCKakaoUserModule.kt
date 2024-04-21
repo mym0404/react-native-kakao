@@ -283,6 +283,21 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
                     putBooleanIfNotNull(
                         "profileNeedsAgreement", user.kakaoAccount?.profileNeedsAgreement
                     )
+                    putBooleanIfNotNull(
+                        "ciNeedsAgreement", user.kakaoAccount?.ciNeedsAgreement
+                    )
+                    putBooleanIfNotNull(
+                        "nameNeedsAgreement", user.kakaoAccount?.nameNeedsAgreement
+                    )
+                    putBooleanIfNotNull(
+                        "profileImageNeedsAgreement", user.kakaoAccount?.profileImageNeedsAgreement
+                    )
+                    putBooleanIfNotNull(
+                        "profileNicknameNeedsAgreement", user.kakaoAccount?.profileNicknameNeedsAgreement
+                    )
+                    putBooleanIfNotNull(
+                        "legalBirthDateNeedsAgreement", user.kakaoAccount?.legalBirthDateNeedsAgreement
+                    )
                 })
             }
         }

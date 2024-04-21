@@ -98,6 +98,11 @@ export type KakaoUser = {
   isKoreanNeedsAgreement?: boolean;
   phoneNumberNeedsAgreement?: boolean;
   profileNeedsAgreement?: boolean;
+  ciNeedsAgreement?: boolean;
+  nameNeedsAgreement?: boolean;
+  profileImageNeedsAgreement?: boolean;
+  profileNicknameNeedsAgreement?: boolean;
+  legalBirthDateNeedsAgreement?: boolean;
 };
 export function login({
   serviceTerms,
