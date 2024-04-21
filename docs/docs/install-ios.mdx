@@ -7,3 +7,60 @@ sidebar_position: 4
 :::info
 이 문서는 Expo를 사용한다면 건너뛰어야합니다.
 :::
+
+[Kakao SDK 문서](https://developers.kakao.com/docs/latest/ko/ios/getting-started)를 참고하여 설정에 관한 더 자세한 정보를 확인할 수 있습니다.
+
+iOS 부분을 구성하는 방법은 다음과 같습니다.
+
+# 카카오 콘솔에서 애플리케이션 생성 및 플랫폼 등록
+
+![feat1](https://raw.githubusercontent.com/mym0404/image-archive/master/202404211426201.webp)
+
+위 사진과 같이 [카카오 개발자 콘솔](https://developers.kakao.com/console/app)에서 어플리케이션을 추가합니다.
+
+이제 플랫폼 탭에 들어가 iOS앱을 추가해주고 Bundle Identifier 등을 등록해줍니다.
+
+![feat2](https://raw.githubusercontent.com/mym0404/image-archive/master/202404211445087.webp)
+
+# 앱 실행 허용 목록 추가
+
+`LSApplicationQueriesSchemes`는 앱이 어떤 scheme를 열 수 있을지 명시해주는 `Info.plist`의 옵션입니다.
+
+다음과 같은 세 가지를 추가해줍니다.
+
+- `kakaokompassauth`: [카카오 로그인](https://developers.kakao.com/docs/latest/ko/kakaologin/common)
+- `kakaolink`: [카카오톡 공유](https://developers.kakao.com/docs/latest/ko/message/common#kakaotalk-sharing)
+- `kakaoplus`: [카카오톡 채널](https://developers.kakao.com/docs/latest/ko/kakaotalk-channel/common)
+
+![](https://raw.githubusercontent.com/mym0404/image-archive/master/202404211447772.webp)
+
+구성된 `Info.plist`는 다음과 같이 생겼습니다.
+
+```property title='Info.plist'
+<key>LSApplicationQueriesSchemes</key>
+  <array>
+      <!-- 카카오톡으로 로그인 -->
+      <string>kakaokompassauth</string>
+      <!-- 카카오톡 공유 -->
+      <string>kakaolink</string>
+      <!-- 카카오톡 채널 -->
+      <string>kakaoplus</string>
+  </array>
+```
+
+:::warning
+주의: 앱 실행 허용 목록 설정을 위한 키 변경
+Xcode 14 이상일 경우, 앱 실행 허용 목록 설정을 위한 키가 LSApplicationQueriesSchemes에서
+Queried URL Schemes로 자동 변환될 수 있습니다.
+
+Info.plist 파일 내부에서는 기존 키를 사용하므로, 해당 파일을 직접 수정할 경우에는 기존 키를 사용합니다.
+:::
+
+# 커스텀 URL Scheme 추가
+
+서비스 앱 실행을 위해 커스텀 URL 스킴 설정을 합니다.
+
+**[Info] > [URL Types] > [URL Schemes]** 항목에 네이티브 앱 키(Native App Key)를 `kakao{{NATIVE_APP_KEY}}`
+형식으로 등록합니다. 예를 들어 네이티브 앱 키가 `123456789`라면 [URL Schemes]에 `kakao123456789`를 입력합니다.
+
+![](https://raw.githubusercontent.com/mym0404/image-archive/master/202404211449631.webp)
