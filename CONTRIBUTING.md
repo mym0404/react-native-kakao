@@ -75,7 +75,7 @@ the example app.
 If you want to use Android Studio or XCode to edit the native code, you can open
 the `example/android` or `example/ios` directories respectively in those editors. To edit the
 Objective-C or Swift files, run `yarn xcode` and
-find the source files at `Pods > Development Pods > react-native-kakao`.
+find the source files at `Pods > Development Pods > RNCKakaoXXX`.
 
 To edit the Java or Kotlin files, run `yarn studio`
 

@@ -43,9 +43,14 @@ export default function Page() {
         {'Native Kakao Sdk All In One Solution'}
       </Txt>
       <Box my={10} w={'100%'} h={px(1)} bg={'text'} opacity={0.8} />
-      <Link href={'/user'}>
-        <Txt textDecorationLine={'underline'}>{'@react-native-kakao/user'}</Txt>
-      </Link>
+      <Box gap={4}>
+        <Link href={'/user'}>
+          <Txt textDecorationLine={'underline'}>{'@react-native-kakao/user'}</Txt>
+        </Link>
+        <Link href={'/share'}>
+          <Txt textDecorationLine={'underline'}>{'@react-native-kakao/share'}</Txt>
+        </Link>
+      </Box>
     </StyledScrollView>
   );
 }

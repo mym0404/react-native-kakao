@@ -9,14 +9,19 @@
 
 RCT_EXPORT_MODULE()
 
-RCT_EXPORT_METHOD(multiply
-                  : (double)a b
-                  : (double)b resolve
+RCT_EXPORT_METHOD(shareCustom
+                  : (double)templateId useWebBrwoserIfKakaoTalkNotAvailable
+                  : (BOOL)useWebBrowserIfKakaoTalkNotAvailable templateArgs
+                  : (NSDictionary*)templateArgs serverCallbackArgs
+                  : (NSDictionary*)serverCallbackArgs resolve
                   : (RCTPromiseResolveBlock)resolve reject
                   : (RCTPromiseRejectBlock)reject) {
-  NSNumber* result = @(a * b);
-
-  resolve(result);
+  [[self manager] shareCustom:(NSInteger)templateId
+      useWebBrowserIfKakaoTalkNotAvailable:useWebBrowserIfKakaoTalkNotAvailable
+                              templateArgs:templateArgs
+                        serverCallbackArgs:serverCallbackArgs
+                                   resolve:resolve
+                                    reject:reject];
 }
 
 // Don't compile this code when we build for the old architecture.

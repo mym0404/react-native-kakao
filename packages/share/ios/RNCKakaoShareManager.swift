@@ -1,41 +1,59 @@
 import Foundation
 import KakaoSDKShare
+import React
+import RNCKakaoCore
+import SafariServices
 
 @objc public class RNCKakaoShareManager: NSObject {
   @objc public static let shared = RNCKakaoShareManager()
 
-  @objc public func go() {
-//    // 카카오톡 설치여부 확인
-//    if ShareApi.isKakaoTalkSharingAvailable() {
-//      // 카카오톡으로 카카오톡 공유 가능
-//      ShareApi.shared.shareCustom(
-//        templateId: templateId,
-//        templateArgs: ["title": "제목입니다.", "description": "설명입니다."]
-//      ) { sharingResult, error in
-//        if let error {
-//          print(error)
-//        } else {
-//          print("shareCustom() success.")
-//          if let sharingResult {
-//            UIApplication.shared.open(sharingResult.url, options: [:], completionHandler: nil)
-//          }
-//        }
-//      }
-//    } else {
-//      // 카카오톡 미설치: 웹 공유 사용 권장
-//      // Custom WebView 또는 디폴트 브라우져 사용 가능
-//      // 웹 공유 예시 코드
-//      if let url = ShareApi.shared.makeCustomUrl(
-//        templateId: templateId,
-//        templateArgs: ["title": "제목입니다.", "description": "설명입니다."]
-//      ) {
-//        safariViewController = SFSafariViewController(url: url)
-//        safariViewController?.modalTransitionStyle = .crossDissolve
-//        safariViewController?.modalPresentationStyle = .overCurrentContext
-//        present(safariViewController!, animated: true) {
-//          print("웹 present success")
-//        }
-//      }
-//    }
+  @objc public func shareCustom(
+    _ templateId: Int64,
+    useWebBrowserIfKakaoTalkNotAvailable: Bool,
+    templateArgs: [String: String],
+    serverCallbackArgs: [String: String],
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    // 카카오톡 설치여부 확인
+    if ShareApi.isKakaoTalkSharingAvailable() {
+      // 카카오톡으로 카카오톡 공유 가능
+      ShareApi.shared.shareCustom(
+        templateId: templateId,
+        templateArgs: templateArgs,
+        serverCallbackArgs: serverCallbackArgs
+      ) { sharingResult, error in
+        if let error {
+          RNCKakaoUtil.reject(reject, error)
+        } else if let sharingResult {
+          UIApplication.shared.open(sharingResult.url, options: [:]) { success in
+            if success {
+              resolve(42)
+            } else {
+              RNCKakaoUtil.reject(reject, "sharingResult url open failed \(sharingResult.url)")
+            }
+          }
+        } else {
+          RNCKakaoUtil.reject(reject, "sharingResult url not found")
+        }
+      }
+    } else if useWebBrowserIfKakaoTalkNotAvailable {
+      if let url = ShareApi.shared.makeCustomUrl(
+        templateId: templateId,
+        templateArgs: templateArgs,
+        serverCallbackArgs: serverCallbackArgs
+      ) {
+        let safariViewController = SFSafariViewController(url: url)
+        safariViewController.modalTransitionStyle = .crossDissolve
+        safariViewController.modalPresentationStyle = .overCurrentContext
+        RNCKakaoUtil.presentViewController(safariViewController) {
+          resolve(42)
+        }
+      } else {
+        RNCKakaoUtil.reject(reject, "makeCustomUrl failed")
+      }
+    } else {
+      RNCKakaoUtil.reject(reject, "kakaotalk not available")
+    }
   }
 }

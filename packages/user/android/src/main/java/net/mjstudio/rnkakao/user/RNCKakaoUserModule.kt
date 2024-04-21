@@ -1,5 +1,6 @@
 package net.mjstudio.rnkakao.user
 
+import android.content.ActivityNotFoundException
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactMethod
@@ -40,6 +41,11 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
         scopes: ReadableArray?,
         promise: Promise
     ) {
+        val context = currentActivity
+        if (context == null) {
+            promise.rejectWith(ActivityNotFoundException())
+            return
+        }
         val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
             if (error != null) {
                 promise.rejectWith(error)
@@ -74,21 +80,19 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
 
         if (scopes?.filterIsInstance<String>()?.isEmpty() == false) {
             UserApiClient.instance.loginWithNewScopes(
-                reactApplicationContext,
-                scopes = scopes.filterIsInstance<String>(),
-                callback = callback
+                context, scopes = scopes.filterIsInstance<String>(), callback = callback
             )
-        } else if (UserApiClient.instance.isKakaoTalkLoginAvailable(reactApplicationContext) && !useKakaoAccountLogin && scopes?.filterIsInstance<String>()
+        } else if (UserApiClient.instance.isKakaoTalkLoginAvailable(context) && !useKakaoAccountLogin && scopes?.filterIsInstance<String>()
                 ?.isEmpty() == true
         ) {
             UserApiClient.instance.loginWithKakaoTalk(
-                reactApplicationContext,
+                context,
                 serviceTerms = serviceTerms?.filterIsInstance<String>()?.ifEmpty { null },
                 callback = callback
             )
         } else {
             UserApiClient.instance.loginWithKakaoAccount(
-                reactApplicationContext,
+                context,
                 prompts = prompts?.filterIsInstance<String>()?.mapNotNull {
                     when (it) {
                         "Login" -> LOGIN
