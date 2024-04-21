@@ -5,6 +5,7 @@ PROPERTY="newArchEnabled"
 
 # New value from first command line argument
 NEW_VALUE="$1"
+POD="$2"
 
 # Validate new value is either "true" or "false"
 if [ "${NEW_VALUE}" != "true" ] && [ "${NEW_VALUE}" != "false" ]; then
@@ -19,4 +20,19 @@ FILE="example/android/gradle.properties"
 # cp ${FILE} ${FILE}.bak
 
 # Use 'sed' to replace the property value
-sed -i'' -e "s/${PROPERTY}=.*/${PROPERTY}=${NEW_VALUE}/" ${FILE}
+sed -i '' -e "s/${PROPERTY}=.*/${PROPERTY}=${NEW_VALUE}/" ${FILE}
+
+JSON="example/app.json"
+sed -i '' -e "s/\"newArchEnabled\": true/\"newArchEnabled\": ${NEW_VALUE}/g" $JSON
+sed -i '' -e "s/\"newArchEnabled\": false/\"newArchEnabled\": ${NEW_VALUE}/g" $JSON
+
+yarn gen:android
+yarn gen:ios
+
+if [[ $POD == 'true' ]]; then
+if [[ $NEW_VALUE == 'true' ]]; then
+  yarn pod:new
+else
+  yarn pod:old
+fi
+fi

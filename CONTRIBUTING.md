@@ -37,10 +37,10 @@ The `package.json` file contains various scripts for common tasks:
 
 **Architecture Convert**
 
-- `pod:old`: install old architecture pod for example project
-- `pod:new`: install new architecture pod for example project
-- `gradle:old`: disable new architecture for example project
-- `gradle:new`: enable new architecture for example project
+- `new`: convert example project to new architecture
+- `old`: convert example project to old architecture
+- `new:pod`: convert example project to new architecture with pod install
+- `old:pod`: convert example project to old architecture with pod install
 
 **Codegen**
 
