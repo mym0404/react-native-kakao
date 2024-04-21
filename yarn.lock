@@ -4583,7 +4583,6 @@ __metadata:
     react-native-builder-bob: "npm:^0.20.0"
     typescript: "npm:5.1.6"
   peerDependencies:
-    "@react-native-kakao/core": 0.7.1
     react: "*"
     react-native: "*"
   languageName: unknown
