@@ -3,6 +3,12 @@
     <img width="160px" src="https://raw.githubusercontent.com/mym0404/image-archive/master/202404201234177.webp"><br/>
   </a>
   <h1 align="center">React Native Kakao</h1>
+  <p align="center">
+  <a href="https://www.npmjs.com/package/@react-native-kakao/core"><img src="https://img.shields.io/npm/dm/@react-native-kakao/core.svg?style=flat-square" alt="NPM downloads"></a>
+  <a href="https://www.npmjs.com/package/@react-native-kakao/core"><img src="https://img.shields.io/npm/v/@react-native-kakao/core.svg?style=flat-square" alt="NPM version"></a>
+  <a href="/LICENSE"><img src="https://img.shields.io/npm/l/@react-native-kakao/core.svg?style=flat-square" alt="License"></a>
+</p>
+
   <h3 align="center">Native Kakao SDK All In One Solution</h3>
 </p>
 <a href="https://mj-studio-library.github.io/react-native-kakao/">Documentation</a>
@@ -10,7 +16,11 @@
 ---
 
 >[!IMPORTANT]
-> The package is still under development.
+> We are glad to introduce our first working package **User**([Docs](https://mj-studio-library.github.io/react-native-kakao/docs/user/intro)) ❤️
+>
+> Documentations are also prepared.
+>
+> https://github.com/mj-studio-library/react-native-kakao/assets/33388801/24375a20-832d-4d85-88fa-5501a86f445e
 
 ---
 
@@ -68,9 +78,3 @@ please select the package link from below.
     Built and maintained by <a href="https://mjstudio.net/">MJ Studio</a>.
   </p>
 </p>
-
----
-
-> [!NOTE]
-> README.md template is highly inspired
-> by [react-native-firebase](https://github.com/invertase/react-native-firebase)
