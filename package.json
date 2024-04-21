@@ -25,7 +25,7 @@
     "format:ios": "./script/clang-format.sh && ./script/swift-format.sh",
     "format": "yarn format:ios",
     "lint:ios": "./script/clang-lint.sh && ./script/swift-lint.sh",
-    "t": "yarn lint && yarn typecheck && yarn lint:clang",
+    "t": "yarn lint && yarn typecheck",
     "clean": "lerna run clean",
     "prepare": "husky",
     "build": "lerna run prepack",
