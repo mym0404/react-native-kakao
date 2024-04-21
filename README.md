@@ -19,7 +19,7 @@
 > We are glad to introduce our first working packages [**User**](https://mj-studio-library.github.io/react-native-kakao/docs/user/intro) 
 > and [**Share**](https://mj-studio-library.github.io/react-native-kakao/docs/share/intro) ❤️
 >
-> Documentations are also prepared.
+> [Documentation](https://mj-studio-library.github.io/react-native-kakao/docs/intro) is also prepared.
 >
 > https://github.com/mj-studio-library/react-native-kakao/assets/33388801/24375a20-832d-4d85-88fa-5501a86f445e
 
