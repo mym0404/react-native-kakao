@@ -14,9 +14,8 @@ The `package.json` file contains various scripts for common tasks:
 
 **Validation**
 
-- `yarn t`: easy validation for all lint, tsc, test
-- `yarn typecheck`: type-check files with TypeScript
-- `yarn lint`: lint files with ESLint, ClangFormat, SwiftFormat, Ktlint
+- `yarn lint`: lint files with ESLint, ClangFormat, SwiftFormat, Ktlint, TypeScript
+- `yarn t`: alias for lint
 - `yarn test`: run unit tests with Jest
 - `yarn format:ios`: run formatter with ClangFormat, SwiftFormat for iOS codes
 - `yarn format:android`: run formatter with Ktlint for Android codes
