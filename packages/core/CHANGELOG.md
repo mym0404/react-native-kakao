@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.4](https://github.com/mj-studio-library/react-native-kakao/compare/v1.0.3...v1.0.4) (2024-04-22)
+
+### Bug Fixes
+
+* **share:** ios view controller presenting in wrong position ([b4b50a5](https://github.com/mj-studio-library/react-native-kakao/commit/b4b50a5359cb619a7bd81b48eee04f7f9a45e171))
+
 ## [1.0.3](https://github.com/mj-studio-library/react-native-kakao/compare/v1.0.2...v1.0.3) (2024-04-21)
 
 **Note:** Version bump only for package @react-native-kakao/core
