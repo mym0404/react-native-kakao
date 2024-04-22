@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.0](https://github.com/mj-studio-library/react-native-kakao/compare/v1.0.4...v1.1.0) (2024-04-22)
+
+### Features
+
+* **share:** android - default templates + ktlint ([873f458](https://github.com/mj-studio-library/react-native-kakao/commit/873f458e5db1f920163729d7cbd21f4d23bbc14b))
+
+### Bug Fixes
+
+* **share:** android wrong type casting ([babf98f](https://github.com/mj-studio-library/react-native-kakao/commit/babf98f9330726a0ed08285aa1544aa9849c34a9))
+
 ## [1.0.4](https://github.com/mj-studio-library/react-native-kakao/compare/v1.0.3...v1.0.4) (2024-04-22)
 
 ### Bug Fixes
