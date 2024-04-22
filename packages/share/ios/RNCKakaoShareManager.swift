@@ -47,8 +47,12 @@ import SafariServices
           let safariViewController = SFSafariViewController(url: url)
           safariViewController.modalTransitionStyle = .crossDissolve
           safariViewController.modalPresentationStyle = .overCurrentContext
-          RNCKakaoUtil.presentViewController(safariViewController) {
-            resolve(42)
+          RNCKakaoUtil.presentViewController(safariViewController) { success in
+            if success {
+              resolve(42)
+            } else {
+              RNCKakaoUtil.reject(reject, "SFSafariViewController open failed")
+            }
           }
         } else {
           RNCKakaoUtil.reject(reject, "makeCustomUrl failed")

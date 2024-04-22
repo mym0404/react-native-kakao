@@ -53,27 +53,33 @@ public class RNCKakaoUtil {
     reject(DEFAULT_APP_DISPLAY_NAME, message, error)
   }
 
-  private class func getViewController(
+  private class func getTopmostViewController(
     base: UIViewController? = UIApplication.shared.windows
       .first(where: { $0.isKeyWindow })?.rootViewController
   ) -> UIViewController? {
     if let nav = base as? UINavigationController {
-      return getViewController(base: nav.visibleViewController)
+      return getTopmostViewController(base: nav.visibleViewController)
     }
     if let tab = base as? UITabBarController, let selected = tab.selectedViewController {
-      return getViewController(base: selected)
+      return getTopmostViewController(base: selected)
     }
     if let presented = base?.presentedViewController {
-      return getViewController(base: presented)
+      return getTopmostViewController(base: presented)
     }
     return base
   }
 
   public class func presentViewController(
     _ viewController: UIViewController,
-    completion: (() -> Void)?
+    completion: ((Bool) -> Void)?
   ) {
-    getViewController()?.present(viewController, animated: true, completion: completion)
+    if let topmostViewController = getTopmostViewController() {
+      topmostViewController.present(viewController, animated: true) {
+        completion?(true)
+      }
+    } else {
+      completion?(false)
+    }
   }
 }
 
