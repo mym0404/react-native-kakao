@@ -14,4 +14,46 @@ abstract class KakaoShareSpec internal constructor(context: ReactApplicationCont
       serverCallbackArgs: ReadableMap?,
       promise: Promise,
     )
+
+    abstract fun shareFeedTemplate(
+      value: ReadableMap,
+      useWebBrowserIfKakaoTalkNotAvailable: Boolean,
+      serverCallbackArgs: ReadableMap?,
+      promise: Promise,
+    )
+
+    abstract fun shareListTemplate(
+      value: ReadableMap,
+      useWebBrowserIfKakaoTalkNotAvailable: Boolean,
+      serverCallbackArgs: ReadableMap?,
+      promise: Promise,
+    )
+
+    abstract fun shareLocationTemplate(
+      value: ReadableMap,
+      useWebBrowserIfKakaoTalkNotAvailable: Boolean,
+      serverCallbackArgs: ReadableMap?,
+      promise: Promise,
+    )
+
+    abstract fun shareCommerceTemplate(
+      value: ReadableMap,
+      useWebBrowserIfKakaoTalkNotAvailable: Boolean,
+      serverCallbackArgs: ReadableMap?,
+      promise: Promise,
+    )
+
+    abstract fun shareTextTemplate(
+      value: ReadableMap,
+      useWebBrowserIfKakaoTalkNotAvailable: Boolean,
+      serverCallbackArgs: ReadableMap?,
+      promise: Promise,
+    )
+
+    abstract fun shareCalendarTemplate(
+      value: ReadableMap,
+      useWebBrowserIfKakaoTalkNotAvailable: Boolean,
+      serverCallbackArgs: ReadableMap?,
+      promise: Promise,
+    )
   }

@@ -52,10 +52,10 @@
               "https://repository.map.naver.com/archive/maven",
               "https://devrepo.kakao.com/nexus/content/groups/public/"
             ],
-            "newArchEnabled": true
+            "newArchEnabled": false
           },
           "ios": {
-            "newArchEnabled": true
+            "newArchEnabled": false
           }
         }
       ],
