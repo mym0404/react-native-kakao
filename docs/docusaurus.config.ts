@@ -13,7 +13,7 @@ const coverImage = 'img/social-card.png';
 const config: Config = {
   title: title,
   tagline: description,
-  favicon: 'img/favicon.png',
+  favicon: 'img/favicon.ico',
 
   url: 'https://mj-studio-library.github.io',
   baseUrl: '/react-native-kakao/',

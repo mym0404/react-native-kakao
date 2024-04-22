@@ -18,6 +18,7 @@ import net.mjstudio.rnkakao.core.util.RNCKakaoUtil
 import net.mjstudio.rnkakao.core.util.argArr
 import net.mjstudio.rnkakao.core.util.argMap
 import net.mjstudio.rnkakao.core.util.filterIsInstance
+import net.mjstudio.rnkakao.core.util.onMain
 import net.mjstudio.rnkakao.core.util.pushMapList
 import net.mjstudio.rnkakao.core.util.pushStringList
 import net.mjstudio.rnkakao.core.util.putBooleanIfNotNull
@@ -40,11 +41,11 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
         useKakaoAccountLogin: Boolean,
         scopes: ReadableArray?,
         promise: Promise
-    ) {
+    ) = onMain {
         val context = currentActivity
         if (context == null) {
             promise.rejectWith(ActivityNotFoundException())
-            return
+            return@onMain
         }
         val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
             if (error != null) {
@@ -110,12 +111,12 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
     }
 
     @ReactMethod
-    override fun isKakaoTalkLoginAvailable(promise: Promise) {
+    override fun isKakaoTalkLoginAvailable(promise: Promise) = onMain {
         promise.resolve(UserApiClient.instance.isKakaoTalkLoginAvailable(reactApplicationContext))
     }
 
     @ReactMethod
-    override fun logout(promise: Promise) {
+    override fun logout(promise: Promise) = onMain {
         UserApiClient.instance.logout {
             if (it != null) {
                 promise.rejectWith(it)
@@ -126,7 +127,7 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
     }
 
     @ReactMethod
-    override fun unlink(promise: Promise) {
+    override fun unlink(promise: Promise) = onMain {
         UserApiClient.instance.unlink {
             if (it != null) {
                 promise.rejectWith(it)
@@ -137,7 +138,7 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
     }
 
     @ReactMethod
-    override fun isLogined(promise: Promise) {
+    override fun isLogined(promise: Promise) = onMain {
         if (AuthApiClient.instance.hasToken()) {
             UserApiClient.instance.accessTokenInfo { _, error ->
                 if (error != null) {
@@ -156,7 +157,7 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
     }
 
     @ReactMethod
-    override fun scopes(scopes: ReadableArray?, promise: Promise) {
+    override fun scopes(scopes: ReadableArray?, promise: Promise) = onMain {
         UserApiClient.instance.scopes { scopeInfo, error ->
             if (error != null) {
                 promise.rejectWith(error)
@@ -181,7 +182,7 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
     }
 
     @ReactMethod
-    override fun revokeScopes(scopes: ReadableArray, promise: Promise) {
+    override fun revokeScopes(scopes: ReadableArray, promise: Promise) = onMain {
         UserApiClient.instance.revokeScopes(
             scopes = scopes.filterIsInstance<String>()
         ) { scopeInfo, error ->
@@ -196,7 +197,7 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
     }
 
     @ReactMethod
-    override fun serviceTerms(promise: Promise) {
+    override fun serviceTerms(promise: Promise) = onMain {
         UserApiClient.instance.serviceTerms { serviceTerms, error ->
             if (error != null) {
                 promise.rejectWith(error)
@@ -218,7 +219,7 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
     }
 
     @ReactMethod
-    override fun shippingAddresses(promise: Promise) {
+    override fun shippingAddresses(promise: Promise) = onMain {
         UserApiClient.instance.shippingAddresses { addrs, error ->
             if (error != null) {
                 promise.rejectWith(error)
@@ -252,7 +253,7 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
     }
 
     @ReactMethod
-    override fun me(promise: Promise) {
+    override fun me(promise: Promise) = onMain {
         UserApiClient.instance.me { user, error ->
             if (error != null) {
                 promise.rejectWith(error)

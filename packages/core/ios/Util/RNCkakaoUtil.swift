@@ -76,3 +76,13 @@ public class RNCKakaoUtil {
     getViewController()?.present(viewController, animated: true, completion: completion)
   }
 }
+
+public func onMain(fn: @escaping () -> Void) {
+  if Thread.isMainThread {
+    fn()
+  } else {
+    DispatchQueue.main.async {
+      fn()
+    }
+  }
+}

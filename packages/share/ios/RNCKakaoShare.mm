@@ -10,7 +10,7 @@
 RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(shareCustom
-                  : (double)templateId useWebBrwoserIfKakaoTalkNotAvailable
+                  : (double)templateId useWebBrowserIfKakaoTalkNotAvailable
                   : (BOOL)useWebBrowserIfKakaoTalkNotAvailable templateArgs
                   : (NSDictionary*)templateArgs serverCallbackArgs
                   : (NSDictionary*)serverCallbackArgs resolve

@@ -1,8 +1,11 @@
 package net.mjstudio.rnkakao.core.util
 
+import android.os.Looper
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReadableArray
+import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
 import com.kakao.sdk.common.model.ApiError
@@ -74,6 +77,20 @@ fun argMap(): WritableMap {
 
 fun argArr(): WritableArray {
     return Arguments.createArray()
+}
+
+fun ReadableMap.toStringMap(): Map<String, String> {
+    return toHashMap().filterValues { it is String }.mapValues { it.value.toString() }
+}
+
+fun onMain(fn: () -> Unit) {
+    if (Looper.myLooper() == Looper.getMainLooper()) {
+        fn()
+    } else {
+        UiThreadUtil.runOnUiThread {
+            fn()
+        }
+    }
 }
 
 object RNCKakaoUtil {

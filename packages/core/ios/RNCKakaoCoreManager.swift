@@ -7,6 +7,8 @@ import KakaoSDKCommon
   override private init() {}
 
   @objc public func initializeKakaoSDK(_ appKey: String) {
-    KakaoSDK.initSDK(appKey: appKey)
+    onMain {
+      KakaoSDK.initSDK(appKey: appKey)
+    }
   }
 }

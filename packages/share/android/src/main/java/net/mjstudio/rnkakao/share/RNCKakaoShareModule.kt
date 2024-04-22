@@ -8,7 +8,11 @@ import com.facebook.react.bridge.ReadableMap
 import com.kakao.sdk.common.util.KakaoCustomTabsClient
 import com.kakao.sdk.share.ShareClient
 import com.kakao.sdk.share.WebSharerClient
+import com.kakao.sdk.share.model.SharingResult
+import com.kakao.sdk.template.model.DefaultTemplate
+import net.mjstudio.rnkakao.core.util.onMain
 import net.mjstudio.rnkakao.core.util.rejectWith
+import net.mjstudio.rnkakao.core.util.toStringMap
 
 class RNCKakaoShareModule internal constructor(context: ReactApplicationContext) :
     KakaoShareSpec(context) {
@@ -24,14 +28,44 @@ class RNCKakaoShareModule internal constructor(context: ReactApplicationContext)
         templateArgs: ReadableMap?,
         serverCallbackArgs: ReadableMap?,
         promise: Promise,
+    ) = onMain {
+        runShare(
+            templateId = templateId,
+            useWebBrowserIfKakaoTalkNotAvailable = useWebBrowserIfKakaoTalkNotAvailable,
+            templateArgs = templateArgs,
+            serverCallbackArgs = serverCallbackArgs,
+            promise = promise,
+        )
+    }
+
+    //    @ReactMethod
+    //    fun shareFeed(serverCallbackArgs: ReadableMap?, promise: Promise) {
+    //        val context = currentActivity
+    //        if (context == null) {
+    //            promise.rejectWith(ActivityNotFoundException())
+    //            return
+    //        }
+    //        ShareClient.instance.shareDefault(context, serverCallbackArgs = serverCallbackArgs) {
+    //
+    //        }
+    //    }
+
+    private fun runShare(
+        templateId: Double? = null,
+        defaultTemplate: DefaultTemplate? = null,
+        useWebBrowserIfKakaoTalkNotAvailable: Boolean,
+        templateArgs: ReadableMap?,
+        serverCallbackArgs: ReadableMap?,
+        promise: Promise,
     ) {
         val context = currentActivity
         if (context == null) {
             promise.rejectWith(ActivityNotFoundException())
             return
         }
+
         if (ShareClient.instance.isKakaoTalkSharingAvailable(context)) {
-            ShareClient.instance.shareCustom(context, templateId.toLong()) { sharingResult, error ->
+            val callback = { sharingResult: SharingResult?, error: Throwable? ->
                 if (error != null) {
                     promise.rejectWith(error)
                 } else if (sharingResult != null) {
@@ -39,27 +73,45 @@ class RNCKakaoShareModule internal constructor(context: ReactApplicationContext)
                     promise.resolve(42)
                 }
             }
+
+            if (templateId != null) {
+                ShareClient.instance.shareCustom(
+                    context,
+                    templateId.toLong(),
+                    templateArgs = templateArgs?.toStringMap(),
+                    serverCallbackArgs = serverCallbackArgs?.toStringMap(),
+                    callback = callback,
+                )
+            } else if (defaultTemplate != null) {
+                ShareClient.instance.shareDefault(
+                    context,
+                    defaultTemplate,
+                    serverCallbackArgs = serverCallbackArgs?.toStringMap(),
+                    callback = callback,
+                )
+            }
         } else if (useWebBrowserIfKakaoTalkNotAvailable) {
-            val sharerUrl = WebSharerClient.instance.makeCustomUrl(templateId.toLong())
-
-            // CustomTabs으로 웹 브라우저 열기
-
-            // 1. CustomTabsServiceConnection 지원 브라우저 열기
-            // ex) Chrome, 삼성 인터넷, FireFox, 웨일 등
+            val sharerUrl = if (templateId != null) WebSharerClient.instance.makeCustomUrl(
+                templateId.toLong(),
+                templateArgs = templateArgs?.toStringMap(),
+                serverCallbackArgs = serverCallbackArgs?.toStringMap()
+            ) else if (defaultTemplate != null) WebSharerClient.instance.makeDefaultUrl(
+                defaultTemplate, serverCallbackArgs = serverCallbackArgs?.toStringMap()
+            ) else run {
+                promise.rejectWith("one of templateId or template shouldn't be null")
+                return
+            }
             try {
                 KakaoCustomTabsClient.openWithDefault(context, sharerUrl)
                 promise.resolve(42)
                 return
-            } catch (e: UnsupportedOperationException) { // CustomTabsServiceConnection 지원 브라우저가 없을 때 예외처리
+            } catch (_: UnsupportedOperationException) {
             }
-
-            // 2. CustomTabsServiceConnection 미지원 브라우저 열기
-            // ex) 다음, 네이버 등
             try {
                 KakaoCustomTabsClient.open(context, sharerUrl)
                 promise.resolve(42)
                 return
-            } catch (e: ActivityNotFoundException) { // 디바이스에 설치된 인터넷 브라우저가 없을 때 예외처리
+            } catch (_: ActivityNotFoundException) {
             }
 
             promise.rejectWith("web url open failed $sharerUrl")
