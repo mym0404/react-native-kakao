@@ -5,6 +5,7 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.bridge.ReadableType
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
@@ -58,6 +59,16 @@ fun Promise.rejectWith(s: String) {
 
 inline fun <reified T> ReadableArray.filterIsInstance(): List<T> {
   return toArrayList().filterIsInstance<T>()
+}
+
+fun ReadableArray.filterIsReadableMap(): List<ReadableMap> {
+  val ret = mutableListOf<ReadableMap>()
+  for (i in 0 until this.size()) {
+    if (getType(i) == ReadableType.Map) {
+      ret.add(getMap(i))
+    }
+  }
+  return ret
 }
 
 fun WritableArray.pushStringList(list: List<String>) = list.forEach(::pushString)

@@ -16,7 +16,7 @@ import com.kakao.sdk.template.model.ListTemplate
 import com.kakao.sdk.template.model.LocationTemplate
 import com.kakao.sdk.template.model.Social
 import com.kakao.sdk.template.model.TextTemplate
-import net.mjstudio.rnkakao.core.util.filterIsInstance
+import net.mjstudio.rnkakao.core.util.filterIsReadableMap
 import net.mjstudio.rnkakao.core.util.getIntElseNull
 import net.mjstudio.rnkakao.core.util.toStringMap
 
@@ -52,7 +52,7 @@ object RNCKakaoShareTemplates {
       titleImageText = getString("titleImageText"),
       titleImageUrl = getString("titleImageUrl"),
       titleImageCategory = getString("titleImageCategory"),
-      items = getArray("items")?.filterIsInstance<ReadableMap>()?.map { it.toItemInfo() },
+      items = getArray("items")?.filterIsReadableMap()?.map { it.toItemInfo() },
       sum = getString("sum"),
       sumOp = getString("sumOp"),
     )
@@ -88,20 +88,21 @@ object RNCKakaoShareTemplates {
       content = map.getMap("content")!!.toContent(),
       itemContent = map.getMap("itemContent")?.toItemContent(),
       social = map.getMap("social")?.toSocial(),
-      buttons = map.getArray("buttons")?.filterIsInstance<ReadableMap>()?.map { it.toButton() },
+      buttons = map.getArray("buttons")?.filterIsReadableMap()?.map { it.toButton() },
       buttonTitle = map.getString("buttonTitle"),
     )
 
-  fun createListTemplate(map: ReadableMap) =
-    ListTemplate(
+  fun createListTemplate(map: ReadableMap): ListTemplate {
+    return ListTemplate(
       headerTitle = map.getString("headerTitle") ?: "",
       headerLink = map.getMap("headerLink")?.toLink() ?: Link(),
       contents =
-        map.getArray("contents")?.filterIsInstance<ReadableMap>()?.map { it.toContent() }
+        map.getArray("contents")?.filterIsReadableMap()?.map { it.toContent() }
           ?: listOf(),
-      buttons = map.getArray("buttons")?.filterIsInstance<ReadableMap>()?.map { it.toButton() },
+      buttons = map.getArray("buttons")?.filterIsReadableMap()?.map { it.toButton() },
       buttonTitle = map.getString("buttonTitle"),
     )
+  }
 
   fun createLocationTemplate(map: ReadableMap) =
     LocationTemplate(
@@ -109,7 +110,7 @@ object RNCKakaoShareTemplates {
       content = map.getMap("content")!!.toContent(),
       addressTitle = map.getString("addressTitle"),
       social = map.getMap("social")?.toSocial(),
-      buttons = map.getArray("buttons")?.filterIsInstance<ReadableMap>()?.map { it.toButton() },
+      buttons = map.getArray("buttons")?.filterIsReadableMap()?.map { it.toButton() },
       buttonTitle = map.getString("buttonTitle"),
     )
 
@@ -117,7 +118,7 @@ object RNCKakaoShareTemplates {
     CommerceTemplate(
       content = map.getMap("content")!!.toContent(),
       commerce = map.getMap("commerce")!!.toCommerce(),
-      buttons = map.getArray("buttons")?.filterIsInstance<ReadableMap>()?.map { it.toButton() },
+      buttons = map.getArray("buttons")?.filterIsReadableMap()?.map { it.toButton() },
       buttonTitle = map.getString("buttonTitle"),
     )
 
@@ -125,7 +126,7 @@ object RNCKakaoShareTemplates {
     TextTemplate(
       text = map.getString("text") ?: "",
       link = map.getMap("link")?.toLink() ?: Link(),
-      buttons = map.getArray("buttons")?.filterIsInstance<ReadableMap>()?.map { it.toButton() },
+      buttons = map.getArray("buttons")?.filterIsReadableMap()?.map { it.toButton() },
       buttonTitle = map.getString("buttonTitle"),
     )
 
@@ -134,6 +135,6 @@ object RNCKakaoShareTemplates {
       id = map.getString("id")!!,
       idType = if (map.getString("id") == "event") EVENT else CALENDAR,
       content = map.getMap("content")!!.toContent(),
-      buttons = map.getArray("buttons")?.filterIsInstance<ReadableMap>()?.map { it.toButton() },
+      buttons = map.getArray("buttons")?.filterIsReadableMap()?.map { it.toButton() },
     )
 }

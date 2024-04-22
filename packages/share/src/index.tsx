@@ -14,7 +14,6 @@ import type {
   KakaoTemplateLink,
   KakaoTemplateSocial,
   KakaoTextTemplate,
-  NativeKakaoCalendarTemplate,
   Spec,
 } from './spec/NativeKakaoShare';
 
@@ -31,7 +30,6 @@ export type {
   KakaoListTemplate,
   KakaoFeedTemplate,
   KakaoCommerceTemplate,
-  NativeKakaoCalendarTemplate,
 };
 
 const LINKING_ERROR =

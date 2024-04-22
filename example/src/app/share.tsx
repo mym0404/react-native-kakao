@@ -14,7 +14,11 @@ import {
 import { Btn } from '../component/Btn';
 import { StyledScrollView } from '../component/StyledScrollView';
 
-const link: KakaoTemplateLink = { webUrl: 'https://mjstudio.net' };
+const link: KakaoTemplateLink = {
+  webUrl: 'https://mjstudio.net',
+  mobileWebUrl: 'https://mjstudio.net',
+};
+
 const social: KakaoTemplateSocial = {
   commentCount: 999,
   likeCount: 999,
@@ -26,6 +30,15 @@ const social: KakaoTemplateSocial = {
 const content: KakaoTemplateContent = {
   imageUrl: 'https://picsum.photos/256/256',
   title: 'React Native Kakao',
+  link: link,
+  description: 'React Native Kakao is all in one solution of Kakao SDK in React Native',
+  imageHeight: 256,
+  imageWidth: 256,
+};
+
+const content2: KakaoTemplateContent = {
+  imageUrl: 'https://picsum.photos/256/256',
+  title: 'React Native Kakao2',
   link: link,
   description: 'React Native Kakao is all in one solution of Kakao SDK in React Native',
   imageHeight: 256,
@@ -73,7 +86,7 @@ export default function Page() {
         onPress={() => {
           shareListTemplate({
             template: {
-              contents: [content, content],
+              contents: [content, content2],
               headerLink: link,
               headerTitle: 'Header',
               buttons: [

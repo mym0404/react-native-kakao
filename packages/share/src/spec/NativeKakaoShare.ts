@@ -1,6 +1,6 @@
 import type { TurboModule } from 'react-native';
 import { TurboModuleRegistry } from 'react-native';
-import type { Int32 } from 'react-native/Libraries/Types/CodegenTypes';
+import type { Int32, UnsafeObject } from 'react-native/Libraries/Types/CodegenTypes';
 
 /**
  * 메시지에서 콘텐츠 영역이나 버튼 클릭 시에 이동되는 링크 정보 오브젝트.
@@ -216,13 +216,6 @@ export interface KakaoCalendarTemplate {
   buttons?: KakaoTemplateButton[];
 }
 
-export interface NativeKakaoCalendarTemplate {
-  id: string;
-  idType: string;
-  content: KakaoTemplateContent;
-  buttons?: KakaoTemplateButton[];
-}
-
 export interface Spec extends TurboModule {
   shareCustom(
     templateId: Int32,
@@ -232,37 +225,37 @@ export interface Spec extends TurboModule {
   ): Promise<void>;
 
   shareFeedTemplate(
-    value: KakaoFeedTemplate,
+    value: UnsafeObject,
     useWebBrowserIfKakaoTalkNotAvailable: boolean,
     serverCallbackArgs: Readonly<{ [key: string]: string }>,
   ): Promise<void>;
 
   shareListTemplate(
-    value: KakaoListTemplate,
+    value: UnsafeObject,
     useWebBrowserIfKakaoTalkNotAvailable: boolean,
     serverCallbackArgs: Readonly<{ [key: string]: string }>,
   ): Promise<void>;
 
   shareLocationTemplate(
-    value: KakaoLocationTemplate,
+    value: UnsafeObject,
     useWebBrowserIfKakaoTalkNotAvailable: boolean,
     serverCallbackArgs: Readonly<{ [key: string]: string }>,
   ): Promise<void>;
 
   shareCommerceTemplate(
-    value: KakaoCommerceTemplate,
+    value: UnsafeObject,
     useWebBrowserIfKakaoTalkNotAvailable: boolean,
     serverCallbackArgs: Readonly<{ [key: string]: string }>,
   ): Promise<void>;
 
   shareTextTemplate(
-    value: KakaoTextTemplate,
+    value: UnsafeObject,
     useWebBrowserIfKakaoTalkNotAvailable: boolean,
     serverCallbackArgs: Readonly<{ [key: string]: string }>,
   ): Promise<void>;
 
   shareCalendarTemplate(
-    value: Readonly<NativeKakaoCalendarTemplate>,
+    value: UnsafeObject,
     useWebBrowserIfKakaoTalkNotAvailable: boolean,
     serverCallbackArgs: Readonly<{ [key: string]: string }>,
   ): Promise<void>;
