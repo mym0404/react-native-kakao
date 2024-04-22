@@ -2,6 +2,7 @@
 
 if which ktlint >/dev/null; then
   for dir in ./packages/*/android; do
+              echo "🌊 ktlint $dir"
     ktlint --color --format --relative --editorconfig=packages/core/android/.editorconfig $dir
   done
 else
