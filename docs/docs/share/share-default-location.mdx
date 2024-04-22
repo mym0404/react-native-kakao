@@ -13,4 +13,46 @@ sidebar_position: 8
 
 ![](https://raw.githubusercontent.com/mym0404/image-archive/master/202404220338261.webp)
 
-## WIP
+## Usage
+
+위치 템플릿은 다음과 같은 타입을 가집니다.
+
+```ts
+/**
+ * 주소를 이용하여 특정 위치를 공유할 수 있는 메시지 템플릿.
+ *
+ * @property address 공유할 위치의 주소. 예) 경기 성남시 분당구 판교역로 235
+ * @property addressTitle 카카오톡 내의 지도 뷰에서 사용되는 타이틀. 예) 카카오판교오피스
+ * @property content 위치에 대해 설명하는 컨텐츠 정보
+ * @property social 댓글수, 좋아요수 등, 컨텐츠에 대한 소셜 정보
+ * @property buttons 버튼 목록. 기본 버튼의 타이틀 외에 링크도 변경하고 싶을 때 설정. (최대 1개, 오른쪽 위치 보기 버튼은 고정)
+ * @property buttonTitle 기본 버튼 타이틀(자세히 보기)을 변경하고 싶을 때 설정. 이 값을 사용하면 클릭 시 이동할 링크는 content에 입력된 값이 사용됨.
+ */
+export interface KakaoLocationTemplate {
+  address: string;
+  content: KakaoTemplateContent;
+  addressTitle?: string;
+  social?: KakaoTemplateSocial;
+  buttons?: KakaoTemplateButton[];
+  buttonTitle?: string;
+}
+```
+
+`shareLocationTemplate` 함수로 사용할 수 있습니다.
+
+```tsx
+export function shareLocationTemplate(params: {
+  template: KakaoLocationTemplate;
+  useWebBrowserIfKakaoTalkNotAvailable?: boolean;
+  serverCallbackArgs?: Record<string, string>;
+})
+```
+
+- `useWebBrowserIfKakaoTalkNotAvailable`: 카카오톡이 사용 가능하지 않을 때 웹 브라우저를 이용해 공유를 할 것인지 여부입니다. 기본값은 true입니다.
+- `serverCallbackArgs`: 서버 콜백 인자들입니다. 모두 문자열만 값으로 전달되어야 합니다.
+
+:::info
+자세한 컴포넌트들의 타입은 [컴포넌트 타입들](/docs/share/component-types)을 참고해주세요.
+
+사용에 문제가 생긴다면 [Troubleshooting](/docs/share/troubleshooting)을 참고해주세요
+:::

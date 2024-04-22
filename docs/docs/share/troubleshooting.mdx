@@ -1,0 +1,39 @@
+---
+sidebar_position: 999
+---
+
+# Troubleshooting & FAQ
+
+[공식 문서](https://developers.kakao.com/docs/latest/ko/message/common)
+
+## 앱이 비정상종료돼요
+
+메세지 타입의 인자를 확인해주세요.
+
+`templateArgs`나 `serverCallbackArgs`는 **꼭 문자열 키와 문자열 값을 객체로** 전달해야 합니다.
+
+## 카카오톡, 브라우저가 실행은 되지만 4002에러 등 메세지를 보낼 수 없어요
+
+메세지 타입의 인자들에 문제가 있는 경우입니다.
+
+TypeScript로 제공되는 인자들이 제대로 지켜지는지 확인하고 빈 배열 등을 전달한 것이 없는지 확인해주세요.
+
+또한 템플릿 아이디나 캘린더 템플릿의 아이디는 카카오 콘솔에서 미리 설정되어 있어야 합니다.
+
+## 링크 실행 우선순위에 대하여
+
+android, ios execution params 가 가장 큰 우선순위를 가지며 그 이후 `mobileWebUrl`, `webUrl`가 존재한다면 실행됩니다.
+
+## 카카오톡 메세지 API는 지원하지 않나요?
+
+아직 카카오톡 공유 API만 지원하고 있습니다.
+
+## 이미지가 제대로 보이지 않아요
+
+모든 이미지는 최소 200px x 200px 이상이며 2MB 이하여야 합니다.
+
+## 버튼을 누르면 내 웹페이지로 이동하지 않아요
+
+카카오 콘솔에서 웹 플랫폼을 등록하시고 자신의 웹사이트의 URL을 미리 등록해두어야 합니다.
+
+![](https://raw.githubusercontent.com/mym0404/image-archive/master/202404230155140.webp)
