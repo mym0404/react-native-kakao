@@ -1,5 +1,8 @@
 echo '🔥 pre-commit hook running...'
+echo '⚒️ eslint .'
+echo '🧊 prettier .'
 yarn lint
+echo '🐋 typescript .'
 yarn typecheck
 #yarn build:expo-config-plugin
 #git add expo-config-plugin
