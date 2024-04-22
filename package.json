@@ -21,10 +21,12 @@
     "example": "yarn workspace kakao-example",
     "test": "jest",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint \"**/*.{js,ts,tsx}\" && yarn lint:ios",
+    "lint": "eslint \"**/*.{js,ts,tsx}\" && yarn lint:ios && yarn lint:android",
     "format:ios": "./script/clang-format.sh && ./script/swift-format.sh",
+    "format:android": "./script/ktlint-format.sh",
     "format": "yarn format:ios",
     "lint:ios": "./script/clang-lint.sh && ./script/swift-lint.sh",
+    "lint:android": "./script/ktlint-lint.sh",
     "t": "yarn lint && yarn typecheck",
     "clean": "lerna run clean",
     "prepare": "husky",
@@ -32,7 +34,7 @@
     "release": "yarn t && yarn build && lerna publish --force-publish",
     "android": "yarn example android",
     "ios": "yarn example ios",
-    "dev": "yarn example start",
+    "dev": "yarn watchman-refresh && yarn example start",
     "gen:android": "yarn example prebuild:android",
     "gen:android:clean": "yarn example prebuild:android:clean",
     "gen:ios": "yarn example prebuild:ios",
@@ -48,7 +50,8 @@
     "new:clean": "script/arch-convert.sh true false true",
     "codegen:android": "cd example/android && ./gradlew generateCodegenArtifactsFromSchema",
     "codegen:ios": "node node_modules/react-native/scripts/generate-codegen-artifacts.js --path example/ --outputPath example/ios",
-    "codegen": "yarn codegen:android && yarn codegen:ios"
+    "codegen": "yarn codegen:android && yarn codegen:ios",
+    "watchman-refresh": "watchman watch-del $(pwd) ; watchman watch-project $(pwd)"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^17.0.2",

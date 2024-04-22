@@ -6,13 +6,13 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReadableArray
 
 abstract class KakaoUserSpec internal constructor(context: ReactApplicationContext) :
-    ReactContextBaseJavaModule(context) {
+  ReactContextBaseJavaModule(context) {
     abstract fun login(
-        serviceTerms: ReadableArray?,
-        prompts: ReadableArray?,
-        useKakaoAccountLogin: Boolean,
-        scopes: ReadableArray?,
-        promise: Promise
+      serviceTerms: ReadableArray?,
+      prompts: ReadableArray?,
+      useKakaoAccountLogin: Boolean,
+      scopes: ReadableArray?,
+      promise: Promise,
     )
 
     abstract fun isKakaoTalkLoginAvailable(promise: Promise)
@@ -23,13 +23,19 @@ abstract class KakaoUserSpec internal constructor(context: ReactApplicationConte
 
     abstract fun isLogined(promise: Promise)
 
-    abstract fun scopes(scopes: ReadableArray?, promise: Promise)
+    abstract fun scopes(
+      scopes: ReadableArray?,
+      promise: Promise,
+    )
 
-    abstract fun revokeScopes(scopes: ReadableArray, promise: Promise)
+    abstract fun revokeScopes(
+      scopes: ReadableArray,
+      promise: Promise,
+    )
 
     abstract fun serviceTerms(promise: Promise)
 
     abstract fun shippingAddresses(promise: Promise)
 
     abstract fun me(promise: Promise)
-}
+  }

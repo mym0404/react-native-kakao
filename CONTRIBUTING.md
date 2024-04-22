@@ -16,9 +16,10 @@ The `package.json` file contains various scripts for common tasks:
 
 - `yarn t`: easy validation for all lint, tsc, test
 - `yarn typecheck`: type-check files with TypeScript
-- `yarn lint`: lint files with ESLint, ClangFormat, SwiftFormat
+- `yarn lint`: lint files with ESLint, ClangFormat, SwiftFormat, Ktlint
 - `yarn test`: run unit tests with Jest
 - `yarn format:ios`: run formatter with ClangFormat, SwiftFormat for iOS codes
+- `yarn format:android`: run formatter with Ktlint for Android codes
 
 **Example App Build, Manipluations**
 
@@ -131,7 +132,7 @@ Our pre-commit hooks verify that your commit message matches this format when co
 ### Linting and tests
 
 [ESLint](https://eslint.org/), [Prettier](https://prettier.io/), [TypeScript](https://www.typescriptlang.org/),
-[ClangFormat](https://clang.llvm.org/docs/ClangFormat.html), [SwiftFormat](https://github.com/apple/swift-format)
+[ClangFormat](https://clang.llvm.org/docs/ClangFormat.html), [SwiftFormat](https://github.com/apple/swift-format), [Ktlint](https://pinterest.github.io/ktlint/latest/install/setup/)
 
 We use [TypeScript](https://www.typescriptlang.org/) for type
 checking, [ESLint](https://eslint.org/) with [Prettier](https://prettier.io/) for linting and
@@ -141,14 +142,15 @@ In iOS project, we
 use [ClangFormat](https://clang.llvm.org/docs/ClangFormat.html), [SwiftFormat](https://github.com/apple/swift-format)
 for formatting and linting.
 
-In Android project, we'll add format, linter for Kotlin. But at now, just keep the readability of
-Kotlin code.
+In Android project, we use [Ktlint](https://pinterest.github.io/ktlint/latest/install/setup/) for
+formatting and linting.
 
 Our pre-commit hooks verify that the linter and tests pass when committing.
 
 ### Documentation
 
-[Our documentation](https://mj-studio-library.github.io/react-native-kakao/) is built with [Docusaurus](https://docusaurus.io/) and is just maintained with
+[Our documentation](https://mj-studio-library.github.io/react-native-kakao/) is built
+with [Docusaurus](https://docusaurus.io/) and is just maintained with
 **Korean**.
 
 If your API changes require changes to the documentation, you should include those changes in the
