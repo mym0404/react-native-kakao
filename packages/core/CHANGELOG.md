@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.0](https://github.com/mj-studio-library/react-native-kakao/compare/v1.1.0...v1.2.0) (2024-04-23)
+
+### Features
+
+* **ios:** bump packages 2.14.0 -> 2.22.0 ([17b30a1](https://github.com/mj-studio-library/react-native-kakao/commit/17b30a14c4bc14d8ebd8ee3d056917347e4fba63))
+
 ## [1.1.0](https://github.com/mj-studio-library/react-native-kakao/compare/v1.0.4...v1.1.0) (2024-04-22)
 
 ### Features

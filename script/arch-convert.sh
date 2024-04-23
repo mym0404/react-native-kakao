@@ -28,8 +28,8 @@ sed -i '' -e "s/\"newArchEnabled\": true/\"newArchEnabled\": ${NEW_VALUE}/g" $JS
 sed -i '' -e "s/\"newArchEnabled\": false/\"newArchEnabled\": ${NEW_VALUE}/g" $JSON
 
 if [[ $CLEAN == 'true' ]]; then
-yes | yarn gen:android:clean
-yes | yarn gen:ios:clean
+yarn gen:android:clean
+yarn gen:ios:clean
 else
 yarn gen:android
 yarn gen:ios

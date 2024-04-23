@@ -112,3 +112,5 @@ example/android/
 example/ios/
 !packages/*/android/
 !packages/*/ios/
+
+example/.watchman-cookie-*
