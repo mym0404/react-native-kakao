@@ -110,9 +110,10 @@
   },
   "sdkVersions": {
     "ios": {
-      "core": "2.14.0",
-      "share": "2.14.0",
-      "user": "2.14.0"
+      "core": "2.22.0",
+      "share": "2.22.0",
+      "user": "2.22.0",
+      "navi": "2.22.0"
     },
     "android": {
       "minSdk": 21,
@@ -123,7 +124,8 @@
       "androidGradlePlugin": "7.2.1",
       "core": "2.20.1",
       "share": "2.20.1",
-      "user": "2.20.1"
+      "user": "2.20.1",
+      "navi": "2.20.1"
     }
   },
   "gitHead": "57203ed1725b209e814da7cfbb71b36f52d24210"
