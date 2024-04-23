@@ -32,7 +32,7 @@
     "clean": "lerna run clean",
     "prepare": "husky",
     "build": "lerna run prepack",
-    "release": "yarn t && yarn build && lerna --force-publish publish",
+    "release": "yarn t && yarn build && lerna publish --force-publish",
     "android": "yarn example android",
     "ios": "yarn example ios",
     "dev": "yarn watchman-refresh && yarn example start",
