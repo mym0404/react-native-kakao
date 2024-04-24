@@ -25,3 +25,7 @@ runs:
       if: steps.yarn-cache.outputs.cache-hit != 'true'
       run: yarn install --immutable
       shell: bash
+
+#    - name: Generate Example Project
+#      shell: bash
+#      run: yarn gen:android && yarn gen:ios

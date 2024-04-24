@@ -25,9 +25,6 @@ jobs:
         shell: bash
         run: brew install ktlint
 
-#      - name: Generate Example Project
-#        run: yarn new
-
       - name: Lint files
         run: yarn lint
 
