@@ -53,10 +53,10 @@
               "https://devrepo.kakao.com/nexus/content/groups/public/"
             ],
             "minSdkVerson": 26,
-            "newArchEnabled": false
+            "newArchEnabled": true
           },
           "ios": {
-            "newArchEnabled": false
+            "newArchEnabled": true
           }
         }
       ],

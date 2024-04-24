@@ -50,7 +50,10 @@ export type KakaoScopeInfo = {
 };
 export type KakaoServiceTerms = {
   tag: string;
-  agreedAt: number;
+  agreedAt?: number;
+  agreed: boolean;
+  required: boolean;
+  revocable: boolean;
 };
 export type KakaoAppServiceTerms = {
   tag: string;
@@ -159,10 +162,7 @@ export function revokeScopes(scopes: string[]): Promise<void> {
   return Native.revokeScopes(scopes);
 }
 
-export function serviceTerms(): Promise<{
-  allowedServiceTerms?: KakaoServiceTerms[];
-  appServiceTerms?: KakaoAppServiceTerms[];
-}> {
+export function serviceTerms(): Promise<KakaoServiceTerms[]> {
   return Native.serviceTerms();
 }
 

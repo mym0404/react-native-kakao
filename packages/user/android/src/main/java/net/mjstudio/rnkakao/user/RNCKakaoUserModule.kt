@@ -238,6 +238,9 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
                         argMap().apply {
                           putString("tag", term.tag)
                           putDoubleIfNotNull("agreedAt", term.agreedAt?.time?.toDouble())
+                          putBoolean("agreed", term.agreed)
+                          putBoolean("required", term.required)
+                          putBoolean("revocable", term.revocable)
                         },
                       )
                     }
