@@ -36,6 +36,7 @@ export default function Page() {
               y: 35.5449848249,
               name: 'Gangnam',
             },
+            openWebInstallUrlIfNaviAppNotAvailable: false,
           }).then(console.log);
         }}
       />

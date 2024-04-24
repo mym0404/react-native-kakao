@@ -53,11 +53,6 @@ import RNCKakaoCore
   }
 }
 
-private func emptyArrayToNil<T>(_ arr: [T]?) -> [T]? {
-  if arr == nil || arr?.isEmpty == true { return nil }
-  return arr
-}
-
 private func createOption(options: [String: Any]?) -> NaviOption? {
   guard let options else { return nil }
 

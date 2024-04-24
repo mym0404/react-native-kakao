@@ -47,7 +47,7 @@ def supportsNamespace() {
 
 android {
     if (supportsNamespace()) {
-        namespace "net.mjstudio.rnkakao.user"
+        namespace "net.mjstudio.rnkakao.navi"
 
         sourceSets {
             main {
@@ -112,13 +112,13 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:${Versions.kotlin}"
 
     api coreProject
-    implementation "com.kakao.sdk:v2-user:${Versions.user}"
+    implementation "com.kakao.sdk:v2-navi:${Versions.navi}"
 }
 
 if (isNewArchitectureEnabled()) {
     react {
         jsRootDir = file("../src/")
-        libraryName = "RNCKakaoUser"
-        codegenJavaPackageName = "net.mjstudio.rnkakao.user"
+        libraryName = "RNCKakaoNavi"
+        codegenJavaPackageName = "net.mjstudio.rnkakao.navi"
     }
 }

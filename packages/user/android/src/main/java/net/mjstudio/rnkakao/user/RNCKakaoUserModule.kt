@@ -41,11 +41,11 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
       scopes: ReadableArray?,
       promise: Promise,
     ) = onMain {
-      val context = currentActivity
-      if (context == null) {
-        promise.rejectWith(ActivityNotFoundException())
-        return@onMain
-      }
+      val context =
+        currentActivity ?: run {
+          promise.rejectWith(ActivityNotFoundException())
+          return@onMain
+        }
       val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
         if (error != null) {
           promise.rejectWith(error)
