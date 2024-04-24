@@ -66,7 +66,7 @@ please select the package link from below.
 - [Issues](https://github.com/mym0404/react-native-kakao/issues)
 - [PRs](https://github.com/mym0404/react-native-kakao/pulls)
 - [Documentation](https://rnkakao.dev)
-- [Code of Conduct](https://github.com/mj-studio-library/react-native-kakao/blob/main/CODE_OF_CONDUCT.md)
+- [Code of Conduct](https://github.com/mym0404/react-native-kakao/blob/main/CODE_OF_CONDUCT.md)
 
 ## License
 
