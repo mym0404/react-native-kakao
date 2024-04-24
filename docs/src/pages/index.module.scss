@@ -8,8 +8,17 @@
   text-align: center;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(to bottom, #FFFFFF, #DFE7FC);
-  color: black;
+
+  background: linear-gradient(to bottom, #111, #242424, #111);
+  color: white;
+}
+
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 }
 
 @media screen and (max-width: 996px) {
@@ -38,7 +47,8 @@
 }
 
 .logo {
-  animation: 20s rotate-loop linear infinite;
+  animation: 30s rotate-loop linear infinite;
   width: 256px;
   height: 256px;
+  filter: drop-shadow(2px 2px 12px white);
 }

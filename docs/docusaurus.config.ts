@@ -58,6 +58,9 @@ const config: Config = {
         tagName: '',
       },
     ],
+    colorMode: {
+      defaultMode: 'dark',
+    },
     image: coverImage,
     docs: {
       sidebar: {
@@ -66,6 +69,7 @@ const config: Config = {
     },
     navbar: {
       title: title,
+      hideOnScroll: false,
       logo: {
         alt: 'My Site Logo',
         src: 'img/logo.svg',
@@ -85,7 +89,6 @@ const config: Config = {
       ],
     },
     footer: {
-      style: 'dark',
       links: [
         {
           title: 'Documentation',
@@ -109,8 +112,8 @@ const config: Config = {
       copyright: `Copyright © ${new Date().getFullYear()} MJ Studio.`,
     },
     prism: {
-      theme: prismThemes.oceanicNext,
-      darkTheme: prismThemes.oceanicNext,
+      theme: prismThemes.nightOwl,
+      darkTheme: prismThemes.vsDark,
     },
   } satisfies Preset.ThemeConfig,
 

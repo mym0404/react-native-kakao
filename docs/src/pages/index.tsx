@@ -10,11 +10,14 @@ import styles from './index.module.scss';
 
 function HomepageHeader() {
   const { siteConfig } = useDocusaurusContext();
-  const Svg = require('@site/static/img/logo.svg').default;
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
-      <div className="container">
-        <Svg className={styles.logo} />
+      <div className={styles.container}>
+        <img
+          alt={'logo'}
+          src={require('@site/static/img/logo.png').default}
+          className={styles.logo}
+        />
         <Heading as="h1" className="hero__title">
           {siteConfig.title}
         </Heading>
