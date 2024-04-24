@@ -25,11 +25,3 @@ runs:
       if: steps.yarn-cache.outputs.cache-hit != 'true'
       run: yarn install --immutable
       shell: bash
-
-    - name: Install ClangFormat
-      shell: bash
-      run: brew install clang-format
-
-    - name: Install Ktlint
-      shell: bash
-      run: brew install ktlint

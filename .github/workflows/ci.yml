@@ -17,6 +17,14 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
+      - name: Install ClangFormat
+        shell: bash
+        run: brew install clang-format
+
+      - name: Install Ktlint
+        shell: bash
+        run: brew install ktlint
+
       - name: Generate Example Project
         run: yarn new
 
