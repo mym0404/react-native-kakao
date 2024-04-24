@@ -84,47 +84,47 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-- **user:** ios impl ([f6c0232](https://github.com/mj-studio-library/react-native-kakao/commit/f6c0232da9c60c589b3fdca3648dc56a2e960271))
+- **user:** ios impl ([f6c0232](https://github.com/mym0404/react-native-kakao/commit/f6c0232da9c60c589b3fdca3648dc56a2e960271))
 
 ### Bug Fixes
 
-- **android:** fix spec old arch type ([e18d9a1](https://github.com/mj-studio-library/react-native-kakao/commit/e18d9a15fd7c59f1265b443955a3f2ecb55aa402))
+- **android:** fix spec old arch type ([e18d9a1](https://github.com/mym0404/react-native-kakao/commit/e18d9a15fd7c59f1265b443955a3f2ecb55aa402))
 
 ## 0.4.0 (2024-04-20)
 
 ### Features
 
-- **android:** restore share android dir ([0d710f3](https://github.com/mj-studio-library/react-native-kakao/commit/0d710f309b12dcb51def08549996d7aa464d9e02))
-- **core:** initializeSdk API ([0b39b37](https://github.com/mj-studio-library/react-native-kakao/commit/0b39b3738a252e844322634217875a527c402e5f))
-- **expo:** config expo plugin ([90e1da9](https://github.com/mj-studio-library/react-native-kakao/commit/90e1da9ae9506cc7e727851e8af1fd8259627ea0))
-- **ios:** setup ios ([8f29622](https://github.com/mj-studio-library/react-native-kakao/commit/8f2962235ba8c10678293c8787e52a0557aefe5c))
+- **android:** restore share android dir ([0d710f3](https://github.com/mym0404/react-native-kakao/commit/0d710f309b12dcb51def08549996d7aa464d9e02))
+- **core:** initializeSdk API ([0b39b37](https://github.com/mym0404/react-native-kakao/commit/0b39b3738a252e844322634217875a527c402e5f))
+- **expo:** config expo plugin ([90e1da9](https://github.com/mym0404/react-native-kakao/commit/90e1da9ae9506cc7e727851e8af1fd8259627ea0))
+- **ios:** setup ios ([8f29622](https://github.com/mym0404/react-native-kakao/commit/8f2962235ba8c10678293c8787e52a0557aefe5c))
 
 ### Documentation
 
-- update readme ([cbb6f9c](https://github.com/mj-studio-library/react-native-kakao/commit/cbb6f9c2b33b01bcc4dc2e741580784352c6fb95))
-- update readme ([4422123](https://github.com/mj-studio-library/react-native-kakao/commit/442212375983f90b077631572b90d27c0e5b3136))
+- update readme ([cbb6f9c](https://github.com/mym0404/react-native-kakao/commit/cbb6f9c2b33b01bcc4dc2e741580784352c6fb95))
+- update readme ([4422123](https://github.com/mym0404/react-native-kakao/commit/442212375983f90b077631572b90d27c0e5b3136))
 
 ### Miscellaneous Chores
 
-- changelog format ([c4891c0](https://github.com/mj-studio-library/react-native-kakao/commit/c4891c0c192f296de7095a3cffeff25a4568a0ec))
-- publish ([541b5b5](https://github.com/mj-studio-library/react-native-kakao/commit/541b5b5a7387de4e2ee01173688680f920aed83d))
-- publish ([36b16e0](https://github.com/mj-studio-library/react-native-kakao/commit/36b16e0ebbd4b107e6f91b230bf75f9bb1ac3637))
-- publish ([83de7d0](https://github.com/mj-studio-library/react-native-kakao/commit/83de7d0f888da6767c066fd3a5cfcc01a4e5827f))
+- changelog format ([c4891c0](https://github.com/mym0404/react-native-kakao/commit/c4891c0c192f296de7095a3cffeff25a4568a0ec))
+- publish ([541b5b5](https://github.com/mym0404/react-native-kakao/commit/541b5b5a7387de4e2ee01173688680f920aed83d))
+- publish ([36b16e0](https://github.com/mym0404/react-native-kakao/commit/36b16e0ebbd4b107e6f91b230bf75f9bb1ac3637))
+- publish ([83de7d0](https://github.com/mym0404/react-native-kakao/commit/83de7d0f888da6767c066fd3a5cfcc01a4e5827f))
 
-## [0.3.0](https://github.com/mj-studio-library/react-native-kakao/compare/@react-native-kakao/share@0.2.0...@react-native-kakao/share@0.3.0) (2024-04-20)
+## [0.3.0](https://github.com/mym0404/react-native-kakao/compare/@react-native-kakao/share@0.2.0...@react-native-kakao/share@0.3.0) (2024-04-20)
 
 ### Features
 
-- **core:** initializeSdk API ([0b39b37](https://github.com/mj-studio-library/react-native-kakao/commit/0b39b3738a252e844322634217875a527c402e5f))
+- **core:** initializeSdk API ([0b39b37](https://github.com/mym0404/react-native-kakao/commit/0b39b3738a252e844322634217875a527c402e5f))
 
 ### Miscellaneous Chores
 
-- changelog format ([c4891c0](https://github.com/mj-studio-library/react-native-kakao/commit/c4891c0c192f296de7095a3cffeff25a4568a0ec))
+- changelog format ([c4891c0](https://github.com/mym0404/react-native-kakao/commit/c4891c0c192f296de7095a3cffeff25a4568a0ec))
 
 # 0.2.0 (2024-04-20)
 
 ### Features
 
-- **android:** restore share android dir ([0d710f3](https://github.com/mj-studio-library/react-native-kakao/commit/0d710f309b12dcb51def08549996d7aa464d9e02))
-- **expo:** config expo plugin ([90e1da9](https://github.com/mj-studio-library/react-native-kakao/commit/90e1da9ae9506cc7e727851e8af1fd8259627ea0))
-- **ios:** setup ios ([8f29622](https://github.com/mj-studio-library/react-native-kakao/commit/8f2962235ba8c10678293c8787e52a0557aefe5c))
+- **android:** restore share android dir ([0d710f3](https://github.com/mym0404/react-native-kakao/commit/0d710f309b12dcb51def08549996d7aa464d9e02))
+- **expo:** config expo plugin ([90e1da9](https://github.com/mym0404/react-native-kakao/commit/90e1da9ae9506cc7e727851e8af1fd8259627ea0))
+- **ios:** setup ios ([8f29622](https://github.com/mym0404/react-native-kakao/commit/8f2962235ba8c10678293c8787e52a0557aefe5c))
