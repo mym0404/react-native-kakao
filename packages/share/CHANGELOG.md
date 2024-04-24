@@ -3,84 +3,84 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [1.2.0](https://github.com/mj-studio-library/react-native-kakao/compare/v1.1.0...v1.2.0) (2024-04-23)
+## [1.2.0](https://github.com/mym0404/react-native-kakao/compare/v1.1.0...v1.2.0) (2024-04-23)
 
 **Note:** Version bump only for package @react-native-kakao/share
 
-## [1.1.0](https://github.com/mj-studio-library/react-native-kakao/compare/v1.0.4...v1.1.0) (2024-04-22)
+## [1.1.0](https://github.com/mym0404/react-native-kakao/compare/v1.0.4...v1.1.0) (2024-04-22)
 
 ### Features
 
-* **share:** android - default templates + ktlint ([873f458](https://github.com/mj-studio-library/react-native-kakao/commit/873f458e5db1f920163729d7cbd21f4d23bbc14b))
-* **share:** android - support old arch ([1e2bbe5](https://github.com/mj-studio-library/react-native-kakao/commit/1e2bbe531f410d25763b08bea57d9eae40894adb))
+* **share:** android - default templates + ktlint ([873f458](https://github.com/mym0404/react-native-kakao/commit/873f458e5db1f920163729d7cbd21f4d23bbc14b))
+* **share:** android - support old arch ([1e2bbe5](https://github.com/mym0404/react-native-kakao/commit/1e2bbe531f410d25763b08bea57d9eae40894adb))
 
 ### Bug Fixes
 
-* **share:** android wrong type casting ([babf98f](https://github.com/mj-studio-library/react-native-kakao/commit/babf98f9330726a0ed08285aa1544aa9849c34a9))
+* **share:** android wrong type casting ([babf98f](https://github.com/mym0404/react-native-kakao/commit/babf98f9330726a0ed08285aa1544aa9849c34a9))
 
-## [1.0.4](https://github.com/mj-studio-library/react-native-kakao/compare/v1.0.3...v1.0.4) (2024-04-22)
-
-### Bug Fixes
-
-* **share:** ios view controller presenting in wrong position ([b4b50a5](https://github.com/mj-studio-library/react-native-kakao/commit/b4b50a5359cb619a7bd81b48eee04f7f9a45e171))
-
-## [1.0.3](https://github.com/mj-studio-library/react-native-kakao/compare/v1.0.2...v1.0.3) (2024-04-21)
-
-**Note:** Version bump only for package @react-native-kakao/share
-
-## [1.0.2](https://github.com/mj-studio-library/react-native-kakao/compare/v1.0.1...v1.0.2) (2024-04-21)
-
-**Note:** Version bump only for package @react-native-kakao/share
-
-## [1.0.1](https://github.com/mj-studio-library/react-native-kakao/compare/v1.0.0...v1.0.1) (2024-04-21)
-
-### Features
-
-* **share:** fix android build ([e3ec351](https://github.com/mj-studio-library/react-native-kakao/commit/e3ec35102c2e442e8729f2ac8d51f8b7d5be77af))
-
-## [1.0.0](https://github.com/mj-studio-library/react-native-kakao/compare/v0.10.0...v1.0.0) (2024-04-21)
-
-### Features
-
-* **share:** impl customShare ([b728f44](https://github.com/mj-studio-library/react-native-kakao/commit/b728f441023eda0cdf22f26e8b77e79d3d77ad75))
-
-## [0.10.0](https://github.com/mj-studio-library/react-native-kakao/compare/v0.9.1...v0.10.0) (2024-04-21)
-
-### Features
-
-* **user:** 로그인 함수로 추가 동의 항목 받기 ([fecc2bc](https://github.com/mj-studio-library/react-native-kakao/commit/fecc2bc103504496ca9e9d90c471e421b9ae654b))
-
-## [0.9.1](https://github.com/mj-studio-library/react-native-kakao/compare/v0.9.0...v0.9.1) (2024-04-21)
-
-**Note:** Version bump only for package @react-native-kakao/share
-
-## [0.9.0](https://github.com/mj-studio-library/react-native-kakao/compare/v0.7.1...v0.9.0) (2024-04-21)
-
-**Note:** Version bump only for package @react-native-kakao/share
-
-## [0.8.0](https://github.com/mj-studio-library/react-native-kakao/compare/v0.7.1...v0.8.0) (2024-04-21)
-
-**Note:** Version bump only for package @react-native-kakao/share
-
-## [0.7.1](https://github.com/mj-studio-library/react-native-kakao/compare/v0.7.0...v0.7.1) (2024-04-21)
+## [1.0.4](https://github.com/mym0404/react-native-kakao/compare/v1.0.3...v1.0.4) (2024-04-22)
 
 ### Bug Fixes
 
-- **user:** export android method with @ReactMethod. old arch supporting is so toooooooooooooooooough ([9502d47](https://github.com/mj-studio-library/react-native-kakao/commit/9502d47de7193f0533ba04590e18a7b2da2eb4c0))
+* **share:** ios view controller presenting in wrong position ([b4b50a5](https://github.com/mym0404/react-native-kakao/commit/b4b50a5359cb619a7bd81b48eee04f7f9a45e171))
 
-## [0.7.0](https://github.com/mj-studio-library/react-native-kakao/compare/v0.6.0...v0.7.0) (2024-04-21)
-
-**Note:** Version bump only for package @react-native-kakao/share
-
-## [0.6.0](https://github.com/mj-studio-library/react-native-kakao/compare/v0.5.1...v0.6.0) (2024-04-21)
+## [1.0.3](https://github.com/mym0404/react-native-kakao/compare/v1.0.2...v1.0.3) (2024-04-21)
 
 **Note:** Version bump only for package @react-native-kakao/share
 
-## [0.5.1](https://github.com/mj-studio-library/react-native-kakao/compare/v0.5.0...v0.5.1) (2024-04-20)
+## [1.0.2](https://github.com/mym0404/react-native-kakao/compare/v1.0.1...v1.0.2) (2024-04-21)
 
 **Note:** Version bump only for package @react-native-kakao/share
 
-## [0.5.0](https://github.com/mj-studio-library/react-native-kakao/compare/v0.4.0...v0.5.0) (2024-04-20)
+## [1.0.1](https://github.com/mym0404/react-native-kakao/compare/v1.0.0...v1.0.1) (2024-04-21)
+
+### Features
+
+* **share:** fix android build ([e3ec351](https://github.com/mym0404/react-native-kakao/commit/e3ec35102c2e442e8729f2ac8d51f8b7d5be77af))
+
+## [1.0.0](https://github.com/mym0404/react-native-kakao/compare/v0.10.0...v1.0.0) (2024-04-21)
+
+### Features
+
+* **share:** impl customShare ([b728f44](https://github.com/mym0404/react-native-kakao/commit/b728f441023eda0cdf22f26e8b77e79d3d77ad75))
+
+## [0.10.0](https://github.com/mym0404/react-native-kakao/compare/v0.9.1...v0.10.0) (2024-04-21)
+
+### Features
+
+* **user:** 로그인 함수로 추가 동의 항목 받기 ([fecc2bc](https://github.com/mym0404/react-native-kakao/commit/fecc2bc103504496ca9e9d90c471e421b9ae654b))
+
+## [0.9.1](https://github.com/mym0404/react-native-kakao/compare/v0.9.0...v0.9.1) (2024-04-21)
+
+**Note:** Version bump only for package @react-native-kakao/share
+
+## [0.9.0](https://github.com/mym0404/react-native-kakao/compare/v0.7.1...v0.9.0) (2024-04-21)
+
+**Note:** Version bump only for package @react-native-kakao/share
+
+## [0.8.0](https://github.com/mym0404/react-native-kakao/compare/v0.7.1...v0.8.0) (2024-04-21)
+
+**Note:** Version bump only for package @react-native-kakao/share
+
+## [0.7.1](https://github.com/mym0404/react-native-kakao/compare/v0.7.0...v0.7.1) (2024-04-21)
+
+### Bug Fixes
+
+- **user:** export android method with @ReactMethod. old arch supporting is so toooooooooooooooooough ([9502d47](https://github.com/mym0404/react-native-kakao/commit/9502d47de7193f0533ba04590e18a7b2da2eb4c0))
+
+## [0.7.0](https://github.com/mym0404/react-native-kakao/compare/v0.6.0...v0.7.0) (2024-04-21)
+
+**Note:** Version bump only for package @react-native-kakao/share
+
+## [0.6.0](https://github.com/mym0404/react-native-kakao/compare/v0.5.1...v0.6.0) (2024-04-21)
+
+**Note:** Version bump only for package @react-native-kakao/share
+
+## [0.5.1](https://github.com/mym0404/react-native-kakao/compare/v0.5.0...v0.5.1) (2024-04-20)
+
+**Note:** Version bump only for package @react-native-kakao/share
+
+## [0.5.0](https://github.com/mym0404/react-native-kakao/compare/v0.4.0...v0.5.0) (2024-04-20)
 
 ### Features
 

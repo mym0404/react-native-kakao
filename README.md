@@ -21,7 +21,7 @@
 >
 > [Documentation](https://rnkakao.dev/docs/intro) is also prepared.
 >
-> https://github.com/mj-studio-library/react-native-kakao/assets/33388801/24375a20-832d-4d85-88fa-5501a86f445e
+> https://github.com/mym0404/react-native-kakao/assets/33388801/24375a20-832d-4d85-88fa-5501a86f445e
 
 ---
 

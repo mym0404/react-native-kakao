@@ -16,7 +16,7 @@
     "url": "git+https://github.com/mym0404/react-native-kakao.git"
   },
   "author": "MJ Studio <mym0404@gmail.com> (https://github.com/mym0404)",
-  "homepage": "https://github.com/mym0404/react-native-kakao.git",
+  "homepage": "https://rnkakao.dev",
   "scripts": {
     "example": "yarn workspace kakao-example",
     "test": "jest",

@@ -26,7 +26,7 @@
     "!**/.*"
   ],
   "author": "MJ Studio <mym0404@gmail.com> (https://github.com/mym0404)",
-  "homepage": "https://github.com/mj-studio-library/react-native-kakao.git",
+  "homepage": "https://github.com/mym0404/react-native-kakao.git",
   "scripts": {
     "test": "jest",
     "prepare": "husky",
@@ -49,7 +49,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/mj-studio-library/react-native-kakao.git",
+    "url": "https://github.com/mym0404/react-native-kakao.git",
     "directory": "packages/share"
   },
   "license": "MIT",
