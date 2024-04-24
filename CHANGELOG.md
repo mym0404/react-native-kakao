@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.1](https://github.com/mym0404/react-native-kakao/compare/v1.4.0...v1.4.1) (2024-04-24)
+
+### Bug Fixes
+
+* **user:** ios login crash ([80c0de8](https://github.com/mym0404/react-native-kakao/commit/80c0de8a1594c44e8859b5982afbffe2f55cf67a))
+
 ## [1.4.0](https://github.com/mym0404/react-native-kakao/compare/v1.3.0...v1.4.0) (2024-04-24)
 
 ### Features
