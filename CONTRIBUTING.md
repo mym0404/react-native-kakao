@@ -148,7 +148,7 @@ Our pre-commit hooks verify that the linter and tests pass when committing.
 
 ### Documentation
 
-[Our documentation](https://mj-studio-library.github.io/react-native-kakao/) is built
+[Our documentation](https://mym0404.github.io/react-native-kakao/) is built
 with [Docusaurus](https://docusaurus.io/) and is just maintained with
 **Korean**.
 

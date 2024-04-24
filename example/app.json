@@ -52,6 +52,7 @@
               "https://repository.map.naver.com/archive/maven",
               "https://devrepo.kakao.com/nexus/content/groups/public/"
             ],
+            "minSdkVerson": 26,
             "newArchEnabled": false
           },
           "ios": {
