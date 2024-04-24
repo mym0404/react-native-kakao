@@ -190,24 +190,16 @@ import RNCKakaoCore
       UserApi.shared.serviceTerms { serviceTerms, error in
         if let error {
           RNCKakaoUtil.reject(reject, error)
-        } else if let serviceTerms {
-          resolve(
+        } else if let serviceTerms = serviceTerms?.serviceTerms {
+          resolve(serviceTerms.map {
             [
-              "allowedServiceTerms": serviceTerms.allowedServiceTerms?.map {
-                [
-                  "tag": $0.tag,
-                  "agreedAt": $0.agreedAt.timeIntervalSince1970
-                ]
-              },
-              "appServiceTerms": serviceTerms.appServiceTerms?.map {
-                [
-                  "tag": $0.tag,
-                  "createdAt": $0.createdAt.timeIntervalSince1970,
-                  "updatedAt": $0.updatedAt.timeIntervalSince1970
-                ]
-              }
+              "tag": $0.tag,
+              "agreedAt": $0.agreedAt?.timeIntervalSince1970 as Any,
+              "agreed": $0.agreed,
+              "required": $0.required,
+              "revocable": $0.revocable
             ]
-          )
+          })
         } else {
           RNCKakaoUtil.reject(reject, "serviceTerms not found")
         }

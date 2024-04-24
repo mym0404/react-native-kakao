@@ -17,23 +17,18 @@ sidebar_position: 7
 응답은 다음과 같습니다.
 
 ```tsx
-Promise<{
-  allowedServiceTerms?: KakaoServiceTerms[];
-  appServiceTerms?: KakaoAppServiceTerms[];
-}>
+Promise<KakaoServiceTerms[]>
 ```
 
-다음은 해당하는 타입들입니다.
+다음은 해당하는 타입입니다.
 
 ```tsx
 export type KakaoServiceTerms = {
   tag: string;
-  agreedAt: number;
-};
-export type KakaoAppServiceTerms = {
-  tag: string;
-  createdAt: number;
-  updatedAt: number;
+  agreedAt?: number;
+  agreed: boolean;
+  required: boolean;
+  revocable: boolean;
 };
 ```
 

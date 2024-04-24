@@ -2,7 +2,6 @@ import type { TurboModule } from 'react-native';
 import { TurboModuleRegistry } from 'react-native';
 
 import type {
-  KakaoAppServiceTerms,
   KakaoLoginToken,
   KakaoScopeInfo,
   KakaoServiceTerms,
@@ -23,10 +22,7 @@ export interface Spec extends TurboModule {
   isLogined(): Promise<boolean>;
   scopes(scopes?: string[]): Promise<KakaoScopeInfo[]>;
   revokeScopes(scopes: string[]): Promise<void>;
-  serviceTerms(): Promise<{
-    allowedServiceTerms?: KakaoServiceTerms[];
-    appServiceTerms?: KakaoAppServiceTerms[];
-  }>;
+  serviceTerms(): Promise<KakaoServiceTerms[]>;
   shippingAddresses(): Promise<KakaoShippingAddressResult>;
   me(): Promise<KakaoUser>;
 }
