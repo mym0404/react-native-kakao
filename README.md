@@ -63,8 +63,8 @@ please select the package link from below.
 ## Contributing
 
 - [Contributing](https://github.com/mym0404/react-native-kakao/blob/main/CONTRIBUTING.md)
-- [Issues](https://github.com/invertase/react-native-kakao/issues)
-- [PRs](https://github.com/invertase/react-native-kakao/pulls)
+- [Issues](https://github.com/mym0404/react-native-kakao/issues)
+- [PRs](https://github.com/mym0404/react-native-kakao/pulls)
 - [Documentation](https://rnkakao.dev)
 - [Code of Conduct](https://github.com/mj-studio-library/react-native-kakao/blob/main/CODE_OF_CONDUCT.md)
 
