@@ -128,6 +128,11 @@ fun ReadableMap.getDoubleElseNull(key: String): Double? {
   return null
 }
 
+fun ReadableMap.getBooleanElseNull(key: String): Boolean? {
+  if (hasKey(key)) return getBoolean(key)
+  return null
+}
+
 fun onMain(fn: () -> Unit) {
   if (Looper.myLooper() == Looper.getMainLooper()) {
     fn()

@@ -50,6 +50,9 @@ export default function Page() {
         <Link href={'/share'}>
           <Txt textDecorationLine={'underline'}>{'@react-native-kakao/share'}</Txt>
         </Link>
+        <Link href={'/navi'}>
+          <Txt textDecorationLine={'underline'}>{'@react-native-kakao/navi'}</Txt>
+        </Link>
       </Box>
     </StyledScrollView>
   );

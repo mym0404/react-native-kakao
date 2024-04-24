@@ -69,7 +69,8 @@
             "forwardKakaoLinkIntentFilterToMainActivity": true
           },
           "ios": {
-            "handleKakaoOpenUrl": true
+            "handleKakaoOpenUrl": true,
+            "naviApplicationQuerySchemes": true
           }
         }
       ],

@@ -4,4 +4,5 @@ export type KakaoAndroidConfig = {
 };
 export type KakaoIosConfig = {
   handleKakaoOpenUrl?: boolean;
+  naviApplicationQuerySchemes?: boolean;
 };

@@ -1,0 +1,22 @@
+---
+sidebar_position: 3
+---
+
+# Expo 설정
+
+## iOS - 카카오내비 앱 실행을 위한 스키마 등록
+
+`app.json`에 다음과 같이 추가합니다.
+
+```json title='app.json'
+[
+  "@react-native-kakao/core",
+  {
+    "nativeAppKey": "5a9383961eadba5496cb4ff895e91a89",
+    "ios": {
+// highlight-next-line
+      "naviApplicationQuerySchemes": true
+    }
+  }
+],
+```
