@@ -38,10 +38,6 @@ FILE="example/android/gradle.properties"
 # Use 'sed' to replace the property value
 sed -i '' -e "s/${PROPERTY}=.*/${PROPERTY}=${NEW_VALUE}/" ${FILE}
 
-
-
-
-
 if [[ $CLEAN == 'true' ]]; then
 yarn gen:android:clean
 yarn gen:ios:clean
