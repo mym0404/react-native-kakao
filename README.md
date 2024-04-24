@@ -31,6 +31,8 @@ both iOS and Android.
 
 React Native Kakao is built with four key principles in mind;
 
+- ❤️ **No version conflicts**
+  - managed and consistent versions of native SDKs ensure there are no version conflicts.
 - 👁 **Well typed**
   - first class support for Typescript included
 - 📄 **Well documented**
