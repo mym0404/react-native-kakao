@@ -15,8 +15,8 @@ const FeatureList: FeatureItem[] = [
     Svg: require('@site/static/img/finding-topics.svg').default,
     description: (
       <>
-        React Native Kakao는 로그인, 공유, 지도 등 따로 관리되고 있거나 아예 존재하지 않는 Kakao
-        SDK기능들을 리액트 네이티브에서 쉽게 사용할 수 있게 하자는 생각에서 탄생했습니다.
+        로그인, 공유, 지도 등 따로 관리되고 있는 SDK들로부터의 버전 충돌을 완벽히 해결합니다. 또한,
+        누락된 API나 미구현 기능들을 포함합니다.
       </>
     ),
   },
