@@ -67,7 +67,7 @@ import RNCKakaoCore
           .loginWithKakaoTalk(serviceTerms: emptyArrayToNil(serviceTerms), completion: callback)
       } else {
         var _prompts: [Prompt] = []
-        prompts.forEach { p in
+        for p in prompts {
           if p == "Login" { _prompts.append(.Login) }
           if p == "Cert" { _prompts.append(.Cert) }
           if p == "Create" { _prompts.append(.Create) }
