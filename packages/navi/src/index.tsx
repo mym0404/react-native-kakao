@@ -1,6 +1,6 @@
 import { NativeModules, Platform } from 'react-native';
 
-import type { Spec } from './spec/NativeKakaoNavi';
+import type { KakaoNaviLocation, KakaoNaviOption, Spec } from './spec/NativeKakaoNavi';
 
 const LINKING_ERROR =
   "The package '@react-native-kakao/navi' doesn't seem to be linked. Make sure: \n\n" +
@@ -26,6 +26,44 @@ const Native: Spec = Module
       },
     );
 
-export function a() {
-  console.log(Native);
+export type { KakaoNaviLocation, KakaoNaviOption } from './spec/NativeKakaoNavi';
+
+export function navigateTo({
+  destination,
+  option,
+  viaList,
+  openWebInstallUrlIfNaviAppNotAvailable,
+}: {
+  destination: KakaoNaviLocation;
+  option?: KakaoNaviOption;
+  viaList?: KakaoNaviLocation[];
+  openWebInstallUrlIfNaviAppNotAvailable?: boolean;
+}) {
+  return Native.navigateOrShareTo(
+    destination,
+    option,
+    viaList,
+    openWebInstallUrlIfNaviAppNotAvailable ?? true,
+    false,
+  );
+}
+
+export function shareTo({
+  destination,
+  option,
+  viaList,
+  openWebInstallUrlIfNaviAppNotAvailable,
+}: {
+  destination: KakaoNaviLocation;
+  option?: KakaoNaviOption;
+  viaList?: KakaoNaviLocation[];
+  openWebInstallUrlIfNaviAppNotAvailable?: boolean;
+}) {
+  return Native.navigateOrShareTo(
+    destination,
+    option,
+    viaList,
+    openWebInstallUrlIfNaviAppNotAvailable ?? true,
+    true,
+  );
 }

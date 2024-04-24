@@ -10,7 +10,7 @@ import type { KakaoIosConfig } from './type';
 const withIos: ConfigPlugin<{
   nativeAppKey: string;
   ios: KakaoIosConfig;
-}> = (config, { nativeAppKey, ios: { handleKakaoOpenUrl } }) => {
+}> = (config, { nativeAppKey, ios: { handleKakaoOpenUrl, naviApplicationQuerySchemes } }) => {
   if (!nativeAppKey) {
     throw new Error(
       "[@react-native-kakao/core] 'nativeAppKey' missing in expo config plugin value",
@@ -27,21 +27,35 @@ const withIos: ConfigPlugin<{
     }
 
     // core
-    config.modResults.CFBundleURLTypes = [
-      ...config.modResults.CFBundleURLTypes,
-      {
-        CFBundleURLSchemes: [`kakao${nativeAppKey}`],
-        CFBundleURLName: 'Kakao',
-      },
+    if (
+      config.modResults.CFBundleURLTypes?.findIndex((t) =>
+        t.CFBundleURLSchemes.some((s) => s === `kakao${nativeAppKey}`),
+      ) === -1
+    ) {
+      config.modResults.CFBundleURLTypes = [
+        ...config.modResults.CFBundleURLTypes,
+        {
+          CFBundleURLSchemes: [`kakao${nativeAppKey}`],
+          CFBundleURLName: 'Kakao',
+        },
+      ];
+    }
+
+    config.modResults.LSApplicationQueriesSchemes = [
+      ...new Set([
+        ...config.modResults.LSApplicationQueriesSchemes,
+        'kakaokompassauth',
+        'kakaolink',
+        'kakaoplus',
+      ]),
     ];
 
-    // kakao share
-    config.modResults.LSApplicationQueriesSchemes = [
-      ...config.modResults.LSApplicationQueriesSchemes,
-      'kakaokompassauth',
-      'kakaolink',
-      'kakaoplus',
-    ];
+    // kakao navi
+    if (naviApplicationQuerySchemes) {
+      config.modResults.LSApplicationQueriesSchemes = [
+        ...new Set([...config.modResults.LSApplicationQueriesSchemes, 'kakaonavi-sdk']),
+      ];
+    }
 
     return config;
   });

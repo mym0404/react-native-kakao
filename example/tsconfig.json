@@ -4,6 +4,7 @@
     { "path": "../packages/core" },
     { "path": "../packages/share" },
     { "path": "../packages/user" },
+    { "path": "../packages/navi" },
   ],
   "compilerOptions": {
     // Avoid expo-cli auto-generating a tsconfig
