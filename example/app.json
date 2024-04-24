@@ -63,7 +63,7 @@
       [
         "@react-native-kakao/core",
         {
-          "nativeAppKey": "5a9383961eadba5496cb4ff895e91a89",
+          "nativeAppKey": "fb975c77483d1edbe69467fca6bb2a6e",
           "android": {
             "authCodeHandlerActivity": true,
             "forwardKakaoLinkIntentFilterToMainActivity": true

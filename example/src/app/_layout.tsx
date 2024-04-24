@@ -17,7 +17,7 @@ export default function RootLayout() {
   const { top } = useSafeAreaInsets();
 
   useMount(() => {
-    initializeKakaoSDK('5a9383961eadba5496cb4ff895e91a89');
+    initializeKakaoSDK('fb975c77483d1edbe69467fca6bb2a6e');
   });
 
   return (
