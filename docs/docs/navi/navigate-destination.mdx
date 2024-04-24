@@ -1,0 +1,31 @@
+---
+sidebar_position: 5
+---
+
+# 목적지까지 경로 안내 시작하기
+## 목적지까지 경로 안내 시작하기
+
+[공식 문서](https://developers.kakao.com/docs/latest/ko/kakaonavi/android)
+
+## Usage
+
+`navigateTo()` 함수를 이용해 카카오내비 앱을 실행시켜 경로안내를 시작할 수 있습니다.
+
+이 함수는 다음과 같이 정의됩니다.
+
+```tsx
+export function navigateTo(params: {
+  destination: KakaoNaviLocation;
+  option?: KakaoNaviOption;
+  viaList?: KakaoNaviLocation[];
+  openWebInstallUrlIfNaviAppNotAvailable?: boolean;
+})
+```
+
+- `destination`: 목적지 정보입니다. 필수값입니다.
+- `option`: 옵션입니다.
+- `viaList`: 경유지 리스트입니다.
+- `openWebInstallUrlIfNaviAppNotAvailable`: 카카오내비 앱을 실행할 수 없다면 자동으로 설치 화면으로 보낼지 여부입니다.
+기본값은 `true`입니다.
+
+옵션에 대한 자세한 설명은 [공식 문서](https://developers.kakao.com/docs/latest/ko/kakaonavi/android#set-parameter)를 참고해주세요.
