@@ -5,7 +5,7 @@ runs:
   using: composite
   steps:
     - name: Setup Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version-file: .nvmrc
 
@@ -25,3 +25,26 @@ runs:
       if: steps.yarn-cache.outputs.cache-hit != 'true'
       run: yarn install --immutable
       shell: bash
+
+    - name: Restore swift build cache
+      uses: actions/cache@v4
+      with:
+        path: .build
+        key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+        restore-keys: |
+          ${{ runner.os }}-spm-
+
+    - name: Install swiftformat
+      shell: bash
+      run: |
+        if [ -d ".build" ]; then
+          if ! [ -x "$(command -v swift-format)" ]; then
+            sudo cp -f .build/release/swift-format /usr/local/bin/swift-format
+          fi
+        else
+          git clone -b swift-5.9-RELEASE https://github.com/apple/swift-format.git
+          cd swift-format
+          swift build --disable-sandbox -c release
+          mv .build .. && cd ..
+          sudo cp -f .build/release/swift-format /usr/local/bin/swift-format
+        fi

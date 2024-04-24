@@ -17,6 +17,9 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
+      - name: Generate Example Project
+        run: yarn new
+
       - name: Lint files
         run: yarn lint
 
