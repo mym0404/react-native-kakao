@@ -13,10 +13,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mj-studio-library/react-native-kakao.git"
+    "url": "git+https://github.com/mym0404/react-native-kakao.git"
   },
   "author": "MJ Studio <mym0404@gmail.com> (https://github.com/mym0404)",
-  "homepage": "https://github.com/mj-studio-library/react-native-kakao.git",
+  "homepage": "https://github.com/mym0404/react-native-kakao.git",
   "scripts": {
     "example": "yarn workspace kakao-example",
     "test": "jest",

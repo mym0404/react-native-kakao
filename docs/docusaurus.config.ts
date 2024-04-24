@@ -4,10 +4,9 @@ import type * as Preset from '@docusaurus/preset-classic';
 
 const title = 'React Native Kakao';
 const description = 'Native Kakao SDK All In One Solution';
-const websiteUrl = 'https://mj-studio-library.github.io/react-native-kakao/';
-const repoOrg = 'mj-studio-library';
+const repoOrg = 'mym0404';
 const repoName = 'react-native-kakao';
-const repoUrl = 'https://github.com/mj-studio-library/react-native-kakao';
+const repoUrl = 'https://github.com/mym0404/react-native-kakao';
 const coverImage = 'img/social-card.png';
 
 const config: Config = {
@@ -15,8 +14,8 @@ const config: Config = {
   tagline: description,
   favicon: 'img/favicon.ico',
 
-  url: 'https://mj-studio-library.github.io',
-  baseUrl: '/react-native-kakao/',
+  url: 'https://rnkakao.dev',
+  baseUrl: '/',
 
   organizationName: repoOrg,
   projectName: repoName,
@@ -48,6 +47,17 @@ const config: Config = {
   ],
 
   themeConfig: {
+    metadata: [
+      {
+        name: 'keywords',
+        content: 'kakao, react native, react, kakao-login, kakao-navi, kakao-share, kakao-maps',
+      },
+    ],
+    headTags: [
+      {
+        tagName: '',
+      },
+    ],
     image: coverImage,
     docs: {
       sidebar: {
