@@ -32,7 +32,7 @@
     "clean": "lerna run clean",
     "prepare": "husky",
     "build": "lerna run prepack",
-    "version": "yarn t && yarn build && lerna version",
+    "bump": "yarn t && yarn build && lerna version",
     "release": "lerna publish from-package",
     "android": "yarn example android",
     "ios": "yarn example ios",

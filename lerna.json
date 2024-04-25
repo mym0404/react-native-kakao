@@ -29,7 +29,8 @@
       ],
       "allow-peer-dependencies-update": true,
       "changelog-include-commits-client-login": " by @%l",
-      "remote-client": "github"
+      "remote-client": "github",
+      "force-publish": true
     },
     "publish": {
       "force-publish": true
@@ -98,9 +99,6 @@
         "section": "Continuous Integration",
         "hidden": true
       }
-    ],
-    "commitUrlFormat": "{{host}}/{{owner}}/{{repository}}/commit/{{hash}}",
-    "compareUrlFormat": "{{host}}/{{owner}}/{{repository}}/compare/{{previousTag}}...{{currentTag}}",
-    "userUrlFormat": "{{host}}/{{user}}"
+    ]
   }
 }
