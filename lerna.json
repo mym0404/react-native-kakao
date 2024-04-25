@@ -29,8 +29,7 @@
       ],
       "allow-peer-dependencies-update": true,
       "changelog-include-commits-client-login": " by @%l",
-      "remote-client": "github",
-      "force-publish": true
+      "remote-client": "github"
     },
     "publish": {
       "force-publish": true
