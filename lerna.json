@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/lerna/schemas/lerna-schema.json",
-  "version": "1.4.4",
+  "version": "1.4.5",
   "packages": [
     "packages/*"
   ],
@@ -10,9 +10,7 @@
       "graphType": "all",
       "syncWorkspaceLock": true,
       "allowBranch": "main",
-      "allowPeerDependenciesUpdate": true,
       "conventionalCommits": true,
-      "createRelease": "github",
       "message": "chore: publish",
       "preId": "alpha",
       "private": false,
