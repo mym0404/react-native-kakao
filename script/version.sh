@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 
-yarn lint
-yarn build
+echo $1
 
-V = $1
+#yarn lint
+#yarn build
 
-lerna version --force-publish --allow-peer-dependencies-update --changelog-include-commits-client-login " by @%l" \
-      --remote-client github $V
+V=$1
+
+lerna version $V --force-publish --allow-peer-dependencies-update --changelog-include-commits-client-login " by @%l" \
+      --exact --remote-client github
