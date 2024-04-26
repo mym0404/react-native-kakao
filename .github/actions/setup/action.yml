@@ -26,6 +26,16 @@ runs:
       run: yarn install --immutable
       shell: bash
 
-#    - name: Generate Example Project
-#      shell: bash
-#      run: yarn gen:android && yarn gen:ios
+    - name: Build
+      shell: bash
+      run: yarn build
+
+    - name: Generate Android Example Project
+      shell: bash
+      working-directory: example
+      run: yarn expo prebuild -p android --no-install
+
+    - name: Generate iOS Example Project
+      shell: bash
+      working-directory: example
+      run: yarn expo prebuild -p ios --no-install
