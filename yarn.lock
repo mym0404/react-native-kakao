@@ -19905,7 +19905,7 @@ __metadata:
     react: "npm:18.2.0"
     react-native: "npm:0.73.7"
     react-native-builder-bob: "npm:^0.20.0"
-    turbo: "npm:^1.13.3"
+    turbo: "npm:1.13.3"
     typescript: "npm:5.1.6"
   languageName: unknown
   linkType: soft
@@ -21740,7 +21740,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"turbo@npm:^1.13.3":
+"turbo@npm:1.13.3":
   version: 1.13.3
   resolution: "turbo@npm:1.13.3"
   dependencies:
