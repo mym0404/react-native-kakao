@@ -155,7 +155,7 @@ jobs:
           cd example/ios
           bundle exec pod install
         env:
-          NO_FLIPPER: 1
+          NO_FLIPPER: 0
           RCT_NEW_ARCH_ENABLED: 1
 
       - name: Build example for iOS
