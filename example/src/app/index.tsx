@@ -1,9 +1,12 @@
 import { useRef } from 'react';
 import { Animated, Easing } from 'react-native';
+import { showMessage } from 'react-native-flash-message';
 import { useMount } from '@mj-studio/react-util';
+import { login, logout } from '@react-native-kakao/user';
 import { Link } from 'expo-router';
 
 import { Box } from '../component/Box';
+import { Btn } from '../component/Btn';
 import { StyledScrollView } from '../component/StyledScrollView';
 import { Txt } from '../component/Txt';
 import { px } from '../util/px';
@@ -44,14 +47,63 @@ export default function Page() {
       </Txt>
       <Box my={10} w={'100%'} h={px(1)} bg={'text'} opacity={0.8} />
       <Box gap={4}>
+        <Btn
+          minW={px(240)}
+          title={'Login'}
+          onPress={() => {
+            login()
+              .then(() => {
+                showMessage({
+                  type: 'success',
+                  message: 'Login Success',
+                });
+              })
+              .catch((e) =>
+                showMessage({
+                  type: 'warning',
+                  message: e.message,
+                }),
+              );
+          }}
+        />
+        <Btn
+          minW={px(240)}
+          title={'Log Out'}
+          onPress={() => {
+            logout()
+              .then(() => {
+                showMessage({
+                  type: 'success',
+                  message: 'Logout Success',
+                });
+              })
+              .catch((e) =>
+                showMessage({
+                  type: 'warning',
+                  message: e.message,
+                }),
+              );
+          }}
+        />
         <Link href={'/user'}>
-          <Txt textDecorationLine={'underline'}>{'@react-native-kakao/user'}</Txt>
+          <Txt textDecorationLine={'underline'} align={'center'}>
+            {'@react-native-kakao/user'}
+          </Txt>
         </Link>
         <Link href={'/share'}>
-          <Txt textDecorationLine={'underline'}>{'@react-native-kakao/share'}</Txt>
+          <Txt textDecorationLine={'underline'} align={'center'}>
+            {'@react-native-kakao/share'}
+          </Txt>
         </Link>
         <Link href={'/navi'}>
-          <Txt textDecorationLine={'underline'}>{'@react-native-kakao/navi'}</Txt>
+          <Txt textDecorationLine={'underline'} align={'center'}>
+            {'@react-native-kakao/navi'}
+          </Txt>
+        </Link>
+        <Link href={'/social'}>
+          <Txt textDecorationLine={'underline'} align={'center'}>
+            {'@react-native-kakao/social'}
+          </Txt>
         </Link>
       </Box>
     </StyledScrollView>

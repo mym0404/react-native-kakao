@@ -2,12 +2,14 @@ require "json"
 
 package = JSON.parse(File.read(File.join(__dir__, "package.json")))
 corePackage = JSON.parse(File.read(File.join(__dir__, "..", "core", "package.json")))
-sdk_version = corePackage['sdkVersions']['ios']['navi']
+
+friend_sdk_version = corePackage['sdkVersions']['ios']['friend']
+talk_sdk_version = corePackage['sdkVersions']['ios']['talk']
 
 folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
 
 Pod::Spec.new do |s|
-  s.name         = "RNCKakaoNavi"
+  s.name         = "RNCKakaoSocial"
   s.version      = package["version"]
   s.summary      = package["description"]
   s.homepage     = package["homepage"]
@@ -43,13 +45,19 @@ Pod::Spec.new do |s|
   end
 
   # Override Version by User
-  if defined?($KakaoNaviSDKVersion)
-    Pod::UI.puts "#{s.name}: Using user specified Kakao SDK version '#{$KakaoNaviSDKVersion}'"
-    sdk_version = $KakaoNaviSDKVersion
+  if defined?($KakaoFriendSDKVersion)
+    Pod::UI.puts "#{s.name}: Using user specified Kakao SDK version '#{$KakaoFriendSDKVersion}'"
+    friend_sdk_version = $KakaoFriendSDKVersion
+  end
+  if defined?($KakaoTalkSDKVersion)
+    Pod::UI.puts "#{s.name}: Using user specified Kakao SDK version '#{$KakaoTalkSDKVersion}'"
+    talk_sdk_version = $KakaoTalkSDKVersion
   end
 
   s.dependency          'RNCKakaoCore'
+  s.dependency          'RNCKakaoUser'
 
   # Kakao dependencies
-  s.dependency          'KakaoSDKNavi', sdk_version
+  s.dependency          'KakaoSDKFriend', friend_sdk_version
+  s.dependency          'KakaoSDKTalk',   talk_sdk_version
 end

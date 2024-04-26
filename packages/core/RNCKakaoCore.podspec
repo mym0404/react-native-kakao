@@ -44,7 +44,7 @@ Pod::Spec.new do |s|
 
   # Override Version by User
   if defined?($KakaoCoreSDKVersion)
-    Pod::UI.puts "#{s.name}: Using user specified Firebase SDK version '#{$KakaoCoreSDKVersion}'"
+    Pod::UI.puts "#{s.name}: Using user specified Kakao SDK version '#{$KakaoCoreSDKVersion}'"
     sdk_version = $KakaoCoreSDKVersion
   end
 
