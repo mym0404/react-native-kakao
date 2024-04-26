@@ -50,7 +50,8 @@ const config: Config = {
     metadata: [
       {
         name: 'keywords',
-        content: 'kakao, react native, react, kakao-login, kakao-navi, kakao-share, kakao-maps',
+        content:
+          'kakao, react native, react, kakao-login, kakao-navi, kakao-share, kakao-maps, 카카오, 카카오SDK, 카카오로그인, 카카오지도, 카카오내비, 로그인, Oauth, 리액트네이티브, 리액트',
       },
       {
         name: 'naver-site-verification',
