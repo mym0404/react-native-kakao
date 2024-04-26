@@ -52,16 +52,12 @@ const config: Config = {
         name: 'keywords',
         content: 'kakao, react native, react, kakao-login, kakao-navi, kakao-share, kakao-maps',
       },
-    ],
-    headTags: [
       {
-        tagName: 'meta',
-        attributes: {
-          name: 'naver-site-verification',
-          content: '8f6b803740d4c113455ae0e4fa297b09dbb6d11d',
-        },
+        name: 'naver-site-verification',
+        content: '8f6b803740d4c113455ae0e4fa297b09dbb6d11d',
       },
     ],
+    headTags: [],
     colorMode: {
       defaultMode: 'dark',
     },
