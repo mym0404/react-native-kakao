@@ -12,10 +12,10 @@ const coverImage = 'img/social-card.png';
 const config: Config = {
   title: title,
   tagline: description,
-  favicon: 'img/favicon.ico',
+  favicon: 'favicon.ico',
 
   url: 'https://rnkakao.dev',
-  baseUrl: '/',
+  baseUrl: '',
 
   organizationName: repoOrg,
   projectName: repoName,
