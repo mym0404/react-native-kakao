@@ -55,7 +55,11 @@ const config: Config = {
     ],
     headTags: [
       {
-        tagName: '',
+        tagName: 'meta',
+        attributes: {
+          name: 'naver-site-verification',
+          content: '8f6b803740d4c113455ae0e4fa297b09dbb6d11d',
+        },
       },
     ],
     colorMode: {
