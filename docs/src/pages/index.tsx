@@ -33,9 +33,11 @@ function HomepageHeader() {
 }
 
 export default function Home(): JSX.Element {
-  const { siteConfig } = useDocusaurusContext();
   return (
-    <Layout title={`${siteConfig.title}`} description="Kakao SDK All In One Solution">
+    <Layout
+      title={`Kakao SDK All-In-One Solution in React Native`}
+      description="Kakao SDK All In One Solution"
+    >
       <HomepageHeader />
       <main>
         <HomepageFeatures />

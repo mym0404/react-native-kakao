@@ -2,7 +2,7 @@ import { themes as prismThemes } from 'prism-react-renderer';
 import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
-const title = 'Kakao SDK All-In-One Solution in React Native';
+const title = 'React Native Kakao';
 const description = 'Native Kakao SDK All In One Solution';
 const repoOrg = 'mym0404';
 const repoName = 'react-native-kakao';
