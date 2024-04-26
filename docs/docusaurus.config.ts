@@ -15,7 +15,7 @@ const config: Config = {
   favicon: 'favicon.ico',
 
   url: 'https://rnkakao.dev',
-  baseUrl: '',
+  baseUrl: '/',
 
   organizationName: repoOrg,
   projectName: repoName,
