@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.1](https://github.com/mym0404/react-native-kakao/compare/v1.5.0...v1.5.1) (2024-04-27)
+
+### Features
+
+* enhance error handling, consistent error response format ([7b6d67e](https://github.com/mym0404/react-native-kakao/commit/7b6d67ec4347e21b921bf78a2349a1f3e3e41dae))
+
 ## [1.5.0](https://github.com/mym0404/react-native-kakao/compare/v1.4.6-alpha.2...v1.5.0) (2024-04-27)
 
 **Note:** Version bump only for package react-native-kakao
