@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+set -e
 if which swiftformat >/dev/null; then
   for dir in ./packages/*/ios; do
       echo "🪽 swiftformat $dir"

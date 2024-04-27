@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+set -e
 if which clang-format >/dev/null; then
 
   for dir in ./packages/*/ios; do
