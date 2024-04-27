@@ -24,7 +24,7 @@
     "!**/__fixtures__",
     "!**/__mocks__",
     "!**/.*",
-    "expo-config-plugin/build/index.js",
+    "expo-config-plugin/build",
     "app.plugin.js"
   ],
   "author": "MJ Studio <mym0404@gmail.com> (https://github.com/mym0404)",
