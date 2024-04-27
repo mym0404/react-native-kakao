@@ -3,9 +3,32 @@ import { TurboModuleRegistry } from 'react-native';
 import type { UnsafeObject } from 'react-native/Libraries/Types/CodegenTypes';
 
 export interface KakaoTalkProfile {
+  /**
+   * 카카오톡 닉네임
+   *
+   * 필요한 동의항목: 프로필 정보(닉네임/프로필 사진) 또는 닉네임
+   */
   nickname?: string;
+  /**
+   * 사용자가 카카오톡을 이용 중인 국가
+   *
+   * @deprecated
+   * @link https://devtalk.kakao.com/t/api-change-notice-response-fields-of-the-retrieving-kakao-talk-kakao-story-api/115151
+   */
   countryISO?: string;
+  /**
+   * 카카오톡 프로필 이미지 URL
+   * 640px * 640px 크기, HTTPS만 지원
+   *
+   * 필요한 동의항목: 프로필 정보(닉네임/프로필 사진) 또는 프로필 사진
+   */
   profileImageUrl?: string;
+  /**
+   * 카카오톡 프로필 썸네일(Thumbnail) 이미지 URL
+   * 110px * 110px 크기, HTTPS만 지원
+   *
+   * 필요한 동의항목: 프로필 정보(닉네임/프로필 사진) 또는 프로필 사진
+   */
   thumbnailUrl?: string;
 }
 export interface KakaoTalkFriendSelectResult {
@@ -13,10 +36,22 @@ export interface KakaoTalkFriendSelectResult {
   users: KakaoTalkFriendProfile[];
 }
 export interface KakaoTalkFriendProfile {
+  /**
+   * 해당 앱에서의 사용자 식별 코드 연결 상태와 관계 없으며 일반적으로 메시지 전송 시 사용 카카오톡을 탈퇴하거나
+   * 새로 가입할 경우 값이 변경될 수 있음 사용자의 계정 상태에 따라 바뀔 수 있으므로, 앱에서 사용자 식별자로 사용하는 것을 권장하지 않음
+   */
   uuid: string;
+  /** 친구의 회원번호, 앱과 연결된 친구에게만 존재 */
   id?: number;
+  /** 즐겨찾기 추가 여부, 채팅방 피커에서는 미제공 */
   favorite?: boolean;
+  /** 프로필 닉네임, 프로필 닉네임 동의 항목에 동의하지 않은 친구나 앱과 연결되지 않는 친구의 경우,
+   * 닉네임을 마스킹 처리하여 제공(닉네임 원본을 받으려면 권한 및 displayAllProfile 설정 필요) */
   profileNickname?: string;
+  /**
+   * 프로필 썸네일 이미지, 프로필 썸네일 이미지 동의 항목에 동의하지 않은 친구나 앱과 연결되지 않은 친구의 경우,
+   * 프로필 이미지 미제공(프로필 이미지를 받으려면 권한 및 displayAllProfile 설정 필요)
+   */
   profileThumbnailImage?: string;
 }
 export interface KakaoTalkFriendSelectOptions {
