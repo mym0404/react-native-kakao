@@ -10,51 +10,60 @@ import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
 import com.kakao.sdk.common.model.ApiError
+import com.kakao.sdk.common.model.AppsError
+import com.kakao.sdk.common.model.AuthError
+import com.kakao.sdk.common.model.ClientError
 import java.util.Date
 
-fun Promise.rejectWith(e: Throwable) {
-  val message = e.localizedMessage ?: "unknown"
-  if (e is ApiError) {
-    val code = e.reason.errorCode
-    val statusCode = e.statusCode
+private const val UNKNOWN_ERROR = "RNC_KAKAO_UNKNOWN"
 
-    reject(
-      code.toString(),
-      "${e.reason.name} $message",
-      Arguments.createMap().apply {
-        putString("code", code.toString())
-        putInt("statusCode", statusCode)
-        putString("message", message)
-        putInt("nativeErrorCode", code)
-        putString("nativeErrorMessage", message)
-        putBoolean("isInvalidTokenError", e.isInvalidTokenError())
-      },
-    )
-  } else {
-    reject(
-      "unknown",
-      message,
-      Arguments.createMap().apply {
-        putInt("code", -1)
-        putString("message", message)
-        putInt("nativeErrorCode", -1)
-        putString("nativeErrorMessage", message)
-      },
-    )
+fun Promise.rejectWith(e: Throwable) {
+  val message = e.localizedMessage ?: ""
+
+  val userInfo =
+    argMap().apply {
+      putBoolean("fatal", true)
+      putString("nativeErrorMessage", message)
+      putBoolean("isApiFailed", false)
+      putBoolean("isAuthFailed", false)
+      putBoolean("isClientFailed", false)
+      putBoolean("isAppsFailed", false)
+      putBoolean("isInvalidTokenError", false)
+    }
+
+  when (e) {
+    is ClientError -> {
+      userInfo.putBoolean("isClientFailed", true)
+      userInfo.putBoolean("isInvalidTokenError", e.isInvalidTokenError())
+      reject(e.reason.name, e.msg, userInfo)
+    }
+    is ApiError -> {
+      userInfo.putBoolean("isApiFailed", true)
+      userInfo.putBoolean("isInvalidTokenError", e.isInvalidTokenError())
+      reject(e.reason.name, e.msg, userInfo)
+    }
+    is AuthError -> {
+      userInfo.putBoolean("isAuthFailed", true)
+      userInfo.putBoolean("isInvalidTokenError", e.isInvalidTokenError())
+      reject(e.reason.name, e.msg, userInfo)
+    }
+    is AppsError -> {
+      userInfo.putBoolean("isAppsFailed", true)
+      userInfo.putBoolean("isInvalidTokenError", e.isInvalidTokenError())
+      reject(e.reason.name, e.msg, userInfo)
+    }
+    else -> {
+      reject(
+        UNKNOWN_ERROR,
+        message,
+        userInfo,
+      )
+    }
   }
 }
 
 fun Promise.rejectWith(s: String) {
-  reject(
-    "unknown",
-    s,
-    Arguments.createMap().apply {
-      putInt("code", -1)
-      putString("message", s)
-      putInt("nativeErrorCode", -1)
-      putString("nativeErrorMessage", s)
-    },
-  )
+  rejectWith(RuntimeException(s))
 }
 
 inline fun <reified T> ReadableArray.filterIsInstance(): List<T> {

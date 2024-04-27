@@ -37,7 +37,7 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
-          editUrl: `${repoUrl}/tree/main/doc/`,
+          editUrl: `${repoUrl}/tree/main/docs/`,
         },
         theme: {
           customCss: './src/css/custom.css',

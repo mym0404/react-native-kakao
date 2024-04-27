@@ -46,7 +46,7 @@ export default function Page() {
         {'Native Kakao Sdk All In One Solution'}
       </Txt>
       <Box my={10} w={'100%'} h={px(1)} bg={'text'} opacity={0.8} />
-      <Box gap={4}>
+      <Box gap={4} w={'100%'} alignItems={'center'}>
         <Btn
           minW={px(240)}
           title={'Login'}

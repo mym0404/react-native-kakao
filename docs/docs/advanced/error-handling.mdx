@@ -1,0 +1,170 @@
+---
+sidebar_position: 1
+---
+
+# 에러 핸들링
+
+이 글에서 말하는 에러는 API호출 시에 `Promise`가 `reject`되어 `catch`같은 로직으로 잡아낼 수 있는 에러를 의미합니다.
+
+## API호출에 에러가 발생하는 시점의 동기화
+
+:::info
+현재 지원하는 플랫폼인 `Android`와 `iOS` 기준으로 에러가 어떤 상황에 발생하는지는 **로직적으로 거의 차이가 없습니다.**
+:::
+
+예를 들어, Native Kakao SDK의 Android와 iOS의 유저 정보를 가져오는 `me` 함수가 있다고 하겠습니다.
+
+Kakao SDK는 내부적으로 콜백 방식의 구현(이 패키지는 ReactiveX는 굳이 쓰지 않습니다.)을 취합니다.
+
+대부분의 API wrapper 함수는 다음과 같은 형태를 취합니다.
+
+```swift title='ios.swift'
+@objc public func me(
+    _ resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+) {
+  onMain {
+    UserApi.shared.me { user, error in
+      if let error {
+        RNCKakaoUtil.reject(reject, error)
+      } else if let user {
+        resolve([
+          "id": user.id as Any
+          //...
+        ])
+      } else {
+        RNCKakaoUtil.reject(reject, "user not found")
+      }
+    }
+  }
+}
+```
+
+```kotlin title='android.kt'
+@ReactMethod
+override fun me(promise: Promise) =
+  onMain {
+    UserApiClient.instance.me { user, error ->
+      if (error != null) {
+        promise.rejectWith(error)
+      } else if (user == null) {
+        promise.rejectWith("user not found")
+      } else {
+        promise.resolve(
+          argMap().apply {
+            putIntIfNotNull("id", user.id?.toInt())
+            // ...
+          },
+        )
+      }
+    }
+  }
+```
+
+Kakao SDK의 콜백 함수들은 형태가 동일하게 항상 첫 인자는 결과값, 두 번째 인자는 에러를 의미합니다.
+
+만약 에러가 `null` 값이 아니라면 에러가 발생한 것입니다.
+
+또한 이 패키지에선 첫 인자가 유의미한 값이 포함되어서 오는지도 확인합니다.
+
+:::note
+이 동작은 아마도 의미없는 행위(TILT)일 것입니다.
+:::
+
+둘 다 아니라면 성공적으로 결과값을 반환합니다.
+
+## 에러의 형태
+
+JavaScript로 `catch`로 전달되는 에러 객체는 플랫폼별로 조금 다릅니다.
+
+Native Kakao SDK는 플랫폼별로 에러 코드로 소통하지만 이 패키지에선 모든 에러의 인터페이스를 통합하기보단 그대로 유의미한 값을 담아
+transitivity하게 전달하는 방식을 취합니다.
+
+하지만 대부분의 에러는 `code`로 판단 가능하며 대략 다음과 같은 구조를 가집니다.
+
+이것은 이 패키지가 편리한 에러 핸들링을 위해 의미있는 값을 전달하기 위해 많은 관심을 기울여 개발되었기 때문입니다.
+
+- Android
+
+```js
+{
+  "message": "authentication tokens don't exist.",
+  "code": "TokenNotFound",
+  "nativeStackAndroid": [],
+  "userInfo": {
+    "isAppsFailed": false,
+    "isInvalidTokenError": false,
+    "isClientFailed": true,
+    "fatal": true,
+    "isAuthFailed": false,
+    "isApiFailed": false,
+    "nativeErrorMessage": "authentication tokens don't exist."
+  }
+}
+```
+
+- iOS
+
+```js
+{
+  "code": "TokenNotFound",
+  "message": "authentication tokens not exist.",
+  "nativeStackIOS": [
+    "0   KakaoExample                        0x000000010069dc9c RCTJSErrorFromCodeMessageAndNSError + 112",
+    "1   KakaoExample                        0x00000001009a023c ___ZZN8facebook5react15ObjCTurboModule13createPromiseERNS_3jsi7RuntimeENSt3__112basic_stringIcNS5_11char_traitsIcEENS5_9allocatorIcEEEEU13block_pointerFvU13block_pointerFvP11objc_objectEU13block_pointerFvP8NSStringSH_P7NSErrorEEENK3$_0clES4_RKNS2_5ValueEPSQ_m_block_invoke.59 + 388",
+    "2   KakaoExample                        0x00000001002c5e20 $sSo8NSStringCSgACSo7NSErrorCSgIeyByyy_SSSgAGs5Error_pSgIegggg_TR + 380",
+    // ...
+  ],
+  "domain": "RNCKakaoErrorDomain",
+  "userInfo": {
+    "isAuthFailed": false,
+    "isInvalidTokenError": false,
+    "isAppsFailed": false,
+    "isClientFailed": true,
+    "isApiFailed": false,
+    "fatal": false,
+    "nativeErrorMessage": "The operation couldn’t be completed. (KakaoSDKCommon.SdkError error 0.)"
+  }
+}
+
+```
+
+중요한 것은 `code`, `message`이고 기타 부가적인 정보는 `userInfo`에 포함되어 있습니다.
+
+:::warning 경고
+`code`는 Native Kakao SDK의 Enum의 case 이름들을 그대로 가져온 것이기 때문에 Native Kakao SDK에서
+두 케이스의 이름이 다르게 정의되었다면 다를 수 있습니다. 하지만 대부분의 경우 동일합니다.
+:::
+
+## 에러를 핸들링하는 예시
+
+실제 어떠한 `code`값들이 존재하는지는 Android, iOS 공식 API 문서를 참고해서 확인하실 수 있습니다.
+
+하지만 대략 다음과 같은 방법으로 대부분의 에러를 정확히 구별해 핸들링할 수 있습니다.
+
+```tsx
+ selectSingleFriend({ mode: 'popup', options: {} })
+   .then((res) => showMessage({ message: formatJson(res) }))
+   .catch((e) => {
+     if (e && typeof e === 'object') {
+       if (e.code === 'TokenNotFound') {
+         showMessage({ type: 'warning', message: '토큰을 얻어오지 못했습니다' });
+       } else {
+         // ...
+       }
+     } else {
+       showMessage({ type: 'warning', message: '알 수 없는 에러입니다' });
+     }
+   })
+```
+
+
+
+## Android의 ActivityNotFoundException
+
+Android의 `Context`가 필요한 API들은 React Native Module에서 제공하는 `getCurrentActivity()`를 통해 동작됩니다.
+
+`ReactApplicationContext`는 theme에 대한 정보나 `startActivity`같은 행위에서 추가적인 플래그를 요구하여 예기치 못한
+결과로 귀결될 수 있기 때문입니다.
+
+따라서 `getCurrentActivity()`가 `null`이 반환될 경우에도 에러가 반환됩니다.
