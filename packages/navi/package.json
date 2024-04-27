@@ -1,7 +1,7 @@
 {
   "name": "@react-native-kakao/navi",
   "description": "React Native Kakao Navi SDK",
-  "version": "1.4.6-alpha.0",
+  "version": "1.4.6-alpha.1",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
   "types": "lib/typescript/src/index.d.ts",
@@ -62,7 +62,7 @@
     "access": "public"
   },
   "devDependencies": {
-    "@react-native-kakao/core": "1.4.6-alpha.0",
+    "@react-native-kakao/core": "1.4.6-alpha.1",
     "@types/invariant": "^2",
     "@types/jest": "^29.5.5",
     "@types/react": "^18.2.44",
@@ -74,7 +74,7 @@
     "typescript": "5.1.6"
   },
   "peerDependencies": {
-    "@react-native-kakao/core": "1.4.6-alpha.0",
+    "@react-native-kakao/core": "1.4.6-alpha.1",
     "react": "*",
     "react-native": "*"
   },
