@@ -13,7 +13,8 @@
         "!example/android/app/build",
         "!packages/**/lib",
         "!packages/**/android/build",
-        "**/package.json"
+        "**/package.json",
+        "!**/node_modules"
       ],
       "outputs": []
     },
@@ -29,7 +30,8 @@
         "!example/android/app/build",
         "!packages/**/lib",
         "!packages/**/android/build",
-        "**/package.json"
+        "**/package.json",
+        "!**/node_modules"
       ],
       "outputs": []
     },
@@ -46,7 +48,8 @@
         "!example/ios/build",
         "!example/ios/Pods",
         "!packages/**/lib",
-        "**/package.json"
+        "**/package.json",
+        "!**/node_modules"
       ],
       "outputs": []
     },
@@ -63,7 +66,8 @@
         "!example/ios/build",
         "!example/ios/Pods",
         "!packages/**/lib",
-        "**/package.json"
+        "**/package.json",
+        "!**/node_modules"
       ],
       "outputs": []
     }

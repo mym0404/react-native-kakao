@@ -125,7 +125,7 @@ jobs:
         env:
           JAVA_OPTS: "-XX:MaxHeapSize=6g"
         run: |
-          yarn turbo run ci:android:build:${{matrix.arch}} --cache-dir="${{ env.TURBO_CACHE_DIR }} --single-package"
+          yarn turbo run ci:android:build:${{matrix.arch}} --cache-dir="${{ env.TURBO_CACHE_DIR }}" --single-package
 
   build-ios:
     runs-on: macos-latest
@@ -179,4 +179,4 @@ jobs:
 
       - name: Build example for iOS
         run: |
-          yarn turbo run ci:ios:build:${{matrix.arch}} --cache-dir="${{ env.TURBO_CACHE_DIR }} --single-package"
+          yarn turbo run ci:ios:build:${{matrix.arch}} --cache-dir="${{ env.TURBO_CACHE_DIR }}" --single-package
