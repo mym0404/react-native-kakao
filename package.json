@@ -33,6 +33,7 @@
     "prepare": "husky",
     "build": "lerna run prepack",
     "bump": "./script/version.sh",
+    "bump:prerelease": "./script/version-prerelease.sh",
     "release": "./script/publish.sh",
     "android": "yarn example android",
     "ios": "yarn example ios",
