@@ -45,7 +45,10 @@
     "javascript",
     "react",
     "expo",
-    "kakao-share"
+    "kakao-share",
+    "kakao-message",
+    "kakao-message-template",
+    "kakaotalk"
   ],
   "repository": {
     "type": "git",
