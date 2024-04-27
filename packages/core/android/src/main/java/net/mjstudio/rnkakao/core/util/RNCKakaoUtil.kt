@@ -15,8 +15,6 @@ import com.kakao.sdk.common.model.AuthError
 import com.kakao.sdk.common.model.ClientError
 import java.util.Date
 
-private const val UNKNOWN_ERROR = "RNC_KAKAO_UNKNOWN"
-
 fun Promise.rejectWith(e: Throwable) {
   val message = e.localizedMessage ?: ""
 
@@ -29,6 +27,7 @@ fun Promise.rejectWith(e: Throwable) {
       putBoolean("isClientFailed", false)
       putBoolean("isAppsFailed", false)
       putBoolean("isInvalidTokenError", false)
+      putBoolean("isPackageError", false)
     }
 
   when (e) {
@@ -52,18 +51,19 @@ fun Promise.rejectWith(e: Throwable) {
       userInfo.putBoolean("isInvalidTokenError", e.isInvalidTokenError())
       reject(e.reason.name, e.msg, userInfo)
     }
+    is RNCKakaoException -> {
+      userInfo.putBoolean("isPackageError", true)
+      reject(e.code, e.message, userInfo)
+    }
     else -> {
+      userInfo.putBoolean("isPackageError", true)
       reject(
-        UNKNOWN_ERROR,
+        RNCKakaoUnknownException().code,
         message,
         userInfo,
       )
     }
   }
-}
-
-fun Promise.rejectWith(s: String) {
-  rejectWith(RuntimeException(s))
 }
 
 inline fun <reified T> ReadableArray.filterIsInstance(): List<T> {

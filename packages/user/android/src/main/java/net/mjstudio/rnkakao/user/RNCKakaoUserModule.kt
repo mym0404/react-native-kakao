@@ -14,6 +14,7 @@ import com.kakao.sdk.auth.model.Prompt.SELECT_ACCOUNT
 import com.kakao.sdk.auth.model.Prompt.UNIFY_DAUM
 import com.kakao.sdk.common.model.KakaoSdkError
 import com.kakao.sdk.user.UserApiClient
+import net.mjstudio.rnkakao.core.util.RNCKakaoResponseNotFoundException
 import net.mjstudio.rnkakao.core.util.RNCKakaoUtil
 import net.mjstudio.rnkakao.core.util.argArr
 import net.mjstudio.rnkakao.core.util.argMap
@@ -50,7 +51,7 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
         if (error != null) {
           promise.rejectWith(error)
         } else if (token == null) {
-          promise.rejectWith("token not found")
+          promise.rejectWith(RNCKakaoResponseNotFoundException("token"))
         } else {
           promise.resolve(
             argMap().apply {
@@ -178,7 +179,7 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
         if (error != null) {
           promise.rejectWith(error)
         } else if (scopeInfo?.scopes == null) {
-          promise.rejectWith("scopes not found")
+          promise.rejectWith(RNCKakaoResponseNotFoundException("scopes"))
         } else {
           promise.resolve(
             argArr().also { arr ->
@@ -212,7 +213,7 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
         if (error != null) {
           promise.rejectWith(error)
         } else if (scopeInfo == null) {
-          promise.rejectWith("scopeInfo not found")
+          promise.rejectWith(RNCKakaoResponseNotFoundException("scopeInfo"))
         } else {
           promise.resolve(42)
         }
@@ -226,7 +227,7 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
           if (error != null) {
             promise.rejectWith(error)
           } else if (serviceTerms?.serviceTerms == null) {
-            promise.rejectWith("serviceTerms not found")
+            promise.rejectWith(RNCKakaoResponseNotFoundException("serviceTerms"))
           } else {
             promise.resolve(
               argMap().apply {
@@ -259,7 +260,7 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
           if (error != null) {
             promise.rejectWith(error)
           } else if (addrs == null) {
-            promise.rejectWith("shipping addresses not found")
+            promise.rejectWith(RNCKakaoResponseNotFoundException("shippingAddresses"))
           } else {
             promise.resolve(
               argMap().apply {
@@ -301,7 +302,7 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
           if (error != null) {
             promise.rejectWith(error)
           } else if (user == null) {
-            promise.rejectWith("user not found")
+            promise.rejectWith(RNCKakaoResponseNotFoundException("user"))
           } else {
             promise.resolve(
               argMap().apply {

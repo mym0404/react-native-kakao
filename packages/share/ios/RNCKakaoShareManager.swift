@@ -67,11 +67,14 @@ import SafariServices
           if success {
             resolve(42)
           } else {
-            RNCKakaoUtil.reject(reject, "sharingResult url open failed \(sharingResult.url)")
+            RNCKakaoUtil.reject(
+              reject,
+              RNCKakaoError.unknown("sharingResult url open failed \(sharingResult.url)")
+            )
           }
         }
       } else {
-        RNCKakaoUtil.reject(reject, "sharingResult url not found")
+        RNCKakaoUtil.reject(reject, RNCKakaoError.responseNotFound(name: "sharingResult"))
       }
     }
 
@@ -91,7 +94,10 @@ import SafariServices
           RNCKakaoUtil.reject(reject, error)
         }
       } else {
-        RNCKakaoUtil.reject(reject, "templateId or defaultTemplate and templateClazz not passed")
+        RNCKakaoUtil.reject(
+          reject,
+          RNCKakaoError.unknown("templateId or defaultTemplate and templateType not passed")
+        )
       }
     } else if useWebBrowserIfKakaoTalkNotAvailable {
       if let templateId {
@@ -107,11 +113,14 @@ import SafariServices
             if success {
               resolve(42)
             } else {
-              RNCKakaoUtil.reject(reject, "SFSafariViewController open failed")
+              RNCKakaoUtil.reject(
+                reject,
+                RNCKakaoError.unknown("SFSafariViewController open failed")
+              )
             }
           }
         } else {
-          RNCKakaoUtil.reject(reject, "makeCustomUrl failed")
+          RNCKakaoUtil.reject(reject, RNCKakaoError.unknown("makeCustomUrl failed"))
         }
       } else if var defaultTemplate, let templateType {
         do {
@@ -125,20 +134,26 @@ import SafariServices
               if success {
                 resolve(42)
               } else {
-                RNCKakaoUtil.reject(reject, "SFSafariViewController open failed")
+                RNCKakaoUtil.reject(
+                  reject,
+                  RNCKakaoError.unknown("SFSafariViewController open failed")
+                )
               }
             }
           } else {
-            RNCKakaoUtil.reject(reject, "makeDefaultUrl failed")
+            RNCKakaoUtil.reject(reject, RNCKakaoError.unknown("makeDefaultUrl failed"))
           }
         } catch {
           RNCKakaoUtil.reject(reject, error)
         }
       } else {
-        RNCKakaoUtil.reject(reject, "templateId or defaultTemplate and templateClazz not passed")
+        RNCKakaoUtil.reject(
+          reject,
+          RNCKakaoError.unknown("templateId or defaultTemplate and templateType not passed")
+        )
       }
     } else {
-      RNCKakaoUtil.reject(reject, "kakaotalk not available")
+      RNCKakaoUtil.reject(reject, RNCKakaoError.unknown("kakaotalk not available"))
     }
   }
 
