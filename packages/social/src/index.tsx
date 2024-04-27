@@ -3,6 +3,7 @@ import { NativeModules, Platform } from 'react-native';
 import type {
   KakaoTalkFriendProfile,
   KakaoTalkFriendSelectOptions,
+  KakaoTalkProfile,
   Spec,
 } from './spec/NativeKakaoSocial';
 
@@ -37,7 +38,7 @@ const Native: Spec = Module
       },
     );
 
-export function getTalkProfile() {
+export function getTalkProfile(): Promise<KakaoTalkProfile> {
   return Native.getProfile();
 }
 

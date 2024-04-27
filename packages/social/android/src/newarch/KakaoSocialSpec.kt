@@ -1,6 +1,6 @@
-package net.mjstudio.rnkakao.user
+package net.mjstudio.rnkakao.social
 
 import com.facebook.react.bridge.ReactApplicationContext
 
-abstract class KakaoUserSpec internal constructor(context: ReactApplicationContext) :
-  NativeKakaoUserSpec(context)
+abstract class KakaoSocialSpec internal constructor(context: ReactApplicationContext) :
+  NativeKakaoSocialSpec(context)
