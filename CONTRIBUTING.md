@@ -71,6 +71,12 @@ yarn
 The [example app](/example/) demonstrates usage of the library. You need to run it to test any
 changes you make.
 
+> [!IMPORTANT]
+> Our example app uses Expo. You should generate iOS and Android projects for development or building.
+>
+> Please take a look at the scripts for handling Expo project generation and building.
+> If you are having trouble building or running the Expo example project, you can run it directly from Android Studio or Xcode after the appropriate setup.
+
 It is configured to use the local version of the library, so any changes you make to the library's
 source code will be reflected in the example app. Changes to the library's JavaScript code will be
 reflected in the example app without a rebuild, but native code changes will require a rebuild of
