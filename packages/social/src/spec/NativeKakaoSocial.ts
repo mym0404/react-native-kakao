@@ -75,6 +75,36 @@ export interface KakaoTalkFriendSelectOptions {
   minPickableCount?: number;
 }
 
+export interface KakaoTalkGetFriendsResult {
+  totalCount: number;
+  favoriteCount?: number;
+  friends: KakaoTalkFriend[];
+}
+/**
+ * 카카오톡 친구
+ *
+ * @property id 회원번호
+ * @property uuid 메시지를 전송하기 위한 고유 아이디. 사용자의 계정 상태에 따라 이 정보는 바뀔 수 있으므로 앱내의 사용자 식별자로는 권장하지 않음.
+ * @property profileNickname 친구의 닉네임
+ * @property profileThumbnailImage 썸네일 이미지 URL
+ * @property favorite 즐겨찾기 추가 여부
+ * @property allowedMsg 메시지 수신이 허용되었는지 여부. 앱가입 친구의 경우는 feed msg 에 해당. 앱미가입친구는 invite msg 에 해당
+ */
+export interface KakaoTalkFriend {
+  id?: number;
+  uuid: string;
+  profileNickname: string;
+  profileThumbnailImage?: string;
+  favorite?: boolean;
+  allowedMsg?: boolean;
+}
+export interface KakaoTalkGetFriendsOptions {
+  offset?: number;
+  limit?: number;
+  order?: 'asc' | 'desc';
+  friendOrder?: 'nickname' | 'age' | 'favorite';
+}
+
 export interface Spec extends TurboModule {
   getProfile(): Promise<KakaoTalkProfile>;
   selectFriends(
@@ -82,6 +112,7 @@ export interface Spec extends TurboModule {
     mode: string,
     options: UnsafeObject,
   ): Promise<KakaoTalkFriendSelectResult>;
+  getFriends(options: UnsafeObject): Promise<KakaoTalkGetFriendsResult>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('RNCKakaoSocial');

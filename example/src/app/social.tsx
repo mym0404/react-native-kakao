@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { showMessage } from 'react-native-flash-message';
 import { formatJson } from '@mj-studio/js-util';
 import {
+  getFriends,
   getTalkProfile,
   type KakaoTalkProfile,
   selectMultipleFriends,
@@ -50,6 +51,14 @@ export default function Page() {
         title={'Select Multiple Friends'}
         onPress={() =>
           selectMultipleFriends({ mode: 'popup', options: {} })
+            .then((res) => showMessage({ message: formatJson(res) }))
+            .catch((e) => showMessage({ type: 'warning', message: e.message }))
+        }
+      />
+      <Btn
+        title={'Get Friends'}
+        onPress={() =>
+          getFriends({ options: {} })
             .then((res) => showMessage({ message: formatJson(res) }))
             .catch((e) => showMessage({ type: 'warning', message: e.message }))
         }

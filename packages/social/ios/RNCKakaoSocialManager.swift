@@ -32,41 +32,6 @@ import RNCKakaoCore
     }
   }
 
-  @objc public func getFriends(
-    options: [String: Any],
-    resolve: @escaping RCTPromiseResolveBlock,
-    reject: @escaping RCTPromiseRejectBlock
-  ) {
-    let order: Order? = switch options["order"] {
-    case let x as String where x == "asc": .Asc
-    case let x as String where x == "desc": .Desc
-    default: nil
-    }
-    let friendOrder: FriendOrder? = switch options["friendOrder"] {
-    case let x as String where x == "nickname": .Nickname
-    case let x as String where x == "age": .Age
-    case let x as String where x == "favorite": .Favorite
-    default: nil
-    }
-
-    onMain {
-      TalkApi.shared
-        .friends(
-          offset: options["offset"] as? Int,
-          limit: options["limit"] as? Int,
-          order: order,
-          friendOrder: friendOrder
-        ) { friends, error in
-          if let error {
-            RNCKakaoUtil.reject(reject, error)
-          } else if let friends {
-          } else {
-            RNCKakaoUtil.reject(reject, RNCKakaoError.responseNotFound(name: "friends"))
-          }
-        }
-    }
-  }
-
   @objc public func selectFriends(
     _ multiple: Bool,
     mode: String,
@@ -136,6 +101,56 @@ import RNCKakaoCore
           )
         }
       }
+    }
+  }
+
+  @objc public func getFriends(
+    options: [String: Any],
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    let order: Order? = switch options["order"] {
+    case let x as String where x == "asc": .Asc
+    case let x as String where x == "desc": .Desc
+    default: nil
+    }
+    let friendOrder: FriendOrder? = switch options["friendOrder"] {
+    case let x as String where x == "nickname": .Nickname
+    case let x as String where x == "age": .Age
+    case let x as String where x == "favorite": .Favorite
+    default: nil
+    }
+
+    onMain {
+      TalkApi.shared
+        .friends(
+          offset: options["offset"] as? Int,
+          limit: options["limit"] as? Int,
+          order: order,
+          friendOrder: friendOrder
+        ) { friends, error in
+          if let error {
+            RNCKakaoUtil.reject(reject, error)
+          } else if let friends, let items = friends.elements {
+            resolve([
+              "totalCount": friends.totalCount,
+              "favoriteCount": friends.favoriteCount as Any,
+              "friends": items
+                .map {
+                  [
+                    "id": $0.id as Any,
+                    "uuid": $0.uuid,
+                    "profileNickname": $0.profileNickname as Any,
+                    "profileThumbnailImage": $0.profileThumbnailImage as Any,
+                    "favorite": $0.favorite as Any,
+                    "allowedMsg": $0.allowedMsg as Any
+                  ]
+                }
+            ])
+          } else {
+            RNCKakaoUtil.reject(reject, RNCKakaoError.responseNotFound(name: "friends"))
+          }
+        }
     }
   }
 }

@@ -1,8 +1,12 @@
 import { NativeModules, Platform } from 'react-native';
 
 import type {
+  KakaoTalkFriend,
   KakaoTalkFriendProfile,
   KakaoTalkFriendSelectOptions,
+  KakaoTalkFriendSelectResult,
+  KakaoTalkGetFriendsOptions,
+  KakaoTalkGetFriendsResult,
   KakaoTalkProfile,
   Spec,
 } from './spec/NativeKakaoSocial';
@@ -12,7 +16,10 @@ export type {
   KakaoTalkFriendProfile,
   KakaoTalkFriendSelectOptions,
   KakaoTalkFriendSelectResult,
-} from './spec/NativeKakaoSocial';
+  KakaoTalkGetFriendsOptions,
+  KakaoTalkFriend,
+  KakaoTalkGetFriendsResult,
+};
 
 const LINKING_ERROR =
   "The package '@react-native-kakao/social' doesn't seem to be linked. Make sure: \n\n" +
@@ -62,4 +69,12 @@ export function selectMultipleFriends({
   options?: KakaoTalkFriendSelectOptions;
 }) {
   return Native.selectFriends(true, mode, options);
+}
+
+export function getFriends({
+  options = {},
+}: {
+  options?: KakaoTalkGetFriendsOptions;
+}): Promise<KakaoTalkGetFriendsResult> {
+  return Native.getFriends(options);
 }
