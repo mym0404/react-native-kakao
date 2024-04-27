@@ -9,7 +9,6 @@
     "version": {
       "graphType": "all",
       "syncWorkspaceLock": true,
-      "allowBranch": "main",
       "conventionalCommits": true,
       "message": "chore: publish",
       "preId": "alpha",
