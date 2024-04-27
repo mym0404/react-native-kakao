@@ -8,6 +8,7 @@ NEW_VALUE="$1"
 POD="$2"
 CLEAN="$3"
 
+pwd
 # Modify app.json
 JSON="example/app.json"
 sed -i '' -e "s/\"newArchEnabled\": true/\"newArchEnabled\": ${NEW_VALUE}/g" $JSON
