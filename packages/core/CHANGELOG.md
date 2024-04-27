@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.6-alpha.2](https://github.com/mym0404/react-native-kakao/compare/v1.4.6-alpha.1...v1.4.6-alpha.2) (2024-04-27)
+
+### Bug Fixes
+
+* **core:** include expo config plugin whole build outputs ([712fde5](https://github.com/mym0404/react-native-kakao/commit/712fde585537eaf1dd1a799c16b08230333509db))
+
 ## [1.4.6-alpha.1](https://github.com/mym0404/react-native-kakao/compare/v1.4.6-alpha.0...v1.4.6-alpha.1) (2024-04-27)
 
 **Note:** Version bump only for package @react-native-kakao/core

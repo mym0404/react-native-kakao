@@ -1,7 +1,7 @@
 {
   "name": "@react-native-kakao/user",
   "description": "React Native Kakao User SDK",
-  "version": "1.4.6-alpha.1",
+  "version": "1.4.6-alpha.2",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
   "types": "lib/typescript/src/index.d.ts",
@@ -62,7 +62,7 @@
     "access": "public"
   },
   "devDependencies": {
-    "@react-native-kakao/core": "1.4.6-alpha.1",
+    "@react-native-kakao/core": "1.4.6-alpha.2",
     "@types/invariant": "^2",
     "@types/jest": "^29.5.5",
     "@types/react": "^18.2.44",
@@ -74,7 +74,7 @@
     "typescript": "5.1.6"
   },
   "peerDependencies": {
-    "@react-native-kakao/core": "1.4.6-alpha.1",
+    "@react-native-kakao/core": "1.4.6-alpha.2",
     "react": "*",
     "react-native": "*"
   },
