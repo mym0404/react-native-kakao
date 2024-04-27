@@ -3,39 +3,35 @@ import React
 import UIKit
 
 private let DEFAULT_APP_DISPLAY_NAME = "RNKakao"
+private let UNKNOWN_ERROR = "RNC_KAKAO_UNKNOWN"
+
+private enum RNCKakaoError: Error {
+  case unknown(message: String)
+}
 
 public class RNCKakaoUtil {
   static let RNCKakaoErrorDomain = "RNCKakaoErrorDomain"
 
-  public class func reject(
-    _ reject: RCTPromiseRejectBlock,
-    _ exception: NSException
-  ) {
-    var userInfo = [String: Any]()
-
-    userInfo["fatal"] = true
-    userInfo["code"] = "unknown"
-    userInfo["message"] = exception.reason
-    userInfo["nativeErrorCode"] = exception.name.rawValue
-    userInfo["nativeErrorMessage"] = exception.reason
-
-    let error = NSError(domain: RNCKakaoErrorDomain, code: 444, userInfo: userInfo)
-    reject(exception.name.rawValue, exception.reason, error)
-  }
-
   public class func reject(_ reject: RCTPromiseRejectBlock, _ error: Error) {
     var userInfo = [String: Any]()
+
+    let message = error.localizedDescription
+
     userInfo["fatal"] = false
-    userInfo["code"] = "unknown"
-    userInfo["message"] = error.localizedDescription
-    userInfo["nativeErrorCode"] = -1
-    userInfo["nativeErrorMessage"] = error.localizedDescription
+    userInfo["nativeErrorMessage"] = message
+    userInfo["isApiFailed"] = false
+    userInfo["isAuthFailed"] = false
+    userInfo["isClientFailed"] = false
+    userInfo["isAppsFailed"] = false
+    userInfo["isInvalidTokenError"] = false
 
     if let kakaoError = error as? SdkError {
       userInfo["isApiFailed"] = kakaoError.isApiFailed
       userInfo["isAuthFailed"] = kakaoError.isAuthFailed
       userInfo["isClientFailed"] = kakaoError.isClientFailed
+      userInfo["isAppsFailed"] = kakaoError.isAppsFailed
       userInfo["isInvalidTokenError"] = kakaoError.isInvalidTokenError()
+
       switch kakaoError {
       case let .ClientFailed(reason, errorMessage):
         reject(
@@ -48,35 +44,34 @@ public class RNCKakaoUtil {
           userInfo["requiredScopes"] = requiredScopes
         }
         reject(
-          String(reason.rawValue),
-          errorInfo?.msg ?? kakaoError.localizedDescription,
+          "\(reason)",
+          errorInfo?.msg ?? message,
           NSError(domain: RNCKakaoErrorDomain, code: 444, userInfo: userInfo)
         )
       case let .AuthFailed(reason, errorInfo):
         reject(
-          reason.rawValue,
-          errorInfo?.errorDescription ?? kakaoError.localizedDescription,
+          "\(reason)",
+          errorInfo?.errorDescription ?? message,
           NSError(domain: RNCKakaoErrorDomain, code: 444, userInfo: userInfo)
         )
       case let .AppsFailed(reason, errorInfo):
         reject(
-          reason.rawValue,
-          errorInfo?.errorMsg ?? kakaoError.localizedDescription,
+          "\(reason)",
+          errorInfo?.errorMsg ?? message,
           NSError(domain: RNCKakaoErrorDomain, code: 444, userInfo: userInfo)
         )
       }
     } else {
       reject(
-        "unknown",
-        error.localizedDescription,
+        UNKNOWN_ERROR,
+        message,
         NSError(domain: RNCKakaoErrorDomain, code: 444, userInfo: userInfo)
       )
     }
   }
 
   public class func reject(_ reject: RCTPromiseRejectBlock, _ message: String) {
-    let error = NSError(domain: RNCKakaoErrorDomain, code: 444, userInfo: ["message": message])
-    reject(DEFAULT_APP_DISPLAY_NAME, message, error)
+    self.reject(reject, RNCKakaoError.unknown(message: message))
   }
 
   private class func getTopmostViewController(

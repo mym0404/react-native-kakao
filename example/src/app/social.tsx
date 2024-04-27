@@ -33,15 +33,23 @@ export default function Page() {
       <Btn
         title={'Select Single Friend'}
         onPress={() =>
-          selectSingleFriend({ mode: 'full', options: {} })
+          selectSingleFriend({ mode: 'popup', options: {} })
             .then((res) => showMessage({ message: formatJson(res) }))
-            .catch((e) => showMessage({ type: 'warning', message: e.message }))
+            .catch((e) => {
+              if (e && typeof e === 'object') {
+                if (e.code === 'TokenNotFound') {
+                  showMessage({ type: 'warning', message: '토큰을 얻어오지 못했습니다' });
+                } else {
+                  // ...
+                }
+              }
+            })
         }
       />
       <Btn
         title={'Select Multiple Friends'}
         onPress={() =>
-          selectMultipleFriends({ mode: 'full', options: {} })
+          selectMultipleFriends({ mode: 'popup', options: {} })
             .then((res) => showMessage({ message: formatJson(res) }))
             .catch((e) => showMessage({ type: 'warning', message: e.message }))
         }
