@@ -75,6 +75,8 @@ Google Play Console에선 앱을 릴리즈 할 때마다 [App signing](https://p
 
 보통 React Native설정엔 `android/app/build.gradle`에 `enableProguardInReleaseBuilds`로 설정 할 수 있게 되어있습니다.
 
+최신 규칙은 [공식 문서](https://developers.kakao.com/docs/latest/ko/android/getting-started#project-pro-guard)를 참고하시는 것을 추천드립니다.
+
 ```text title='proguard-rules.pro'
 -keep class com.kakao.sdk.**.model.* { <fields>; }
 -keep class * extends com.google.gson.TypeAdapter
