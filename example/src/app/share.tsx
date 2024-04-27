@@ -177,13 +177,14 @@ export default function Page() {
         title={'Send Custom Template To Friends'}
         onPress={async () => {
           const { users } = await selectMultipleFriends({ mode: 'popup' });
-          await sendCustomTemplateToFriends({
+          const ret = await sendCustomTemplateToFriends({
             templateId: 107430,
             templateArgs: {
               price: '20000',
             },
             receiverUuids: users.map((u) => u.uuid),
           });
+          console.log(ret);
         }}
       />
       <Txt>{'Feed'}</Txt>

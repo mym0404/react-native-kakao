@@ -56,4 +56,16 @@ abstract class KakaoShareSpec internal constructor(context: ReactApplicationCont
       serverCallbackArgs: ReadableMap?,
       promise: Promise,
     )
+
+    abstract fun shareOrSendMeOrSendFriendOrWhatever(
+      sendType: String,
+      templateType: String,
+      templateId: Double,
+      templateJson: ReadableMap,
+      receiverUuids: ReadableArray,
+      useWebBrowserIfKakaoTalkNotAvailable: Boolean,
+      templateArgs: ReadableMap,
+      serverCallbackArgs: ReadableMap,
+      promise: Promise,
+    )
   }

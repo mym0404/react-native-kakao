@@ -6,6 +6,7 @@ import com.kakao.sdk.template.model.CalendarTemplate
 import com.kakao.sdk.template.model.Commerce
 import com.kakao.sdk.template.model.CommerceTemplate
 import com.kakao.sdk.template.model.Content
+import com.kakao.sdk.template.model.DefaultTemplate
 import com.kakao.sdk.template.model.FeedTemplate
 import com.kakao.sdk.template.model.IdType.CALENDAR
 import com.kakao.sdk.template.model.IdType.EVENT
@@ -16,11 +17,26 @@ import com.kakao.sdk.template.model.ListTemplate
 import com.kakao.sdk.template.model.LocationTemplate
 import com.kakao.sdk.template.model.Social
 import com.kakao.sdk.template.model.TextTemplate
+import net.mjstudio.rnkakao.core.util.RNCKakaoUnknownException
 import net.mjstudio.rnkakao.core.util.filterIsReadableMap
 import net.mjstudio.rnkakao.core.util.getIntElseNull
 import net.mjstudio.rnkakao.core.util.toStringMap
 
 object RNCKakaoShareTemplates {
+  fun createDefaultTemplate(
+    template: ReadableMap,
+    templateType: String,
+  ): DefaultTemplate =
+    when (templateType) {
+      "feed" -> createFeedTemplate(template)
+      "list" -> createListTemplate(template)
+      "location" -> createLocationTemplate(template)
+      "commerce" -> createCommerceTemplate(template)
+      "text" -> createTextTemplate(template)
+      "calendar" -> createCalendarTemplate(template)
+      else -> throw RNCKakaoUnknownException("Unknown templateType: $templateType")
+    }
+
   private fun ReadableMap.toLink() =
     Link(
       webUrl = getString("webUrl"),
@@ -83,7 +99,7 @@ object RNCKakaoShareTemplates {
       currencyUnitPosition = getIntElseNull("currencyUnitPosition"),
     )
 
-  fun createFeedTemplate(map: ReadableMap) =
+  private fun createFeedTemplate(map: ReadableMap) =
     FeedTemplate(
       content = map.getMap("content")!!.toContent(),
       itemContent = map.getMap("itemContent")?.toItemContent(),
@@ -92,7 +108,7 @@ object RNCKakaoShareTemplates {
       buttonTitle = map.getString("buttonTitle"),
     )
 
-  fun createListTemplate(map: ReadableMap): ListTemplate {
+  private fun createListTemplate(map: ReadableMap): ListTemplate {
     return ListTemplate(
       headerTitle = map.getString("headerTitle") ?: "",
       headerLink = map.getMap("headerLink")?.toLink() ?: Link(),
@@ -104,7 +120,7 @@ object RNCKakaoShareTemplates {
     )
   }
 
-  fun createLocationTemplate(map: ReadableMap) =
+  private fun createLocationTemplate(map: ReadableMap) =
     LocationTemplate(
       address = map.getString("address") ?: "",
       content = map.getMap("content")!!.toContent(),
@@ -114,7 +130,7 @@ object RNCKakaoShareTemplates {
       buttonTitle = map.getString("buttonTitle"),
     )
 
-  fun createCommerceTemplate(map: ReadableMap) =
+  private fun createCommerceTemplate(map: ReadableMap) =
     CommerceTemplate(
       content = map.getMap("content")!!.toContent(),
       commerce = map.getMap("commerce")!!.toCommerce(),
@@ -122,7 +138,7 @@ object RNCKakaoShareTemplates {
       buttonTitle = map.getString("buttonTitle"),
     )
 
-  fun createTextTemplate(map: ReadableMap) =
+  private fun createTextTemplate(map: ReadableMap) =
     TextTemplate(
       text = map.getString("text") ?: "",
       link = map.getMap("link")?.toLink() ?: Link(),
@@ -130,7 +146,7 @@ object RNCKakaoShareTemplates {
       buttonTitle = map.getString("buttonTitle"),
     )
 
-  fun createCalendarTemplate(map: ReadableMap) =
+  private fun createCalendarTemplate(map: ReadableMap) =
     CalendarTemplate(
       id = map.getString("id")!!,
       idType = if (map.getString("id") == "event") EVENT else CALENDAR,

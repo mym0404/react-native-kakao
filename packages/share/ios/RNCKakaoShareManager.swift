@@ -40,7 +40,6 @@ import SafariServices
           sendType: sendType,
           templateType: templateType,
           dict: templateJson,
-          type: templateType,
           receiverUuids: receiverUuids,
           useWebBrowserIfKakaoTalkNotAvailable: useWebBrowserIfKakaoTalkNotAvailable,
           serverCallbackArgs: serverCallbackArgs,
@@ -97,7 +96,6 @@ import SafariServices
     sendType: String,
     templateType: String,
     dict: [String: Any],
-    type: String,
     receiverUuids: [String],
     useWebBrowserIfKakaoTalkNotAvailable: Bool,
     serverCallbackArgs: [String: String]?,
@@ -341,7 +339,7 @@ import SafariServices
     } else if type == "calendar" {
       return try SdkJSONDecoder.custom.decode(CalendarTemplate.self, from: json) as Templatable
     } else {
-      throw SdkError.ApiFailed(reason: .BadParameter, errorInfo: nil)
+      throw RNCKakaoError.unknown("Unknown templateType: \(type)")
     }
   }
 }

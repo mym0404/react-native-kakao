@@ -119,7 +119,7 @@ export function sendCustomTemplateToFriends({
   receiverUuids: string[];
 }): Promise<string[]> {
   return Native.shareOrSendMeOrSendFriendOrWhatever(
-    SendTypes.sendMe,
+    SendTypes.sendFriend,
     TemplateTypes.custom,
     templateId,
     {},
@@ -172,7 +172,7 @@ export function sendFeedTemplateToFriends({
   receiverUuids: string[];
 }): Promise<string[]> {
   return Native.shareOrSendMeOrSendFriendOrWhatever(
-    SendTypes.sendMe,
+    SendTypes.sendFriend,
     TemplateTypes.feed,
     -1,
     template,
@@ -225,7 +225,7 @@ export function sendListTemplateToFriends({
   receiverUuids: string[];
 }): Promise<string[]> {
   return Native.shareOrSendMeOrSendFriendOrWhatever(
-    SendTypes.sendMe,
+    SendTypes.sendFriend,
     TemplateTypes.list,
     -1,
     template,
@@ -278,7 +278,7 @@ export function sendLocationTemplateToFriends({
   receiverUuids: string[];
 }): Promise<string[]> {
   return Native.shareOrSendMeOrSendFriendOrWhatever(
-    SendTypes.sendMe,
+    SendTypes.sendFriend,
     TemplateTypes.location,
     -1,
     template,
@@ -331,7 +331,7 @@ export function sendCommerceTemplateToFriends({
   receiverUuids: string[];
 }): Promise<string[]> {
   return Native.shareOrSendMeOrSendFriendOrWhatever(
-    SendTypes.sendMe,
+    SendTypes.sendFriend,
     TemplateTypes.commerce,
     -1,
     template,
@@ -384,7 +384,7 @@ export function sendTextTemplateToFriends({
   receiverUuids: string[];
 }): Promise<string[]> {
   return Native.shareOrSendMeOrSendFriendOrWhatever(
-    SendTypes.sendMe,
+    SendTypes.sendFriend,
     TemplateTypes.text,
     -1,
     template,
@@ -437,7 +437,7 @@ export function sendCalendarTemplateToFriends({
   receiverUuids: string[];
 }): Promise<string[]> {
   return Native.shareOrSendMeOrSendFriendOrWhatever(
-    SendTypes.sendMe,
+    SendTypes.sendFriend,
     TemplateTypes.calendar,
     -1,
     template,

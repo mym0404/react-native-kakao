@@ -32,3 +32,15 @@ try {
 } catch (Exception ignored) {
     throw new GradleException(":${project.name} failed to parse ${fileName} found at ${_pkg}.")
 }
+
+ext.getWorkspaceProject = { name ->
+    Project ret
+    if (findProject(":@react-native-kakao_$name")) {
+        ret = project(":@react-native-kakao_$name")
+    } else if (findProject(":react-native-kakao_$name")) {
+        ret = project(":react-native-kakao_$name")
+    } else {
+        throw new GradleException("Could not find the react-native-kakao/$name package, have you installed it?")
+    }
+    return ret
+}

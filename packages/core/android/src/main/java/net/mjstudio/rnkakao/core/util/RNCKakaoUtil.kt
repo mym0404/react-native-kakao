@@ -13,6 +13,7 @@ import com.kakao.sdk.common.model.ApiError
 import com.kakao.sdk.common.model.AppsError
 import com.kakao.sdk.common.model.AuthError
 import com.kakao.sdk.common.model.ClientError
+import com.kakao.sdk.common.model.KakaoSdkError
 import java.util.Date
 
 fun Promise.rejectWith(e: Throwable) {
@@ -31,25 +32,29 @@ fun Promise.rejectWith(e: Throwable) {
     }
 
   when (e) {
-    is ClientError -> {
-      userInfo.putBoolean("isClientFailed", true)
-      userInfo.putBoolean("isInvalidTokenError", e.isInvalidTokenError())
-      reject(e.reason.name, e.msg, userInfo)
-    }
-    is ApiError -> {
-      userInfo.putBoolean("isApiFailed", true)
-      userInfo.putBoolean("isInvalidTokenError", e.isInvalidTokenError())
-      reject(e.reason.name, e.msg, userInfo)
-    }
-    is AuthError -> {
-      userInfo.putBoolean("isAuthFailed", true)
-      userInfo.putBoolean("isInvalidTokenError", e.isInvalidTokenError())
-      reject(e.reason.name, e.msg, userInfo)
-    }
-    is AppsError -> {
-      userInfo.putBoolean("isAppsFailed", true)
-      userInfo.putBoolean("isInvalidTokenError", e.isInvalidTokenError())
-      reject(e.reason.name, e.msg, userInfo)
+    is KakaoSdkError -> {
+      when (e) {
+        is ClientError -> {
+          userInfo.putBoolean("isClientFailed", true)
+          userInfo.putBoolean("isInvalidTokenError", e.isInvalidTokenError())
+          reject(e.reason.name, e.msg, userInfo)
+        }
+        is ApiError -> {
+          userInfo.putBoolean("isApiFailed", true)
+          userInfo.putBoolean("isInvalidTokenError", e.isInvalidTokenError())
+          reject(e.reason.name, e.msg, userInfo)
+        }
+        is AuthError -> {
+          userInfo.putBoolean("isAuthFailed", true)
+          userInfo.putBoolean("isInvalidTokenError", e.isInvalidTokenError())
+          reject(e.reason.name, e.msg, userInfo)
+        }
+        is AppsError -> {
+          userInfo.putBoolean("isAppsFailed", true)
+          userInfo.putBoolean("isInvalidTokenError", e.isInvalidTokenError())
+          reject(e.reason.name, e.msg, userInfo)
+        }
+      }
     }
     is RNCKakaoException -> {
       userInfo.putBoolean("isPackageError", true)
@@ -80,11 +85,20 @@ fun ReadableArray.filterIsReadableMap(): List<ReadableMap> {
   return ret
 }
 
-fun WritableArray.pushStringList(list: List<String>) = list.forEach(::pushString)
+fun WritableArray.pushStringList(list: List<String>): WritableArray {
+  list.forEach(::pushString)
+  return this
+}
 
-fun WritableArray.pushIntList(list: List<Int>) = list.forEach(::pushInt)
+fun WritableArray.pushIntList(list: List<Int>): WritableArray {
+  list.forEach(::pushInt)
+  return this
+}
 
-fun WritableArray.pushDoubleList(list: List<Double>) = list.forEach(::pushDouble)
+fun WritableArray.pushDoubleList(list: List<Double>): WritableArray {
+  list.forEach(::pushDouble)
+  return this
+}
 
 fun WritableArray.pushMapList(list: List<WritableMap>): WritableArray {
   list.forEach(::pushMap)
