@@ -47,7 +47,9 @@
     "typescript",
     "javascript",
     "react",
-    "expo"
+    "expo",
+    "kakao-login",
+    "kakao-auth"
   ],
   "repository": {
     "type": "git",

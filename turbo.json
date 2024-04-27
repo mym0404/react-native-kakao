@@ -3,79 +3,67 @@
   "pipeline": {
     "ci:android:build:new": {
       "inputs": [
-        "package.json",
-        "android",
         "!android/build",
-        "packages/*/src",
-        "packages/*/android",
-        "packages/*/package.json",
+        "packages/**/src",
+        "packages/**/android",
         "packages/core/expo-config-plugin",
-        "example/package.json",
         "example/android",
         "!example/android/.gradle",
         "!example/android/build",
         "!example/android/app/build",
-        "!packages/*/lib",
-        "!packages/*/android/build"
+        "!packages/**/lib",
+        "!packages/**/android/build",
+        "**/package.json"
       ],
       "outputs": []
     },
     "ci:android:build:old": {
       "inputs": [
-        "package.json",
-        "android",
         "!android/build",
-        "packages/*/src",
-        "packages/*/android",
-        "packages/*/package.json",
+        "packages/**/src",
+        "packages/**/android",
         "packages/core/expo-config-plugin",
-        "example/package.json",
         "example/android",
         "!example/android/.gradle",
         "!example/android/build",
         "!example/android/app/build",
-        "!packages/*/lib",
-        "!packages/*/android/build"
+        "!packages/**/lib",
+        "!packages/**/android/build",
+        "**/package.json"
       ],
       "outputs": []
     },
     "ci:ios:build:new": {
       "inputs": [
-        "package.json",
         "packages/**/*.podspec",
-        "!android/build",
-        "packages/*/src",
-        "packages/*/ios",
-        "packages/*/package.json",
+        "packages/**/src",
+        "packages/**/ios",
         "packages/core/expo-config-plugin",
-        "example/package.json",
         "example/ios",
         "!example/android/.gradle",
         "!example/android/build",
         "!example/android/app/build",
         "!example/ios/build",
         "!example/ios/Pods",
-        "!packages/*/lib"
+        "!packages/**/lib",
+        "**/package.json"
       ],
       "outputs": []
     },
     "ci:ios:build:old": {
       "inputs": [
-        "package.json",
         "packages/**/*.podspec",
-        "!android/build",
-        "packages/*/src",
-        "packages/*/ios",
-        "packages/*/package.json",
+        "packages/**/src",
+        "packages/**/ios",
         "packages/core/expo-config-plugin",
-        "example/package.json",
         "example/ios",
         "!example/android/.gradle",
         "!example/android/build",
         "!example/android/app/build",
         "!example/ios/build",
         "!example/ios/Pods",
-        "!packages/*/lib"
+        "!packages/**/lib",
+        "**/package.json"
       ],
       "outputs": []
     }

@@ -15,4 +15,9 @@ abstract class KakaoSocialSpec internal constructor(context: ReactApplicationCon
       options: ReadableMap?,
       promise: Promise,
     )
+
+    abstract fun getFriends(
+      options: ReadableMap?,
+      promise: Promise,
+    )
   }
