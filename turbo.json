@@ -6,18 +6,17 @@
         "package.json",
         "android",
         "!android/build",
-        "packages/**/*.ts",
-        "packages/**/*.tsx",
-        "packages/**/android",
-        "packages/**/package.json",
+        "packages/*/src",
+        "packages/*/android",
+        "packages/*/package.json",
         "packages/core/expo-config-plugin",
         "example/package.json",
         "example/android",
         "!example/android/.gradle",
         "!example/android/build",
         "!example/android/app/build",
-        "!packages/**/lib",
-        "!packages/**/android/build"
+        "!packages/*/lib",
+        "!packages/*/android/build"
       ],
       "outputs": []
     },
@@ -26,18 +25,17 @@
         "package.json",
         "android",
         "!android/build",
-        "packages/**/*.ts",
-        "packages/**/*.tsx",
-        "packages/**/android",
-        "packages/**/package.json",
+        "packages/*/src",
+        "packages/*/android",
+        "packages/*/package.json",
         "packages/core/expo-config-plugin",
         "example/package.json",
         "example/android",
         "!example/android/.gradle",
         "!example/android/build",
         "!example/android/app/build",
-        "!packages/**/lib",
-        "!packages/**/android/build"
+        "!packages/*/lib",
+        "!packages/*/android/build"
       ],
       "outputs": []
     },
@@ -46,10 +44,9 @@
         "package.json",
         "packages/**/*.podspec",
         "!android/build",
-        "packages/**/*.ts",
-        "packages/**/*.tsx",
-        "packages/**/ios",
-        "packages/**/package.json",
+        "packages/*/src",
+        "packages/*/ios",
+        "packages/*/package.json",
         "packages/core/expo-config-plugin",
         "example/package.json",
         "example/ios",
@@ -58,7 +55,7 @@
         "!example/android/app/build",
         "!example/ios/build",
         "!example/ios/Pods",
-        "!packages/**/lib"
+        "!packages/*/lib"
       ],
       "outputs": []
     },
@@ -67,10 +64,9 @@
         "package.json",
         "packages/**/*.podspec",
         "!android/build",
-        "packages/**/*.ts",
-        "packages/**/*.tsx",
-        "packages/**/ios",
-        "packages/**/package.json",
+        "packages/*/src",
+        "packages/*/ios",
+        "packages/*/package.json",
         "packages/core/expo-config-plugin",
         "example/package.json",
         "example/ios",
@@ -79,7 +75,7 @@
         "!example/android/app/build",
         "!example/ios/build",
         "!example/ios/Pods",
-        "!packages/**/lib"
+        "!packages/*/lib"
       ],
       "outputs": []
     }
