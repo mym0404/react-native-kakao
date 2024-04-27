@@ -1,13 +1,5 @@
 #!/usr/bin/env bash
 
-if [ "$OS" == "Darwin" ]; then
-    echo "MacOS"
-elif [ "$OS" == "Linux" ]; then
-    echo "Linux"
-else
-    echo "Other"
-fi
-
 # New value from first command line argument
 NEW_VALUE="$1"
 POD="$2"

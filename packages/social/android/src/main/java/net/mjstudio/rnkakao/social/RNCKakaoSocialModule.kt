@@ -15,6 +15,8 @@ import com.kakao.sdk.friend.model.ViewAppearance.AUTO
 import com.kakao.sdk.friend.model.ViewAppearance.DARK
 import com.kakao.sdk.friend.model.ViewAppearance.LIGHT
 import com.kakao.sdk.talk.TalkApiClient
+import com.kakao.sdk.talk.model.FriendOrder
+import com.kakao.sdk.talk.model.Order
 import net.mjstudio.rnkakao.core.util.RNCKakaoResponseNotFoundException
 import net.mjstudio.rnkakao.core.util.argArr
 import net.mjstudio.rnkakao.core.util.argMap
@@ -132,6 +134,58 @@ class RNCKakaoSocialModule internal constructor(context: ReactApplicationContext
         maxPickableCount = options?.getIntElseNull("maxPickableCount"),
         minPickableCount = options?.getIntElseNull("minPickableCount"),
       )
+
+    @ReactMethod
+    override fun getFriends(
+      options: ReadableMap?,
+      promise: Promise,
+    ) = onMain {
+      TalkApiClient.instance.friends(
+        offset = options?.getIntElseNull("offset"),
+        limit = options?.getIntElseNull("limit"),
+        order =
+          when (options?.getString("order")) {
+            "asc" -> Order.ASC
+            "desc" -> Order.DESC
+            else -> null
+          },
+        friendOrder =
+          when (options?.getString("friendOrder")) {
+            "nickname" -> FriendOrder.NICKNAME
+            "age" -> FriendOrder.AGE
+            "favorite" -> FriendOrder.FAVORITE
+            else -> null
+          },
+      ) { friends, error ->
+        if (error != null) {
+          promise.rejectWith(error)
+        } else if (friends?.elements == null) {
+          promise.rejectWith(RNCKakaoResponseNotFoundException("friends"))
+        } else {
+          promise.resolve(
+            argMap().apply {
+              putInt("totalCount", friends.totalCount)
+              putIntIfNotNull("favoriteCount", friends.favoriteCount)
+              putArray(
+                "friends",
+                argArr().pushMapList(
+                  friends.elements!!.map {
+                    argMap().apply {
+                      putIntIfNotNull("id", it.id?.toInt())
+                      putString("uuid", it.uuid)
+                      putString("profileNickname", it.profileNickname)
+                      putString("profileThumbnailImage", it.profileThumbnailImage)
+                      putBooleanIfNotNull("favorite", it.favorite)
+                      putBooleanIfNotNull("allowedMsg", it.allowedMsg)
+                    }
+                  },
+                ),
+              )
+            },
+          )
+        }
+      }
+    }
 
     companion object {
       const val NAME = "RNCKakaoSocial"
