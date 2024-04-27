@@ -37,7 +37,7 @@ import RNCKakaoCore
   ) {
     onMain { [self] in
       guard let _ = try? KakaoSDK.shared.appKey() else {
-        RNCKakaoUtil.reject(reject, "KakaoSdk is not initialized")
+        RNCKakaoUtil.reject(reject, RNCKakaoError.sdkNotInitialized)
         return
       }
       let callback = { (token: OAuthToken?, error: Error?) in
@@ -56,7 +56,7 @@ import RNCKakaoCore
             "scopes": token.scopes ?? []
           ])
         } else {
-          RNCKakaoUtil.reject(reject, "token not found")
+          RNCKakaoUtil.reject(reject, RNCKakaoError.responseNotFound(name: "token"))
         }
       }
 
@@ -158,7 +158,7 @@ import RNCKakaoCore
             ]
           })
         } else {
-          RNCKakaoUtil.reject(reject, "scopes not found")
+          RNCKakaoUtil.reject(reject, RNCKakaoError.responseNotFound(name: "scopes"))
         }
       }
     }
@@ -176,7 +176,7 @@ import RNCKakaoCore
         } else if info != nil {
           resolve(42)
         } else {
-          RNCKakaoUtil.reject(reject, "scopeInfo not found")
+          RNCKakaoUtil.reject(reject, RNCKakaoError.responseNotFound(name: "scopeInfo"))
         }
       }
     }
@@ -201,7 +201,7 @@ import RNCKakaoCore
             ]
           })
         } else {
-          RNCKakaoUtil.reject(reject, "serviceTerms not found")
+          RNCKakaoUtil.reject(reject, RNCKakaoError.responseNotFound(name: "serviceTerms"))
         }
       }
     }
@@ -237,7 +237,7 @@ import RNCKakaoCore
             } ?? []
           ])
         } else {
-          RNCKakaoUtil.reject(reject, "shipping addresses not found")
+          RNCKakaoUtil.reject(reject, RNCKakaoError.responseNotFound(name: "shippingAddresses"))
         }
       }
     }
@@ -285,7 +285,7 @@ import RNCKakaoCore
             "legalBirthDateNeedsAgreement": user.kakaoAccount?.legalBirthDateNeedsAgreement as Any
           ])
         } else {
-          RNCKakaoUtil.reject(reject, "user not found")
+          RNCKakaoUtil.reject(reject, RNCKakaoError.responseNotFound(name: "user"))
         }
       }
     }

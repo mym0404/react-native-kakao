@@ -25,7 +25,7 @@ import RNCKakaoCore
         option: createOption(options: opts),
         viaList: via?.map { createLocation($0) }
       ) else {
-        RNCKakaoUtil.reject(reject, "Failed to create construct navigateUrl")
+        RNCKakaoUtil.reject(reject, RNCKakaoError.unknown("Failed to create construct navigateUrl"))
         return
       }
 
@@ -34,7 +34,10 @@ import RNCKakaoCore
           if success {
             resolve(true)
           } else {
-            RNCKakaoUtil.reject(reject, "Failed to open navigateUrl \(navigateUrl)")
+            RNCKakaoUtil.reject(
+              reject,
+              RNCKakaoError.unknown("Failed to open navigateUrl \(navigateUrl)")
+            )
           }
         }
       } else if openWebInstallUrlIfNaviAppNotAvailable {
@@ -42,7 +45,7 @@ import RNCKakaoCore
           if success {
             resolve(false)
           } else {
-            RNCKakaoUtil.reject(reject, "Failed to open webNaviInstallUrl")
+            RNCKakaoUtil.reject(reject, RNCKakaoError.unknown("Failed to open webNaviInstallUrl"))
           }
         }
       } else {

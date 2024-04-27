@@ -26,9 +26,44 @@ import RNCKakaoCore
             "thumbnailUrl": profile.thumbnailUrl?.absoluteString as Any
           ])
         } else {
-          RNCKakaoUtil.reject(reject, "profile not found")
+          RNCKakaoUtil.reject(reject, RNCKakaoError.responseNotFound(name: "profile"))
         }
       }
+    }
+  }
+
+  @objc public func getFriends(
+    options: [String: Any],
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    let order: Order? = switch options["order"] {
+    case let x as String where x == "asc": .Asc
+    case let x as String where x == "desc": .Desc
+    default: nil
+    }
+    let friendOrder: FriendOrder? = switch options["friendOrder"] {
+    case let x as String where x == "nickname": .Nickname
+    case let x as String where x == "age": .Age
+    case let x as String where x == "favorite": .Favorite
+    default: nil
+    }
+
+    onMain {
+      TalkApi.shared
+        .friends(
+          offset: options["offset"] as? Int,
+          limit: options["limit"] as? Int,
+          order: order,
+          friendOrder: friendOrder
+        ) { friends, error in
+          if let error {
+            RNCKakaoUtil.reject(reject, error)
+          } else if let friends {
+          } else {
+            RNCKakaoUtil.reject(reject, RNCKakaoError.responseNotFound(name: "friends"))
+          }
+        }
     }
   }
 
@@ -73,7 +108,7 @@ import RNCKakaoCore
             } ?? []
           ])
         } else {
-          RNCKakaoUtil.reject(reject, "users not found")
+          RNCKakaoUtil.reject(reject, RNCKakaoError.responseNotFound(name: "users"))
         }
       }
       if !multiple {
