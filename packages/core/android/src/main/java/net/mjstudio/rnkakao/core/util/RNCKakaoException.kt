@@ -17,3 +17,12 @@ class RNCKakaoResponseNotFoundException(name: String) : RNCKakaoException("The A
 class RNCKakaoSdkNotInitializedException : RNCKakaoException("The SDK is not initialized from react-native-kakao") {
   override val code: String = "Package-SDKNotInitialized"
 }
+
+enum class KakaoApp(val appName: String) {
+  TALK("talk"),
+  NAVI("navi"),
+}
+
+class RNCKakaoAppNotAvailableException(val app: KakaoApp) : RNCKakaoException("Kakao application is not available. app: ${app.appName}") {
+  override val code: String = "Package-KakaoAppNotAvailable"
+}

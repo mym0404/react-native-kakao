@@ -1,13 +1,6 @@
 apply from: file('./../../core/android/package-json.gradle')
 def Versions = project.ext.RNCKakaoSdkVersions
-def coreProject
-if (findProject(':@react-native-kakao_core')) {
-    coreProject = project(':@react-native-kakao_core')
-} else if (findProject(':react-native-kakao_core')) {
-    coreProject = project(':react-native-kakao_core')
-} else {
-    throw new GradleException('Could not find the react-native-kakao/core package, have you installed it?')
-}
+Project coreProject = project.ext.getWorkspaceProject("core")
 
 buildscript {
     // Buildscript is evaluated before everything else so we can't use getExtOrDefault

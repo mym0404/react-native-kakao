@@ -1,0 +1,28 @@
+import Code from '@theme/CodeInline'
+import CodeBlock from '@theme/CodeBlock'
+
+{props.description}
+
+## Usage
+
+<Code>{`share${props.name[0].toUpperCase() + props.name.slice(1)}Template`}</Code> 로 템플릿 메세지를 공유할 수 있습니다.
+
+<CodeBlock language={'tsx'}>
+{`
+export function share${props.name[0].toUpperCase() + props.name.slice(1)}Template(params: {
+  template: Kakao${props.name[0].toUpperCase() + props.name.slice(1)}Template;
+  useWebBrowserIfKakaoTalkNotAvailable?: boolean;
+  serverCallbackArgs?: Record<string, string>;
+})
+`.trim()}
+</CodeBlock>
+
+- `template`: 템플릿 객체입니다.
+- `useWebBrowserIfKakaoTalkNotAvailable`: 카카오톡이 사용 가능하지 않을 때 웹 브라우저를 이용해 공유를 할 것인지 여부입니다. 기본값은 `true`입니다.
+- `serverCallbackArgs`: 서버 콜백 인자들입니다. 모두 문자열만 값으로 전달되어야 합니다.
+
+:::info
+자세한 컴포넌트들의 타입은 [컴포넌트 타입들](/docs/share/component-types)을 참고해주세요.
+
+사용에 문제가 생긴다면 [Troubleshooting](/docs/share/troubleshooting)을 참고해주세요
+:::

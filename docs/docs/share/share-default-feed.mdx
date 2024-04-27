@@ -1,60 +1,10 @@
 ---
 sidebar_position: 6
 ---
-
 # 피드 템플릿으로 메세지 공유하기
-## 피드 템플릿으로 메세지 공유하기
+## 피드 템플릿
 
-[공식 문서](https://developers.kakao.com/docs/latest/ko/message/android-link#create-message)
+import Description from './partial/_feed.mdx';
+import Share from './partial/_share_default_template.mdx'
 
-이미지와 글로 구성된 기본 메시지 형식입니다. 아이템 목록을 포함할 수 있습니다.
-
-스크랩 메시지를 보내는 경우에도, 피드 템플릿 구조가 사용됩니다.
-
-스크랩 메시지는 요청한 웹 페이지 URL에서 오픈 그래프 프로토콜(Open Graph Protocol)을 기반으로 웹 페이지 정보를 읽어와 구성한 메시지 형식입니다.
-
-활용 예시: 서비스의 새로운 소식이나 프로모션 이벤트를 공유하는데 활용할 수 있습니다. 간편하게 웹 페이지를 공유할 때는 스크랩 메시지를 활용합니다. 아이템 영역을 사용하면 주문 내역, 카탈로그, 영수증과 같은 형태의 피드 메시지를 만들 수 있습니다.
-
-![](https://raw.githubusercontent.com/mym0404/image-archive/master/202404220336612.webp)
-
-## Usage
-
-피드 템플릿은 다음과 같은 타입을 가집니다.
-
-```ts
-/**
- * 기본 템플릿으로 제공되는 피드 템플릿 클래스.
- *
- * @property content 메시지의 메인 콘텐츠 정보
- * @property itemContent 아이템 영역에 포함할 콘텐츠, [ItemContent] 참고
- * @property social 콘텐츠에 대한 소셜 정보
- * @property buttons 버튼 목록, 최대 2개. 버튼 타이틀과 링크를 변경하고 싶을 때, 버튼 두 개를 넣고 싶을 때 사용
- * @property buttonTitle 기본 버튼 타이틀(자세히 보기)을 변경하고 싶을 때 설정. 이 값을 사용하면 클릭 시 이동할 링크는 content 에 입력된 값이 사용됨.
- */
-export interface KakaoFeedTemplate {
-  content: KakaoTemplateContent;
-  itemContent?: KakaoTemplateItemContent;
-  social?: KakaoTemplateSocial;
-  buttons?: KakaoTemplateButton[];
-  buttonTitle?: string;
-}
-```
-
-`shareFeedTemplate` 함수로 사용할 수 있습니다.
-
-```tsx
-export function shareFeedTemplate(params: {
-  template: KakaoFeedTemplate;
-  useWebBrowserIfKakaoTalkNotAvailable?: boolean;
-  serverCallbackArgs?: Record<string, string>;
-})
-```
-
-- `useWebBrowserIfKakaoTalkNotAvailable`: 카카오톡이 사용 가능하지 않을 때 웹 브라우저를 이용해 공유를 할 것인지 여부입니다. 기본값은 true입니다.
-- `serverCallbackArgs`: 서버 콜백 인자들입니다. 모두 문자열만 값으로 전달되어야 합니다.
-
-:::info
-자세한 컴포넌트들의 타입은 [컴포넌트 타입들](/docs/share/component-types)을 참고해주세요.
-
-사용에 문제가 생긴다면 [Troubleshooting](/docs/share/troubleshooting)을 참고해주세요
-:::
+<Share name={'feed'} description={<Description/>}/>

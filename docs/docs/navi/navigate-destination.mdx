@@ -19,7 +19,7 @@ export function navigateTo(params: {
   option?: KakaoNaviOption;
   viaList?: KakaoNaviLocation[];
   openWebInstallUrlIfNaviAppNotAvailable?: boolean;
-})
+}): Promise<boolean>
 ```
 
 - `destination`: 목적지 정보입니다. 필수값입니다.
@@ -29,3 +29,10 @@ export function navigateTo(params: {
 기본값은 `true`입니다.
 
 옵션에 대한 자세한 설명은 [공식 문서](https://developers.kakao.com/docs/latest/ko/kakaonavi/android#set-parameter)를 참고해주세요.
+
+:::info
+Navi는 특별히 설치 과정을 유도하는 옵션이 있기 때문에 앱 실행에 실패해도 `Package-KakaoAppNotAvailable` 에러 코드가
+`Promise`로 reject되지 않습니다.
+
+대신, resolve되는 결과로 앱이 문제없이 실행이 되었는 지 판단할 수 있습니다.
+:::

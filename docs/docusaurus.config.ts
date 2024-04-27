@@ -38,6 +38,8 @@ const config: Config = {
         docs: {
           sidebarPath: './sidebars.ts',
           editUrl: `${repoUrl}/tree/main/docs/`,
+          remarkPlugins: [],
+          rehypePlugins: [],
         },
         theme: {
           customCss: './src/css/custom.css',
