@@ -1,7 +1,24 @@
-35 error TypeError: Invalid Version:
-35 error     at new SemVer (/Users/mj/Desktop/react-native-kakao/node_modules/semver/classes/semver.js:38:13)
-35 error     at parse (/Users/mj/Desktop/react-native-kakao/node_modules/semver/functions/parse.js:7:12)
-35 error     at Object.diff (/Users/mj/Desktop/react-native-kakao/node_modules/semver/functions/diff.js:5:14)
-35 error     at isBreakingChange (file:///Users/mj/Desktop/react-native-kakao/node_modules/@lerna-lite/version/dist/lib/is-breaking-change.js:3:32)
-35 error     at VersionCommand.setUpdatesForVersions (file:///Users/mj/Desktop/react-native-kakao/node_modules/@lerna-lite/version/dist/version-command.js:301:58)
-35 error     at VersionCommand.initialize (file:///Users/mj/Desktop/react-native-kakao/node_modules/@lerna-lite/version/dist/version-command.js:204:20)
+0 silly argv [object Object]
+1 notice cli v3.3.3
+2 verbose rootPath /Users/mj/Desktop/react-native-kakao
+3 silly createGitHubClient
+4 verbose project packages packages/*
+5 info current project version 1.4.5
+6 silly isAnythingCommitted
+7 verbose isAnythingCommitted 1
+8 silly currentBranch
+9 verbose currentBranch social
+10 silly remoteBranchExists
+11 silly isBehindUpstream
+12 silly isBehindUpstream social is behind origin/social by 0 commit(s) and ahead by 1
+13 silly git-describe parsed => {"lastTagName":"v1.4.5","lastVersion":"v1.4.5","refCount":"36","sha":"67e65cb","isDirty":false}
+14 silly git getCurrentBranchOldestCommitSinceLastTag
+15 verbose exec git log v1.4.5..HEAD --format="%h %aI" --reverse
+16 info oldestCommitSinceLastTag commit found since last tag: v1.4.5 - (SHA) df25372 - 2024-04-25T11:13:31+09:00
+17 silly parseGitRepo
+18 verbose git config --get remote.origin.url
+19 silly createGitHubClient
+20 error HttpError: API rate limit exceeded for 211.49.123.111. (But here's the good news: Authenticated requests get a higher rate limit. Check out the documentation for more details.) - https://docs.github.com/rest/overview/resources-in-the-rest-api#rate-limiting
+20 error     at /Users/mj/Desktop/react-native-kakao/node_modules/@octokit/request/dist-node/index.js:125:21
+20 error     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+20 error     at async getGithubCommits (file:///Users/mj/Desktop/react-native-kakao/node_modules/@lerna-lite/version/dist/conventional-commits/get-github-commits.js:24:26)

@@ -5,5 +5,5 @@ echo $1
 yarn lint
 yarn build
 
-lerna version prerelease --force-publish --allow-peer-dependencies-update --changelog-include-commits-client-login " by @%l" \
+lerna version prerelease --force-publish --allow-peer-dependencies-update \
       --exact --remote-client github --create-release github
