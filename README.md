@@ -15,30 +15,26 @@
 
 ---
 
-> [!IMPORTANT]
-> We are glad to introduce our first working packages [**User**](https://rnkakao.dev/docs/user/intro)
-> and [**Share**](https://rnkakao.dev/docs/share/intro) ❤️
->
-> [Documentation](https://rnkakao.dev/docs/intro) is also prepared.
->
-> https://github.com/mym0404/react-native-kakao/assets/33388801/24375a20-832d-4d85-88fa-5501a86f445e
-
----
-
 **React Native Kakao** is a collection of official React Native modules connecting you to Kakao
 services; each module is a light-weight JavaScript layer connecting you to the native Kakao SDKs for
 both iOS and Android.
 
-React Native Kakao is built with four key principles in mind;
+## Highlights
 
 - ❤️ **No version conflicts**
   - managed and consistent versions of native SDKs ensure there are no version conflicts.
-- 👁 **Well typed**
-  - first class support for Typescript included
+- 🍎 **Consistent logic for each platform**
+  - same JS code => same android, ios logics are ensured.
+- ⚡️ **Easy coding, Fast development**
+  - all APIs are designed with the DX as the top priority.
+- 🎃 **Well typed**
+  - first class support for **Typescript** included
 - 📄 **Well documented**
   - full reference & installation documentation alongside detailed guides and FAQs
 - 🚀 **Wide supportability**
-  - first class supports for New Architecture, Old Architecture, even Expo
+  - first class supports for **New Architecture, Old Architecture, even Expo**
+- 🦋 **Robust error handling**
+  - All SDK errors are forwarded to JS clearly, consistently for each platform.
 
 ## Kakao Modules
 
