@@ -38,7 +38,7 @@ export function navigateTo({
   option?: KakaoNaviOption;
   viaList?: KakaoNaviLocation[];
   openWebInstallUrlIfNaviAppNotAvailable?: boolean;
-}) {
+}): Promise<boolean> {
   return Native.navigateOrShareTo(
     destination,
     option,
@@ -58,7 +58,7 @@ export function shareTo({
   option?: KakaoNaviOption;
   viaList?: KakaoNaviLocation[];
   openWebInstallUrlIfNaviAppNotAvailable?: boolean;
-}) {
+}): Promise<boolean> {
   return Native.navigateOrShareTo(
     destination,
     option,

@@ -217,64 +217,21 @@ export interface KakaoCalendarTemplate {
 }
 
 export interface Spec extends TurboModule {
-  // shareOrSendMeOrSendFriendOrBlahBlahBlahBlah(
-  //   /* share, send-me, send-friend */
-  //   sendType: string,
-  //   /* custom, feed, list, location, commerce, text, calendar */
-  //   messageType: string,
-  //   /* only for custom */
-  //   templateId: Int32,
-  //   /* only for default templates */
-  //   templateJson: UnsafeObject,
-  //   /* only for pass friend uuid directly */
-  //   receiverUuids: ReadonlyArray<string>,
-  //   useWebBrowserIfKakaoTalkNotAvailable: boolean,
-  //   templateArgs: Readonly<{ [key: string]: string }>,
-  //   serverCallbackArgs: Readonly<{ [key: string]: string }>,
-  // ): Promise<void>;
-
-  shareCustom(
+  shareOrSendMeOrSendFriendOrWhatever(
+    /* share, send-me, send-friend */
+    sendType: string,
+    /* custom, feed, list, location, commerce, text, calendar */
+    templateType: string,
+    /* only for custom */
     templateId: Int32,
+    /* only for default templates */
+    templateJson: UnsafeObject,
+    /* only for pass friend uuid directly */
+    receiverUuids: ReadonlyArray<string>,
     useWebBrowserIfKakaoTalkNotAvailable: boolean,
     templateArgs: Readonly<{ [key: string]: string }>,
     serverCallbackArgs: Readonly<{ [key: string]: string }>,
-  ): Promise<void>;
-
-  shareFeedTemplate(
-    value: UnsafeObject,
-    useWebBrowserIfKakaoTalkNotAvailable: boolean,
-    serverCallbackArgs: Readonly<{ [key: string]: string }>,
-  ): Promise<void>;
-
-  shareListTemplate(
-    value: UnsafeObject,
-    useWebBrowserIfKakaoTalkNotAvailable: boolean,
-    serverCallbackArgs: Readonly<{ [key: string]: string }>,
-  ): Promise<void>;
-
-  shareLocationTemplate(
-    value: UnsafeObject,
-    useWebBrowserIfKakaoTalkNotAvailable: boolean,
-    serverCallbackArgs: Readonly<{ [key: string]: string }>,
-  ): Promise<void>;
-
-  shareCommerceTemplate(
-    value: UnsafeObject,
-    useWebBrowserIfKakaoTalkNotAvailable: boolean,
-    serverCallbackArgs: Readonly<{ [key: string]: string }>,
-  ): Promise<void>;
-
-  shareTextTemplate(
-    value: UnsafeObject,
-    useWebBrowserIfKakaoTalkNotAvailable: boolean,
-    serverCallbackArgs: Readonly<{ [key: string]: string }>,
-  ): Promise<void>;
-
-  shareCalendarTemplate(
-    value: UnsafeObject,
-    useWebBrowserIfKakaoTalkNotAvailable: boolean,
-    serverCallbackArgs: Readonly<{ [key: string]: string }>,
-  ): Promise<void>;
+  ): Promise<any>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('RNCKakaoShare');
