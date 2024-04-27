@@ -33,7 +33,7 @@ Kakao SDK는 내부적으로 콜백 방식의 구현(이 패키지는 ReactiveX�
           //...
         ])
       } else {
-        RNCKakaoUtil.reject(reject, "user not found")
+        RNCKakaoUtil.reject(reject, RNCKakaoError.responseNotFound(name: "user"))
       }
     }
   }
@@ -48,7 +48,7 @@ override fun me(promise: Promise) =
       if (error != null) {
         promise.rejectWith(error)
       } else if (user == null) {
-        promise.rejectWith("user not found")
+        promise.rejectWith(RNCKakaoResponseNotFoundException("user"))
       } else {
         promise.resolve(
           argMap().apply {
