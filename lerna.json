@@ -10,7 +10,7 @@
       "graphType": "all",
       "syncWorkspaceLock": true,
       "conventionalCommits": true,
-      "message": "chore: publish",
+      "message": "chore: publish [skip ci]",
       "preId": "alpha",
       "private": false,
       "preDistTag": "next",
