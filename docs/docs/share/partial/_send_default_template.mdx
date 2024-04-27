@@ -1,0 +1,42 @@
+import Code from '@theme/CodeInline'
+import CodeBlock from '@theme/CodeBlock'
+
+{props.description}
+
+## 나에게 메세지 전송하기
+
+<Code>{`send${props.name[0].toUpperCase() + props.name.slice(1)}TemplateToMe`}</Code> 로 템플릿 메세지를 나에게 전송할 수 있습니다.
+
+<CodeBlock language={'tsx'}>
+{`
+export function send${props.name[0].toUpperCase() + props.name.slice(1)}TemplateToMe(params: {
+  template: Kakao${props.name[0].toUpperCase() + props.name.slice(1)}Template;
+})
+`.trim()}
+</CodeBlock>
+
+- `template`: 템플릿 객체입니다.
+
+## 친구들에게 메세지 전송하기
+
+<Code>{`send${props.name[0].toUpperCase() + props.name.slice(1)}TemplateToFriends`}</Code> 로 템플릿 메세지를 친구들에게 전송할 수 있습니다.
+
+<CodeBlock language={'tsx'}>
+  {`
+export function send${props.name[0].toUpperCase() + props.name.slice(1)}TemplateToFriends(params: {
+  template: Kakao${props.name[0].toUpperCase() + props.name.slice(1)}Template;
+  receiverUuids: string[];
+})
+`.trim()}
+</CodeBlock>
+
+- `template`: 템플릿 객체입니다.
+- `receiverUuids`: 메세지를 보낼 친구들의 uuid 리스트입니다. [social](/docs/social/intro)패키지의
+[카카오톡 친구 선택하기](/docs/social/select-talk-friends)나 [카카오톡 친구 가져오기](/docs/social/get-friends)에서 얻어올 수 있습니다.
+
+:::info
+자세한 컴포넌트들의 타입은 [컴포넌트 타입들](/docs/share/component-types)을 참고해주세요.
+
+사용에 문제가 생긴다면 [Troubleshooting](/docs/share/troubleshooting)을 참고해주세요
+:::
+

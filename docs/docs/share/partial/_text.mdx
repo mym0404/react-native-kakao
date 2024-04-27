@@ -1,0 +1,26 @@
+[공식 문서](https://developers.kakao.com/docs/latest/ko/message/android-link#create-message)
+
+글로만 구성된 메시지 형식입니다.
+
+활용 예시: 장문의 메시지로 사용자에게 많은 정보를 전달해야 하는 경우나, 간단하게 텍스트로만 구성된 메시지를 구성하는 데 적합합니다.
+
+![](https://raw.githubusercontent.com/mym0404/image-archive/master/202404220338059.webp)
+
+## 템플릿 타입 정의
+
+```ts
+/**
+ * 텍스트형 기본 템플릿 클래스
+ *
+ * @property text 메시지에 들어갈 텍스트 (최대 200자)
+ * @property link 컨텐츠 클릭 시 이동할 링크 정보
+ * @property buttons 버튼 목록. 버튼 타이틀과 링크를 변경하고 싶을때, 버튼 두개를 사용하고 싶을때 사용. (최대 2개)
+ * @property buttonTitle 기본 버튼 타이틀(자세히 보기)을 변경하고 싶을 때 설정. 이 값을 사용하면 클릭 시 이동할 링크는 content에 입력된 값이 사용됨.
+ */
+export interface KakaoTextTemplate {
+  text: string;
+  link: KakaoTemplateLink;
+  buttons?: KakaoTemplateButton[];
+  buttonTitle?: string;
+}
+```

@@ -1,0 +1,26 @@
+[공식 문서](https://developers.kakao.com/docs/latest/ko/message/android-link#create-message)
+
+상품 가격을 포함해 상품 정보를 자세히 보여주는 메시지 형식입니다. 피드 템플릿만큼 긴 텍스트를 추가하거나 소셜 정보를 추가할 수는 없지만, 사용자에게 가격 정보를 안내할 수 있는 장점이 있습니다.
+
+활용 예시: 상품의 가격 정보(정상 가격, 할인 가격, 할인율)를 담을 수 있어 쇼핑몰에서 판매하는 상품이나 프로모션 진행 상품의 소식을 알리는 데 적합합니다.
+
+![](https://raw.githubusercontent.com/mym0404/image-archive/master/202404220338423.webp)
+
+## 템플릿 타입 정의
+
+```ts
+/**
+ * 기본 템플릿으로 제공되는 커머스 템플릿 클래스
+ *
+ * @property content 메시지의 내용. 텍스트 및 이미지, 링크 정보 포함.
+ * @property commerce 컨텐츠에 대한 가격 정보
+ * @property buttons 버튼 목록. 버튼 타이틀과 링크를 변경하고 싶을때, 버튼 두개를 사용하고 싶을때 사용. (최대 2개)
+ * @property buttonTitle 기본 버튼 타이틀(자세히 보기)을 변경하고 싶을 때 설정. 이 값을 사용하면 클릭 시 이동할 링크는 content 에 입력된 값이 사용됨.
+ */
+export interface KakaoCommerceTemplate {
+  content: KakaoTemplateContent;
+  commerce: KakaoTemplateCommerce;
+  buttons?: KakaoTemplateButton[];
+  buttonTitle?: string;
+}
+```
