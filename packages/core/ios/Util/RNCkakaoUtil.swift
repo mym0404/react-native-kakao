@@ -30,26 +30,52 @@ public class RNCKakaoUtil {
     userInfo["message"] = error.localizedDescription
     userInfo["nativeErrorCode"] = -1
     userInfo["nativeErrorMessage"] = error.localizedDescription
+
     if let kakaoError = error as? SdkError {
       userInfo["isApiFailed"] = kakaoError.isApiFailed
       userInfo["isAuthFailed"] = kakaoError.isAuthFailed
       userInfo["isClientFailed"] = kakaoError.isClientFailed
       userInfo["isInvalidTokenError"] = kakaoError.isInvalidTokenError()
-      let newErrorWithUserInfo = NSError(domain: RNCKakaoErrorDomain, code: 444, userInfo: userInfo)
-      reject(
-        kakaoError.asAFError?.failureReason ?? "unknown",
-        kakaoError.localizedDescription,
-        newErrorWithUserInfo
-      )
+      switch kakaoError {
+      case let .ClientFailed(reason, errorMessage):
+        reject(
+          "\(reason)",
+          errorMessage,
+          NSError(domain: RNCKakaoErrorDomain, code: 444, userInfo: userInfo)
+        )
+      case let .ApiFailed(reason, errorInfo):
+        if let requiredScopes = errorInfo?.requiredScopes {
+          userInfo["requiredScopes"] = requiredScopes
+        }
+        reject(
+          String(reason.rawValue),
+          errorInfo?.msg ?? kakaoError.localizedDescription,
+          NSError(domain: RNCKakaoErrorDomain, code: 444, userInfo: userInfo)
+        )
+      case let .AuthFailed(reason, errorInfo):
+        reject(
+          reason.rawValue,
+          errorInfo?.errorDescription ?? kakaoError.localizedDescription,
+          NSError(domain: RNCKakaoErrorDomain, code: 444, userInfo: userInfo)
+        )
+      case let .AppsFailed(reason, errorInfo):
+        reject(
+          reason.rawValue,
+          errorInfo?.errorMsg ?? kakaoError.localizedDescription,
+          NSError(domain: RNCKakaoErrorDomain, code: 444, userInfo: userInfo)
+        )
+      }
     } else {
-      let newErrorWithUserInfo = NSError(domain: RNCKakaoErrorDomain, code: 444, userInfo: userInfo)
-      reject("unknown", error.localizedDescription, newErrorWithUserInfo)
+      reject(
+        "unknown",
+        error.localizedDescription,
+        NSError(domain: RNCKakaoErrorDomain, code: 444, userInfo: userInfo)
+      )
     }
   }
 
   public class func reject(_ reject: RCTPromiseRejectBlock, _ message: String) {
     let error = NSError(domain: RNCKakaoErrorDomain, code: 444, userInfo: ["message": message])
-
     reject(DEFAULT_APP_DISPLAY_NAME, message, error)
   }
 

@@ -16,7 +16,6 @@ import RNCKakaoCore
     reject: @escaping RCTPromiseRejectBlock
   ) {
     onMain {
-      debugE(createLocation(dest))
       guard let navigateUrl = isShare ? NaviApi.shared.shareUrl(
         destination: createLocation(dest),
         option: createOption(options: opts),

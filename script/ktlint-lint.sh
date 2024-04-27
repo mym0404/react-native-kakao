@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+set -e
 if which ktlint >/dev/null; then
   for dir in ./packages/*/android; do
           echo "🌊 ktlint $dir"

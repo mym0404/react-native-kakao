@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { showMessage } from 'react-native-flash-message';
-import { formatJson } from '@mj-studio/js-util';
 import { useMount } from '@mj-studio/react-util';
 import {
   isKakaoTalkLoginAvailable,
@@ -15,6 +14,7 @@ import {
 } from '@react-native-kakao/user';
 
 import { Btn } from '../component/Btn';
+import { PrettyResult } from '../component/PrettyResult';
 import { StyledScrollView } from '../component/StyledScrollView';
 import { Txt } from '../component/Txt';
 import { px } from '../util/px';
@@ -188,7 +188,6 @@ export default function Page() {
               setMeResult(ret);
             })
             .catch((e) => {
-              console.log(e);
               showMessage({
                 type: 'warning',
                 message: e.message,
@@ -196,26 +195,11 @@ export default function Page() {
             });
         }}
       />
-      <Txt mt={6}>{'Login Result'}</Txt>
-      <Txt w={'100%'} t={'c2'} p={4} borderWidth={1} borderColor={'text'} color={'primary100'}>
-        {!result ? 'No data' : formatJson(result)}
-      </Txt>
-      <Txt>{'Scopes Result'}</Txt>
-      <Txt w={'100%'} t={'c2'} p={4} borderWidth={1} borderColor={'text'} color={'primary100'}>
-        {!scopesResult ? 'No data' : formatJson(scopesResult)}
-      </Txt>
-      <Txt>{'Service Terms Result'}</Txt>
-      <Txt w={'100%'} t={'c2'} p={4} borderWidth={1} borderColor={'text'} color={'primary100'}>
-        {!serviceTermsResult ? 'No data' : formatJson(serviceTermsResult)}
-      </Txt>
-      <Txt>{'Shipping Addresses Result'}</Txt>
-      <Txt w={'100%'} t={'c2'} p={4} borderWidth={1} borderColor={'text'} color={'primary100'}>
-        {!shippingResult ? 'No data' : formatJson(shippingResult)}
-      </Txt>
-      <Txt>{'Get Profile Result'}</Txt>
-      <Txt w={'100%'} t={'c2'} p={4} borderWidth={1} borderColor={'text'} color={'primary100'}>
-        {!meResult ? 'No data' : formatJson(meResult)}
-      </Txt>
+      <PrettyResult label={'Login Result'} result={result} />
+      <PrettyResult label={'Scopes Result'} result={scopesResult} />
+      <PrettyResult label={'Service Terms Result'} result={serviceTermsResult} />
+      <PrettyResult label={'Shipping Addresses Result'} result={shippingResult} />
+      <PrettyResult label={'Get Profile Result'} result={meResult} />
     </StyledScrollView>
   );
 }

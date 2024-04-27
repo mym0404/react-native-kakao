@@ -1,17 +1,30 @@
 #!/usr/bin/env bash
 
-# Gradle property to change
-PROPERTY="newArchEnabled"
+if [ "$OS" == "Darwin" ]; then
+    echo "MacOS"
+elif [ "$OS" == "Linux" ]; then
+    echo "Linux"
+else
+    echo "Other"
+fi
 
 # New value from first command line argument
 NEW_VALUE="$1"
 POD="$2"
 CLEAN="$3"
 
+pwd
 # Modify app.json
 JSON="example/app.json"
-sed -i '' -e "s/\"newArchEnabled\": true/\"newArchEnabled\": ${NEW_VALUE}/g" $JSON
-sed -i '' -e "s/\"newArchEnabled\": false/\"newArchEnabled\": ${NEW_VALUE}/g" $JSON
+
+
+if [[ -f $JSON ]]; then
+  sed -e "s/\"newArchEnabled\": true/\"newArchEnabled\": ${NEW_VALUE}/g" $JSON > temp.json && mv temp.json $JSON
+  sed -e "s/\"newArchEnabled\": false/\"newArchEnabled\": ${NEW_VALUE}/g" $JSON > temp.json && mv temp.json $JSON
+else
+  echo "${JSON} Not found"
+fi
+
 
 # Validate new value is either "true" or "false"
 if [ "${NEW_VALUE}" != "true" ] && [ "${NEW_VALUE}" != "false" ]; then
@@ -30,13 +43,15 @@ fi
 
 
 # Gradle properties file
-FILE="example/android/gradle.properties"
+GRADLE_RPOPERTIES="example/android/gradle.properties"
 
-# Create a backup of the original file
-# cp ${FILE} ${FILE}.bak
+PROPERTY="newArchEnabled"
+if [ -f $GRADLE_RPOPERTIES ]; then
+sed -e "s/${PROPERTY}=.*/${PROPERTY}=${NEW_VALUE}/" ${GRADLE_RPOPERTIES} > temp && mv temp ${GRADLE_RPOPERTIES}
+else
+echo "${GRADLE_RPOPERTIES} Not found"
+fi
 
-# Use 'sed' to replace the property value
-sed -i '' -e "s/${PROPERTY}=.*/${PROPERTY}=${NEW_VALUE}/" ${FILE}
 
 if [[ $CLEAN == 'true' ]]; then
 yarn gen:android:clean

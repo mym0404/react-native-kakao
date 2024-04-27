@@ -1,0 +1,42 @@
+---
+sidebar_position: 1
+---
+
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+
+# 시작하기
+
+## 시작하기 전에
+
+[`Core`패키지에 대한 의존성을 설치](/docs/install-core)하고 관련된 [플랫폼별 설정](/docs/install-android)이 완료되어야 합니다.
+
+## 시작하기
+
+`social` 패키지는 카카오톡 프로필을 불러오거나 친구 목록을 가져올 수 있는 패키지입니다.
+
+내부적으로 카카오 SDK의 `friend`와 `talk` SDK를 사용합니다.
+
+[공식 문서](https://developers.kakao.com/docs/latest/ko/kakaotalk-social/common)를 참고해주시기 바랍니다.
+
+## 설치하기
+
+<Tabs>
+  <TabItem value="npm" label="NPM" default>
+    ```shell
+    npm install --save @react-native-kakao/user @react-native-kakao/social
+    ```
+  </TabItem>
+  <TabItem value="yarn" label="Yarn">
+    ```shell
+    yarn add @react-native-kakao/{user, social}
+    ```
+  </TabItem>
+  <TabItem value="expo" label="Expo">
+    ```shell
+    npx expo install @react-native-kakao/user @react-native-kakao/social
+    ```
+  </TabItem>
+</Tabs>

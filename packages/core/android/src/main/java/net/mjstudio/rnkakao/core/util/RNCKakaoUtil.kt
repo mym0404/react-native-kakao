@@ -20,9 +20,9 @@ fun Promise.rejectWith(e: Throwable) {
 
     reject(
       code.toString(),
-      message,
+      "${e.reason.name} $message",
       Arguments.createMap().apply {
-        putInt("code", code)
+        putString("code", code.toString())
         putInt("statusCode", statusCode)
         putString("message", message)
         putInt("nativeErrorCode", code)
@@ -77,7 +77,10 @@ fun WritableArray.pushIntList(list: List<Int>) = list.forEach(::pushInt)
 
 fun WritableArray.pushDoubleList(list: List<Double>) = list.forEach(::pushDouble)
 
-fun WritableArray.pushMapList(list: List<WritableMap>) = list.forEach(::pushMap)
+fun WritableArray.pushMapList(list: List<WritableMap>): WritableArray {
+  list.forEach(::pushMap)
+  return this
+}
 
 fun WritableMap.putBooleanIfNotNull(
   key: String,
