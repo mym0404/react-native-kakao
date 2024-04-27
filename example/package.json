@@ -17,11 +17,7 @@
     "typecheck": "tsc --noEmit",
     "theme:gen": "generate-theme-type src/design/AppTheme.ts ./../node_modules/@react-native-styled-system/core/lib/typescript/src/@types/ThemedTypings.d.ts",
     "pod:old": "cd ios && bundle install && RCT_NEW_ARCH_ENABLED=0 bundle exec pod install",
-    "pod:new": "cd ios && bundle install && RCT_NEW_ARCH_ENABLED=1 bundle exec pod install",
-    "ci:android:build:new": "./../script/ci-android-build.sh",
-    "ci:android:build:old": "./../script/ci-android-build.sh",
-    "ci:ios:build:new": "./../script/ci-ios-build.sh",
-    "ci:ios:build:old": "./../script/ci-ios-build.sh"
+    "pod:new": "cd ios && bundle install && RCT_NEW_ARCH_ENABLED=1 bundle exec pod install"
   },
   "dependencies": {
     "@mj-studio/js-util": "^1.0.34",
