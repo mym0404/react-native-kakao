@@ -15,6 +15,7 @@ import com.kakao.sdk.friend.model.ViewAppearance.AUTO
 import com.kakao.sdk.friend.model.ViewAppearance.DARK
 import com.kakao.sdk.friend.model.ViewAppearance.LIGHT
 import com.kakao.sdk.talk.TalkApiClient
+import net.mjstudio.rnkakao.core.util.RNCKakaoResponseNotFoundException
 import net.mjstudio.rnkakao.core.util.argArr
 import net.mjstudio.rnkakao.core.util.argMap
 import net.mjstudio.rnkakao.core.util.getBooleanElseNull
@@ -40,7 +41,7 @@ class RNCKakaoSocialModule internal constructor(context: ReactApplicationContext
             return@profile
           }
           if (profile == null) {
-            promise.rejectWith("profile not found")
+            promise.rejectWith(RNCKakaoResponseNotFoundException("profile"))
             return@profile
           }
           promise.resolve(
@@ -70,7 +71,7 @@ class RNCKakaoSocialModule internal constructor(context: ReactApplicationContext
         if (error != null) {
           promise.rejectWith(error)
         } else if (users == null) {
-          promise.rejectWith("users not found")
+          promise.rejectWith(RNCKakaoResponseNotFoundException("users"))
         } else {
           promise.resolve(
             argMap().apply {

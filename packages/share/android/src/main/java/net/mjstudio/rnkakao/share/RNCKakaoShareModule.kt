@@ -10,6 +10,7 @@ import com.kakao.sdk.share.ShareClient
 import com.kakao.sdk.share.WebSharerClient
 import com.kakao.sdk.share.model.SharingResult
 import com.kakao.sdk.template.model.DefaultTemplate
+import net.mjstudio.rnkakao.core.util.RNCKakaoUnknownException
 import net.mjstudio.rnkakao.core.util.onMain
 import net.mjstudio.rnkakao.core.util.rejectWith
 import net.mjstudio.rnkakao.core.util.toStringMap
@@ -184,7 +185,7 @@ class RNCKakaoShareModule internal constructor(context: ReactApplicationContext)
             )
           } else {
             run {
-              promise.rejectWith("one of templateId or template shouldn't be null")
+              promise.rejectWith(RNCKakaoUnknownException("one of templateId or template shouldn't be null"))
               return
             }
           }
@@ -201,9 +202,9 @@ class RNCKakaoShareModule internal constructor(context: ReactApplicationContext)
         } catch (_: ActivityNotFoundException) {
         }
 
-        promise.rejectWith("web url open failed $sharerUrl")
+        promise.rejectWith(RNCKakaoUnknownException("web url open failed $sharerUrl"))
       } else {
-        promise.rejectWith("kakaotalk not available")
+        promise.rejectWith(RNCKakaoUnknownException("kakaotalk not available"))
       }
     }
 

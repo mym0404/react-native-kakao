@@ -3,11 +3,6 @@ import React
 import UIKit
 
 private let DEFAULT_APP_DISPLAY_NAME = "RNKakao"
-private let UNKNOWN_ERROR = "RNC_KAKAO_UNKNOWN"
-
-private enum RNCKakaoError: Error {
-  case unknown(message: String)
-}
 
 public class RNCKakaoUtil {
   static let RNCKakaoErrorDomain = "RNCKakaoErrorDomain"
@@ -24,6 +19,7 @@ public class RNCKakaoUtil {
     userInfo["isClientFailed"] = false
     userInfo["isAppsFailed"] = false
     userInfo["isInvalidTokenError"] = false
+    userInfo["isPackageError"] = false
 
     if let kakaoError = error as? SdkError {
       userInfo["isApiFailed"] = kakaoError.isApiFailed
@@ -61,17 +57,21 @@ public class RNCKakaoUtil {
           NSError(domain: RNCKakaoErrorDomain, code: 444, userInfo: userInfo)
         )
       }
-    } else {
+    } else if let packageError = error as? RNCKakaoError {
+      userInfo["isPackageError"] = true
       reject(
-        UNKNOWN_ERROR,
+        packageError.code,
+        packageError.description,
+        NSError(domain: RNCKakaoErrorDomain, code: 444, userInfo: userInfo)
+      )
+    } else {
+      userInfo["isPackageError"] = true
+      reject(
+        RNCKakaoError.unknown().code,
         message,
         NSError(domain: RNCKakaoErrorDomain, code: 444, userInfo: userInfo)
       )
     }
-  }
-
-  public class func reject(_ reject: RCTPromiseRejectBlock, _ message: String) {
-    self.reject(reject, RNCKakaoError.unknown(message: message))
   }
 
   private class func getTopmostViewController(
