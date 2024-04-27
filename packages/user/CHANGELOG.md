@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.0](https://github.com/mym0404/react-native-kakao/compare/v1.5.2...v1.6.0) (2024-04-27)
+
+### Features
+
+* **share:** message - android impl ([c2292a5](https://github.com/mym0404/react-native-kakao/commit/c2292a59aacb352f027bcf0eaa98011edfcfa894))
+
 ## [1.5.2](https://github.com/mym0404/react-native-kakao/compare/v1.5.1...v1.5.2) (2024-04-27)
 
 ### Features
