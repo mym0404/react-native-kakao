@@ -217,6 +217,22 @@ export interface KakaoCalendarTemplate {
 }
 
 export interface Spec extends TurboModule {
+  // shareOrSendMeOrSendFriendOrBlahBlahBlahBlah(
+  //   /* share, send-me, send-friend */
+  //   sendType: string,
+  //   /* custom, feed, list, location, commerce, text, calendar */
+  //   messageType: string,
+  //   /* only for custom */
+  //   templateId: Int32,
+  //   /* only for default templates */
+  //   templateJson: UnsafeObject,
+  //   /* only for pass friend uuid directly */
+  //   receiverUuids: ReadonlyArray<string>,
+  //   useWebBrowserIfKakaoTalkNotAvailable: boolean,
+  //   templateArgs: Readonly<{ [key: string]: string }>,
+  //   serverCallbackArgs: Readonly<{ [key: string]: string }>,
+  // ): Promise<void>;
+
   shareCustom(
     templateId: Int32,
     useWebBrowserIfKakaoTalkNotAvailable: boolean,
