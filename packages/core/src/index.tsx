@@ -30,4 +30,8 @@ const Native: Spec = Module
 export function initializeKakaoSDK(appKey: string) {
   Native.initializeKakaoSDK(appKey);
 }
+
+export function getKeyHashAndroid(): Promise<string | undefined> {
+  return Native.getKeyHashAndroid();
+}
 export { kAssert };
