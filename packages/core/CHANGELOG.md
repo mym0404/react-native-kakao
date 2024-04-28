@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.1](https://github.com/mym0404/react-native-kakao/compare/v1.6.0...v1.6.1) (2024-04-28)
+
+### Features
+
+* **core:** getKeyHashAndroid utility fn ([4258d3e](https://github.com/mym0404/react-native-kakao/commit/4258d3e073ffc9c79fef5b08447d8e7d06ad1f31))
+
 ## [1.6.0](https://github.com/mym0404/react-native-kakao/compare/v1.5.2...v1.6.0) (2024-04-27)
 
 ### Features
