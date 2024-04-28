@@ -31,8 +31,8 @@
     "test": "jest",
     "prepare": "husky",
     "release": "./script/release.sh",
-    "codegen:android": "cd ../../example/android && ./gradlew generateCodegenArtifactsFromSchema",
-    "codegen:ios": "node ../../example/node_modules/react-native/scripts/generate-codegen-artifacts.js --path example/ --outputPath ../../example/ios",
+    "codegen:android": "cd example/android && ./gradlew generateCodegenArtifactsFromSchema",
+    "codegen:ios": "node node_modules/react-native/scripts/generate-codegen-artifacts.js --path example/ --outputPath example/ios",
     "codegen": "yarn codegen:android && yarn codegen:ios",
     "prepack": "bob build",
     "clean": "del-cli android/ lib"
