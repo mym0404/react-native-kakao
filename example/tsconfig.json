@@ -6,6 +6,7 @@
     { "path": "../packages/user" },
     { "path": "../packages/navi" },
     { "path": "../packages/social" },
+    { "path": "../packages/channel" },
   ],
   "compilerOptions": {
     // Avoid expo-cli auto-generating a tsconfig
