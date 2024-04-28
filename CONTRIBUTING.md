@@ -47,8 +47,6 @@ The `package.json` file contains various scripts for common tasks:
 **Codegen**
 
 - `yarn codegen`: generate codegen spec for all platform
-- `yarn codegen:android`: generate android codegen spec
-- `yarn codegen:ios`: generate ios codegen spec
 
 ## Development workflow
 
