@@ -1,0 +1,23 @@
+---
+sidebar_position: 3
+---
+
+# 안드로이드 키 해시 얻기
+
+## 안드로이드 키 해시 얻기
+
+안드로이드의 키 해시를 각 환경에서 쉽게 얻을 수 있는 유틸리티 함수입니다.
+
+```tsx title='index.js'
+import { getKeyHashAndroid } from '@react-native-kakao/core';
+
+getKeyHashAndroid().then(console.log);
+```
+
+:::info
+이 함수는 콘솔이 출력되는 debug환경에서는 위와 같이 단순히 `console.log`로 확인할 수 있지만,
+
+디버그 환경이 아닌 릴리즈 환경에서는 정확한 키를 얻기 위해 `Text`같은 컴포넌트에 보여준 뒤 얻어오는 것도 방법이 될 수 있습니다.
+
+물론 이 유틸리티를 사용하지 않고  [공식 문서](https://developers.kakao.com/docs/latest/ko/android/getting-started#before-you-begin-add-key-hash)를 따라 직접 추출할 수 있습니다.
+:::

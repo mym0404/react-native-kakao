@@ -37,8 +37,6 @@ sidebar_position: 3
 - 디버그 키 해시: 프로젝트를 처음 생성하거나 디버그할 때, 안드로이드 스튜디오에서 개발 환경에 맞게 자동으로 생성되는 디버그 인증서에서 해시(hash)한 값
 - 릴리즈 키 해시: 앱 스토어에 앱을 배포하기 위해 생성한 릴리즈 인증서로부터 해시한 값
 
-키 해시 생성은 [공식 문서](https://developers.kakao.com/docs/latest/ko/android/getting-started#before-you-begin-add-key-hash)에서 참고해주세요.
-
 :::info
 이것과 더불어 Google Play Console에서 발급해주는 키 해시가 하나 더 있습니다.
 
@@ -49,6 +47,12 @@ Google Play Console에선 앱을 릴리즈 할 때마다 [App signing](https://p
 
 이것을 등록하지 않을 시 실제 플레이 스토어에 앱을 출시해 구동시킬 때 Kakao SDK가 동작하지 않습니다.
 :::
+
+키 해시는 `core`패키지의 `getKeyHashAndroid()`함수로 쉽게 얻어올 수 있습니다.
+
+디버그, 릴리즈, 플레이스토어 환경에서 각각 이 함수의 결과값을 콘솔이나 텍스트에 출력 후 그대로 사용하시면 됩니다.
+
+키 해시 직접 생성은 [공식 문서](https://developers.kakao.com/docs/latest/ko/android/getting-started#before-you-begin-add-key-hash)에서 참고해주세요.
 
 ## 프로젝트 권한
 
