@@ -9,7 +9,11 @@ const withAndroid: ConfigPlugin<{
 }> = (
   config,
   {
-    android: { authCodeHandlerActivity, forwardKakaoLinkIntentFilterToMainActivity },
+    android: {
+      authCodeHandlerActivity,
+      forwardKakaoLinkIntentFilterToMainActivity,
+      followChannelHandlerActivity,
+    },
     nativeAppKey,
   },
 ) => {
@@ -65,6 +69,43 @@ const withAndroid: ConfigPlugin<{
                 {
                   $: {
                     'android:host': 'oauth',
+                    'android:scheme': `kakao${nativeAppKey}`,
+                  },
+                },
+              ],
+            },
+          ],
+        },
+        activityName: name,
+      });
+    }
+
+    if (followChannelHandlerActivity) {
+      const name = 'com.kakao.sdk.talk.FollowChannelHandlerActivity';
+
+      injectActivity({
+        activity: {
+          '$': {
+            'android:name': name,
+            'android:exported': 'true',
+          },
+          'intent-filter': [
+            {
+              action: [
+                {
+                  $: {
+                    'android:name': 'android.intent.action.VIEW',
+                  },
+                },
+              ],
+              category: [
+                { $: { 'android:name': 'android.intent.category.DEFAULT' } },
+                { $: { 'android:name': 'android.intent.category.BROWSABLE' } },
+              ],
+              data: [
+                {
+                  $: {
+                    'android:host': 'channel',
                     'android:scheme': `kakao${nativeAppKey}`,
                   },
                 },
