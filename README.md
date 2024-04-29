@@ -16,7 +16,7 @@
 ---
 
 > [!IMPORTANT]
-> (NEW ARCH) The generated type of Codegen of RN 0.74 is changed. So currently, the package can't be built with RN 0.74. But we'll publish new version compatible with 0.74 soon 🙏
+> (NEW ARCH) The generated type of Codegen of RN 0.74 is changed. So currently, the package can't be built with RN 0.74. But we'll publish new version compatible with 0.74 soon 🙏If you are using under 0.74 with new architecture, you should be fine.
 
 ---
 
