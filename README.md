@@ -15,6 +15,11 @@
 
 ---
 
+> [!IMPORTANT]
+> (NEW ARCH) The generated type of Codegen of RN 0.74 is changed. So currently, the package can't be built with RN 0.74. But we'll publish new version compatible with 0.74 soon 🙏
+
+---
+
 **React Native Kakao** is a collection of official React Native modules connecting you to Kakao
 services; each module is a light-weight JavaScript layer connecting you to the native Kakao SDKs for
 both iOS and Android.
