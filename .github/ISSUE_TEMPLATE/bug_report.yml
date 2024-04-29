@@ -27,7 +27,7 @@ body:
     attributes:
       label: Version of react-native
       description: What version of react-native are you running?
-      placeholder: ex. 0.73.6
+      placeholder: ex. 0.74.0
     validations:
       required: true
   - type: dropdown

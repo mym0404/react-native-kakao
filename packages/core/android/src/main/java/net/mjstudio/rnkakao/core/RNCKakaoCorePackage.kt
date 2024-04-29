@@ -28,7 +28,6 @@ class RNCKakaoCorePackage : TurboReactPackage() {
           RNCKakaoCoreModule.NAME,
           false, // canOverrideExistingModule
           false, // needsEagerInit
-          true, // hasConstants
           false, // isCxxModule
           isTurboModule, // isTurboModule
         )
