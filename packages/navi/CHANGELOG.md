@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.7.0](https://github.com/mym0404/react-native-kakao/compare/v1.6.3...v1.7.0) (2024-04-30)
+
+**Note:** Version bump only for package @react-native-kakao/navi
+
 ## [1.6.3](https://github.com/mym0404/react-native-kakao/compare/v1.6.2...v1.6.3) (2024-04-30)
 
 **Note:** Version bump only for package @react-native-kakao/navi
