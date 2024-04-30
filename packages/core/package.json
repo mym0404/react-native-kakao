@@ -49,7 +49,11 @@
     "react",
     "expo",
     "kakao-login",
-    "kakao-auth"
+    "kakao-auth",
+    "kakao-core",
+    "kakao-navi",
+    "kakao-channel",
+    "kakaotalk"
   ],
   "repository": {
     "type": "git",
