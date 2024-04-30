@@ -9,7 +9,11 @@ const withAndroid: ConfigPlugin<{
 }> = (
   config,
   {
-    android: { authCodeHandlerActivity, forwardKakaoLinkIntentFilterToMainActivity },
+    android: {
+      authCodeHandlerActivity,
+      forwardKakaoLinkIntentFilterToMainActivity,
+      followChannelHandlerActivity,
+    },
     nativeAppKey,
   },
 ) => {
@@ -76,31 +80,79 @@ const withAndroid: ConfigPlugin<{
       });
     }
 
-    if (forwardKakaoLinkIntentFilterToMainActivity && mainActivity) {
-      mainActivity['intent-filter'] = [
-        ...(mainActivity['intent-filter'] || []),
-        {
-          action: [
+    if (followChannelHandlerActivity) {
+      const name = 'com.kakao.sdk.talk.FollowChannelHandlerActivity';
+
+      injectActivity({
+        activity: {
+          '$': {
+            'android:name': name,
+            'android:exported': 'true',
+          },
+          'intent-filter': [
             {
-              $: {
-                'android:name': 'android.intent.action.VIEW',
-              },
-            },
-          ],
-          category: [
-            { $: { 'android:name': 'android.intent.category.DEFAULT' } },
-            { $: { 'android:name': 'android.intent.category.BROWSABLE' } },
-          ],
-          data: [
-            {
-              $: {
-                'android:host': 'kakaolink',
-                'android:scheme': `kakao${nativeAppKey}`,
-              },
+              action: [
+                {
+                  $: {
+                    'android:name': 'android.intent.action.VIEW',
+                  },
+                },
+              ],
+              category: [
+                { $: { 'android:name': 'android.intent.category.DEFAULT' } },
+                { $: { 'android:name': 'android.intent.category.BROWSABLE' } },
+              ],
+              data: [
+                {
+                  $: {
+                    'android:host': 'channel',
+                    'android:scheme': `kakao${nativeAppKey}`,
+                  },
+                },
+              ],
             },
           ],
         },
-      ];
+        activityName: name,
+      });
+    }
+
+    if (forwardKakaoLinkIntentFilterToMainActivity && mainActivity) {
+      if (
+        !mainActivity['intent-filter'] ||
+        !mainActivity['intent-filter']?.some((f) =>
+          f.data?.some(
+            (d) =>
+              d.$?.['android:host'] === 'kakaolink' &&
+              d.$?.['android:scheme'] === `kakao${nativeAppKey}`,
+          ),
+        )
+      ) {
+        mainActivity['intent-filter'] = [
+          ...(mainActivity['intent-filter'] || []),
+          {
+            action: [
+              {
+                $: {
+                  'android:name': 'android.intent.action.VIEW',
+                },
+              },
+            ],
+            category: [
+              { $: { 'android:name': 'android.intent.category.DEFAULT' } },
+              { $: { 'android:name': 'android.intent.category.BROWSABLE' } },
+            ],
+            data: [
+              {
+                $: {
+                  'android:host': 'kakaolink',
+                  'android:scheme': `kakao${nativeAppKey}`,
+                },
+              },
+            ],
+          },
+        ];
+      }
     }
 
     return config;

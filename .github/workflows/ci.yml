@@ -135,6 +135,9 @@ jobs:
     env:
       TURBO_CACHE_DIR: .turbo/ios-${{matrix.arch}}
     steps:
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: 15.3
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -172,7 +175,7 @@ jobs:
             ${{ runner.os }}-cocoapods-${{matrix.arch}}-
 
       - name: Install cocoapods
-#        if: env.turbo_cache_hit != 1 && steps.cocoapods-cache.outputs.cache-hit != 'true'
+        if: env.turbo_cache_hit != 1 && steps.cocoapods-cache.outputs.cache-hit != 'true'
         run: yarn pod:${{matrix.arch}}
         env:
           NO_FLIPPER: 1

@@ -24,9 +24,9 @@ import net.mjstudio.rnkakao.core.util.getBooleanElseNull
 import net.mjstudio.rnkakao.core.util.getIntElseNull
 import net.mjstudio.rnkakao.core.util.onMain
 import net.mjstudio.rnkakao.core.util.pushMapList
-import net.mjstudio.rnkakao.core.util.putBooleanIfNotNull
-import net.mjstudio.rnkakao.core.util.putDoubleIfNotNull
-import net.mjstudio.rnkakao.core.util.putIntIfNotNull
+import net.mjstudio.rnkakao.core.util.putB
+import net.mjstudio.rnkakao.core.util.putD
+import net.mjstudio.rnkakao.core.util.putI
 import net.mjstudio.rnkakao.core.util.rejectWith
 
 class RNCKakaoSocialModule internal constructor(context: ReactApplicationContext) :
@@ -85,8 +85,8 @@ class RNCKakaoSocialModule internal constructor(context: ReactApplicationContext
                   users.users?.map {
                     argMap().apply {
                       putString("uuid", it.uuid)
-                      putDoubleIfNotNull("id", it.id?.toDouble())
-                      putBooleanIfNotNull("favorite", it.favorite)
+                      putD("id", it.id?.toDouble())
+                      putB("favorite", it.favorite)
                       putString("profileNickname", it.profileNickname)
                       putString("profileThumbnailImage", it.profileThumbnailImage)
                     }
@@ -166,18 +166,18 @@ class RNCKakaoSocialModule internal constructor(context: ReactApplicationContext
           promise.resolve(
             argMap().apply {
               putInt("totalCount", friends.totalCount)
-              putIntIfNotNull("favoriteCount", friends.favoriteCount)
+              putI("favoriteCount", friends.favoriteCount)
               putArray(
                 "friends",
                 argArr().pushMapList(
                   friends.elements!!.map {
                     argMap().apply {
-                      putDoubleIfNotNull("id", it.id?.toDouble())
+                      putD("id", it.id?.toDouble())
                       putString("uuid", it.uuid)
                       putString("profileNickname", it.profileNickname)
                       putString("profileThumbnailImage", it.profileThumbnailImage)
-                      putBooleanIfNotNull("favorite", it.favorite)
-                      putBooleanIfNotNull("allowedMsg", it.allowedMsg)
+                      putB("favorite", it.favorite)
+                      putB("allowedMsg", it.allowedMsg)
                     }
                   },
                 ),

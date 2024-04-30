@@ -2,7 +2,7 @@
   <a href="https://rnkakao.dev">
     <img width="160px" src="https://raw.githubusercontent.com/mym0404/image-archive/master/202404201234177.webp"><br/>
   </a>
-  <h1 align="center">React Native Kakao Core</h1>
+  <h1 align="center">React Native Kakao Social</h1>
   <p align="center">
   <a href="https://www.npmjs.com/package/@react-native-kakao/core"><img src="https://img.shields.io/npm/dm/@react-native-kakao/core.svg?style=flat-square" alt="NPM downloads"></a>
   <a href="https://www.npmjs.com/package/@react-native-kakao/core"><img src="https://img.shields.io/npm/v/@react-native-kakao/core.svg?style=flat-square" alt="NPM version"></a>

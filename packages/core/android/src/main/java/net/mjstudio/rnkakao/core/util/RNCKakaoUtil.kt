@@ -105,7 +105,7 @@ fun WritableArray.pushMapList(list: List<WritableMap>): WritableArray {
   return this
 }
 
-fun WritableMap.putBooleanIfNotNull(
+fun WritableMap.putB(
   key: String,
   value: Boolean?,
 ): WritableMap {
@@ -117,7 +117,7 @@ fun WritableMap.putBooleanIfNotNull(
   return this
 }
 
-fun WritableMap.putIntIfNotNull(
+fun WritableMap.putI(
   key: String,
   value: Int?,
 ): WritableMap {
@@ -129,7 +129,7 @@ fun WritableMap.putIntIfNotNull(
   return this
 }
 
-fun WritableMap.putDoubleIfNotNull(
+fun WritableMap.putD(
   key: String,
   value: Double?,
 ): WritableMap {
@@ -138,6 +138,21 @@ fun WritableMap.putDoubleIfNotNull(
   } else {
     putNull(key)
   }
+  return this
+}
+
+fun WritableMap.putL(
+  key: String,
+  value: Long?,
+): WritableMap {
+  return putD(key, value?.toDouble())
+}
+
+fun WritableMap.putS(
+  key: String,
+  value: String?,
+): WritableMap {
+  putString(key, value)
   return this
 }
 
