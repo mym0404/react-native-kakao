@@ -108,8 +108,8 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
-example/android/
-example/ios/
+#example/android/
+#example/ios/
 !packages/*/android/
 !packages/*/ios/
 
