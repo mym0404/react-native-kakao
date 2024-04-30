@@ -49,7 +49,7 @@
         "packages/**/src/**",
         "packages/**/ios/**",
         "packages/core/expo-config-plugin",
-        "example/ios/**/*.{mm,m,swift,h,plist,lock}",
+        "example/ios/**/*.{mm,m,swift,h,lock}",
         "!example/ios/.xcode.env*",
         "!example/android/.gradle",
         "!example/android/build",
