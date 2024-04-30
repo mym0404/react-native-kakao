@@ -105,6 +105,11 @@ export default function Page() {
             {'@react-native-kakao/social'}
           </Txt>
         </Link>
+        <Link href={'/channel'}>
+          <Txt textDecorationLine={'underline'} align={'center'}>
+            {'@react-native-kakao/channel'}
+          </Txt>
+        </Link>
       </Box>
     </StyledScrollView>
   );
