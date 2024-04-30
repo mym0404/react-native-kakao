@@ -24,8 +24,8 @@ import net.mjstudio.rnkakao.core.util.pushMapList
 import net.mjstudio.rnkakao.core.util.pushStringList
 import net.mjstudio.rnkakao.core.util.putBooleanIfNotNull
 import net.mjstudio.rnkakao.core.util.putDoubleIfNotNull
-import net.mjstudio.rnkakao.core.util.putIntIfNotNull
 import net.mjstudio.rnkakao.core.util.rejectWith
+import net.mjstudio.rnkakao.core.util.unix
 import java.util.Date
 
 class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) :
@@ -61,11 +61,11 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
               putString("idToken", token.idToken)
               putDouble(
                 "accessTokenExpiresAt",
-                token.accessTokenExpiresAt.time.toDouble(),
+                token.accessTokenExpiresAt.unix.toDouble(),
               )
               putDouble(
                 "refreshTokenExpiresAt",
-                token.refreshTokenExpiresAt.time.toDouble(),
+                token.refreshTokenExpiresAt.unix.toDouble(),
               )
               putDouble(
                 "accessTokenExpiresIn",
@@ -230,24 +230,17 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
             promise.rejectWith(RNCKakaoResponseNotFoundException("serviceTerms"))
           } else {
             promise.resolve(
-              argMap().apply {
-                putArray(
-                  "allowedServiceTerms",
-                  argArr().apply {
-                    serviceTerms.serviceTerms?.forEach { term ->
-                      pushMap(
-                        argMap().apply {
-                          putString("tag", term.tag)
-                          putDoubleIfNotNull("agreedAt", term.agreedAt?.time?.toDouble())
-                          putBoolean("agreed", term.agreed)
-                          putBoolean("required", term.required)
-                          putBoolean("revocable", term.revocable)
-                        },
-                      )
-                    }
-                  },
-                )
-              },
+              argArr().pushMapList(
+                serviceTerms.serviceTerms?.map { term ->
+                  argMap().apply {
+                    putString("tag", term.tag)
+                    putDoubleIfNotNull("agreedAt", term.agreedAt?.unix?.toDouble())
+                    putBoolean("agreed", term.agreed)
+                    putBoolean("required", term.required)
+                    putBoolean("revocable", term.revocable)
+                  }
+                } ?: listOf(),
+              ),
             )
           }
         }
@@ -264,7 +257,7 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
           } else {
             promise.resolve(
               argMap().apply {
-                putIntIfNotNull("userId", addrs.userId?.toInt())
+                putDoubleIfNotNull("userId", addrs.userId?.toDouble())
                 putBooleanIfNotNull("needsAgreement", addrs.needsAgreement)
                 putArray(
                   "shippingAddresses",
@@ -272,10 +265,10 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
                     pushMapList(
                       addrs.shippingAddresses?.map { addr ->
                         argMap().apply {
-                          putInt("id", addr.id.toInt())
+                          putDouble("id", addr.id.toDouble())
                           putString("name", addr.name)
                           putBoolean("isDefault", addr.isDefault)
-                          putDoubleIfNotNull("updatedAt", addr.updatedAt?.time?.toDouble())
+                          putDoubleIfNotNull("updatedAt", addr.updatedAt?.unix?.toDouble())
                           putString("type", addr.type?.name)
                           putString("baseAddress", addr.baseAddress)
                           putString("detailAddress", addr.detailAddress)
@@ -306,7 +299,7 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
           } else {
             promise.resolve(
               argMap().apply {
-                putIntIfNotNull("id", user.id?.toInt())
+                putDoubleIfNotNull("id", user.id?.toDouble())
                 putString("name", user.kakaoAccount?.name)
 
                 putString("email", user.kakaoAccount?.email)

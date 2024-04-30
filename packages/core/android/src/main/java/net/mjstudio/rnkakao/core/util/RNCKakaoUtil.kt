@@ -108,28 +108,37 @@ fun WritableArray.pushMapList(list: List<WritableMap>): WritableArray {
 fun WritableMap.putBooleanIfNotNull(
   key: String,
   value: Boolean?,
-) {
+): WritableMap {
   if (value != null) {
     putBoolean(key, value)
+  } else {
+    putNull(key)
   }
+  return this
 }
 
 fun WritableMap.putIntIfNotNull(
   key: String,
   value: Int?,
-) {
+): WritableMap {
   if (value != null) {
     putInt(key, value)
+  } else {
+    putNull(key)
   }
+  return this
 }
 
 fun WritableMap.putDoubleIfNotNull(
   key: String,
   value: Double?,
-) {
+): WritableMap {
   if (value != null) {
     putDouble(key, value)
+  } else {
+    putNull(key)
   }
+  return this
 }
 
 fun argMap(): WritableMap {
@@ -177,3 +186,6 @@ object RNCKakaoUtil {
     return (d1.time - d2.time) / 1000L
   }
 }
+
+val Date.unix: Long
+  get() = time / 1000

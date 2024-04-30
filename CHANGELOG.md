@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.3](https://github.com/mym0404/react-native-kakao/compare/v1.6.2...v1.6.3) (2024-04-30)
+
+### Bug Fixes
+
+* **user:** fix integer overflows on kakao user ids ([2658540](https://github.com/mym0404/react-native-kakao/commit/265854069567d17e48830e3e01d4eaea2ed64f62))
+* **user:** handle android time with unix seconds not ms + unify service terms response format ([5b99864](https://github.com/mym0404/react-native-kakao/commit/5b998641141215237214287e2a069e16413ec081))
+
+## [1.6.2](https://github.com/mym0404/react-native-kakao/compare/v1.6.1...v1.6.2) (2024-04-29)
+
+**Note:** Version bump only for package react-native-kakao
+
 ## [1.6.1](https://github.com/mym0404/react-native-kakao/compare/v1.6.0...v1.6.1) (2024-04-28)
 
 ### Features

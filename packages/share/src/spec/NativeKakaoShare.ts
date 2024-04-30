@@ -1,6 +1,6 @@
 import type { TurboModule } from 'react-native';
 import { TurboModuleRegistry } from 'react-native';
-import type { Int32, UnsafeObject } from 'react-native/Libraries/Types/CodegenTypes';
+import type { Double, Int32, UnsafeObject } from 'react-native/Libraries/Types/CodegenTypes';
 
 /**
  * 메시지에서 콘텐츠 영역이나 버튼 클릭 시에 이동되는 링크 정보 오브젝트.
@@ -223,7 +223,7 @@ export interface Spec extends TurboModule {
     /* custom, feed, list, location, commerce, text, calendar */
     templateType: string,
     /* only for custom */
-    templateId: Int32,
+    templateId: Double,
     /* only for default templates */
     templateJson: UnsafeObject,
     /* only for pass friend uuid directly */

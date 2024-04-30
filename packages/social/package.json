@@ -1,7 +1,7 @@
 {
   "name": "@react-native-kakao/social",
   "description": "React Native Kakao Social SDK",
-  "version": "1.6.1",
+  "version": "1.6.3",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
   "types": "lib/typescript/src/index.d.ts",
@@ -64,19 +64,19 @@
     "access": "public"
   },
   "devDependencies": {
-    "@react-native-kakao/core": "1.6.1",
+    "@react-native-kakao/core": "1.6.3",
     "@types/invariant": "^2",
     "@types/jest": "^29.5.5",
     "@types/react": "^18.2.44",
     "del-cli": "^5.1.0",
     "jest": "^29.7.0",
     "react": "18.2.0",
-    "react-native": "0.73.7",
+    "react-native": "0.74.0",
     "react-native-builder-bob": "^0.20.0",
     "typescript": "5.1.6"
   },
   "peerDependencies": {
-    "@react-native-kakao/core": "1.6.1",
+    "@react-native-kakao/core": "1.6.3",
     "react": "*",
     "react-native": "*"
   },

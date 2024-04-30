@@ -28,7 +28,6 @@ class RNCKakaoNaviPackage : TurboReactPackage() {
           RNCKakaoNaviModule.NAME,
           false, // canOverrideExistingModule
           false, // needsEagerInit
-          true, // hasConstants
           false, // isCxxModule
           isTurboModule, // isTurboModule
         )
