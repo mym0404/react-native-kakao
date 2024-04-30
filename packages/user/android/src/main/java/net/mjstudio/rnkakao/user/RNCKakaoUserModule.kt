@@ -22,8 +22,8 @@ import net.mjstudio.rnkakao.core.util.filterIsInstance
 import net.mjstudio.rnkakao.core.util.onMain
 import net.mjstudio.rnkakao.core.util.pushMapList
 import net.mjstudio.rnkakao.core.util.pushStringList
-import net.mjstudio.rnkakao.core.util.putBooleanIfNotNull
-import net.mjstudio.rnkakao.core.util.putDoubleIfNotNull
+import net.mjstudio.rnkakao.core.util.putB
+import net.mjstudio.rnkakao.core.util.putD
 import net.mjstudio.rnkakao.core.util.rejectWith
 import net.mjstudio.rnkakao.core.util.unix
 import java.util.Date
@@ -190,9 +190,9 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
                     map.putString("displayName", scope.displayName)
                     map.putString("type", scope.type.name)
                     map.putBoolean("using", scope.using)
-                    map.putBooleanIfNotNull("delegated", scope.delegated)
+                    map.putB("delegated", scope.delegated)
                     map.putBoolean("agreed", scope.agreed)
-                    map.putBooleanIfNotNull("revocable", scope.revocable)
+                    map.putB("revocable", scope.revocable)
                   },
                 )
               }
@@ -234,7 +234,7 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
                 serviceTerms.serviceTerms?.map { term ->
                   argMap().apply {
                     putString("tag", term.tag)
-                    putDoubleIfNotNull("agreedAt", term.agreedAt?.unix?.toDouble())
+                    putD("agreedAt", term.agreedAt?.unix?.toDouble())
                     putBoolean("agreed", term.agreed)
                     putBoolean("required", term.required)
                     putBoolean("revocable", term.revocable)
@@ -257,8 +257,8 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
           } else {
             promise.resolve(
               argMap().apply {
-                putDoubleIfNotNull("userId", addrs.userId?.toDouble())
-                putBooleanIfNotNull("needsAgreement", addrs.needsAgreement)
+                putD("userId", addrs.userId?.toDouble())
+                putB("needsAgreement", addrs.needsAgreement)
                 putArray(
                   "shippingAddresses",
                   argArr().apply {
@@ -268,7 +268,7 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
                           putDouble("id", addr.id.toDouble())
                           putString("name", addr.name)
                           putBoolean("isDefault", addr.isDefault)
-                          putDoubleIfNotNull("updatedAt", addr.updatedAt?.unix?.toDouble())
+                          putD("updatedAt", addr.updatedAt?.unix?.toDouble())
                           putString("type", addr.type?.name)
                           putString("baseAddress", addr.baseAddress)
                           putString("detailAddress", addr.detailAddress)
@@ -299,7 +299,7 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
           } else {
             promise.resolve(
               argMap().apply {
-                putDoubleIfNotNull("id", user.id?.toDouble())
+                putD("id", user.id?.toDouble())
                 putString("name", user.kakaoAccount?.name)
 
                 putString("email", user.kakaoAccount?.email)
@@ -312,58 +312,58 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
                 putString("birthdayType", user.kakaoAccount?.birthdayType?.name)
                 putString("birthyear", user.kakaoAccount?.birthyear)
                 putString("gender", user.kakaoAccount?.gender?.name)
-                putBooleanIfNotNull("isEmailValid", user.kakaoAccount?.isEmailValid)
-                putBooleanIfNotNull("isEmailVerified", user.kakaoAccount?.isEmailVerified)
-                putBooleanIfNotNull("isKorean", user.kakaoAccount?.isKorean)
-                putBooleanIfNotNull(
+                putB("isEmailValid", user.kakaoAccount?.isEmailValid)
+                putB("isEmailVerified", user.kakaoAccount?.isEmailVerified)
+                putB("isKorean", user.kakaoAccount?.isKorean)
+                putB(
                   "ageRangeNeedsAgreement",
                   user.kakaoAccount?.ageRangeNeedsAgreement,
                 )
-                putBooleanIfNotNull(
+                putB(
                   "birthdayNeedsAgreement",
                   user.kakaoAccount?.birthdayNeedsAgreement,
                 )
-                putBooleanIfNotNull(
+                putB(
                   "birthyearNeedsAgreement",
                   user.kakaoAccount?.birthyearNeedsAgreement,
                 )
-                putBooleanIfNotNull(
+                putB(
                   "emailNeedsAgreement",
                   user.kakaoAccount?.emailNeedsAgreement,
                 )
-                putBooleanIfNotNull(
+                putB(
                   "genderNeedsAgreement",
                   user.kakaoAccount?.genderNeedsAgreement,
                 )
-                putBooleanIfNotNull(
+                putB(
                   "isKoreanNeedsAgreement",
                   user.kakaoAccount?.isKoreanNeedsAgreement,
                 )
-                putBooleanIfNotNull(
+                putB(
                   "phoneNumberNeedsAgreement",
                   user.kakaoAccount?.phoneNumberNeedsAgreement,
                 )
-                putBooleanIfNotNull(
+                putB(
                   "profileNeedsAgreement",
                   user.kakaoAccount?.profileNeedsAgreement,
                 )
-                putBooleanIfNotNull(
+                putB(
                   "ciNeedsAgreement",
                   user.kakaoAccount?.ciNeedsAgreement,
                 )
-                putBooleanIfNotNull(
+                putB(
                   "nameNeedsAgreement",
                   user.kakaoAccount?.nameNeedsAgreement,
                 )
-                putBooleanIfNotNull(
+                putB(
                   "profileImageNeedsAgreement",
                   user.kakaoAccount?.profileImageNeedsAgreement,
                 )
-                putBooleanIfNotNull(
+                putB(
                   "profileNicknameNeedsAgreement",
                   user.kakaoAccount?.profileNicknameNeedsAgreement,
                 )
-                putBooleanIfNotNull(
+                putB(
                   "legalBirthDateNeedsAgreement",
                   user.kakaoAccount?.legalBirthDateNeedsAgreement,
                 )
