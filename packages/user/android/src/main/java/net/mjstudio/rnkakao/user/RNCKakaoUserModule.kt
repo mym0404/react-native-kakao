@@ -24,7 +24,6 @@ import net.mjstudio.rnkakao.core.util.pushMapList
 import net.mjstudio.rnkakao.core.util.pushStringList
 import net.mjstudio.rnkakao.core.util.putBooleanIfNotNull
 import net.mjstudio.rnkakao.core.util.putDoubleIfNotNull
-import net.mjstudio.rnkakao.core.util.putIntIfNotNull
 import net.mjstudio.rnkakao.core.util.rejectWith
 import net.mjstudio.rnkakao.core.util.unix
 import java.util.Date
@@ -258,7 +257,7 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
           } else {
             promise.resolve(
               argMap().apply {
-                putIntIfNotNull("userId", addrs.userId?.toInt())
+                putDoubleIfNotNull("userId", addrs.userId?.toDouble())
                 putBooleanIfNotNull("needsAgreement", addrs.needsAgreement)
                 putArray(
                   "shippingAddresses",
@@ -266,7 +265,7 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
                     pushMapList(
                       addrs.shippingAddresses?.map { addr ->
                         argMap().apply {
-                          putInt("id", addr.id.toInt())
+                          putDouble("id", addr.id.toDouble())
                           putString("name", addr.name)
                           putBoolean("isDefault", addr.isDefault)
                           putDoubleIfNotNull("updatedAt", addr.updatedAt?.unix?.toDouble())
