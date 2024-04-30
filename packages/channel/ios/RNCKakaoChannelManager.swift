@@ -137,26 +137,28 @@ import SafariServices
   }
 
   @objc public func channels(
-    _ resolve: @escaping RCTPromiseResolveBlock,
+    _ channelPublicIds: [String]?,
+    resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
     onMain {
-      TalkApi.shared.channels { channels, error in
-        if let error {
-          RNCKakaoUtil.reject(reject, error)
-        } else if let channels = channels?.channels {
-          resolve(channels.map { c in
-            [
-              "uuid": c.uuid,
-              "encodedId": c.encodedId,
-              "relation": c.relation.rawValue.lowercased(),
-              "updateAt": c.updatedAt?.timeIntervalSince1970 as Any
-            ]
-          })
-        } else {
-          RNCKakaoUtil.reject(reject, RNCKakaoError.responseNotFound(name: "channels"))
+      TalkApi.shared
+        .channels(publicIds: channelPublicIds) { channels, error in
+          if let error {
+            RNCKakaoUtil.reject(reject, error)
+          } else if let channels = channels?.channels {
+            resolve(channels.map { c in
+              [
+                "uuid": c.uuid,
+                "encodedId": c.encodedId,
+                "relation": c.relation.rawValue.lowercased(),
+                "updateAt": c.updatedAt?.timeIntervalSince1970 as Any
+              ]
+            })
+          } else {
+            RNCKakaoUtil.reject(reject, RNCKakaoError.responseNotFound(name: "channels"))
+          }
         }
-      }
     }
   }
 }

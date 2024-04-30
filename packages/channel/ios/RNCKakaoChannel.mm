@@ -59,9 +59,10 @@ RCT_EXPORT_METHOD(openChatChannelUrl
 }
 
 RCT_EXPORT_METHOD(channels
+                  : (nullable NSArray*)channelPublicIds resolve
                   : (RCTPromiseResolveBlock)resolve reject
                   : (RCTPromiseRejectBlock)reject) {
-  [[self manager] channels:resolve reject:reject];
+  [[self manager] channels:channelPublicIds resolve:resolve reject:reject];
 }
 
 // Don't compile this code when we build for the old architecture.

@@ -2,6 +2,7 @@ package net.mjstudio.rnkakao.channel
 
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
+import com.facebook.react.bridge.ReadableArray
 
 abstract class KakaoChannelSpec internal constructor(context: ReactApplicationContext) :
   ReactContextBaseJavaModule(context) {
@@ -40,5 +41,8 @@ abstract class KakaoChannelSpec internal constructor(context: ReactApplicationCo
       promise: Promise,
     )
 
-    abstract fun channels(promise: Promise)
+    abstract fun channels(
+      channelPublicIds: ReadableArray?,
+      promise: Promise,
+    )
   }

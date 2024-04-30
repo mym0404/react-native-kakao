@@ -16,7 +16,7 @@ export interface Spec extends TurboModule {
   chatChannel(channelPublicId: string): Promise<void>;
   getChatChannelUrl(channelPublicId: string): Promise<string>;
   openChatChannelUrl(channelPublicId: string): Promise<string>;
-  channels(): Promise<KakaoChannel[]>;
+  channels(channelPublicIds?: string[]): Promise<KakaoChannel[]>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('RNCKakaoChannel');
