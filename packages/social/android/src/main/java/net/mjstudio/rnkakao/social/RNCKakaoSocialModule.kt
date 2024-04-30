@@ -25,6 +25,7 @@ import net.mjstudio.rnkakao.core.util.getIntElseNull
 import net.mjstudio.rnkakao.core.util.onMain
 import net.mjstudio.rnkakao.core.util.pushMapList
 import net.mjstudio.rnkakao.core.util.putBooleanIfNotNull
+import net.mjstudio.rnkakao.core.util.putDoubleIfNotNull
 import net.mjstudio.rnkakao.core.util.putIntIfNotNull
 import net.mjstudio.rnkakao.core.util.rejectWith
 
@@ -84,7 +85,7 @@ class RNCKakaoSocialModule internal constructor(context: ReactApplicationContext
                   users.users?.map {
                     argMap().apply {
                       putString("uuid", it.uuid)
-                      putIntIfNotNull("id", it.id?.toInt())
+                      putDoubleIfNotNull("id", it.id?.toDouble())
                       putBooleanIfNotNull("favorite", it.favorite)
                       putString("profileNickname", it.profileNickname)
                       putString("profileThumbnailImage", it.profileThumbnailImage)
@@ -171,7 +172,7 @@ class RNCKakaoSocialModule internal constructor(context: ReactApplicationContext
                 argArr().pushMapList(
                   friends.elements!!.map {
                     argMap().apply {
-                      putIntIfNotNull("id", it.id?.toInt())
+                      putDoubleIfNotNull("id", it.id?.toDouble())
                       putString("uuid", it.uuid)
                       putString("profileNickname", it.profileNickname)
                       putString("profileThumbnailImage", it.profileThumbnailImage)
