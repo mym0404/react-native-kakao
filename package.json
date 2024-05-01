@@ -55,10 +55,8 @@
     "codegen:ios": "yarn react-native codegen --platform ios --path example --outputPath example/ios",
     "codegen": "yarn codegen:android && yarn codegen:ios",
     "watchman-refresh": "watchman watch-del $(pwd) ; watchman watch-project $(pwd)",
-    "ci:android:build:new": "script/ci-android-build.sh",
-    "ci:android:build:old": "script/ci-android-build.sh",
-    "ci:ios:build:new": "script/ci-ios-build.sh",
-    "ci:ios:build:old": "script/ci-ios-build.sh"
+    "ci:android:build": "script/ci-android-build.sh",
+    "ci:ios:build": "script/ci-ios-build.sh"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^17.0.2",
