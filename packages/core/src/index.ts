@@ -40,4 +40,5 @@ const KakaoCore = {
   getKeyHashAndroid,
 };
 export default KakaoCore;
+export type KakaoCoreAPI = typeof KakaoCore;
 export { kAssert };

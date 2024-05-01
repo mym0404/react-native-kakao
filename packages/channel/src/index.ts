@@ -73,3 +73,4 @@ const KakaoChannel = {
 };
 
 export default KakaoChannel;
+export type KakaoChannelAPI = typeof KakaoChannel;

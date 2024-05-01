@@ -119,6 +119,15 @@ export function login({
   prompts?: ('Loign' | 'Create' | 'Cert' | 'UnifyDaum' | 'SelectAccount')[];
   scopes?: string[];
   useKakaoAccountLogin?: boolean;
+  web?: {
+    redirectUri?: string;
+    state?: string;
+    scope?: string;
+    prompt?: string;
+    loginHint?: string;
+    nonce?: string;
+    throughTalk?: boolean;
+  };
 } = {}): Promise<KakaoLoginToken> {
   kAssert(
     !useKakaoAccountLogin ? !is.notEmptyArray(prompts) && !is.notEmptyArray(scopes) : true,
@@ -187,3 +196,4 @@ const KakaoUser = {
   me,
 };
 export default KakaoUser;
+export type KakaoUserAPI = typeof KakaoUser;

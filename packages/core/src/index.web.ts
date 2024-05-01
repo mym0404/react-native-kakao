@@ -1,5 +1,6 @@
-import type { Spec } from './spec/NativeKakaoCore';
 import { KakaoJavaScriptError } from './util/KakaoJavaScriptError';
+import { kAssert } from './util/kAssert';
+import type { KakaoCoreAPI } from './index';
 
 const VERSION = '2.7.1';
 const KAKAO_SDK_URL = `https://t1.kakaocdn.net/kakao_js_sdk/${VERSION}/kakao.min.js`;
@@ -22,11 +23,8 @@ function loadScript(url: string, integrity: string): Promise<void> {
   });
 }
 
-const KakaoCore: Spec = {
-  getConstants: () => {
-    return {};
-  },
-  getKeyHashAndroid: async (): Promise<string | undefined> => {
+const KakaoCore: KakaoCoreAPI = {
+  getKeyHashAndroid: async () => {
     return undefined;
   },
   initializeKakaoSDK: async (javascriptKey: string) => {
@@ -40,5 +38,6 @@ const KakaoCore: Spec = {
   },
 };
 
-export const { getKeyHashAndroid, getConstants, initializeKakaoSDK } = KakaoCore;
+export const { getKeyHashAndroid, initializeKakaoSDK } = KakaoCore;
 export default KakaoCore;
+export { kAssert };

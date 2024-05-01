@@ -1,9 +1,6 @@
-import type { KakaoChannel, Spec } from './spec/NativeKakaoChannel';
+import type { KakaoChannelAPI } from './index';
 
-const KakaoChannel: Spec = {
-  getConstants: () => {
-    return {};
-  },
+const KakaoChannel: KakaoChannelAPI = {
   followChannel: (channelPublicId: string): Promise<boolean> => {},
   addChannel: (channelPublicId: string): Promise<void> => {},
   getAddChannelUrl: (channelPublicId: string): Promise<string> => {},
@@ -11,12 +8,11 @@ const KakaoChannel: Spec = {
   chatChannel: (channelPublicId: string): Promise<void> => {},
   getChatChannelUrl: (channelPublicId: string): Promise<string> => {},
   openChatChannelUrl: (channelPublicId: string): Promise<string> => {},
-  channels: (channelPublicIds?: string[]): Promise<KakaoChannel[]> => {},
+  channels: (params) => {},
 };
 
 export const {
   addChannel,
-  getConstants,
   followChannel,
   channels,
   chatChannel,
