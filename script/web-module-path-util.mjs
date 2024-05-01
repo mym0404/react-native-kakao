@@ -159,7 +159,7 @@ for (const { name, workspacePath, pkgStr } of workspaces) {
       convert === 'src' ? '"module": "src/index"' : '"module": "lib/module/index"',
     );
     write(join(workspacePath, 'package.json'), newPkgStr);
-    printSuccess(`Change module path to src: ${name}`);
+    printSuccess(`Change module path to ${convert}: ${name}`);
   }
 }
 if (isCheckForPathsAreModule) {
