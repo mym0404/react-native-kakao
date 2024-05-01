@@ -1,7 +1,7 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "pipeline": {
-    "ci:android:build": {
+    "ci:android:build:old": {
       "inputs": [
         "package.json",
         "packages/*/package.json",
@@ -21,7 +21,47 @@
       ],
       "outputs": []
     },
-    "ci:ios:build": {
+    "ci:android:build:new": {
+      "inputs": [
+        "package.json",
+        "packages/*/package.json",
+        "!android/build",
+        "packages/**/src/**",
+        "packages/**/android/**",
+        "packages/core/expo-config-plugin/**",
+        "example/android/**/*.kt",
+        "example/android/**/*.gradle",
+        "example/android/**/AndroidManifest*.xml",
+        "!example/android/.gradle",
+        "!example/android/build",
+        "!example/android/app/build",
+        "!packages/**/lib",
+        "!packages/**/android/build",
+        "!**/node_modules"
+      ],
+      "outputs": []
+    },
+    "ci:ios:build:old": {
+      "inputs": [
+        "package.json",
+        "packages/*/package.json",
+        "packages/**/*.podspec",
+        "packages/**/src/**",
+        "packages/**/ios/**",
+        "packages/core/expo-config-plugin",
+        "example/ios/**/.{mm,m,swift,h,plist,lock}",
+        "!example/ios/.xcode.env*",
+        "!example/android/.gradle",
+        "!example/android/build",
+        "!example/android/app/build",
+        "!example/ios/build",
+        "!example/ios/Pods",
+        "!packages/**/lib",
+        "!**/node_modules"
+      ],
+      "outputs": []
+    },
+    "ci:ios:build:new": {
       "inputs": [
         "package.json",
         "packages/*/package.json",
