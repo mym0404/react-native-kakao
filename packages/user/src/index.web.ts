@@ -1,5 +1,4 @@
 import { filterNonNullishKeys } from '@mj-studio/js-util';
-import { kCreateWebError } from '@react-native-kakao/core';
 
 import type {
   KakaoLoginToken,
@@ -39,7 +38,10 @@ const KakaoUser: KakaoUserAPI = {
       }),
     );
   },
-  logout: () => Kakao.Auth.logout().catch(kCreateWebError),
+  logout: () =>
+    Kakao.Auth.logout().catch(() => {
+      /*Always success at now*/
+    }),
   isLogined: (): Promise<boolean> => {},
   isKakaoTalkLoginAvailable: (): Promise<boolean> => {},
   unlink: (): Promise<void> => {},

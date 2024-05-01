@@ -61,6 +61,7 @@ export default function Page() {
             login({
               web: {
                 redirectUri: 'http://localhost',
+                prompt: ['select_account'],
               },
             })
               .then(() => {
