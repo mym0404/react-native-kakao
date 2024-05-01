@@ -67,3 +67,6 @@ export function shareTo({
     true,
   );
 }
+
+const KakaoNavi = { navigateTo, shareTo };
+export default KakaoNavi;

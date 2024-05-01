@@ -60,3 +60,16 @@ export function channels({ channelPublicIds }: { channelPublicIds?: string[] } =
 > {
   return Native.channels(channelPublicIds);
 }
+
+const KakaoChannel = {
+  followChannel,
+  addChannel,
+  getAddChannelUrl,
+  openAddChannelUrl,
+  chatChannel,
+  getChatChannelUrl,
+  openChatChannelUrl,
+  channels,
+};
+
+export default KakaoChannel;

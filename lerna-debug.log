@@ -1,24 +1,13 @@
 0 silly argv [object Object]
 1 notice cli v3.3.3
 2 verbose rootPath /Users/mj/Desktop/react-native-kakao
-3 silly createGitHubClient
-4 verbose project packages packages/*
-5 info current project version 1.4.5
-6 silly isAnythingCommitted
-7 verbose isAnythingCommitted 1
-8 silly currentBranch
-9 verbose currentBranch social
-10 silly remoteBranchExists
-11 silly isBehindUpstream
-12 silly isBehindUpstream social is behind origin/social by 0 commit(s) and ahead by 1
-13 silly git-describe parsed => {"lastTagName":"v1.4.5","lastVersion":"v1.4.5","refCount":"36","sha":"67e65cb","isDirty":false}
-14 silly git getCurrentBranchOldestCommitSinceLastTag
-15 verbose exec git log v1.4.5..HEAD --format="%h %aI" --reverse
-16 info oldestCommitSinceLastTag commit found since last tag: v1.4.5 - (SHA) df25372 - 2024-04-25T11:13:31+09:00
-17 silly parseGitRepo
-18 verbose git config --get remote.origin.url
-19 silly createGitHubClient
-20 error HttpError: API rate limit exceeded for 211.49.123.111. (But here's the good news: Authenticated requests get a higher rate limit. Check out the documentation for more details.) - https://docs.github.com/rest/overview/resources-in-the-rest-api#rate-limiting
-20 error     at /Users/mj/Desktop/react-native-kakao/node_modules/@octokit/request/dist-node/index.js:125:21
-20 error     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
-20 error     at async getGithubCommits (file:///Users/mj/Desktop/react-native-kakao/node_modules/@lerna-lite/version/dist/conventional-commits/get-github-commits.js:24:26)
+3 verbose project packages packages/*
+4 verbose Topological yarn run prepack
+5 silly npmRunScript prepack [] @react-native-kakao/channel
+6 silly getNpmExecOpts /Users/mj/Desktop/react-native-kakao/packages/channel
+7 silly npmRunScript prepack [] @react-native-kakao/core
+8 silly getNpmExecOpts /Users/mj/Desktop/react-native-kakao/packages/core
+9 error TypeError: Received unexpected exit code value undefined
+9 error     at getExitCode (file:///Users/mj/Desktop/react-native-kakao/node_modules/@lerna-lite/core/dist/child-process.js:56:11)
+9 error     at file:///Users/mj/Desktop/react-native-kakao/node_modules/@lerna-lite/core/dist/child-process.js:80:28
+9 error     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)

@@ -78,3 +78,6 @@ export function getFriends({
 }): Promise<KakaoTalkGetFriendsResult> {
   return Native.getFriends(options);
 }
+
+const KakaoSocial = { getTalkProfile, selectSingleFriend, selectMultipleFriends, getFriends };
+export default KakaoSocial;

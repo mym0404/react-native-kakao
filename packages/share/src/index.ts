@@ -447,3 +447,28 @@ export function sendCalendarTemplateToFriends({
     {},
   );
 }
+
+const KakaoShare = {
+  shareCustomTemplate,
+  sendCustomTemplateToMe,
+  sendCustomTemplateToFriends,
+  shareFeedTemplate,
+  sendFeedTemplateToMe,
+  sendFeedTemplateToFriends,
+  shareListTemplate,
+  sendListTemplateToMe,
+  sendListTemplateToFriends,
+  shareLocationTemplate,
+  sendLocationTemplateToMe,
+  sendLocationTemplateToFriends,
+  shareCommerceTemplate,
+  sendCommerceTemplateToMe,
+  sendCommerceTemplateToFriends,
+  shareTextTemplate,
+  sendTextTemplateToMe,
+  sendTextTemplateToFriends,
+  shareCalendarTemplate,
+  sendCalendarTemplateToMe,
+  sendCalendarTemplateToFriends,
+};
+export default KakaoShare;

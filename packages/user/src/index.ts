@@ -173,3 +173,17 @@ export function shippingAddresses(): Promise<KakaoShippingAddressResult> {
 export function me(): Promise<KakaoUser> {
   return Native.me();
 }
+
+const KakaoUser = {
+  login,
+  logout,
+  unlink,
+  isLogined,
+  isKakaoTalkLoginAvailable,
+  scopes,
+  revokeScopes,
+  serviceTerms,
+  shippingAddresses,
+  me,
+};
+export default KakaoUser;

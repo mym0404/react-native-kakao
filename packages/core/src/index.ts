@@ -34,4 +34,10 @@ export function initializeKakaoSDK(appKey: string) {
 export function getKeyHashAndroid(): Promise<string | undefined> {
   return Native.getKeyHashAndroid();
 }
+
+const KakaoCore = {
+  initializeKakaoSDK,
+  getKeyHashAndroid,
+};
+export default KakaoCore;
 export { kAssert };
