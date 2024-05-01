@@ -2,6 +2,7 @@ import { NativeModules, Platform } from 'react-native';
 
 import type { Spec } from './spec/NativeKakaoCore';
 import { kAssert } from './util/kAssert';
+import { kCreateWebError } from './util/kCreateWebError';
 
 const LINKING_ERROR =
   "The package '@react-native-kakao/core' doesn't seem to be linked. Make sure: \n\n" +
@@ -27,7 +28,7 @@ const Native: Spec = Module
       },
     );
 
-export function initializeKakaoSDK(appKey: string) {
+export async function initializeKakaoSDK(appKey: string): Promise<void> {
   Native.initializeKakaoSDK(appKey);
 }
 
@@ -41,4 +42,4 @@ const KakaoCore = {
 };
 export default KakaoCore;
 export type KakaoCoreAPI = typeof KakaoCore;
-export { kAssert };
+export { kAssert, kCreateWebError };

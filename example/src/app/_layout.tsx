@@ -1,4 +1,5 @@
-import { Image } from 'react-native';
+import { useState } from 'react';
+import { Image, Platform } from 'react-native';
 import FlashMessage from 'react-native-flash-message';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useMount } from '@mj-studio/react-util';
@@ -16,9 +17,22 @@ import { px } from '../util/px';
 export default function RootLayout() {
   const { top } = useSafeAreaInsets();
 
+  const [isKakaoInitialized, setKakaoInitialized] = useState(false);
   useMount(() => {
-    initializeKakaoSDK('fb975c77483d1edbe69467fca6bb2a6e');
+    const init = async () => {
+      await initializeKakaoSDK(
+        Platform.OS === 'web'
+          ? '7bd64215ea748be5c4a2bbcea40ebee9'
+          : 'fb975c77483d1edbe69467fca6bb2a6e',
+      );
+      setKakaoInitialized(true);
+    };
+    init();
   });
+
+  if (!isKakaoInitialized) {
+    return null;
+  }
 
   return (
     <StyledSystemProvider theme={AppTheme}>

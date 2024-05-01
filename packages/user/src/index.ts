@@ -120,13 +120,14 @@ export function login({
   scopes?: string[];
   useKakaoAccountLogin?: boolean;
   web?: {
-    redirectUri?: string;
-    state?: string;
-    scope?: string;
-    prompt?: string;
-    loginHint?: string;
-    nonce?: string;
+    redirectUri: string;
+    scope?: string[];
     throughTalk?: boolean;
+    prompt?: ('login' | 'none' | 'create' | 'select_account')[];
+    loginHint?: string;
+    serviceTerms?: string[];
+    state?: string;
+    nonce?: string;
   };
 } = {}): Promise<KakaoLoginToken> {
   kAssert(
@@ -183,6 +184,9 @@ export function me(): Promise<KakaoUser> {
   return Native.me();
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function setAccessTokenWeb(token: string) {}
+
 const KakaoUser = {
   login,
   logout,
@@ -194,6 +198,7 @@ const KakaoUser = {
   serviceTerms,
   shippingAddresses,
   me,
+  setAccessTokenWeb,
 };
 export default KakaoUser;
 export type KakaoUserAPI = typeof KakaoUser;

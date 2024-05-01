@@ -3949,6 +3949,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mj-studio/js-util@npm:1.0.35":
+  version: 1.0.35
+  resolution: "@mj-studio/js-util@npm:1.0.35"
+  checksum: 10/d4d4eaefb6da3a71c1ba69c6c27ec2d3bffcc4c6d9ee57b8f59780b297bcbdc7a51739e06d81720f893ab39ddf045081facef77951a9d038931fcfc6bea70c80
+  languageName: node
+  linkType: hard
+
 "@mj-studio/react-util@npm:^0.0.20":
   version: 0.0.20
   resolution: "@mj-studio/react-util@npm:0.0.20"
@@ -4822,7 +4829,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@react-native-kakao/user@workspace:packages/user"
   dependencies:
-    "@mj-studio/js-util": "npm:^1.0.34"
+    "@mj-studio/js-util": "npm:1.0.35"
     "@react-native-kakao/core": "npm:1.7.0"
     "@types/invariant": "npm:^2"
     "@types/jest": "npm:^29.5.5"
