@@ -1,6 +1,4 @@
 {
-  "name": "KakaoExample",
-  "displayName": "KakaoExample",
   "expo": {
     "name": "Kakao Example",
     "owner": "react-native-kakao",
