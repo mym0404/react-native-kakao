@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.0](https://github.com/mym0404/react-native-kakao/compare/v1.7.0...v2.0.0) (2024-05-02)
+
+### Features
+
+* **user:** web ([d49474b](https://github.com/mym0404/react-native-kakao/commit/d49474b1dfcd410519dc03e13a7ff66bfc13463c))
+* **web:** bump rn 0.74.1-rc01, check all platforms ([d1b7518](https://github.com/mym0404/react-native-kakao/commit/d1b7518afc7f36306b2667b30f39ab0d5847815e))
+* **web:** create all default export in packages ([aea1578](https://github.com/mym0404/react-native-kakao/commit/aea1578b06a5100c89ce0614e132dc8073426994))
+* **web:** create web utils + initialization ([ab1f9ac](https://github.com/mym0404/react-native-kakao/commit/ab1f9ac73a5da112ef6e08958df0e18263fca151))
+
 ## [1.7.0](https://github.com/mym0404/react-native-kakao/compare/v1.6.3...v1.7.0) (2024-04-30)
 
 ### Features
