@@ -1,0 +1,124 @@
+---
+sidebar_position: 102
+---
+
+# 카카오 로그인 (Web)
+
+웹에서 로그인하는 방식은 redirect uri를 이용한 페이지 이동 방식이 되어야 하기 때문에 추가적인 과정이 필요합니다.
+
+:::tip
+로그인을 제외한 다른 API들은 [카카오 로그인](/docs/user/login)에서의 다른 API들과 동일하게 사용할 수 있습니다.
+:::
+
+## 로그인하기
+
+카카오 로그인하기를 이용해 회원가입, 로그인, 추가 동의내역 받기, 약관 동의시키기 등을 수행할 수 있습니다.
+
+## 카카오 콘솔에서 Redirect URI 추가
+
+카카오 콘솔의 카카오 로그인에서 Redirect URI를 추가합니다.
+
+![feat](https://raw.githubusercontent.com/mym0404/image-archive/master/202405030144548.webp)
+
+:::warning
+위 예시는 개발 환경에서 port 80을 썼을 때의 예시입니다. 필요한 Redirect URI를 직접 개발환경, 릴리즈환경 모두 기재해야 합니다.
+:::
+
+```tsx
+const { code } = useGlobalSearchParams<{ code?: string }>();
+const accessTokenIssued = useRef(false);
+useEffect(() => {
+  const go = async () => {
+    const { accessToken } = await issueAccessTokenWithCodeWeb({
+      code: code!,
+      redirectUri: 'http://localhost',
+    });
+    setAccessTokenWeb(accessToken);
+    accessTokenIssued.current = true;
+  };
+
+  if (code && !accessTokenIssued.current) {
+    go();
+  }
+}, [code]);
+```
+
+## Step 1. 간편 로그인으로 인가 코드 Redirect된 페이지에서 Search Parameter로 받아오기
+
+`login()` 함수를 호출해주면 카카오 로그인 페이지로 이동합니다.
+
+웹 플랫폼은 `web`객체를 전달해야 합니다.
+
+`web`객체 안의 인자가 아닌 다른 옵션들은 무시됩니다.
+
+예를 들어, `prompt`는 `web`객체 안에도 있고 밖에도 있는데 Web 플랫폼에서는 항상 `web`안에 있는 `prompt`만 사용합니다.
+
+```tsx
+import { login } from '@react-native-kakao/user';
+
+...
+
+login({
+  web: {
+    redirectUri: 'http://localhost',
+    prompt: ['select_account'],
+  },
+})
+```
+
+:::danger Dangerous
+`redirectUri`는 콘솔에 등록한 것, `login`을 호출할 때 쓰는 것, `issueAccessTokenWithCodeWeb`를 호출할 때 쓰는 것 세 가지가 모두
+동일해야 정상작동합니다.
+:::
+
+인자들에 대한 자세한 정보는 [공식 문서](https://developers.kakao.com/docs/latest/ko/kakaologin/js#login)를 참고해주세요.
+
+## Step 2. 인가 코드로 Access Token발급받기
+
+`issueAccessTokenWithCodeWeb()` 함수를 호출하여 인가 코드를 이용해 실제 Access Token을 발급받을 수 있습니다.
+
+Access Token을 발급받고 이것을 `setAccessTokenWeb()`함수에 전달해주면 됩니다.
+
+다음은 Expo router환경에서 search parameter에 있는 `code`를 이용해 로그인을 완료하는 예시입니다.
+
+```tsx
+const { code } = useGlobalSearchParams<{ code?: string }>();
+const accessTokenIssued = useRef(false);
+useEffect(() => {
+  const go = async () => {
+    const { accessToken } = await issueAccessTokenWithCodeWeb({
+      code: code!,
+      redirectUri: 'http://localhost',
+    });
+    setAccessTokenWeb(accessToken);
+    accessTokenIssued.current = true;
+  };
+
+  if (code && !accessTokenIssued.current) {
+    go();
+  }
+}, [code]);
+```
+
+:::tip TIP
+위는 단지 예시일 뿐입니다. search parameter에서 `code`를 얻어 `issueAccessTokenWithCodeWeb`, `setAccessTokenWeb`
+을 순서대로 호출해야 한다는 것만 중요합니다.
+:::
+
+### 응답
+
+`Promise`로 토큰과 관련된 정보가 반환됩니다.
+
+응답은 다음과 같습니다.
+
+```tsx
+{
+  tokenType: string;
+  accessToken: string;
+  idToken?: string;
+  expiresIn: number; // unix
+  refreshToken: string;
+  refreshTokenExpiresIn: number; // unix
+  scope?: string;
+};
+```

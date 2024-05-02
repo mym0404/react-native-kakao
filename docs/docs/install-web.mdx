@@ -1,0 +1,77 @@
+---
+sidebar_position: 5
+---
+
+# Web 설정
+## Web 설정
+
+React Native Kakao는 Native뿐만 아니라 Web플랫폼 지원도 동일한 수준의 개발자 경험을 유지할 수 있게 지원합니다.
+
+[Kakao SDK 문서](https://developers.kakao.com/docs/latest/ko/javascript/getting-started)를 참고하여 설정에 관한 더 자세한 정보를 확인할 수 있습니다.
+
+## 카카오 JavaScript SDK 설치
+
+[다운로드](https://developers.kakao.com/docs/latest/ko/javascript/download) 페이지에서 최신 버전의 카카오 SDK를 `index.html`의 `head`에 삽입하여 설치합니다.
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+...
+  <script src="https://t1.kakaocdn.net/kakao_js_sdk/{{Version}}/kakao.min.js"
+          integrity="{{integrity}}"
+          crossorigin="anonymous"></script>
+</head>
+
+<body>
+...
+</body>
+</html>
+
+```
+
+:::tip
+Expo환경에서 `index.html`을 커스터마이징 하는 방법은 `npx expo customize`커맨드를 이용할 수 있습니다.
+
+[Expo 문서](https://docs.expo.dev/more/expo-cli/#customizing)
+:::
+
+
+## 카카오 콘솔에서 플랫폼 등록
+
+![feat1](https://raw.githubusercontent.com/mym0404/image-archive/master/202405030132281.webp)
+
+플랫폼 탭에 들어가 자신의 사이트 도메인을 추가해줍니다.
+
+
+## Web API에 대하여
+
+Web의 API는 내부적으로 구현되는 방식이 Android, iOS플랫폼들과 차이가 있을 수밖에 없습니다.
+
+API는 플랫폼별로 응답이 모두 일관되고 이름도 모두 동일하지만 Web에서만 사용할 수 있는 API들이 있거나 Web만의 인자들이 존재합니다.
+
+예를 들어, 로그인 시에 `redirectUri`같은 인자가 그렇습니다.
+
+Web에서만 사용할 수 있거나 필요한 API들은 함수 이름 뒤에 `Web`이 붙습니다.
+
+예를 들어, `Core.setAccessTokenWeb()`과 같은 식입니다.
+
+그리고 Web에서 사용되는 인자들은 모두 함수의 인자에서 따로 `web`이라는 필드로 관리합니다.
+
+`core`패키지의 SDK초기화 함수를 보겠습니다.
+
+```tsx
+export async function initializeKakaoSDK(
+  appKey: string,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  options: { web?: { javascriptKey: string; restApiKey: string } },
+)
+```
+
+인자로 `web` 객체를 전달받아 필요한 인자들을 받는 모습입니다.
+
+:::warning
+Web을 지원하지 않는다면 `web`인자에 대해 신경 쓸 필요가 없고, `Web`으로 끝나는 API들도 호출하지 말아야 합니다.
+:::
+
+
