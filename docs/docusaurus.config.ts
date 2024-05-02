@@ -27,8 +27,8 @@ const config: Config = {
   // useful metadata like html lang. For example, if your site is Chinese, you
   // may want to replace "en" with "zh-Hans".
   i18n: {
-    defaultLocale: 'ko',
-    locales: ['ko'],
+    defaultLocale: 'en',
+    locales: ['en'],
   },
 
   presets: [
@@ -82,7 +82,7 @@ const config: Config = {
           type: 'docSidebar',
           sidebarId: 'tutorialSidebar',
           position: 'left',
-          label: '시작하기',
+          label: 'Documentation',
         },
         {
           href: repoUrl,
@@ -97,7 +97,7 @@ const config: Config = {
           title: 'Documentation',
           items: [
             {
-              label: '시작하기',
+              label: 'Documentation',
               to: '/docs/intro',
             },
           ],
