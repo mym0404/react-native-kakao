@@ -1,5 +1,5 @@
 ---
-sidebar_position: 6
+sidebar_position: 100
 ---
 
 # 에러 핸들링
@@ -173,6 +173,7 @@ Kakao Native SDK들에서의 에러뿐 아닌 `react-native-kakao`자체의 에�
 SDK를 초기화하지 않은 시점에서 API를 호출할 시 앱이 크래시가 나버리는 API에서 종종 미리 검사되는 용도로 사용됩니다.
 - `Package-KakaoAppNotAvailable`: 예를 들어, 카카오톡이 설치되어야 정상 동작을 하는 API인데 카카오 관련 앱 접근이 불가능해 실패한 경우입니다.
 카카오 관련 앱 접근이 불가능한 경우는 카카오 관련 앱이 설치가 되어있지만 앱에서 카카오 관련 앱을 열 수 있는 권한이 제대로 설정되지 않은 경우도 포함됩니다.
+- `Package-Assertion`: 패키지의 JavaScript로직 내에서 Assertion이 통과하지 못했을 때입니다.
 
 
 ## Android의 ActivityNotFoundException

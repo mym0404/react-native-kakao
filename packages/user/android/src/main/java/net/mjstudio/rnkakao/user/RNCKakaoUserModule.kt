@@ -12,7 +12,6 @@ import com.kakao.sdk.auth.model.Prompt.CREATE
 import com.kakao.sdk.auth.model.Prompt.LOGIN
 import com.kakao.sdk.auth.model.Prompt.SELECT_ACCOUNT
 import com.kakao.sdk.auth.model.Prompt.UNIFY_DAUM
-import com.kakao.sdk.common.model.KakaoSdkError
 import com.kakao.sdk.user.UserApiClient
 import net.mjstudio.rnkakao.core.util.RNCKakaoResponseNotFoundException
 import net.mjstudio.rnkakao.core.util.RNCKakaoUtil
@@ -24,6 +23,8 @@ import net.mjstudio.rnkakao.core.util.pushMapList
 import net.mjstudio.rnkakao.core.util.pushStringList
 import net.mjstudio.rnkakao.core.util.putB
 import net.mjstudio.rnkakao.core.util.putD
+import net.mjstudio.rnkakao.core.util.putI
+import net.mjstudio.rnkakao.core.util.putL
 import net.mjstudio.rnkakao.core.util.rejectWith
 import net.mjstudio.rnkakao.core.util.unix
 import java.util.Date
@@ -156,11 +157,7 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
         if (AuthApiClient.instance.hasToken()) {
           UserApiClient.instance.accessTokenInfo { _, error ->
             if (error != null) {
-              if (error is KakaoSdkError && error.isInvalidTokenError()) {
-                promise.resolve(false)
-              } else {
-                promise.rejectWith(error)
-              }
+              promise.rejectWith(error)
             } else {
               promise.resolve(true)
             }
@@ -367,6 +364,26 @@ class RNCKakaoUserModule internal constructor(context: ReactApplicationContext) 
                   "legalBirthDateNeedsAgreement",
                   user.kakaoAccount?.legalBirthDateNeedsAgreement,
                 )
+              },
+            )
+          }
+        }
+      }
+
+    @ReactMethod
+    override fun getAccessToken(promise: Promise) =
+      onMain {
+        UserApiClient.instance.accessTokenInfo { accessTokenInfo, error ->
+          if (error != null) {
+            promise.rejectWith(error)
+          } else if (accessTokenInfo == null) {
+            promise.rejectWith(RNCKakaoResponseNotFoundException("accessTokenInfo"))
+          } else {
+            promise.resolve(
+              argMap().apply {
+                putL("id", accessTokenInfo.id)
+                putL("expiresIn", accessTokenInfo.expiresIn)
+                putI("appID", accessTokenInfo.appId)
               },
             )
           }

@@ -38,4 +38,6 @@ abstract class KakaoUserSpec internal constructor(context: ReactApplicationConte
     abstract fun shippingAddresses(promise: Promise)
 
     abstract fun me(promise: Promise)
+
+    abstract fun getAccessToken(promise: Promise)
   }

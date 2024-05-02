@@ -2,6 +2,7 @@
 set -e
 echo $1
 
+yarn web:path:check
 yarn lint
 yarn build
 

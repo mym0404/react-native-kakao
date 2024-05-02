@@ -1,6 +1,4 @@
 {
-  "name": "KakaoExample",
-  "displayName": "KakaoExample",
   "expo": {
     "name": "Kakao Example",
     "owner": "react-native-kakao",
@@ -37,7 +35,8 @@
     },
     "web": {
       "bundler": "metro",
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "backgroundColor": "#000000"
     },
     "assetBundlePatterns": [
       "**/*"

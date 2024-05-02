@@ -35,7 +35,8 @@ const modules = [
       self.lastIndexOf(m) === i && !m.startsWith('@react-native-kakao/'),
   );
 
-module.exports = {
+/** @type {import('@expo/metro-config').MetroConfig} */
+const config = {
   ...defaultConfig,
 
   projectRoot: __dirname,
@@ -82,3 +83,5 @@ module.exports = {
     },
   },
 };
+
+module.exports = config;

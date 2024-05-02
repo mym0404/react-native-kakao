@@ -38,7 +38,6 @@ const LINKING_ERROR =
   '- You rebuilt the app after installing the package\n' +
   '- You are not using Expo Go\n';
 
-// @ts-expect-error
 const isTurboModuleEnabled = global.__turboModuleProxy != null;
 
 const Module = isTurboModuleEnabled
@@ -447,3 +446,28 @@ export function sendCalendarTemplateToFriends({
     {},
   );
 }
+
+const KakaoShare = {
+  shareCustomTemplate,
+  sendCustomTemplateToMe,
+  sendCustomTemplateToFriends,
+  shareFeedTemplate,
+  sendFeedTemplateToMe,
+  sendFeedTemplateToFriends,
+  shareListTemplate,
+  sendListTemplateToMe,
+  sendListTemplateToFriends,
+  shareLocationTemplate,
+  sendLocationTemplateToMe,
+  sendLocationTemplateToFriends,
+  shareCommerceTemplate,
+  sendCommerceTemplateToMe,
+  sendCommerceTemplateToFriends,
+  shareTextTemplate,
+  sendTextTemplateToMe,
+  sendTextTemplateToFriends,
+  shareCalendarTemplate,
+  sendCalendarTemplateToMe,
+  sendCalendarTemplateToFriends,
+};
+export default KakaoShare;

@@ -11,7 +11,7 @@ type FeatureItem = {
 
 const FeatureList: FeatureItem[] = [
   {
-    title: '모든 카카오 SDK를 한곳에',
+    title: '모든 카카오 SDK',
     Svg: require('@site/static/img/finding-topics.svg').default,
     description: (
       <>
@@ -21,12 +21,12 @@ const FeatureList: FeatureItem[] = [
     ),
   },
   {
-    title: '필요한 기능에 집중하기',
+    title: '모든 플랫폼과 아키텍처',
     Svg: require('@site/static/img/building-community.svg').default,
     description: (
       <>
-        모노레포로 구성된 프로젝트와 패키지는 각각의 역할을 담당하고 사용자는 자신이 필요한 기능만
-        설치하여 번들 사이즈 최적화 및 필요한 기능에만 집중할 수 있습니다.
+        React Native Kakao는 Android, iOS, Web모든 플랫폼을 지원할 뿐만 아니라 New, Old
+        Architecture, 더 나아가 Expo까지 모두 지원합니다.
       </>
     ),
   },

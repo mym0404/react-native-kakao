@@ -8,7 +8,6 @@ const LINKING_ERROR =
   '- You rebuilt the app after installing the package\n' +
   '- You are not using Expo Go\n';
 
-// @ts-expect-error
 const isTurboModuleEnabled = global.__turboModuleProxy != null;
 
 const Module = isTurboModuleEnabled
@@ -67,3 +66,6 @@ export function shareTo({
     true,
   );
 }
+
+const KakaoNavi = { navigateTo, shareTo };
+export default KakaoNavi;

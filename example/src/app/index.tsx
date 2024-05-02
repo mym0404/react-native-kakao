@@ -51,7 +51,12 @@ export default function Page() {
           minW={px(240)}
           title={'Login'}
           onPress={() => {
-            login()
+            login({
+              web: {
+                redirectUri: 'http://localhost',
+                prompt: ['select_account'],
+              },
+            })
               .then(() => {
                 showMessage({
                   type: 'success',

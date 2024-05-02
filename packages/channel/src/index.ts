@@ -9,7 +9,6 @@ const LINKING_ERROR =
   '- You rebuilt the app after installing the package\n' +
   '- You are not using Expo Go\n';
 
-// @ts-expect-error
 const isTurboModuleEnabled = global.__turboModuleProxy != null;
 
 const Module = isTurboModuleEnabled
@@ -60,3 +59,17 @@ export function channels({ channelPublicIds }: { channelPublicIds?: string[] } =
 > {
   return Native.channels(channelPublicIds);
 }
+
+const KakaoChannel = {
+  followChannel,
+  addChannel,
+  getAddChannelUrl,
+  openAddChannelUrl,
+  chatChannel,
+  getChatChannelUrl,
+  openChatChannelUrl,
+  channels,
+};
+
+export default KakaoChannel;
+export type KakaoChannelAPI = typeof KakaoChannel;

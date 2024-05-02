@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { showMessage } from 'react-native-flash-message';
+import { formatJson } from '@mj-studio/js-util';
 import { useMount } from '@mj-studio/react-util';
 import {
+  getAccessToken,
   isKakaoTalkLoginAvailable,
   isLogined,
   login,
@@ -41,7 +43,12 @@ export default function Page() {
         minW={px(240)}
         title={'Login'}
         onPress={() => {
-          login()
+          login({
+            web: {
+              redirectUri: 'http://localhost',
+              prompt: ['select_account'],
+            },
+          })
             .then((ret) => {
               showMessage({
                 type: 'success',
@@ -186,6 +193,25 @@ export default function Page() {
                 message: 'Success',
               });
               setMeResult(ret);
+            })
+            .catch((e) => {
+              showMessage({
+                type: 'warning',
+                message: e.message,
+              });
+            });
+        }}
+      />
+      <Btn
+        minW={px(240)}
+        title={'Get Access Token'}
+        onPress={() => {
+          getAccessToken()
+            .then((ret) => {
+              showMessage({
+                type: 'success',
+                message: formatJson(ret),
+              });
             })
             .catch((e) => {
               showMessage({

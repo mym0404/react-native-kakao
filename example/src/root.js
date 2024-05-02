@@ -1,4 +1,5 @@
-//index.js
+import '@expo/metro-runtime';
+
 import { registerRootComponent } from 'expo';
 import { ExpoRoot } from 'expo-router';
 

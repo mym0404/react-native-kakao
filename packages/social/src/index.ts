@@ -27,7 +27,6 @@ const LINKING_ERROR =
   '- You rebuilt the app after installing the package\n' +
   '- You are not using Expo Go\n';
 
-// @ts-expect-error
 const isTurboModuleEnabled = global.__turboModuleProxy != null;
 
 const Module = isTurboModuleEnabled
@@ -78,3 +77,6 @@ export function getFriends({
 }): Promise<KakaoTalkGetFriendsResult> {
   return Native.getFriends(options);
 }
+
+const KakaoSocial = { getTalkProfile, selectSingleFriend, selectMultipleFriends, getFriends };
+export default KakaoSocial;
