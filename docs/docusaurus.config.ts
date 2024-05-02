@@ -82,7 +82,7 @@ const config: Config = {
           type: 'docSidebar',
           sidebarId: 'tutorialSidebar',
           position: 'left',
-          label: '시작하기',
+          label: 'Documentation',
         },
         {
           href: repoUrl,
@@ -97,7 +97,7 @@ const config: Config = {
           title: 'Documentation',
           items: [
             {
-              label: '시작하기',
+              label: 'Documentation',
               to: '/docs/intro',
             },
           ],
