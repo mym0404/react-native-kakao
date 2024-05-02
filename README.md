@@ -13,7 +13,7 @@
 </p>
 <a href="https://rnkakao.dev">Documentation</a>
 
-**React Native Kakao** is a collection of official React Native modules connecting you to Kakao
+**React Native Kakao** is a collection of React Native modules connecting you to Kakao
 services; each module is a light-weight JavaScript layer connecting you to the native Kakao SDKs for
 iOS, Android and Web.
 
@@ -33,6 +33,15 @@ iOS, Android and Web.
   - first class supports for **Android, iOS, Web, New Architecture, Old Architecture, even Expo**
 - 🦋 **Robust error handling**
   - All SDK errors are forwarded to JS clearly, consistently for each platform.
+
+> [!IMPORTANT]
+> We releases Web platform in V2!
+>
+> https://github.com/mym0404/react-native-kakao/assets/33388801/0bf4cf3b-8a00-4291-a705-0bebbf5d7fad 
+
+## Youtube Tutorial (Install, Login)
+
+[<img alt="youtube video link" src="https://raw.githubusercontent.com/mym0404/image-archive/master/202405030209892.webp" width="400"/>](https://www.youtube.com/watch?v=apRtsSIYMt0)
 
 ## Kakao Modules
 
