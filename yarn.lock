@@ -4744,13 +4744,17 @@ __metadata:
   resolution: "@react-native-kakao/core@workspace:packages/core"
   dependencies:
     "@expo/config-plugins": "npm:7.8.4"
+    "@types/crypto-js": "npm:^4"
     "@types/jest": "npm:^29.5.5"
     "@types/react": "npm:^18.2.44"
+    crypto-js: "npm:^4.2.0"
     del-cli: "npm:^5.1.0"
     jest: "npm:^29.7.0"
+    query-string: "npm:^9.0.0"
     react: "npm:18.2.0"
     react-native: "npm:0.74.0"
     react-native-builder-bob: "npm:^0.20.0"
+    return-fetch: "npm:^0.4.5"
     typescript: "npm:5.1.6"
   peerDependencies:
     react: "*"
@@ -4847,9 +4851,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@react-native-styled-system/core@npm:^1.2.0":
-  version: 1.2.0
-  resolution: "@react-native-styled-system/core@npm:1.2.0"
+"@react-native-styled-system/core@npm:~1.2.1":
+  version: 1.2.1
+  resolution: "@react-native-styled-system/core@npm:1.2.1"
   dependencies:
     "@mj-studio/js-util": "npm:1.0.34"
     invariant: "npm:^2.2.4"
@@ -4859,7 +4863,7 @@ __metadata:
     react-native: "*"
   bin:
     generate-theme-type: bin/theme-gen.js
-  checksum: 10/8410289999aef11d62b91d366e8b3105b4040dcb334967661a442e97a463ce409f0e86154db7b584eb562db13fdfd1f4e1a1bd2c752bd636968cbb6f3720aa19
+  checksum: 10/d1414ec3392d5520df35740fd4d2640188e636595a710be56f051145706c828374b8af9159aba545f7b129966c4fcee9bbe406e2bc8f523dfc840cf727efbad2
   languageName: node
   linkType: hard
 
@@ -5951,6 +5955,13 @@ __metadata:
   version: 0.6.0
   resolution: "@types/cookie@npm:0.6.0"
   checksum: 10/b883348d5bf88695fbc2c2276b1c49859267a55cae3cf11ea1dccc1b3be15b466e637ce3242109ba27d616c77c6aa4efe521e3d557110b4fdd9bc332a12445c2
+  languageName: node
+  linkType: hard
+
+"@types/crypto-js@npm:^4":
+  version: 4.2.2
+  resolution: "@types/crypto-js@npm:4.2.2"
+  checksum: 10/a40fc5a9219fd33f54ba3e094c5e5ab2904d3106681a76f1029bb038976591e9c8959099963bf4474fde21c2d8d00c1f896445206a3a58f85588f9cb1bd96a9a
   languageName: node
   linkType: hard
 
@@ -9315,6 +9326,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"crypto-js@npm:^4.2.0":
+  version: 4.2.0
+  resolution: "crypto-js@npm:4.2.0"
+  checksum: 10/c7bcc56a6e01c3c397e95aa4a74e4241321f04677f9a618a8f48a63b5781617248afb9adb0629824792e7ec20ca0d4241a49b6b2938ae6f973ec4efc5c53c924
+  languageName: node
+  linkType: hard
+
 "crypto-random-string@npm:^1.0.0":
   version: 1.0.0
   resolution: "crypto-random-string@npm:1.0.0"
@@ -9703,6 +9721,13 @@ __metadata:
   version: 0.2.2
   resolution: "decode-uri-component@npm:0.2.2"
   checksum: 10/17a0e5fa400bf9ea84432226e252aa7b5e72793e16bf80b907c99b46a799aeacc139ec20ea57121e50c7bd875a1a4365928f884e92abf02e21a5a13790a0f33e
+  languageName: node
+  linkType: hard
+
+"decode-uri-component@npm:^0.4.1":
+  version: 0.4.1
+  resolution: "decode-uri-component@npm:0.4.1"
+  checksum: 10/74eec26f7bec3767164e37d526ef19bc1214cb0bbeeeea1c4f0ceb79299e5c38d3ba734e7243d829842aa140f24e5d020f54cc25b17c7082461c8eead8a72ce3
   languageName: node
   linkType: hard
 
@@ -11688,6 +11713,13 @@ __metadata:
   version: 1.1.0
   resolution: "filter-obj@npm:1.1.0"
   checksum: 10/9d681939eec2b4b129cb4f307b7e93d954a0657421d4e5357d86093b26d3f4f570909ed43717dcfd62428b3cf8cddd9841b35f9d40d12ac62cfabaa677942593
+  languageName: node
+  linkType: hard
+
+"filter-obj@npm:^5.1.0":
+  version: 5.1.0
+  resolution: "filter-obj@npm:5.1.0"
+  checksum: 10/8f6dab6d8d8855f686e8cc6be289bbbd64a80be52c660124e36e982f78017cf5dae7de95f79ec167fbf62101d6aab93067a3105ae8f56251785a721e678d6b07
   languageName: node
   linkType: hard
 
@@ -15072,7 +15104,7 @@ __metadata:
     "@babel/runtime": "npm:^7.24.4"
     "@mj-studio/js-util": "npm:^1.0.34"
     "@mj-studio/react-util": "npm:^0.0.20"
-    "@react-native-styled-system/core": "npm:^1.2.0"
+    "@react-native-styled-system/core": "npm:~1.2.1"
     "@react-native/babel-preset": "npm:^0.74.81"
     "@react-native/metro-config": "npm:^0.74.81"
     "@react-native/typescript-config": "npm:^0.74.81"
@@ -19203,6 +19235,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"query-string@npm:^9.0.0":
+  version: 9.0.0
+  resolution: "query-string@npm:9.0.0"
+  dependencies:
+    decode-uri-component: "npm:^0.4.1"
+    filter-obj: "npm:^5.1.0"
+    split-on-first: "npm:^3.0.0"
+  checksum: 10/ea71a81a192743b633ab6acc27a917d9d868c16ef50d3985bddebf5e9b525012e450220b2bad6c208f29c013d34bd2c1e925362979d19f716c74a5fe3ebf4b21
+  languageName: node
+  linkType: hard
+
 "querystring@npm:^0.2.1":
   version: 0.2.1
   resolution: "querystring@npm:0.2.1"
@@ -20414,6 +20457,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"return-fetch@npm:^0.4.5":
+  version: 0.4.5
+  resolution: "return-fetch@npm:0.4.5"
+  checksum: 10/b45c7433f456e627ae3269175eb80dc051318a49eecd153616c305aac25ec0e8b605e94d6a2eb8f7454cecc00afcb6c01969d32e499c23d7a53a3d52cce3ad67
+  languageName: node
+  linkType: hard
+
 "reusify@npm:^1.0.4":
   version: 1.0.4
   resolution: "reusify@npm:1.0.4"
@@ -21289,6 +21339,13 @@ __metadata:
   version: 1.1.0
   resolution: "split-on-first@npm:1.1.0"
   checksum: 10/16ff85b54ddcf17f9147210a4022529b343edbcbea4ce977c8f30e38408b8d6e0f25f92cd35b86a524d4797f455e29ab89eb8db787f3c10708e0b47ebf528d30
+  languageName: node
+  linkType: hard
+
+"split-on-first@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "split-on-first@npm:3.0.0"
+  checksum: 10/75dc27ecbac65cfbeab9a3b90cf046307220192d3d7a30e46aa0f19571cc9b4802aac813f3de2cc9b16f2e46aae72f275659b5d2614bb5369c77724d739e5f73
   languageName: node
   linkType: hard
 

@@ -66,6 +66,7 @@
     "access": "public"
   },
   "devDependencies": {
+    "@types/crypto-js": "^4",
     "@types/jest": "^29.5.5",
     "@types/react": "^18.2.44",
     "del-cli": "^5.1.0",
@@ -138,5 +139,10 @@
       "talk": "2.20.1"
     }
   },
-  "gitHead": "57203ed1725b209e814da7cfbb71b36f52d24210"
+  "gitHead": "57203ed1725b209e814da7cfbb71b36f52d24210",
+  "dependencies": {
+    "crypto-js": "^4.2.0",
+    "query-string": "^9.0.0",
+    "return-fetch": "^0.4.5"
+  }
 }

@@ -7,7 +7,7 @@
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "web": "expo start --web",
+    "web": "expo start --web --port=80",
     "prebuild:android": "expo prebuild -p android",
     "prebuild:android:clean": "expo prebuild -p android --clean",
     "prebuild:ios": "expo prebuild -p ios && echo $(cat ios/.xcode.env) > ios/.xcode.env.local",
@@ -22,7 +22,7 @@
   "dependencies": {
     "@mj-studio/js-util": "^1.0.34",
     "@mj-studio/react-util": "^0.0.20",
-    "@react-native-styled-system/core": "^1.2.0",
+    "@react-native-styled-system/core": "~1.2.1",
     "expo": "51.0.0-preview.7",
     "expo-constants": "16.0.1",
     "expo-dev-client": "4.0.6",

@@ -2,6 +2,7 @@ import type { TurboModule } from 'react-native';
 import { TurboModuleRegistry } from 'react-native';
 
 import type {
+  KakaoAccessTokenInfo,
   KakaoLoginToken,
   KakaoScopeInfo,
   KakaoServiceTerms,
@@ -25,6 +26,7 @@ export interface Spec extends TurboModule {
   serviceTerms(): Promise<KakaoServiceTerms[]>;
   shippingAddresses(): Promise<KakaoShippingAddressResult>;
   me(): Promise<KakaoUser>;
+  getAccessToken(): Promise<KakaoAccessTokenInfo>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('RNCKakaoUser');

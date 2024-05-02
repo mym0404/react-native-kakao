@@ -291,6 +291,27 @@ import RNCKakaoCore
     }
   }
 
+  @objc public func getAccessToken(
+    _ resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    onMain {
+      UserApi.shared.accessTokenInfo { accessTokenInfo, error in
+        if let error {
+          RNCKakaoUtil.reject(reject, error)
+        } else if let accessTokenInfo {
+          resolve([
+            "id": accessTokenInfo.id as Any,
+            "appId": accessTokenInfo.appId,
+            "expiresIn": accessTokenInfo.expiresIn
+          ])
+        } else {
+          RNCKakaoUtil.reject(reject, RNCKakaoError.responseNotFound(name: "accessTokenInfo"))
+        }
+      }
+    }
+  }
+
   private func emptyArrayToNil<T>(_ arr: [T]?) -> [T]? {
     if arr == nil || arr?.isEmpty == true { return nil }
     return arr

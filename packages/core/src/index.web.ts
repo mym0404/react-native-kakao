@@ -1,44 +1,36 @@
-import { KakaoJavaScriptError } from './util/KakaoJavaScriptError';
 import { kAssert } from './util/kAssert';
 import { kCreateWebError } from './util/kCreateWebError';
+import { kFetch, kFetchFormUrlEncoded } from './util/kFetch';
+import kGlobalStorage from './util/kGlobalStorage';
 import type { KakaoCoreAPI } from './index';
 
-const VERSION = '2.7.1';
-const KAKAO_SDK_URL = `https://t1.kakaocdn.net/kakao_js_sdk/${VERSION}/kakao.min.js`;
-const INTEGRITY_VALUE = 'sha384-kDljxUXHaJ9xAb2AzRd59KxjrFjzHa5TAoFQ6GbYTCAG0bjM55XohjjDT7tDDC01';
 declare const Kakao: {
   init: Function;
   isInitialized: Function;
 };
-function loadScript(url: string, integrity: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const script = document.createElement('script');
-    script.src = url;
-    script.integrity = integrity;
-    script.crossOrigin = 'anonymous';
-    script.onload = () => resolve();
-    script.onerror = () => reject();
-    document.head.appendChild(script);
-  });
-}
 
 const KakaoCore: KakaoCoreAPI = {
   getKeyHashAndroid: async () => {
     return undefined;
   },
-  initializeKakaoSDK: async (javascriptKey: string) => {
+  initializeKakaoSDK: async (appKey: string, options) => {
+    kAssert(options?.web?.javascriptKey, '[initializeKakaoSDK] javascriptKey is missing');
+    kAssert(options?.web?.restApiKey, '[initializeKakaoSDK] restApiKey is missing');
+
     try {
-      await loadScript(KAKAO_SDK_URL, INTEGRITY_VALUE);
-      Kakao.init(javascriptKey);
+      kGlobalStorage.javascriptKey = options?.web?.javascriptKey!;
+      kGlobalStorage.restApiKey = options?.web?.restApiKey!;
       if (!Kakao.isInitialized()) {
-        throw new Error('Initialize Failed');
+        Kakao.init(options!.web!.javascriptKey);
       }
+
+      kAssert(Kakao.isInitialized(), 'Kakao.isInitialized returns false');
     } catch (e) {
-      throw new KakaoJavaScriptError('[initializeKakaoSDK] failed');
+      throw e;
     }
   },
 };
 
 export const { getKeyHashAndroid, initializeKakaoSDK } = KakaoCore;
 export default KakaoCore;
-export { kAssert, kCreateWebError };
+export { kAssert, kCreateWebError, kGlobalStorage, kFetch, kFetchFormUrlEncoded };

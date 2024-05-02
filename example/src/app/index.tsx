@@ -1,8 +1,9 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { Animated, Easing } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import { useMount } from '@mj-studio/react-util';
-import { Link, useGlobalSearchParams } from 'expo-router';
+import { login, logout } from '@react-native-kakao/user';
+import { Link } from 'expo-router';
 
 import { Box } from '../component/Box';
 import { Btn } from '../component/Btn';
@@ -11,7 +12,6 @@ import { Txt } from '../component/Txt';
 import { px } from '../util/px';
 import timing = Animated.timing;
 import loop = Animated.loop;
-import { login, logout, setAccessTokenWeb } from '@react-native-kakao/user';
 
 export default function Page() {
   const anim = useRef(new Animated.Value(0)).current;
@@ -20,13 +20,6 @@ export default function Page() {
       timing(anim, { toValue: 1, useNativeDriver: true, duration: 10000, easing: Easing.linear }),
     ).start();
   });
-
-  const params = useGlobalSearchParams();
-  useEffect(() => {
-    if (params?.code) {
-      setAccessTokenWeb(params!.code as string);
-    }
-  }, [params]);
 
   return (
     <StyledScrollView flex={1} contentContainerSx={{ pt: 12, pb: 48, alignItems: 'center', px: 4 }}>

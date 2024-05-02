@@ -37,6 +37,7 @@
     "release": "./script/publish.sh",
     "android": "yarn example android",
     "ios": "yarn example ios",
+    "web": "yarn example web",
     "dev": "yarn watchman-refresh && yarn example start",
     "gen:android": "yarn example prebuild:android",
     "gen:android:clean": "yes | yarn example prebuild:android:clean",

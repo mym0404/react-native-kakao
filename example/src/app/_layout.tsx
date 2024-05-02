@@ -1,11 +1,12 @@
-import { useState } from 'react';
-import { Image, Platform } from 'react-native';
+import { useEffect, useRef } from 'react';
+import { Image } from 'react-native';
 import FlashMessage from 'react-native-flash-message';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useMount } from '@mj-studio/react-util';
 import { initializeKakaoSDK } from '@react-native-kakao/core';
+import { issueAccessTokenWithCodeWeb, setAccessTokenWeb } from '@react-native-kakao/user';
 import { StyledSystemProvider } from '@react-native-styled-system/core';
-import { Link, Slot } from 'expo-router';
+import { Link, Slot, useGlobalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
 import { Box } from '../component/Box';
@@ -17,22 +18,31 @@ import { px } from '../util/px';
 export default function RootLayout() {
   const { top } = useSafeAreaInsets();
 
-  const [isKakaoInitialized, setKakaoInitialized] = useState(false);
-  useMount(() => {
-    const init = async () => {
-      await initializeKakaoSDK(
-        Platform.OS === 'web'
-          ? '7bd64215ea748be5c4a2bbcea40ebee9'
-          : 'fb975c77483d1edbe69467fca6bb2a6e',
-      );
-      setKakaoInitialized(true);
+  const { code } = useGlobalSearchParams<{ code?: string }>();
+  const accessTokenIssued = useRef(false);
+  useEffect(() => {
+    const go = async () => {
+      const { accessToken } = await issueAccessTokenWithCodeWeb({
+        code: code!,
+        redirectUri: 'http://localhost',
+      });
+      setAccessTokenWeb(accessToken);
+      accessTokenIssued.current = true;
     };
-    init();
-  });
 
-  if (!isKakaoInitialized) {
-    return null;
-  }
+    if (code && !accessTokenIssued.current) {
+      go();
+    }
+  }, [code]);
+
+  useMount(() => {
+    initializeKakaoSDK('fb975c77483d1edbe69467fca6bb2a6e', {
+      web: {
+        javascriptKey: '7bd64215ea748be5c4a2bbcea40ebee9',
+        restApiKey: '8b32d258f3f3fb553d86cfaa20964077',
+      },
+    });
+  });
 
   return (
     <StyledSystemProvider theme={AppTheme}>

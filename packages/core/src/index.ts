@@ -2,7 +2,10 @@ import { NativeModules, Platform } from 'react-native';
 
 import type { Spec } from './spec/NativeKakaoCore';
 import { kAssert } from './util/kAssert';
+import type { KakaoPackageErrorCodes } from './util/kCreateWebError';
 import { kCreateWebError } from './util/kCreateWebError';
+import { kFetch, kFetchFormUrlEncoded } from './util/kFetch';
+import kGlobalStorage from './util/kGlobalStorage';
 
 const LINKING_ERROR =
   "The package '@react-native-kakao/core' doesn't seem to be linked. Make sure: \n\n" +
@@ -10,7 +13,6 @@ const LINKING_ERROR =
   '- You rebuilt the app after installing the package\n' +
   '- You are not using Expo Go\n';
 
-// @ts-expect-error
 const isTurboModuleEnabled = global.__turboModuleProxy != null;
 
 const Module = isTurboModuleEnabled
@@ -28,7 +30,11 @@ const Native: Spec = Module
       },
     );
 
-export async function initializeKakaoSDK(appKey: string): Promise<void> {
+export async function initializeKakaoSDK(
+  appKey: string,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  options: { web?: { javascriptKey: string; restApiKey: string } },
+): Promise<void> {
   Native.initializeKakaoSDK(appKey);
 }
 
@@ -42,4 +48,5 @@ const KakaoCore = {
 };
 export default KakaoCore;
 export type KakaoCoreAPI = typeof KakaoCore;
-export { kAssert, kCreateWebError };
+export type { KakaoPackageErrorCodes };
+export { kAssert, kCreateWebError, kGlobalStorage, kFetch, kFetchFormUrlEncoded };

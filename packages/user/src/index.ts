@@ -10,7 +10,6 @@ const LINKING_ERROR =
   '- You rebuilt the app after installing the package\n' +
   '- You are not using Expo Go\n';
 
-// @ts-expect-error
 const isTurboModuleEnabled = global.__turboModuleProxy != null;
 
 const Module = isTurboModuleEnabled
@@ -28,7 +27,7 @@ const Native: Spec = Module
       },
     );
 
-export type KakaoLoginToken = {
+export interface KakaoLoginToken {
   accessToken: string;
   refreshToken: string;
   tokenType?: string;
@@ -38,8 +37,8 @@ export type KakaoLoginToken = {
   accessTokenExpiresIn: number;
   refreshTokenExpiresIn: number;
   scopes: string[];
-};
-export type KakaoScopeInfo = {
+}
+export interface KakaoScopeInfo {
   id: string;
   agreed: boolean;
   displayName: string;
@@ -47,25 +46,25 @@ export type KakaoScopeInfo = {
   using: boolean;
   delegated?: boolean;
   type: string;
-};
-export type KakaoServiceTerms = {
+}
+export interface KakaoServiceTerms {
   tag: string;
   agreedAt?: number;
   agreed: boolean;
   required: boolean;
   revocable: boolean;
-};
-export type KakaoAppServiceTerms = {
+}
+export interface KakaoAppServiceTerms {
   tag: string;
   createdAt: number;
   updatedAt: number;
-};
-export type KakaoShippingAddressResult = {
+}
+export interface KakaoShippingAddressResult {
   userId?: number;
   needsAgreement?: boolean;
   shippingAddresses: KakaoShippingAddress[];
-};
-export type KakaoShippingAddress = {
+}
+export interface KakaoShippingAddress {
   id: number;
   name?: string;
   isDefault: boolean;
@@ -78,8 +77,8 @@ export type KakaoShippingAddress = {
   receiverPhoneNumber2?: string;
   zoneNumber?: string;
   zipCode?: string;
-};
-export type KakaoUser = {
+}
+export interface KakaoUser {
   id: number;
   email: string;
   name: string;
@@ -108,7 +107,14 @@ export type KakaoUser = {
   profileImageNeedsAgreement?: boolean;
   profileNicknameNeedsAgreement?: boolean;
   legalBirthDateNeedsAgreement?: boolean;
-};
+  connectedAt?: number;
+  synchedAt?: number;
+}
+export interface KakaoAccessTokenInfo {
+  id?: number;
+  appId: number;
+  expiresIn: number;
+}
 export function login({
   serviceTerms,
   prompts,
@@ -184,8 +190,28 @@ export function me(): Promise<KakaoUser> {
   return Native.me();
 }
 
+export function getAccessToken(): Promise<KakaoAccessTokenInfo> {
+  return Native.getAccessToken();
+}
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function setAccessTokenWeb(token: string) {}
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export async function issueAccessTokenWithCodeWeb(params: {
+  redirectUri: string;
+  clientSecret?: string;
+  code: string;
+}): Promise<{
+  tokenType: string;
+  accessToken: string;
+  idToken?: string;
+  expiresIn: number;
+  refreshToken: string;
+  refreshTokenExpiresIn: number;
+  scope?: string;
+}> {
+  return {} as any;
+}
 
 const KakaoUser = {
   login,
@@ -198,7 +224,9 @@ const KakaoUser = {
   serviceTerms,
   shippingAddresses,
   me,
+  getAccessToken,
   setAccessTokenWeb,
+  issueAccessTokenWithCodeWeb,
 };
 export default KakaoUser;
 export type KakaoUserAPI = typeof KakaoUser;
