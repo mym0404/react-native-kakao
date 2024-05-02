@@ -1,4 +1,4 @@
-import { type KakaoPackageErrorCodes, kCreateWebError } from '@react-native-kakao/core';
+import { type KakaoPackageErrorCodes, kCreateWebError } from './kCreateWebError';
 
 export function kAssert(
   condition: boolean | undefined | null | string,

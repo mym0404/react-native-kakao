@@ -3,7 +3,7 @@ import { Image } from 'react-native';
 import FlashMessage from 'react-native-flash-message';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useMount } from '@mj-studio/react-util';
-import { initializeKakaoSDK } from '@react-native-kakao/core';
+import Core from '@react-native-kakao/core';
 import { issueAccessTokenWithCodeWeb, setAccessTokenWeb } from '@react-native-kakao/user';
 import { StyledSystemProvider } from '@react-native-styled-system/core';
 import { Link, Slot, useGlobalSearchParams } from 'expo-router';
@@ -36,7 +36,7 @@ export default function RootLayout() {
   }, [code]);
 
   useMount(() => {
-    initializeKakaoSDK('fb975c77483d1edbe69467fca6bb2a6e', {
+    Core.initializeKakaoSDK('fb975c77483d1edbe69467fca6bb2a6e', {
       web: {
         javascriptKey: '7bd64215ea748be5c4a2bbcea40ebee9',
         restApiKey: '8b32d258f3f3fb553d86cfaa20964077',

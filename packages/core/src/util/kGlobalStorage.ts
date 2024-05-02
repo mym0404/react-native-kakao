@@ -1,6 +1,7 @@
-import { kAssert } from '@react-native-kakao/core';
 import CryptoJS from 'crypto-js';
 import AES from 'crypto-js/aes';
+
+import { kAssert } from './kAssert';
 
 const ______________K______________ = '______________K______________';
 
