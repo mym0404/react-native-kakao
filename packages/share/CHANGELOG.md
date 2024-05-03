@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.0](https://github.com/mym0404/react-native-kakao/compare/v2.0.0...v2.1.0) (2024-05-03)
+
+### Features
+
+* **navi:** web support ([5076723](https://github.com/mym0404/react-native-kakao/commit/50767236bc1fe022650f64c081a839237dab130b))
+
 ## [2.0.0](https://github.com/mym0404/react-native-kakao/compare/v1.7.0...v2.0.0) (2024-05-02)
 
 ### Features
