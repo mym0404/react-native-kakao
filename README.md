@@ -37,11 +37,7 @@ iOS, Android and Web.
 > [!IMPORTANT]
 > We releases Web platform in V2!
 >
-> https://github.com/mym0404/react-native-kakao/assets/33388801/0bf4cf3b-8a00-4291-a705-0bebbf5d7fad 
-
-## Youtube Tutorial (Install, Login)
-
-[<img alt="youtube video link" src="https://raw.githubusercontent.com/mym0404/image-archive/master/202405030209892.webp" width="400"/>](https://www.youtube.com/watch?v=apRtsSIYMt0)
+> https://github.com/mym0404/react-native-kakao/assets/33388801/0bf4cf3b-8a00-4291-a705-0bebbf5d7fad
 
 ## Kakao Modules
 
