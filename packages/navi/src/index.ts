@@ -69,3 +69,4 @@ export function shareTo({
 
 const KakaoNavi = { navigateTo, shareTo };
 export default KakaoNavi;
+export type KakaoNaviAPI = typeof KakaoNavi;
