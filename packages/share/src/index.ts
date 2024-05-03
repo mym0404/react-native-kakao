@@ -471,3 +471,4 @@ const KakaoShare = {
   sendCalendarTemplateToFriends,
 };
 export default KakaoShare;
+export type KakaoShareAPI = typeof KakaoShare;

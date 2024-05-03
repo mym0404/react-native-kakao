@@ -80,3 +80,4 @@ export function getFriends({
 
 const KakaoSocial = { getTalkProfile, selectSingleFriend, selectMultipleFriends, getFriends };
 export default KakaoSocial;
+export type KakaoSocialAPI = typeof KakaoSocial;
