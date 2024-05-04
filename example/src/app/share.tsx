@@ -1,3 +1,4 @@
+import { showMessage } from 'react-native-flash-message';
 import {
   type KakaoCommerceTemplate,
   type KakaoFeedTemplate,
@@ -159,7 +160,7 @@ export default function Page() {
               price: '20000',
             },
             serverCallbackArgs: {},
-          });
+          }).catch((e) => showMessage({ type: 'warning', message: e.message }));
         }}
       />
       <Btn
@@ -170,7 +171,9 @@ export default function Page() {
             templateArgs: {
               price: '20000',
             },
-          }).then(console.log);
+          })
+            .then(console.log)
+            .catch((e) => showMessage({ type: 'warning', message: e.message }));
         }}
       />
       <Btn

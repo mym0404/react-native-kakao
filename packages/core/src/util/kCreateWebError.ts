@@ -1,4 +1,8 @@
-export type KakaoPackageErrorCodes = 'Package-Unknown' | 'Package-Assertion';
+export type KakaoPackageErrorCodes =
+  | 'Package-Unknown'
+  | 'Package-Assertion'
+  | 'Package-Unauthorized'
+  | (string & {});
 export function kCreateWebError({
   code = 'Package-Unknown',
   message = '',
@@ -22,12 +26,12 @@ export function kCreateWebError({
 }) {
   throw {
     code: code + '',
-    message: (msg || message) + '',
+    message: (msg || message || 'unknown') + '',
     userInfo: {
       isAppsFailed,
       isInvalidTokenError,
       isClientFailed,
-      isAuthFailed,
+      isAuthFailed: isAuthFailed || (code + '').includes('401'),
       fatal: true,
       isApiFailed,
       nativeErrorMessage,
