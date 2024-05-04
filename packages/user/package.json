@@ -3,7 +3,7 @@
   "description": "React Native Kakao User SDK",
   "version": "2.1.0",
   "main": "lib/commonjs/index",
-  "module": "src/index",
+  "module": "lib/module/index",
   "types": "lib/typescript/src/index.d.ts",
   "react-native": "src/index",
   "source": "src/index",
