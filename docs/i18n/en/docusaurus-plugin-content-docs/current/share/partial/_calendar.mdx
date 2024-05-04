@@ -1,22 +1,22 @@
-[공식 문서](https://developers.kakao.com/docs/latest/ko/message/android-link#create-message)
+[Official Documentation](https://developers.kakao.com/docs/latest/ko/message/android-link#create-message)
 
-[톡캘린더](https://developers.kakao.com/docs/latest/ko/talkcalendar/common)의 공개 일정 또는 구독 캘린더 정보를 포함한 메시지 형식입니다. 카카오톡 채널의 공개 일정 또는 구독 캘린더를 사용자의 톡캘린더에 추가하는 기능을 제공합니다. 서비스 앱과 연결된 카카오톡 채널의 공개 일정이나 구독 캘린더에 대한 메시지만 전송 가능합니다.
+This message format includes public schedule or subscription calendar information from [Kakao Calendar](https://developers.kakao.com/docs/latest/ko/talkcalendar/common). It provides the functionality to add the public schedule or subscription calendar of a Kakao Talk Channel to the user's Kakao Calendar. Messages can only be sent for the public schedule or subscription calendar of the Kakao Talk Channel connected to the service app.
 
-활용 예시: 카카오톡 메시지를 통해 사용자가 서비스의 공개 일정을 사용자 캘린더에 추가하거나, 서비스의 구독 캘린더를 구독하도록 권유하는 용도로 사용합니다.
+Use Case: This is used to encourage users to add a service's public schedule to their calendar or subscribe to a service's calendar via Kakao Talk messages.
 
-![](https://raw.githubusercontent.com/mym0404/image-archive/master/202404220340125.webp)
+![Image](https://raw.githubusercontent.com/mym0404/image-archive/master/202404220340125.webp)
 
-## 템플릿 타입 정의
+## Template Type Definition
 
 ```ts
 /**
- * 톡캘린더의 구독 캘린더 또는 공개 일정 정보를 포함한 메시지 형식입니다.
- * 카카오톡 채널의 구독 캘린더 또는 공개 일정을 사용자의 톡캘린더에 추가하는 기능을 제공합니다.
+ * Message format including subscription calendar or public schedule information from Kakao Calendar.
+ * It provides the functionality to add the subscription calendar or public schedule of a Kakao Talk Channel to the user's Kakao Calendar.
  *
- * @property id 구독 캘린더 또는 공개 일정 ID
- * @property idType id의 타입, event(공개 일정) 또는 calendar(구독 캘린더) 중 하나
- * @property content 일정에 대해 설명하는 컨텐츠 정보
- * @property buttons 버튼 목록. 기본 버튼의 타이틀 외에 링크도 변경하고 싶을 때 설정. (최대 1개, 오른쪽 위치 보기 버튼은 고정)
+ * @property id ID of the subscription calendar or public schedule
+ * @property idType Type of the ID, either event (public schedule) or calendar (subscription calendar)
+ * @property content Content information describing the schedule
+ * @property buttons Button list. When you want to change the link besides the title of the default button. (Up to 1 button, the view button on the right position is fixed)
  */
 export interface KakaoCalendarTemplate {
   id: string;

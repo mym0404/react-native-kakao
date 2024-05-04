@@ -2,19 +2,19 @@
 sidebar_position: 103
 ---
 
-# 프로필 불러오기
+# Get User Profile
 
-## 프로필 불러오기
+## Get User Profile
 
-`me()`로 불러올 수 있습니다.
+You can fetch the profile using `me()`.
 
-응답은 다음과 같습니다.
+The response is as follows:
 
 ```tsx
 Promise<KakaoUser>
 ```
 
-타입은 다음과 같습니다.
+The `KakaoUser` type is defined as:
 
 ```tsx
 export type KakaoUser = {
@@ -49,7 +49,7 @@ export type KakaoUser = {
 };
 ```
 
-### 예시
+### Example
 
 ```tsx
 me()

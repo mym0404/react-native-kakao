@@ -2,18 +2,17 @@
 sidebar_position: 101
 ---
 
-# 사용자 정의 템플릿으로 메세지 전송하기
-## 사용자 정의 템플릿
+# Send Message with Custom Template
 
-[공식 문서](https://developers.kakao.com/docs/latest/ko/message/android)
+## Custom Template
 
-`[도구] > [메시지 템플릿]`에서 직접 구성한 사용자 정의 템플릿을 사용하여 카카오톡으로 메시지를 전송하는 기능입니다.
+Refer to the [Official Documentation](https://developers.kakao.com/docs/latest/ko/message/android) for details on using custom templates to send messages via KakaoTalk.
 
-## 나에게 메세지 전송하기
+## Send Message to Myself
 
-`sendCustomTemplateToMe()` 함수를 이용해 메세지를 보낼 수 있습니다.
+You can send a message using the `sendCustomTemplateToMe()` function.
 
-이 함수는 다음과 같이 정의됩니다.
+This function is defined as follows:
 
 ```tsx
 export function sendCustomTemplateToMe(params: {
@@ -22,14 +21,14 @@ export function sendCustomTemplateToMe(params: {
 })
 ```
 
-- `templateId`: 콘솔에서 지정한 메세지 템플릿입니다.
-- `templateArgs`: 템플릿 인자들입니다. 모두 문자열만 값으로 전달되어야 합니다.
+-  `templateId`: The message template specified in the console.
+-  `templateArgs`: Template arguments. All values must be passed as strings.
 
-## 친구들에게 메세지 전송하기
+## Send Message to Friends
 
-`sendCustomTemplateToFriends()` 함수를 이용해 메세지를 보낼 수 있습니다.
+You can send a message using the `sendCustomTemplateToFriends()` function.
 
-이 함수는 다음과 같이 정의됩니다.
+This function is defined as follows:
 
 ```tsx
 export function sendCustomTemplateToFriends(params: {
@@ -39,13 +38,12 @@ export function sendCustomTemplateToFriends(params: {
 })
 ```
 
-- `templateId`: 콘솔에서 지정한 메세지 템플릿입니다.
-- `templateArgs`: 템플릿 인자들입니다. 모두 문자열만 값으로 전달되어야 합니다.
-- `receiverUuids`: 메세지를 보낼 친구들의 uuid 리스트입니다. [social](/docs/social/intro)패키지의
-[카카오톡 친구 선택하기](/docs/social/select-talk-friends)나 [카카오톡 친구 가져오기](/docs/social/get-friends)에서 얻어올 수 있습니다.
+-  `templateId`: The message template specified in the console.
+-  `templateArgs`: Template arguments. All values must be passed as strings.
+-  `receiverUuids`: List of uuids of friends to whom the message will be sent. You can obtain these from the [social](/docs/social/intro) package's [Select KakaoTalk Friends](/docs/social/select-talk-friends) or [Get KakaoTalk Friends](/docs/social/get-friends).
 
 :::info
-자세한 컴포넌트들의 타입은 [컴포넌트 타입들](/docs/share/component-types)을 참고해주세요.
+Refer to the [Component Types](/docs/share/component-types) for detailed component types.
 
-사용에 문제가 생긴다면 [Troubleshooting](/docs/share/troubleshooting)을 참고해주세요
+If you encounter any issues, refer to the [Troubleshooting](/docs/share/troubleshooting) section.
 :::

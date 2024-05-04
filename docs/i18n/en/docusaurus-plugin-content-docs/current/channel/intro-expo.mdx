@@ -2,16 +2,15 @@
 sidebar_position: 4
 ---
 
-# Expo 설정
+# Expo Configuration
 
-## Android - 채널 추가 이후 앱 실행을 위한 Activity 등록
+## Android - Register Activity for App Launch After Channel Addition
 
-[공식 문서](https://developers.kakao.com/docs/latest/ko/kakaotalk-channel/android#set-custom-url-scheme)
+[Official Documentation](https://developers.kakao.com/docs/latest/ko/kakaotalk-channel/android#set-custom-url-scheme)
 
-카카오톡 채널 간편 추가하기를 사용하려면 `AndroidManifest.xml`에 액티비티(`Activity`) 설정을 해야 합니다.
-해당 기능의 내부 동작에 사용되는 액티비티 리다이렉션(Redirection)을 지원하기 위한 설정입니다. 아래 예제를 참고합니다.
+To enable the easy addition of KakaoTalk channels, you need to configure the activity in the `AndroidManifest.xml`. This setting is for supporting the internal redirection used in this feature. Refer to the example below.
 
-`app.json`에 다음과 같이 추가합니다.
+Add the following to `app.json`:
 
 ```json title='app.json'
 [

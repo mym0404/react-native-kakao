@@ -2,25 +2,25 @@
 sidebar_position: 4
 ---
 
-# 카카오톡 친구 가져오기
-## 카카오톡 친구 가져오기
+# Get KakaoTalk Friends
 
-[공식 문서](https://developers.kakao.com/docs/latest/ko/kakaotalk-social/android#get-friends)
+## Get KakaoTalk Friends
+
+[Official Documentation](https://developers.kakao.com/docs/latest/ko/kakaotalk-social/android#get-friends)
 
 :::info
-API를 사용하기 위해서 카카오 로그인 및 관련 동의 항목이 동의된 상태여야 합니다.
+To use the API, the user must have agreed to Kakao login and related consent items.
 
-피커와 친구 목록 가져오기 API는 사용 권한이 주어진 앱에서만 사용할 수 있습니다.
+The picker and get friends list API can only be used in apps granted permission.
 :::
 
-현재 로그인한 사용자의 카카오톡 친구 목록을 불러옵니다.
-요청 시 친구 목록의 정렬 순서, 한 페이지당 친구 수를 선택적으로 지정할 수 있습니다. 파라미터 없이 요청 시 기본 설정대로 요청이 전송됩니다.
+Fetches the KakaoTalk friends list of the currently logged-in user. You can optionally specify the sort order of the friends list and the number of friends per page when making a request. If requested without parameters, the request is sent with the default settings.
 
 ## Usage
 
-`getFriends()`를 이용해 친구 목록을 가져올 수 있습니다.
+You can fetch the friends list using `getFriends()`.
 
-다음과 같이 정의되어 있습니다.
+It is defined as follows:
 
 ```tsx
 export function getFriends(params: {
@@ -28,18 +28,18 @@ export function getFriends(params: {
 }): Promise<KakaoTalkGetFriendsResult>
 ```
 
-사용되는 타입들은 다음과 같습니다.
+The types used are as follows:
 
 ```tsx
 /**
- * 카카오톡 친구
+ * KakaoTalk Friend
  *
- * @property id 회원번호
- * @property uuid 메시지를 전송하기 위한 고유 아이디. 사용자의 계정 상태에 따라 이 정보는 바뀔 수 있으므로 앱내의 사용자 식별자로는 권장하지 않음.
- * @property profileNickname 친구의 닉네임
- * @property profileThumbnailImage 썸네일 이미지 URL
- * @property favorite 즐겨찾기 추가 여부
- * @property allowedMsg 메시지 수신이 허용되었는지 여부. 앱가입 친구의 경우는 feed msg 에 해당. 앱미가입친구는 invite msg 에 해당
+ * @property id Member number
+ * @property uuid Unique ID to send messages. This information may change depending on the user's account status and is not recommended as the user identifier within the app.
+ * @property profileNickname Friend's nickname
+ * @property profileThumbnailImage Thumbnail image URL
+ * @property favorite Favorite status
+ * @property allowedMsg Whether message reception is allowed. For app-joined friends, this corresponds to feed msg. For unjoined app friends, it corresponds to invite msg.
  */
 export interface KakaoTalkFriend {
   id?: number;

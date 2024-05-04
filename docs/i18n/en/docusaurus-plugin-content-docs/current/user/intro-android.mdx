@@ -2,19 +2,17 @@
 sidebar_position: 2
 ---
 
-# Android 설정
+# Android Configuration
 
 :::info
-이 문서는 Expo를 사용한다면 건너뛰어야합니다.
+If you are using Expo, you can skip this section.
 :::
 
-## Redirect URI 설정
+## Redirect URI Setup
 
-[공식 문서](https://developers.kakao.com/docs/latest/ko/kakaologin/android#set-redirect-uri)
+Refer to the [Official Documentation](https://developers.kakao.com/docs/latest/ko/kakaologin/android#set-redirect-uri) for implementing the Kakao login functionality and receiving the authorization code through redirection.
 
-카카오 로그인 기능을 구현하기 위해서는 리다이렉션(Redirection)을 통해 인가 코드를 받아야 합니다.
-
-이를 위해 AndroidManifest.xml에 액티비티(Activity) 설정이 필요합니다. 아래 예제를 참고합니다.
+To do this, you need to configure the activity (Activity) in AndroidManifest.xml. Refer to the example below.
 
 ```xml
 <activity
@@ -33,5 +31,5 @@ sidebar_position: 2
 ```
 
 :::note
-더 자세한 내용은 [공식 문서](https://developers.kakao.com/docs/latest/ko/kakaologin/android#set-redirect-uri)를 참고해주세요.
+For more details, refer to the [Official Documentation](https://developers.kakao.com/docs/latest/ko/kakaologin/android#set-redirect-uri).
 :::

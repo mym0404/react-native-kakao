@@ -2,19 +2,19 @@
 sidebar_position: 106
 ---
 
-# 동의 내역
+# Consent Scope Information
 
-사용자 동의 내역과 관련된 API입니다.
+API related to user consent information.
 
-자세한 내용은 [공식 문서](https://developers.kakao.com/docs/latest/ko/kakaologin/ios#check-consent)를 참고해주세요.
+For more details, refer to the [Official Documentation](https://developers.kakao.com/docs/latest/ko/kakaologin/ios#check-consent).
 
-## 동의 내역 받기
+## Get Consent Information
 
-[공식 문서](https://developers.kakao.com/docs/latest/ko/kakaologin/ios#check-consent)
+[Official Documentation](https://developers.kakao.com/docs/latest/ko/kakaologin/ios#check-consent)
 
-`scopes(scopes?: string[])`를 이용해 사용자 동의 항목을 받아올 수 있습니다.
+Use `scopes(scopes?: string[])` to retrieve user consent items.
 
-응답 결과는 `Promise<KakaoScopeInfo[]>` 입니다.
+The response will be of type `Promise<KakaoScopeInfo[]>`.
 
 ```tsx
 export type KakaoScopeInfo = {
@@ -28,26 +28,23 @@ export type KakaoScopeInfo = {
 };
 ```
 
-### 예시
+### Example
 
 ```tsx
 scopes()
 ```
 
-## 동의 내역 철회시키기
+## Revoke Consent
 
-[공식 문서](https://developers.kakao.com/docs/latest/ko/kakaologin/ios#revoke-consent)
+[Official Documentation](https://developers.kakao.com/docs/latest/ko/kakaologin/ios#revoke-consent)
 
-`revokeScopes(scopes: string[])`를 이용해 사용자 동의 항목을 철회할 수 있습니다.
+You can revoke user consent items using `revokeScopes(scopes: string[])`.
 
->사용자가 동의한 항목에 대해 동의를 철회합니다.
-동의 내역 확인하기 API를 통해 조회한 동의항목 정보 중 동의 철회 가능 여부(revocable) 값이 true인
-동의항목만 철회 가능합니다.
-동의 철회가 불가능한 동의항목을 대상으로 요청한 경우 에러 응답을 받습니다.
+>Revokes the consent for the agreed items by the user. Only consent items with a revocable value of true in the consent item information obtained through the consent information retrieval API can be revoked. If you request to revoke consent for items where revocation is not possible, you will receive an error response.
 >
->철회할 동의항목의 ID는 scopes 값으로 지정하며, `[내 애플리케이션] > [카카오 로그인] > [동의항목]`의 ID를 참고합니다.
+>The ID of the consent item to be revoked is specified as the `scopes` value, referring to the ID in `[My Applications] > [Kakao Login] > [Consent Items]`.
 
-### 예시
+### Example
 
 ```tsx
 revokeScopes(['terms-of-services'])

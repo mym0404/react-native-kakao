@@ -2,88 +2,81 @@
 sidebar_position: 3
 ---
 
-# 카카오톡 친구 선택하기
-## 카카오톡 친구 선택하기
+# Select KakaoTalk Friends
 
-[공식 문서](https://developers.kakao.com/docs/latest/ko/kakaotalk-social/android#picker-friends)
+## Selecting KakaoTalk Friends
+
+[Official Documentation](https://developers.kakao.com/docs/latest/ko/kakaotalk-social/android#picker-friends)
 
 :::info
-API를 사용하기 위해서 카카오 로그인 및 관련 동의 항목이 동의된 상태여야 합니다.
+To use the API, the user must have agreed to Kakao login and consent items related to the profile information, nickname, and profile picture.
 
-피커와 친구 목록 가져오기 API는 사용 권한이 주어진 앱에서만 사용할 수 있습니다.
-사용 권한을 받기 전에는 앱의 팀원에게만 사용 가능하도록 기능 동작이 제한됩니다.
-실제 서비스에서 모든 사용자에게 기능을 사용하려면 `[내 애플리케이션] > [앱 권한 신청]`에서 사용 권한을 신청해야 합니다.
+The picker and get friends list API can only be used in apps granted permission.
+Before getting permission, the feature is restricted to the app team members only. To enable the feature for all users in a live service, you need to apply for permission in `[My Applications] > [Request App Permissions]`.
 
-사용 권한 신청에 대해서는 [공식 문서](https://developers.kakao.com/docs/latest/ko/kakaotalk-social/common#policy-request-permission)를 참고해주세요.
+For information on requesting permissions, refer to the [Official Documentation](https://developers.kakao.com/docs/latest/ko/kakaotalk-social/common#policy-request-permission).
 :::
 
 ![image](https://raw.githubusercontent.com/mym0404/image-archive/master/202404271649815.webp)
 
-동의 항목이 이용중 동의로 설정되어있다면 해당 기능을 이용하려는 API를 호출하려 할 시에 권한 허용 안내가 위 이미지같이 노출됩니다.
+If the consent items are set to be used during usage, when trying to call the API that uses the function, permissions prompt like the image above will be displayed.
 
 <img alt={"full screen"} src={'https://raw.githubusercontent.com/mym0404/image-archive/master/202404271650614.webp'} width={600}/>
 
-`mode='full'` 형태의 전체 화면을 채우는 피커입니다.
+A picker that fills the entire screen with `mode='full'`.
 
 <img alt={"full screen"} src={'https://raw.githubusercontent.com/mym0404/image-archive/master/202404271651715.webp'} width={600}/>
 
-`mode='popup'` 형태의 팝업 형식의 피커입니다.
+A popup-style picker with `mode='popup'`.
 
-## 공통 타입들
+## Common Types
 
-친구 피커를 설정하는 옵션 객체와 친구 객체는 다음과 같이 정의됩니다.
+The option object for configuring the friend picker and friend object are defined as follows:
 
 ```tsx
 export interface KakaoTalkFriendSelectOptions {
-  /** 친구 피커의 이름 */
+  /** Friend picker title */
   title?: string;
-  /** 친구 피커 테마 */
+  /** Friend picker theme */
   viewAppearance?: 'auto' | 'light' | 'dark';
-  /** 친구 피커의 기기 방향 */
+  /** Friend picker device orientation */
   orientation?: 'auto' | 'landscape' | 'portrait';
-  /** 친구 검색 기능 사용 여부 */
+  /** Enable friend search feature */
   enableSearch?: boolean;
-  /** 내 프로필 표시 여부 */
+  /** Show my profile */
   showMyProfile?: boolean;
-  /** 즐겨찾기 친구 표시 여부 */
+  /** Show favorite friends */
   showFavorite?: boolean;
-  /** 선택한 친구 표시 여부 (멀티 피커에만 사용 가능) */
+  /** Show picked friends (only available for multi-picker) */
   showPickedFriend?: boolean;
-  /** 선택 가능한 친구 수의 최대값 (멀티 피커에만 사용 가능) */
+  /** Maximum number of friends that can be selected (only available for multi-picker) */
   maxPickableCount?: number;
-  /** 선택 가능한 친구 수의 최소값 (멀티 피커에만 사용 가능) */
+  /** Minimum number of friends that can be selected (only available for multi-picker) */
   minPickableCount?: number;
 }
 
 export interface KakaoTalkFriendProfile {
-  /**
-   * 해당 앱에서의 사용자 식별 코드 연결 상태와 관계 없으며 일반적으로 메시지 전송 시 사용 카카오톡을 탈퇴하거나
-   * 새로 가입할 경우 값이 변경될 수 있음 사용자의 계정 상태에 따라 바뀔 수 있으므로, 앱에서 사용자 식별자로 사용하는 것을 권장하지 않음
-   */
+  /** Unique identifier for message transmission. */
   uuid: string;
-  /** 친구의 회원번호, 앱과 연결된 친구에게만 존재 */
+  /** Member number of the friend, only exists for friends connected to the app. */
   id?: number;
-  /** 즐겨찾기 추가 여부, 채팅방 피커에서는 미제공 */
+  /** Favorite status, not provided in chat room picker. */
   favorite?: boolean;
-  /** 프로필 닉네임, 프로필 닉네임 동의 항목에 동의하지 않은 친구나 앱과 연결되지 않는 친구의 경우,
-   * 닉네임을 마스킹 처리하여 제공(닉네임 원본을 받으려면 권한 및 displayAllProfile 설정 필요) */
+  /** Profile nickname. */
   profileNickname?: string;
-  /**
-   * 프로필 썸네일 이미지, 프로필 썸네일 이미지 동의 항목에 동의하지 않은 친구나 앱과 연결되지 않은 친구의 경우,
-   * 프로필 이미지 미제공(프로필 이미지를 받으려면 권한 및 displayAllProfile 설정 필요)
-   */
+  /** Profile thumbnail image URL. */
   profileThumbnailImage?: string;
 }
 ```
 
 
-## 단일 친구 선택하기
+## Select Single Friend
 
-`selectSingleFriend()`를 이용해 친구 한 명을 선택할 수 있습니다.
+You can use `selectSingleFriend()` to choose a single friend.
 
-이 함수는 다음과 같이 정의됩니다.
+It is defined as follows:
 
-`mode`에 따라 화면을 모두 덮는 Picker가 열릴지, 팝업 형태로 열릴지가 달라집니다.
+The `mode` determines whether the screen covers the entire picker or opens as a popup.
 
 ```tsx
 export async function selectSingleFriend(params: {
@@ -92,13 +85,13 @@ export async function selectSingleFriend(params: {
 }): Promise<KakaoTalkFriendProfile | undefined>
 ```
 
-## 여러 친구 선택하기
+## Select Multiple Friends
 
-`selectMultipleFriends()`를 이용해 여러 친구를 선택할 수 있습니다.
+You can select multiple friends using `selectMultipleFriends()`.
 
-이 함수는 다음과 같이 정의됩니다.
+It is defined as follows:
 
-`mode`에 따라 화면을 모두 덮는 Picker가 열릴지, 팝업 형태로 열릴지가 달라집니다.
+The `mode` determines whether the screen covers the entire picker or opens as a popup.
 
 ```tsx
 export function selectMultipleFriends(params: {

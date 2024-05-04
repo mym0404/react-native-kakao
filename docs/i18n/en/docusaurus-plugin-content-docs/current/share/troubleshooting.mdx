@@ -4,36 +4,36 @@ sidebar_position: 999
 
 # Troubleshooting & FAQ
 
-[공식 문서](https://developers.kakao.com/docs/latest/ko/message/common)
+[Official Documentation](https://developers.kakao.com/docs/latest/ko/message/common)
 
-## 앱이 비정상종료돼요
+## App Crashes Unexpectedly
 
-메세지 타입의 인자를 확인해주세요.
+Check the arguments of the message type.
 
-`templateArgs`나 `serverCallbackArgs`는 **꼭 문자열 키와 문자열 값을 객체로** 전달해야 합니다.
+Make sure to pass **string keys and string values as objects** in `templateArgs` and `serverCallbackArgs`.
 
-## 카카오톡, 브라우저가 실행은 되지만 4002에러 등 메세지를 보낼 수 없어요
+## KakaoTalk or Browser Opens but Cannot Send Message (Error 4002, etc.)
 
-메세지 타입의 인자들에 문제가 있는 경우입니다.
+This issue may occur due to problems with the message type arguments.
 
-TypeScript로 제공되는 인자들이 제대로 지켜지는지 확인하고 빈 배열 등을 전달한 것이 없는지 확인해주세요.
+Ensure that the arguments provided, as per the TypeScript definitions, are correct and avoid passing empty arrays.
 
-또한 템플릿 아이디나 캘린더 템플릿의 아이디는 카카오 콘솔에서 미리 설정되어 있어야 합니다.
+Also, template IDs or calendar template IDs must be pre-configured in the Kakao console.
 
-## 링크 실행 우선순위에 대하여
+## Link Execution Priority
 
-android, ios execution params 가 가장 큰 우선순위를 가지며 그 이후 `mobileWebUrl`, `webUrl`가 존재한다면 실행됩니다.
+`android` and `ios execution params` have the highest priority, followed by `mobileWebUrl` and `webUrl` if present.
 
-## 카카오톡 메세지 API는 지원하지 않나요?
+## Does the KakaoTalk Message API Support?
 
-아직 카카오톡 공유 API만 지원하고 있습니다.
+Currently, only the KakaoTalk Share API is supported.
 
-## 이미지가 제대로 보이지 않아요
+## Images Are Not Displaying Properly
 
-모든 이미지는 최소 200px x 200px 이상이며 2MB 이하여야 합니다.
+Ensure that all images are at least 200px x 200px and under 2MB in size.
 
-## 버튼을 누르면 내 웹페이지로 이동하지 않아요
+## Clicking the Button Does Not Redirect to My Website
 
-카카오 콘솔에서 웹 플랫폼을 등록하시고 자신의 웹사이트의 URL을 미리 등록해두어야 합니다.
+Register your web platform in the Kakao console and pre-register the URL of your website.
 
 ![](https://raw.githubusercontent.com/mym0404/image-archive/master/202404230155140.webp)

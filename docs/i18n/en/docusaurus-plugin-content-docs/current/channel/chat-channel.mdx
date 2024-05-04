@@ -2,40 +2,40 @@
 sidebar_position: 103
 ---
 
-# 카카오톡 채널 채팅하기
+# Chat with KakaoTalk Channel
 
-## 카카오톡 채널 채팅하기
+## Chat with KakaoTalk Channel
 
-사용자가 서비스의 카카오톡 채널과 1:1 채팅을 시작합니다.
+Allows the user to start a one-on-one chat with the service's KakaoTalk channel.
 
-[공식 문서](https://developers.kakao.com/docs/latest/ko/kakaotalk-channel/ios#add-chat)
+[Official Documentation](https://developers.kakao.com/docs/latest/ko/kakaotalk-channel/ios#add-chat)
 
-`chatChannel`함수로 카카오톡 채널 채팅을 할 수 있습니다.
+You can chat with a KakaoTalk channel using the `chatChannel` function.
 
 ```tsx
 export function chatChannel(channelPublicId: string): Promise<void>
 ```
 
-- `channelPublicId`: 채팅하려는 카카오톡 채널의 ID입니다.
+-   `channelPublicId`: The ID of the KakaoTalk channel to chat with.
 
 
-## 카카오톡 채널 채팅 URL 얻어오기
+## Get KakaoTalk Channel Chat URL
 
-`getChatChannelUrl`함수로 카카오톡 채널 채팅을 할 수 있는 URL을 얻어올 수 있습니다.
+You can retrieve the URL for chatting with a KakaoTalk channel using the `getChatChannelUrl` function.
 
 ```tsx
 export function getChatChannelUrl(channelPublicId: string): Promise<string>
 ```
 
-- `channelPublicId`: 채팅하려는 카카오톡 채널의 ID입니다.
+-   `channelPublicId`: The ID of the KakaoTalk channel to chat with.
 
 
-## 카카오톡 채널 채팅 URL 브라우저에서 열기
+## Open KakaoTalk Channel Chat URL in Browser
 
-`openChatChannelUrl`함수로 카카오톡 채널 채팅을 할 수 있는 URL을 브라우저에서 열 수 있습니다.
+You can open the URL for chatting with a KakaoTalk channel in a browser using the `openChatChannelUrl` function.
 
 ```tsx
 export function openChatChannelUrl(channelPublicId: string): Promise<string>
 ```
 
-- `channelPublicId`: 채팅하려는 카카오톡 채널의 ID입니다.
+-   `channelPublicId`: The ID of the KakaoTalk channel to chat with.

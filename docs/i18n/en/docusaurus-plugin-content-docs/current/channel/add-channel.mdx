@@ -2,40 +2,40 @@
 sidebar_position: 102
 ---
 
-# 카카오톡 채널 추가하기
+# Add KakaoTalk Channel
 
-## 카카오톡 채널 추가하기
+## Adding KakaoTalk Channel
 
-사용자가 카카오톡 채널을 친구 추가하러 이동합니다.
+Redirects the user to add the KakaoTalk channel as a friend.
 
-[공식 문서](https://developers.kakao.com/docs/latest/ko/kakaotalk-channel/ios#add-channel)
+[Official Documentation](https://developers.kakao.com/docs/latest/ko/kakaotalk-channel/ios#add-channel)
 
-`addChannel`함수로 카카오톡 채널 추가를 할 수 있습니다.
+You can add a KakaoTalk channel using the `addChannel` function.
 
 ```tsx
 export function addChannel(channelPublicId: string): Promise<void>
 ```
 
-- `channelPublicId`: 추가하려는 카카오톡 채널의 ID입니다.
+-  `channelPublicId`: The ID of the KakaoTalk channel to add.
 
 
-## 카카오톡 채널 추가 URL 얻어오기
+## Get KakaoTalk Channel Add URL
 
-`getAddChannelUrl`함수로 카카오톡 채널 추가를 할 수 있는 URL을 얻어올 수 있습니다.
+You can retrieve the URL for adding a KakaoTalk channel using the `getAddChannelUrl` function.
 
 ```tsx
 export function getAddChannelUrl(channelPublicId: string): Promise<string>
 ```
 
-- `channelPublicId`: 추가하려는 카카오톡 채널의 ID입니다.
+-  `channelPublicId`: The ID of the KakaoTalk channel to add.
 
 
-## 카카오톡 채널 추가 URL 브라우저에서 열기
+## Open KakaoTalk Channel Add URL in Browser
 
-`openAddChannelUrl`함수로 카카오톡 채널 추가를 할 수 있는 URL을 브라우저에서 열 수 있습니다.
+You can open the URL for adding a KakaoTalk channel in a browser using the `openAddChannelUrl` function.
 
 ```tsx
 export function openAddChannelUrl(channelPublicId: string): Promise<string>
 ```
 
-- `channelPublicId`: 추가하려는 카카오톡 채널의 ID입니다.
+-  `channelPublicId`: The ID of the KakaoTalk channel to add.

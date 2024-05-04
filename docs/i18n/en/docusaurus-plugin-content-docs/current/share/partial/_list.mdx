@@ -1,22 +1,22 @@
-[공식 문서](https://developers.kakao.com/docs/latest/ko/message/android-link#create-message)
+[Official Documentation](https://developers.kakao.com/docs/latest/ko/message/android-link#create-message)
 
-한 개 이상의 콘텐츠를 세로로 된 목록 형태로 보여주는 메시지 형식입니다. 각 목록은 이미지와 글로 구성할 수 있습니다.
+This message format displays multiple contents in a vertically aligned list. Each list can consist of images and text.
 
-활용 예시: 메시지 하나로 여러 개의 소식이나 상품을 안내하는 데 적합합니다.
+Use Case: It is suitable for guiding users about multiple news or products in a single message.
 
-![](https://raw.githubusercontent.com/mym0404/image-archive/master/202404220337407.webp)
+![Image](https://raw.githubusercontent.com/mym0404/image-archive/master/202404220337407.webp)
 
-### 템플릿 타입 정의
+### Template Type Definition
 
 ```ts
 /**
- * 여러 개의 컨텐츠를 리스트 형태로 보여줄 수 있는 메시지 템플릿 클래스.
+ * Message template class that can display multiple contents in a list format.
  *
- * @property headerTitle 리스트 상단에 노출되는 헤더 타이틀 (최대 200자)
- * @property headerLink 헤더 타이틀 내용에 해당하는 링크 정보
- * @property contents 리스트에 노출되는 컨텐츠 목록 (최소 2개, 최대 3개)
- * @property buttons 버튼 목록. 버튼 타이틀과 링크를 변경하고 싶을때, 버튼 두개를 사용하고 싶을때 사용. (최대 2개)
- * @property buttonTitle 기본 버튼 타이틀(자세히 보기)을 변경하고 싶을 때 설정. 이 값을 사용하면 클릭 시 이동할 링크는 content 에 입력된 값이 사용됨.
+ * @property headerTitle Header title displayed at the top of the list (up to 200 characters)
+ * @property headerLink Link information corresponding to the header title content
+ * @property contents List of contents displayed in the list (minimum 2, maximum 3)
+ * @property buttons Button list. Used when you want to change the button title and the link, or when you want to use two buttons (up to 2 buttons)
+ * @property buttonTitle Set to change the default button title "Learn more". If used, the link to move when the button is clicked will be the value entered in the content
  */
 export interface KakaoListTemplate {
   headerTitle: string;

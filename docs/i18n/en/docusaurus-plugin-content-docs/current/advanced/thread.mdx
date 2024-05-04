@@ -2,24 +2,18 @@
 sidebar_position: 2
 ---
 
-# 쓰레드
+# Threading
 
-## API가 동작하는 쓰레드
+## Threads Used by the API
 
-모든 API는 명시적으로 **Main Thread**에서 동작합니다.
+All APIs explicitly operate on the **Main Thread**.
 
-사실상 Kakao Native SDK의 함수들은 콜백 방식으로 동작하고 콜백 내부는 Main Thread에서 동작합니다.
+In practice, functions from the Kakao Native SDK operate using a callback mechanism, and the callbacks themselves run on the Main Thread.
 
-하지만 모든 로직을 Main Thread에서 실행시킴으로써 혹시 모를 에러를 방지합니다.
+While most logic is executed on the Main Thread to prevent any potential errors, the functions provided in this package are primarily utility functions ported from the Native SDK and do not perform heavy computations.
 
-이 패키지에서 제공하는 함수들은 대부분 Native SDK를 포팅한 일반적인 유틸리티 함수이기 때문에 무거운 연산을 수행하지 않는다고 판단했습니다.
-
-이 동작은 추후에 성능적인 개선이 필요하다고 논의될 시, 언제든지 수정될 수 있습니다.
+If there is a need for performance improvements in the future, the implementation can be revised accordingly.
 
 :::tip
-iOS의 Native Module에서 requireMainQueueSetup은 앱의 부팅 시간을 늘릴 수 있기 때문에 사용하지 않고 필요하지 않기때문에 사용하지 않습니다.
+The `requireMainQueueSetup` in iOS Native Modules can increase app startup time; therefore, it is not used as it is unnecessary.
 :::
-
-
-
-

@@ -2,21 +2,21 @@
 sidebar_position: 104
 ---
 
-# 카카오톡 채널 관계 확인하기
+# Check KakaoTalk Channel Relationship
 
-## 카카오톡 채널 관계 확인하기
+## Check KakaoTalk Channel Relationship
 
-[공식 문서](https://developers.kakao.com/docs/latest/ko/kakaotalk-channel/ios#check-relationship)
+[Official Documentation](https://developers.kakao.com/docs/latest/ko/kakaotalk-channel/ios#check-relationship)
 
-`channels`함수로 카카오톡 채널 관계를 확인할 수 있습니다.
+You can check the KakaoTalk channel relationship using the `channels` function.
 
 ```tsx
 export function channels(params: { channelPublicIds?: string[] } = {}): Promise<KakaoChannel[]>
 ```
 
-- `channelPublicIds`: 관계를 확인하려는 채널들의 ID들입니다. 전달하지 않을 시 모든 채널을 확인합니다.
+- `channelPublicIds`: IDs of the channels to check the relationship. If not provided, it checks all channels.
 
-사용되는 타입은 다음과 같습니다.
+The types used are as follows:
 
 ```tsx
 export interface KakaoChannel {

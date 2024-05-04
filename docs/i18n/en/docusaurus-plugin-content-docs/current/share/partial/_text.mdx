@@ -1,21 +1,21 @@
-[공식 문서](https://developers.kakao.com/docs/latest/ko/message/android-link#create-message)
+[Official Documentation](https://developers.kakao.com/docs/latest/ko/message/android-link#create-message)
 
-글로만 구성된 메시지 형식입니다.
+This is a message format composed only of text.
 
-활용 예시: 장문의 메시지로 사용자에게 많은 정보를 전달해야 하는 경우나, 간단하게 텍스트로만 구성된 메시지를 구성하는 데 적합합니다.
+Use Case: It is suitable for composing messages with lengthy information or for creating messages consisting solely of text.
 
-![](https://raw.githubusercontent.com/mym0404/image-archive/master/202404220338059.webp)
+![Image](https://raw.githubusercontent.com/mym0404/image-archive/master/202404220338059.webp)
 
-## 템플릿 타입 정의
+## Template Type Definition
 
 ```ts
 /**
- * 텍스트형 기본 템플릿 클래스
+ * Basic template class for text-based messages.
  *
- * @property text 메시지에 들어갈 텍스트 (최대 200자)
- * @property link 컨텐츠 클릭 시 이동할 링크 정보
- * @property buttons 버튼 목록. 버튼 타이틀과 링크를 변경하고 싶을때, 버튼 두개를 사용하고 싶을때 사용. (최대 2개)
- * @property buttonTitle 기본 버튼 타이틀(자세히 보기)을 변경하고 싶을 때 설정. 이 값을 사용하면 클릭 시 이동할 링크는 content에 입력된 값이 사용됨.
+ * @property text Text to include in the message (up to 200 characters)
+ * @property link Link information for moving when the content is clicked
+ * @property buttons Button list. Used when you want to change the button title and the link, or when you want to use two buttons. (Up to 2 buttons)
+ * @property buttonTitle Set to change the default button title "Learn more". If used, the link to move when the button is clicked will be the value entered in the content
  */
 export interface KakaoTextTemplate {
   text: string;

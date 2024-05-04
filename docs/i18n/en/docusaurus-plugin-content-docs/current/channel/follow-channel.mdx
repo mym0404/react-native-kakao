@@ -2,18 +2,18 @@
 sidebar_position: 101
 ---
 
-# 카카오톡 채널 간편 추가하기(권장)
+# Easy Add KakaoTalk Channel (Recommended)
 
-## 카카오톡 채널 간편 추가하기
+## Easy Add KakaoTalk Channel
 
-[공식 문서](https://developers.kakao.com/docs/latest/ko/kakaotalk-channel/android#follow-channel)
+[Official Documentation](https://developers.kakao.com/docs/latest/ko/kakaotalk-channel/android#follow-channel)
 
-`followChannel`함수로 카카오톡 간편 채널 추가를 할 수 있습니다.
+You can add a KakaoTalk channel easily using the `followChannel` function.
 
 ```tsx
 export function followChannel(channelPublicId: string): Promise<boolean>;
 ```
 
-결과값은 간편 채널 추가에 성공했는지 여부입니다.
+The result indicates whether the easy channel addition was successful.
 
-- `channelPublicId`: 추가하려는 카카오톡 채널의 ID입니다.
+-   `channelPublicId`: The ID of the KakaoTalk channel to add.

@@ -2,11 +2,11 @@
 sidebar_position: 4
 ---
 
-# Expo 설정
+# Expo Configuration
 
-## Android, iOS 설정
+## Android, iOS Setup
 
-`app.json`에 다음과 같이 추가합니다.
+Add the following to `app.json`.
 
 ```json title='app.json'
 [
@@ -14,11 +14,9 @@ sidebar_position: 4
   {
     "nativeAppKey": "{{native app key}}",
     "android": {
-// highlight-next-line
       "authCodeHandlerActivity": true
     },
     "ios": {
-// highlight-next-line
       "handleKakaoOpenUrl": true
     }
   }

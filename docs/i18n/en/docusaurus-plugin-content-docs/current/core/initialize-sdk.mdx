@@ -2,11 +2,11 @@
 sidebar_position: 2
 ---
 
-# SDK 초기화하기
+# Initialize the SDK
 
-## SDK 초기화하기
+## Initialize the SDK
 
-`index.js`나 `App.tsx`등 앱이 실행되고 Kakao SDK를 어떤 것도 쓰기 전에 `initializeKakaoSDK` 함수를 호출해줍니다.
+Call the `initializeKakaoSDK` function in `index.js` or `App.tsx`, or similar, before any Kakao SDK is used after the app starts.
 
 ```tsx title='index.js'
 import { initializeKakaoSDK } from '@react-native-kakao/core';
@@ -15,12 +15,12 @@ initializeKakaoSDK('{{ native app key }}');
 ```
 
 :::info
-항상 모든 카카오 API가 불리기 전에 이 함수가 먼저 호출되어야 합니다.
+This function must always be called first, before any Kakao API is invoked.
 :::
 
-## Web 플랫폼
+## Web Platform
 
-Web을 지원한다면 `web`옵션에 javascript key와 rest api key를 같이 전달해주어야 합니다.
+If supporting the Web, you must also pass the javascript key and rest api key with the `web` option.
 
 ```ts
 import { initializeKakaoSDK } from '@react-native-kakao/core';

@@ -1,23 +1,23 @@
-[공식 문서](https://developers.kakao.com/docs/latest/ko/message/android-link#create-message)
+[Official Documentation](https://developers.kakao.com/docs/latest/ko/message/android-link#create-message)
 
-위치 정보를 포함한 메시지 형식입니다. 보내는 사람이 주소 정보를 담아 메시지를 보내면, 받는 사람이 메시지에 포함된 위치 정보 버튼을 눌러서 카카오맵을 통해 자세한 장소 정보를 확인할 수 있습니다.
+This message format includes location information. When the sender includes address information in a message, the recipient can click on the location information button in the message to view detailed location information on KakaoMap.
 
-활용 예시: 위치 정보와 함께 새로운 상점의 오픈 소식이나 메뉴를 소개할 때 유용합니다.
+Use Case: It is useful for introducing the opening news of a new store or menu along with location information.
 
-![](https://raw.githubusercontent.com/mym0404/image-archive/master/202404220338261.webp)
+![Image](https://raw.githubusercontent.com/mym0404/image-archive/master/202404220338261.webp)
 
-## 템플릿 타입 정의
+## Template Type Definition
 
 ```ts
 /**
- * 주소를 이용하여 특정 위치를 공유할 수 있는 메시지 템플릿.
+ * Message template that allows sharing a specific location using an address.
  *
- * @property address 공유할 위치의 주소. 예) 경기 성남시 분당구 판교역로 235
- * @property addressTitle 카카오톡 내의 지도 뷰에서 사용되는 타이틀. 예) 카카오판교오피스
- * @property content 위치에 대해 설명하는 컨텐츠 정보
- * @property social 댓글수, 좋아요수 등, 컨텐츠에 대한 소셜 정보
- * @property buttons 버튼 목록. 기본 버튼의 타이틀 외에 링크도 변경하고 싶을 때 설정. (최대 1개, 오른쪽 위치 보기 버튼은 고정)
- * @property buttonTitle 기본 버튼 타이틀(자세히 보기)을 변경하고 싶을 때 설정. 이 값을 사용하면 클릭 시 이동할 링크는 content에 입력된 값이 사용됨.
+ * @property address Address of the location to share. Example) 235 Pangyo Station-ro, Bundang-gu, Seongnam-si, Gyeonggi-do
+ * @property addressTitle Title used in the map view within KakaoTalk. Example) Kakao Pangyo Office
+ * @property content Content information describing the location
+ * @property social Social information about the content, such as the number of comments and likes
+ * @property buttons Button list. Used when you want to change the button title and the link, or when you want to use two buttons. (Up to 1 button, the view button on the right position is fixed)
+ * @property buttonTitle Set to change the default button title "Learn more". If used, the link to move when the button is clicked will be the value entered in the content
  */
 export interface KakaoLocationTemplate {
   address: string;

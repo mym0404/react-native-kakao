@@ -2,26 +2,26 @@
 sidebar_position: 102
 ---
 
-# 카카오 로그인 (Web)
+# Kakao Login (Web)
 
-웹에서 로그인하는 방식은 redirect uri를 이용한 페이지 이동 방식이 되어야 하기 때문에 추가적인 과정이 필요합니다.
+Logging in on the web requires additional steps due to the page redirection method using a redirect URI.
 
 :::tip
-로그인을 제외한 다른 API들은 [카카오 로그인](/docs/user/login)에서의 다른 API들과 동일하게 사용할 수 있습니다.
+All APIs except for login can be used similarly to those in [Kakao Login](/docs/user/login).
 :::
 
-## 로그인하기
+## Logging In
 
-카카오 로그인하기를 이용해 회원가입, 로그인, 추가 동의내역 받기, 약관 동의시키기 등을 수행할 수 있습니다.
+You can perform tasks like user registration, login, receiving additional consent, and obtaining agreement for terms using Kakao Login.
 
-## 카카오 콘솔에서 Redirect URI 추가
+## Adding Redirect URI in Kakao Console
 
-카카오 콘솔의 카카오 로그인에서 Redirect URI를 추가합니다.
+Add a Redirect URI in the Kakao Login section of the Kakao Console.
 
 ![feat](https://raw.githubusercontent.com/mym0404/image-archive/master/202405030144548.webp)
 
 :::warning
-위 예시는 개발 환경에서 port 80을 썼을 때의 예시입니다. 필요한 Redirect URI를 직접 개발환경, 릴리즈환경 모두 기재해야 합니다.
+The example shown is for using port 80 in a development environment. You should specify the required Redirect URI for both the development and release environments.
 :::
 
 ```tsx
@@ -43,15 +43,15 @@ useEffect(() => {
 }, [code]);
 ```
 
-## Step 1. 간편 로그인으로 인가 코드 Redirect된 페이지에서 Search Parameter로 받아오기
+## Step 1: Retrieve Authorization Code via Search Parameter from the Redirected Page after Simple Login
 
-`login()` 함수를 호출해주면 카카오 로그인 페이지로 이동합니다.
+Calling the `login()` function redirects the user to the Kakao login page.
 
-웹 플랫폼은 `web`객체를 전달해야 합니다.
+For the web platform, the `web` object must be passed.
 
-`web`객체 안의 인자가 아닌 다른 옵션들은 무시됩니다.
+Other options outside the `web` object are ignored.
 
-예를 들어, `prompt`는 `web`객체 안에도 있고 밖에도 있는데 Web 플랫폼에서는 항상 `web`안에 있는 `prompt`만 사용합니다.
+For example, the `prompt` value is set both inside and outside the `web` object, but only the `prompt` inside the `web` object is used on the web platform.
 
 ```tsx
 import { login } from '@react-native-kakao/user';
@@ -67,19 +67,18 @@ login({
 ```
 
 :::danger Dangerous
-`redirectUri`는 콘솔에 등록한 것, `login`을 호출할 때 쓰는 것, `issueAccessTokenWithCodeWeb`를 호출할 때 쓰는 것 세 가지가 모두
-동일해야 정상작동합니다.
+The `redirectUri` used in the console registration, when calling `login`, and for `issueAccessTokenWithCodeWeb` must match for proper functionality.
 :::
 
-인자들에 대한 자세한 정보는 [공식 문서](https://developers.kakao.com/docs/latest/ko/kakaologin/js#login)를 참고해주세요.
+Refer to the [Official Documentation](https://developers.kakao.com/docs/latest/ko/kakaologin/js#login) for detailed information on the parameters.
 
-## Step 2. 인가 코드로 Access Token발급받기
+## Step 2: Issue Access Token with Authorization Code
 
-`issueAccessTokenWithCodeWeb()` 함수를 호출하여 인가 코드를 이용해 실제 Access Token을 발급받을 수 있습니다.
+Use the `issueAccessTokenWithCodeWeb()` function to obtain the actual Access Token using the authorization code.
 
-Access Token을 발급받고 이것을 `setAccessTokenWeb()`함수에 전달해주면 됩니다.
+Once you have the Access Token, pass it to the `setAccessTokenWeb()` function.
 
-다음은 Expo router환경에서 search parameter에 있는 `code`를 이용해 로그인을 완료하는 예시입니다.
+The example below demonstrates completing the login in an Expo router environment using the `code` from the search parameter.
 
 ```tsx
 const { code } = useGlobalSearchParams<{ code?: string }>();
@@ -101,17 +100,16 @@ useEffect(() => {
 ```
 
 :::tip TIP
-위는 단지 예시일 뿐입니다. search parameter에서 `code`를 얻어 `issueAccessTokenWithCodeWeb`, `setAccessTokenWeb`
-을 순서대로 호출해야 한다는 것만 중요합니다.
+The example provided is for illustration purposes. The key is to retrieve the `code` from the search parameter and then sequentially call `issueAccessTokenWithCodeWeb` and `setAccessTokenWeb`.
 :::
 
-인자들에 대한 자세한 정보는 [공식 문서](https://developers.kakao.com/docs/latest/ko/kakaologin/rest-api#request-token-request-body)를 참고해주세요.
+Refer to the [Official Documentation](https://developers.kakao.com/docs/latest/ko/kakaologin/rest-api#request-token-request-body) for detailed information on the parameters.
 
-### 응답
+### Response
 
-`Promise`로 토큰과 관련된 정보가 반환됩니다.
+Returns token-related information via a `Promise`.
 
-응답은 다음과 같습니다.
+The response includes the following:
 
 ```tsx
 {
