@@ -1,6 +1,8 @@
 import type { FetchArgs, ReturnFetchDefaultOptions } from 'return-fetch';
 import returnFetch from 'return-fetch';
 
+import { kCreateWebError } from './kCreateWebError';
+
 // Use as a replacer of `RequestInit`
 type JsonRequestInit = Omit<NonNullable<FetchArgs[1]>, 'body'> & { body?: object };
 
@@ -52,6 +54,14 @@ const returnFetchJson = (args?: ReturnFetchDefaultOptions, formUrlEncoded = fals
         ...init?.headers,
       },
     });
+
+    if (response.status === 401) {
+      throw kCreateWebError({
+        code: -401 + '',
+        isAuthFailed: true,
+        msg: 'this access token does not exist',
+      });
+    }
 
     const body = parseJsonSafely(await response.text()) as T;
 

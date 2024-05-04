@@ -6,6 +6,7 @@ import type { KakaoPackageErrorCodes } from './util/kCreateWebError';
 import { kCreateWebError } from './util/kCreateWebError';
 import { kFetch, kFetchFormUrlEncoded } from './util/kFetch';
 import kGlobalStorage from './util/kGlobalStorage';
+import { kRunWebAPI } from './util/kRunWebAPI';
 
 const LINKING_ERROR =
   "The package '@react-native-kakao/core' doesn't seem to be linked. Make sure: \n\n" +
@@ -49,4 +50,4 @@ const KakaoCore = {
 export default KakaoCore;
 export type KakaoCoreAPI = typeof KakaoCore;
 export type { KakaoPackageErrorCodes };
-export { kAssert, kCreateWebError, kGlobalStorage, kFetch, kFetchFormUrlEncoded };
+export { kAssert, kCreateWebError, kGlobalStorage, kFetch, kFetchFormUrlEncoded, kRunWebAPI };

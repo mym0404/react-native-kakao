@@ -2,6 +2,7 @@ import { kAssert } from './util/kAssert';
 import { kCreateWebError } from './util/kCreateWebError';
 import { kFetch, kFetchFormUrlEncoded } from './util/kFetch';
 import kGlobalStorage from './util/kGlobalStorage';
+import { kRunWebAPI } from './util/kRunWebAPI';
 import type { KakaoCoreAPI } from './index';
 
 declare const Kakao: {
@@ -17,7 +18,7 @@ const KakaoCore: KakaoCoreAPI = {
     kAssert(options?.web?.javascriptKey, '[initializeKakaoSDK] javascriptKey is missing');
     kAssert(options?.web?.restApiKey, '[initializeKakaoSDK] restApiKey is missing');
 
-    try {
+    await kRunWebAPI(() => {
       kGlobalStorage.javascriptKey = options?.web?.javascriptKey!;
       kGlobalStorage.restApiKey = options?.web?.restApiKey!;
       if (!Kakao.isInitialized()) {
@@ -25,12 +26,10 @@ const KakaoCore: KakaoCoreAPI = {
       }
 
       kAssert(Kakao.isInitialized(), 'Kakao.isInitialized returns false');
-    } catch (e) {
-      throw e;
-    }
+    });
   },
 };
 
 export const { getKeyHashAndroid, initializeKakaoSDK } = KakaoCore;
 export default KakaoCore;
-export { kAssert, kCreateWebError, kGlobalStorage, kFetch, kFetchFormUrlEncoded };
+export { kAssert, kCreateWebError, kGlobalStorage, kFetch, kFetchFormUrlEncoded, kRunWebAPI };

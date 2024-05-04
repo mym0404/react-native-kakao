@@ -1,10 +1,5 @@
 import { camelCaseObject, filterNonNullishKeys, is } from '@mj-studio/js-util';
-import {
-  kCreateWebError,
-  kFetch,
-  kFetchFormUrlEncoded,
-  kGlobalStorage,
-} from '@react-native-kakao/core';
+import { kFetch, kFetchFormUrlEncoded, kGlobalStorage, kRunWebAPI } from '@react-native-kakao/core';
 import * as querystring from 'querystring';
 
 import {
@@ -34,8 +29,8 @@ function isoToUnix(value?: string | number) {
 }
 
 const KakaoUser: KakaoUserAPI = {
-  getAccessToken: async () => {
-    try {
+  getAccessToken: () =>
+    kRunWebAPI(async () => {
       const { id, expires_in, app_id } = (
         await kFetch<{
           id: number;
@@ -53,12 +48,9 @@ const KakaoUser: KakaoUserAPI = {
         expiresIn: expires_in,
         appId: app_id,
       };
-    } catch (e: any) {
-      throw kCreateWebError(e);
-    }
-  },
-  issueAccessTokenWithCodeWeb: async ({ clientSecret, code, redirectUri }) => {
-    try {
+    }),
+  issueAccessTokenWithCodeWeb: ({ clientSecret, code, redirectUri }) =>
+    kRunWebAPI(async () => {
       const res = await kFetchFormUrlEncoded<{
         token_type: string;
         access_token: string;
@@ -79,10 +71,7 @@ const KakaoUser: KakaoUserAPI = {
       }).then((r) => r.body);
 
       return camelCaseObject(res) as any;
-    } catch (e: any) {
-      throw kCreateWebError(e);
-    }
-  },
+    }),
   setAccessTokenWeb: (token: string) => {
     kGlobalStorage.accessToken = token;
 
@@ -91,24 +80,25 @@ const KakaoUser: KakaoUserAPI = {
       r(42);
     });
   },
-  login: async (params): Promise<KakaoLoginToken> => {
-    const { loginHint, nonce, prompt, redirectUri, scope, state, throughTalk, serviceTerms } =
-      params?.web ?? {};
+  login: (params): Promise<KakaoLoginToken> =>
+    kRunWebAPI(() => {
+      const { loginHint, nonce, prompt, redirectUri, scope, state, throughTalk, serviceTerms } =
+        params?.web ?? {};
 
-    return Kakao.Auth.authorize(
-      filterNonNullishKeys({
-        loginHint,
-        nonce,
-        prompt: prompt?.join(','),
-        redirectUri,
-        scope: scope?.join(','),
-        serviceTerms: serviceTerms?.join(','),
-        state,
-        throughTalk,
-      }),
-    );
-  },
-  logout: () => Kakao.Auth.logout().catch(kCreateWebError),
+      return Kakao.Auth.authorize(
+        filterNonNullishKeys({
+          loginHint,
+          nonce,
+          prompt: prompt?.join(','),
+          redirectUri,
+          scope: scope?.join(','),
+          serviceTerms: serviceTerms?.join(','),
+          state,
+          throughTalk,
+        }),
+      );
+    }),
+  logout: () => kRunWebAPI(() => Kakao.Auth.logout()),
   isLogined: async (): Promise<boolean> => {
     try {
       const { appId } = await KakaoUser.getAccessToken();
@@ -118,60 +108,50 @@ const KakaoUser: KakaoUserAPI = {
       return false;
     }
   },
-  isKakaoTalkLoginAvailable: async (): Promise<boolean> => false,
-  unlink: (): Promise<void> => Kakao.API.request({ url: '/v1/user/unlink' }).catch(kCreateWebError),
-  scopes: async (scopes?: string[]): Promise<KakaoScopeInfo[]> => {
-    try {
+  isKakaoTalkLoginAvailable: async () => false,
+  unlink: () => kRunWebAPI(() => Kakao.API.request({ url: '/v1/user/unlink' })),
+  scopes: (scopes?: string[]) =>
+    kRunWebAPI(async () => {
       const response = await Kakao.API.request({
         url: `/v2/user/scopes${scopes ? '?' + querystring.stringify({ scopes }) : ''}`,
       });
 
       return camelCaseObject(response.scopes) as KakaoScopeInfo[];
-    } catch (e: any) {
-      throw kCreateWebError(e);
-    }
-  },
-  revokeScopes: async (scopes: string[]): Promise<void> => {
-    try {
-      await Kakao.API.request({
+    }),
+  revokeScopes: (scopes: string[]) =>
+    kRunWebAPI(() =>
+      Kakao.API.request({
         url: '/v2/user/revoke/scopes',
         data: {
           scopes,
         },
-      });
-    } catch (e: any) {
-      throw kCreateWebError(e);
-    }
-  },
-  serviceTerms: async (): Promise<KakaoServiceTerms[]> => {
-    try {
-      return camelCaseObject(
-        (
+      }),
+    ),
+  serviceTerms: () =>
+    kRunWebAPI(
+      async () =>
+        camelCaseObject(
+          (
+            await Kakao.API.request({
+              url: '/v2/user/service_terms',
+            })
+          ).service_terms.map((v) => ({
+            ...v,
+            agreed_at: v.agreed_at ? isoToUnix(v.agreed_at) : null,
+          })),
+        ) as KakaoServiceTerms[],
+    ),
+  shippingAddresses: () =>
+    kRunWebAPI(
+      async () =>
+        camelCaseObject(
           await Kakao.API.request({
-            url: '/v2/user/service_terms',
-          })
-        ).service_terms.map((v) => ({
-          ...v,
-          agreed_at: v.agreed_at ? isoToUnix(v.agreed_at) : null,
-        })),
-      ) as KakaoServiceTerms[];
-    } catch (e: any) {
-      throw kCreateWebError(e);
-    }
-  },
-  shippingAddresses: async (): Promise<KakaoShippingAddressResult> => {
-    try {
-      return camelCaseObject(
-        await Kakao.API.request({
-          url: '/v1/user/shipping_address',
-        }),
-      ) as KakaoShippingAddressResult;
-    } catch (e: any) {
-      throw kCreateWebError(e);
-    }
-  },
-  me: async (): Promise<KakaoUser> => {
-    try {
+            url: '/v1/user/shipping_address',
+          }),
+        ) as KakaoShippingAddressResult,
+    ),
+  me: () =>
+    kRunWebAPI(async () => {
       const ret = camelCaseObject(await Kakao.API.request({ url: '/v2/user/me' })) as KakaoUser;
 
       return {
@@ -179,10 +159,7 @@ const KakaoUser: KakaoUserAPI = {
         connectedAt: isoToUnix(ret.connectedAt),
         synchedAt: isoToUnix(ret.synchedAt),
       };
-    } catch (e: any) {
-      throw kCreateWebError(e);
-    }
-  },
+    }),
 };
 
 export const {

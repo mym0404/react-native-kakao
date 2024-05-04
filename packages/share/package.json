@@ -3,7 +3,7 @@
   "description": "React Native Kakao Share SDK",
   "version": "2.1.0",
   "main": "lib/commonjs/index",
-  "module": "lib/module/index",
+  "module": "src/index",
   "types": "lib/typescript/src/index.d.ts",
   "react-native": "src/index",
   "source": "src/index",
@@ -108,5 +108,8 @@
       "javaPackageName": "net.mjstudio.rnkakao.share"
     }
   },
-  "gitHead": "57203ed1725b209e814da7cfbb71b36f52d24210"
+  "gitHead": "57203ed1725b209e814da7cfbb71b36f52d24210",
+  "dependencies": {
+    "@mj-studio/js-util": "1.1.3"
+  }
 }
