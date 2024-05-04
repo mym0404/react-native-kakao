@@ -156,13 +156,10 @@ Our pre-commit hooks verify that the linter and tests pass when committing.
 
 [Our documentation](https://rnkakao.dev) is built
 with [Docusaurus](https://docusaurus.io/) and is just maintained with
-**Korean**.
+**Korean(default) and English**.
 
 If your API changes require changes to the documentation, you should include those changes in the
 documentation as well.
-
-If you are not a Korean speaker, you may indicate so in your PR content. We will update the
-documentation as changes occur.
 
 ### Sending a pull request
 
