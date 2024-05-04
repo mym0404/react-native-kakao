@@ -11,7 +11,7 @@
   <h3 align="center">Native Kakao SDK All In One Solution</h3>
   </p>
 </p>
-<a href="https://rnkakao.dev">Documentation</a>
+<a href="https://rnkakao.dev">Documentation(en, ko)</a>
 
 **React Native Kakao** is a collection of React Native modules connecting you to Kakao
 services; each module is a light-weight JavaScript layer connecting you to the native Kakao SDKs for
