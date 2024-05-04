@@ -1,0 +1,115 @@
+---
+sidebar_position: 3
+---
+
+# Android Setup
+## Android Configuration
+
+:::info
+This document should be skipped except for the console setup if you are using Expo.
+:::
+
+For more detailed information about the setup, refer to the [Kakao SDK documentation](https://developers.kakao.com/docs/latest/ko/android/getting-started).
+
+Here is how to configure the Android part:
+
+## Creating an Application and Registering a Platform in Kakao Console
+
+![feat1](https://raw.githubusercontent.com/mym0404/image-archive/master/202404211426201.webp)
+
+As shown in the photo above, add an application at the [Kakao Developers Console](https://developers.kakao.com/console/app).
+
+Now go to the platform tab, add an Android app, and register the package name, key hash, etc.
+
+![feat2](https://raw.githubusercontent.com/mym0404/image-archive/master/202404211427510.webp)
+
+## Extracting and Registering the Key Hash
+
+[Key Hash official documentation](https://developers.kakao.com/docs/latest/ko/android/getting-started#before-you-begin-add-key-hash)
+
+A Key Hash is a hashed value of the certificate fingerprint used to determine if an app is malicious.
+When calling the Kakao API, the Kakao API server checks if the key hash value added to the request header matches the value registered on the Kakao platform.
+
+There are two types of key hashes: **Debug key hash** and **Release key hash**.
+
+-  **Debug key hash**: Hashed from the debug certificate automatically created by Android Studio to match the development environment when the project is first created or for debugging.
+-  **Release key hash**: Hashed from the release certificate created for distributing the app on the app store.
+
+:::info
+In addition, there is one more key hash issued by the Google Play Console.
+
+Through the Google Play Console, the [App signing](https://play.google.com/console/about/app-integrity/) is used to improve security and manage a Signing Key each time an app is released.
+
+You can obtain this key hash by referring to [this document](https://developers.kakao.com/docs/latest/ko/android/getting-started#before-you-begin-add-key-hash-using-console).
+
+If this is not registered, the Kakao SDK will not operate when the app is launched on the Play Store.
+:::
+
+You can easily obtain the key hash using the `getKeyHashAndroid()` function from the `core` package.
+
+Print the result of this function in the console or text for debugging, release, and Play Store environments, and then use it.
+
+For manual key hash generation, please refer to the [official documentation](https://developers.kakao.com/docs/latest/ko/android/getting-started#before-you-begin-add-key-hash).
+
+## Project Permissions
+
+Allow the use of the internet in the `AndroidManifest.xml` of Android.
+
+```xml title='AndroidManifest.xml'
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.sample">
+
+// highlight-start
+    <!-- Permission to use the internet -->
+    <uses-permission android:name="android.permission.INTERNET" />
+// highlight-end
+
+    <application
+    android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+    ...
+```
+
+## Proguard Rules Setup
+
+If you are using the R8 compiler for obfuscation, the following syntax needs to be added to `proguard-rules.pro`.
+
+Usually, the React Native setup can be configured with `enableProguardInReleaseBuilds` in `android/app/build.gradle`.
+
+It is recommended to refer to the [official documentation](https://developers.kakao.com/docs/latest/ko/android/getting-started#project-pro-guard) for the latest rules.
+
+```text title='proguard-rules.pro'
+- keep class com.kakao.sdk.**.model.* { <fields>; }
+- keep class * extends com.google.gson.TypeAdapter
+
+# https://github.com/square/okhttp/pull/6792
+-dontwarn org.bouncycastle.jsse.**
+-dontwarn org.conscrypt.*
+-dontwarn org.openjsse.**
+
+#------------------RETROFIT---------------------
+#R8 full mode strips generic signatures from return types if not kept.
+-if interface * { @retrofit2.http.* public *** *(...); }
+- keep,allowoptimization,allowshrinking,allowobfuscation class <3>
+#-------------------END--------------------------
+```
+
+## Adding Gradle Dependency Repository
+
+You need to add a gradle repository where the package can search for the dependencies of the Kakao SDK.
+
+```gradle title='android/build.gradle'
+allprojects {
+    repositories {
+        maven {
+// highlight-start
+            url "https://devrepo.kakao.com/nexus/content/groups/public/"
+// highlight-end
+        }
+    }
+}
+```
+
+:::tip
+If your Android project declares dependency repositories in `settings.gradle`, you can set it up according to the [official documentation](https://developers.kakao.com/docs/latest/ko/android/getting-started#apply-sdk-gradle).
+:::

@@ -1,0 +1,51 @@
+---
+sidebar_position: 101
+---
+
+# 사용자 정의 템플릿으로 메세지 전송하기
+## 사용자 정의 템플릿
+
+[공식 문서](https://developers.kakao.com/docs/latest/ko/message/android)
+
+`[도구] > [메시지 템플릿]`에서 직접 구성한 사용자 정의 템플릿을 사용하여 카카오톡으로 메시지를 전송하는 기능입니다.
+
+## 나에게 메세지 전송하기
+
+`sendCustomTemplateToMe()` 함수를 이용해 메세지를 보낼 수 있습니다.
+
+이 함수는 다음과 같이 정의됩니다.
+
+```tsx
+export function sendCustomTemplateToMe(params: {
+  templateId: number;
+  templateArgs?: Record<string, string>;
+})
+```
+
+- `templateId`: 콘솔에서 지정한 메세지 템플릿입니다.
+- `templateArgs`: 템플릿 인자들입니다. 모두 문자열만 값으로 전달되어야 합니다.
+
+## 친구들에게 메세지 전송하기
+
+`sendCustomTemplateToFriends()` 함수를 이용해 메세지를 보낼 수 있습니다.
+
+이 함수는 다음과 같이 정의됩니다.
+
+```tsx
+export function sendCustomTemplateToFriends(params: {
+  templateId: number;
+  templateArgs?: Record<string, string>;
+  receiverUuids: string[];
+})
+```
+
+- `templateId`: 콘솔에서 지정한 메세지 템플릿입니다.
+- `templateArgs`: 템플릿 인자들입니다. 모두 문자열만 값으로 전달되어야 합니다.
+- `receiverUuids`: 메세지를 보낼 친구들의 uuid 리스트입니다. [social](/docs/social/intro)패키지의
+[카카오톡 친구 선택하기](/docs/social/select-talk-friends)나 [카카오톡 친구 가져오기](/docs/social/get-friends)에서 얻어올 수 있습니다.
+
+:::info
+자세한 컴포넌트들의 타입은 [컴포넌트 타입들](/docs/share/component-types)을 참고해주세요.
+
+사용에 문제가 생긴다면 [Troubleshooting](/docs/share/troubleshooting)을 참고해주세요
+:::

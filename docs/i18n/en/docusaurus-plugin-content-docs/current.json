@@ -1,0 +1,62 @@
+{
+  "version.label": {
+    "message": "Next",
+    "description": "The label for version current"
+  },
+  "sidebar.tutorialSidebar.category.Package - Core": {
+    "message": "Package - Core",
+    "description": "The label for category Package - Core in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.Package - Core.link.generated-index.description": {
+    "message": "Core Package",
+    "description": "The generated-index page description for category Package - Core in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.Package - User": {
+    "message": "Package - User",
+    "description": "The label for category Package - User in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.Package - User.link.generated-index.description": {
+    "message": "User Package",
+    "description": "The generated-index page description for category Package - User in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.Package - Share": {
+    "message": "Package - Share",
+    "description": "The label for category Package - Share in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.Package - Share.link.generated-index.description": {
+    "message": "Share Package",
+    "description": "The generated-index page description for category Package - Share in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.Package - Social": {
+    "message": "Package - Social",
+    "description": "The label for category Package - Social in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.Package - Social.link.generated-index.description": {
+    "message": "Social Package",
+    "description": "The generated-index page description for category Package - Social in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.Package - Channel": {
+    "message": "Package - Channel",
+    "description": "The label for category Package - Channel in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.Package - Channel.link.generated-index.description": {
+    "message": "Channel Package",
+    "description": "The generated-index page description for category Package - Channel in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.Package - Navi": {
+    "message": "Package - Navi",
+    "description": "The label for category Package - Navi in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.Package - Navi.link.generated-index.description": {
+    "message": "Navi Package",
+    "description": "The generated-index page description for category Package - Navi in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.Advanced": {
+    "message": "Advanced",
+    "description": "The label for category Advanced in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.Advanced.link.generated-index.description": {
+    "message": "More about React Native Kakao",
+    "description": "The generated-index page description for category Advanced in sidebar tutorialSidebar"
+  }
+}

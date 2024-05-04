@@ -1,0 +1,66 @@
+---
+sidebar_position: 4
+---
+
+# iOS Settings
+## iOS Settings
+
+:::info
+If you are using Expo, you should skip this document, excluding console settings.
+:::
+
+Refer to the [Kakao SDK Documentation](https://developers.kakao.com/docs/latest/ko/ios/getting-started) for more detailed information on the settings.
+
+Here is how you configure the iOS part:
+
+## Create an Application and Register a Platform in Kakao Console
+
+![feat1](https://raw.githubusercontent.com/mym0404/image-archive/master/202404211426201.webp)
+
+As shown in the picture above, you add an application in the [Kakao Developers Console](https://developers.kakao.com/console/app).
+
+Now, navigate to the platform tab, add an iOS app, and register the Bundle Identifier, etc.
+
+![feat2](https://raw.githubusercontent.com/mym0404/image-archive/master/202404211445087.webp)
+
+## Add Allowed List for App Execution
+
+`LSApplicationQueriesSchemes` is an option in `Info.plist` that specifies which schemes the app can open.
+
+Add the following three:
+
+-  `kakaokompassauth`: [Kakao Login](https://developers.kakao.com/docs/latest/ko/kakaologin/common)
+-  `kakaolink`: [Share on KakaoTalk](https://developers.kakao.com/docs/latest/ko/message/common#kakaotalk-sharing)
+-  `kakaoplus`: [KakaoTalk channel](https://developers.kakao.com/docs/latest/ko/kakaotalk-channel/common)
+
+![](https://raw.githubusercontent.com/mym0404/image-archive/master/202404211447772.webp)
+
+Configured `Info.plist` looks like this:
+
+```property title='Info.plist'
+<key>LSApplicationQueriesSchemes</key>
+  <array>
+      <!-- Login with KakaoTalk -->
+      <string>kakaokompassauth</string>
+      <!-- Share on KakaoTalk -->
+      <string>kakaolink</string>
+      <!-- KakaoTalk channel -->
+      <string>kakaoplus</string>
+  </array>
+```
+
+:::warning
+Warning: Key Change for Allowed List Settings
+With Xcode 14 or higher, the key for allowed list settings may automatically change from LSApplicationQueriesSchemes to Queried URL Schemes.
+
+In the Info.plist file, continue using the previous key when manually editing.
+:::
+
+## Adding a Custom URL Scheme
+
+You set up a custom URL scheme for launching the service app.
+
+In **[Info] > [URL Types] > [URL Schemes]**, register the native app key in the format `kakao{{NATIVE_APP_KEY}}`.
+For example, if the native app key is `123456789`, you would enter `kakao123456789` in [URL Schemes].
+
+![](https://raw.githubusercontent.com/mym0404/image-archive/master/202404211449631.webp)

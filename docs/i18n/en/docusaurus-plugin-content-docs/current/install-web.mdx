@@ -1,0 +1,77 @@
+---
+sidebar_position: 5
+---
+
+# Web Settings
+## Web Settings
+
+React Native Kakao not only supports Native but also maintains an equivalent level of developer experience on the Web platform.
+
+Refer to the [Kakao SDK Documentation](https://developers.kakao.com/docs/latest/ko/javascript/getting-started) for more detailed information on the settings.
+
+## Install Kakao JavaScript SDK
+
+Install the latest version of the Kakao SDK by inserting it into the `head` of `index.html` from the [Download](https://developers.kakao.com/docs/latest/ko/javascript/download) page.
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+...
+  <script src="https://t1.kakaocdn.net/kakao_js_sdk/{{Version}}/kakao.min.js"
+          integrity="{{integrity}}"
+          crossorigin="anonymous"></script>
+</head>
+
+<body>
+...
+</body>
+</html>
+
+```
+
+:::tip
+In the Expo environment, you can customize `index.html` using the `npx expo customize` command.
+
+[Expo Documentation](https://docs.expo.dev/more/expo-cli/#customizing)
+:::
+
+
+## Register Platform in Kakao Console
+
+![feat1](https://raw.githubusercontent.com/mym0404/image-archive/master/202405030132281.webp)
+
+Go to the platform tab and add your site domain.
+
+
+## About Web API
+
+The way Web APIs are implemented internally may differ from Android and iOS platforms.
+
+The APIs are consistent across platforms in response and the names are identical, but there are APIs that are only available on the Web or that have unique arguments for the Web.
+
+For example, an argument like `redirectUri` during login.
+
+APIs that are exclusively used or needed on the Web have `Web` appended to their function names.
+
+For instance, `Core.setAccessTokenWeb()`.
+
+Furthermore, arguments specific to the Web are all managed separately in the function's argument under a `web` field.
+
+Let’s look at the `core` package SDK initialization function.
+
+```tsx
+export async function initializeKakaoSDK(
+  appKey: string,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  options: { web?: { javascriptKey: string; restApiKey: string } },
+)
+```
+
+This function receives a `web` object as an argument to obtain the necessary parameters.
+
+:::warning
+If the Web is not supported, there is no need to worry about the `web` argument, and APIs ending with `Web` should also not be called.
+
+Moreover, if there is no `web` argument, the API will operate on the Web using the default arguments.
+:::

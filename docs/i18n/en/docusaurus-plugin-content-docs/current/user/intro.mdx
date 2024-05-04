@@ -1,0 +1,46 @@
+---
+sidebar_position: 1
+---
+
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+
+# 카카오 로그인, 유저 관리 시작하기
+
+## 시작하기 전에
+
+[`Core`패키지에 대한 의존성을 설치](/docs/install-core)하고 관련된 [플랫폼별 설정](/docs/install-android)이 완료되어야 합니다.
+
+## 시작하기
+
+`user` 패키지는 카카오 로그인 및 관련 기능을 담고 있는 패키지입니다.
+
+[공식 문서](https://developers.kakao.com/docs/latest/ko/kakaologin/common)를 참고해주시기 바랍니다.
+
+## 설치하기
+
+<Tabs>
+  <TabItem value="npm" label="NPM" default>
+    ```shell
+    npm install --save @react-native-kakao/user
+    ```
+  </TabItem>
+  <TabItem value="yarn" label="Yarn">
+    ```shell
+    yarn add @react-native-kakao/user
+    ```
+  </TabItem>
+  <TabItem value="expo" label="Expo">
+    ```shell
+    npx expo install @react-native-kakao/user
+    ```
+  </TabItem>
+</Tabs>
+
+## 콘솔 설정하기
+
+카카오 로그인및 유저 API를 구현하기에 앞서 카카오 개발자 콘솔에서 추가로 설정해야합니다.
+
+[공식 문서](https://developers.kakao.com/docs/latest/ko/kakaologin/prerequisite)를 참고해주세요.

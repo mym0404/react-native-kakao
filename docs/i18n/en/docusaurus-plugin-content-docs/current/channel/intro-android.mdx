@@ -1,0 +1,31 @@
+---
+sidebar_position: 2
+---
+
+# Android 설정
+
+:::info
+이 문서는 Expo를 사용한다면 건너뛰어야합니다.
+:::
+
+## 커스텀 URL 스킴 설정
+
+[공식 문서](https://developers.kakao.com/docs/latest/ko/kakaotalk-channel/android#set-custom-url-scheme)
+
+카카오톡 채널 간편 추가하기를 사용하려면 `AndroidManifest.xml`에 액티비티(`Activity`) 설정을 해야 합니다.
+해당 기능의 내부 동작에 사용되는 액티비티 리다이렉션(Redirection)을 지원하기 위한 설정입니다. 아래 예제를 참고합니다.
+
+```xml
+<activity
+  android:name="com.kakao.sdk.talk.FollowChannelHandlerActivity"
+  android:exported="true">
+  <intent-filter>
+      <action android:name="android.intent.action.VIEW" />
+      <category android:name="android.intent.category.DEFAULT" />
+      <category android:name="android.intent.category.BROWSABLE" />
+
+      <!-- Redirect URI: "kakao${NATIVE_APP_KEY}://channel" -->
+      <data android:host="channel" android:scheme="kakao${NATIVE_APP_KEY}" />
+    </intent-filter>
+</activity>
+```

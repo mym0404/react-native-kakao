@@ -1,0 +1,39 @@
+---
+sidebar_position: 4
+---
+
+# Expo 설정
+
+## Android - 커스텀 URL 스킴 설정
+
+`app.json`에 다음과 같이 추가합니다.
+
+```json title='app.json'
+[
+  "@react-native-kakao/core",
+  {
+    "nativeAppKey": "{{native app key}}",
+    "android": {
+// highlight-next-line
+      "forwardKakaoLinkIntentFilterToMainActivity": true
+    }
+  }
+],
+```
+
+그럼 다음과 같이 `MainActivity`에 카카오톡에서 앱 스키마로 설정된
+버튼을 눌렀을 때 `MainActivity`를 실행시키라는 `intent-filter`가 주입됩니다.
+
+```xml title='AndroidManifest.xml'
+ <activity android:name=".MainActivity" ...>
+   ...
+   <!-- highlight-start -->
+   <intent-filter>
+     <action android:name="android.intent.action.VIEW"/>
+     <category android:name="android.intent.category.DEFAULT"/>
+     <category android:name="android.intent.category.BROWSABLE"/>
+     <data android:host="kakaolink" android:scheme="kakao{{kakao app key}}"/>
+   </intent-filter>
+   <!-- highlight-end -->
+ </activity>
+```

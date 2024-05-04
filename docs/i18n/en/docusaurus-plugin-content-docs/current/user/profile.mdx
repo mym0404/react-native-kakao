@@ -1,0 +1,56 @@
+---
+sidebar_position: 103
+---
+
+# 프로필 불러오기
+
+## 프로필 불러오기
+
+`me()`로 불러올 수 있습니다.
+
+응답은 다음과 같습니다.
+
+```tsx
+Promise<KakaoUser>
+```
+
+타입은 다음과 같습니다.
+
+```tsx
+export type KakaoUser = {
+  id: number;
+  email: string;
+  name: string;
+  nickname: string;
+  profileImageUrl: string;
+  thumbnailImageUrl: string;
+  phoneNumber: string;
+  ageRange: string;
+  birthday: string;
+  birthdayType: string;
+  birthyear: string;
+  gender: string;
+  isEmailValid: boolean;
+  isEmailVerified: boolean;
+  isKorean: boolean;
+  ageRangeNeedsAgreement?: boolean;
+  birthdayNeedsAgreement?: boolean;
+  birthyearNeedsAgreement?: boolean;
+  emailNeedsAgreement?: boolean;
+  genderNeedsAgreement?: boolean;
+  isKoreanNeedsAgreement?: boolean;
+  phoneNumberNeedsAgreement?: boolean;
+  profileNeedsAgreement?: boolean;
+  ciNeedsAgreement?: boolean;
+  nameNeedsAgreement?: boolean;
+  profileImageNeedsAgreement?: boolean;
+  profileNicknameNeedsAgreement?: boolean;
+  legalBirthDateNeedsAgreement?: boolean;
+};
+```
+
+### 예시
+
+```tsx
+me()
+```

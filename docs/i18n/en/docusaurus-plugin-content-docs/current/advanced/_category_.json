@@ -1,0 +1,8 @@
+{
+  "label": "Advanced",
+  "position": 10000,
+  "link": {
+    "type": "generated-index",
+    "description": "더 자세한 내용들에 대하여"
+  }
+}

@@ -1,0 +1,48 @@
+---
+sidebar_position: 104
+---
+
+# 토큰 관리하기
+
+## 토큰 얻어오기
+
+`getAccessToken()`로 불러올 수 있습니다.
+
+다음과 같이 정의됩니다.
+
+```tsx
+export function getAccessToken(): Promise<KakaoAccessTokenInfo>
+```
+
+타입은 다음과 같습니다.
+
+```tsx
+export interface KakaoAccessTokenInfo {
+  id?: number;
+  appId: number;
+  expiresIn: number;
+}
+```
+
+### 예시
+
+```tsx
+getAccessToken()
+```
+
+## Access Token 설정하기 (Web)
+
+`setAccessTokenWeb()`함수를 이용해 웹 로그인 성공 시 Redirect URL에 search parameter로 `code`로 온 값을 Kakao SDK를 사용하기 위해 저장할 수 있습니다.
+
+### 예시
+
+로그인의 Redirect URl로 설정한 페이지에서 다음과 같이 `setAccessTokenWeb`을 호출합니다.
+
+```tsx
+const { code } = useGlobalSearchParams<{ code?: string }>();
+useEffect(() => {
+  if (code) {
+    setAccessTokenWeb(code);
+  }
+}, [code]);
+```

@@ -1,0 +1,60 @@
+---
+sidebar_position: 6
+---
+
+# Expo Settings
+
+## Expo Settings
+
+Expo allows you to easily use pre-configured [config plugins](https://docs.expo.dev/config-plugins/introduction/).
+
+:::tip
+If the features provided by this package are not enough, and you need more components from the config plugin,
+refer to the [Android Settings](/docs/install-android) and [iOS Settings](/docs/install-ios) for instructions on how to write and use them yourself.
+:::
+
+## Installation of expo-build-properties
+
+```shell
+npx expo install expo-build-properties
+```
+
+## app.json Settings
+
+Initially, there are not many settings to configure, but as you use other packages, you add the necessary settings for `android` and `ios`.
+
+```json title='app.json'
+"plugins": [
+  [
+    "expo-build-properties",
+    {
+      "android": {
+        "extraMavenRepos": [
+          "https://devrepo.kakao.com/nexus/content/groups/public/"
+        ]
+      }
+    }
+  ],
+  [
+    "@react-native-kakao/core",
+    {
+      "nativeAppKey": "{{native app key}}",
+      "android": {
+        ...
+      },
+      "ios": {
+        ...
+      }
+    }
+  ]
+]
+```
+
+## (Optional) Android Obfuscation Settings
+
+Refer to the [Android Settings](/docs/install-android) to inject proguard rules using the [expo-build-properties](https://docs.expo.dev/versions/latest/sdk/build-properties/)
+config plugin.
+
+## (Optional) Web Platform Support
+
+Proceed in the same manner as the [Web Settings](/docs/install-web).

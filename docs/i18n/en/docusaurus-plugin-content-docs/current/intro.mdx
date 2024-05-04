@@ -2,15 +2,15 @@
 sidebar_position: 1
 ---
 
-# 리액트 네이티브 카카오 시작하기
+# Getting Started
 
 ## React Native Kakao
 
 <img alt={'logo'} src={require('@site/static/img/logo.png').default} width={256} />
 
-[React Native Kakao](https://github.com/mym0404/react-native-kakao)는 React Native용 카카오 SDK들을 모노레포로 일관성있게 관리합니다.
+[React Native Kakao](https://github.com/mym0404/react-native-kakao) manages Kakao SDKs for React Native in a monorepo for consistency.
 
-React Native의 모든 환경을 지원합니다.
+It supports all environments of React Native.
 
 **Android, iOS, Web, New Architecture, Old Architecture, Expo**
 
@@ -35,27 +35,26 @@ React Native의 모든 환경을 지원합니다.
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/apRtsSIYMt0?si=6J8tp5q7rGSffJvT" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
-## API와 문서가 관리되는 법
+## How APIs and Documentation Are Maintained
 
 :::tip
-이 문서는 카카오 SDK의 기본 설정법이나 API에 관련된 자세한 모든 것들이 정리되어 있지 않습니다.
-필요한 기능에 대해 카카오 SDK의 공식 문서를 참고하는것을 추천드립니다.
+This document does not cover all details about the basic configuration or APIs of the Kakao SDK.
+We recommend referring to the Official Documentation of Kakao SDK for the required functionalities.
 
-최소한으로 이 패키지를 사용하기 위한 설정법이나 API등을 다룹니다.
+Minimal setup or APIs usage to utilize this package are covered.
 :::
 
-API의 Usage와 모듈들의 구조는 [카카오 SDK](https://developers.kakao.com/docs/latest/ko/ios/getting-started)의 구조를 따릅니다.
+The structure of APIs and modules follows the structure of the [Kakao SDK](https://developers.kakao.com/docs/latest/ko/ios/getting-started).
 
-대개 iOS문서를 보고 함수의 이름이나 모듈의 이름들이 결정되며 `Common`만 `Core`로 다릅니다.
+Names of functions or modules are generally determined by looking at the iOS documentation, and `Common` is replaced with `Core`.
 
 ![kakao sdk](https://raw.githubusercontent.com/mym0404/image-archive/master/202404211418541.webp)
 
-예를 들어, 위 이미지에 `User` 모듈이 있기 때문에 `@react-native-kakao/user`가 있습니다.
+For example, there is a `User` module in the image above, hence `@react-native-kakao/user` exists.
 
 :::info
-각 API가 어떤 권한과 설정이 있어야 동작하고 그렇지 않은 상황일 때 어떻게 에러가 발생하거나 동작할 수 있는지는
-항상 관련 공식 문서를 참고하시길 부탁드립니다.
+Always refer to the related Official Documentation to understand what permissions and setups each API requires to function properly and how errors may occur or the operation may proceed otherwise.
 
-- [Android 공식 문서](https://developers.kakao.com/docs/latest/ko/android/getting-started)
-- [iOS 공식 문서](https://developers.kakao.com/docs/latest/ko/ios/getting-started)
+-  [Android Official Documentation](https://developers.kakao.com/docs/latest/ko/android/getting-started)
+-  [iOS Official Documentation](https://developers.kakao.com/docs/latest/ko/ios/getting-started)
 :::

@@ -1,0 +1,183 @@
+---
+sidebar_position: 100
+---
+
+# Error Handling
+
+This document refers to errors as those that can be caught through logic such as `catch` when a `Promise` is `rejected` during an API call.
+
+## API호출에 에러가 발생하는 시점의 동기화
+
+## Synchronization at the Moment of API Call Errors
+
+:::info
+Currently supported platforms, `Android` and `iOS`, have almost no difference in the scenarios where errors occur.
+:::
+
+For example, let’s consider the `me` function in the Native Kakao SDK, which fetches user information on both Android and iOS.
+
+The Kakao SDK adopts an internal callback method of implementation (this package does not necessarily use ReactiveX).
+
+Most API wrapper functions take the following form:
+
+```swift title='ios.swift'
+@objc public func me(
+    _ resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+) {
+  onMain {
+    UserApi.shared.me { user, error in
+      if let error {
+        RNCKakaoUtil.reject(reject, error)
+      } else if let user {
+        resolve([
+          "id": user.id as Any
+          //...
+        ])
+      } else {
+        RNCKakaoUtil.reject(reject, RNCKakaoError.responseNotFound(name: "user"))
+      }
+    }
+  }
+}
+```
+
+```kotlin title='android.kt'
+@ReactMethod
+override fun me(promise: Promise) =
+  onMain {
+    UserApiClient.instance.me { user, error ->
+      if (error != null) {
+        promise.rejectWith(error)
+      } else if (user == null) {
+        promise.rejectWith(RNCKakaoResponseNotFoundException("user"))
+      } else {
+        promise.resolve(
+          argMap().apply {
+            putIntIfNotNull("id", user.id?.toInt())
+            // ...
+          },
+        )
+      }
+    }
+  }
+```
+
+Kakao SDK's callback functions always follow the same format: the first argument is the result, and the second argument signifies an error.
+
+If the error is not `null`, it indicates that an error has occurred.
+
+Additionally, this package checks whether the first argument contains a meaningful value.
+
+:::note
+This behavior is probably a meaningless act (TILT).
+:::
+
+If neither condition is met, it successfully returns the result.
+
+## Form of Errors
+
+The error objects passed to JavaScript's `catch` can vary slightly by platform.
+
+While the Native Kakao SDK communicates error codes by platform, this package prefers to transfer meaningful values directly rather than integrating all error interfaces,
+adopting a transitive manner of conveyance.
+
+However, most errors can be identified by `code`, and typically have the following structure:
+
+This is because this package has been developed with a lot of attention to delivering meaningful values for convenient error handling.
+
+- Android
+
+```js
+{
+  "message": "authentication tokens don't exist.",
+  "code": "TokenNotFound",
+  "nativeStackAndroid": [],
+  "userInfo": {
+    "isAppsFailed": false,
+    "isInvalidTokenError": false,
+    "isClientFailed": true,
+    "fatal": true,
+    "isAuthFailed": false,
+    "isApiFailed": false,
+    "nativeErrorMessage": "authentication tokens don't exist."
+  }
+}
+```
+
+- iOS
+
+```js
+{
+  "code": "TokenNotFound",
+  "message": "authentication tokens not exist.",
+  "nativeStackIOS": [
+    "0   KakaoExample                        0x000000010069dc9c RCTJSErrorFromCodeMessageAndNSError + 112",
+    "1   KakaoExample                        0x00000001009a023c ___ZZN8facebook5react15ObjCTurboModule13createPromiseERNS_3jsi7RuntimeENSt3__112basic_stringIcNS5_11char_traitsIcEENS5_9allocatorIcEEEEU13block_pointerFvU13block_pointerFvP11objc_objectEU13block_pointerFvP8NSStringSH_P7NSErrorEEENK3$_0clES4_RKNS2_5ValueEPSQ_m_block_invoke.59 + 388",
+    "2   KakaoExample                        0x00000001002c5e20 $sSo8NSStringCSgACSo7NSErrorCSgIeyByyy_SSSgAGs5Error_pSgIegggg_TR + 380",
+    // ...
+  ],
+  "domain": "RNCKakaoErrorDomain",
+  "userInfo": {
+    "isAuthFailed": false,
+    "isInvalidTokenError": false,
+    "isAppsFailed": false,
+    "isClientFailed": true,
+    "isApiFailed": false,
+    "fatal": false,
+    "nativeErrorMessage": "The operation couldn’t be completed. (KakaoSDKCommon.SdkError error 0.)"
+  }
+}
+
+```
+
+The important fields are `code`, `message`, and other auxiliary information is contained within `userInfo`.
+
+:::warning Warning
+`code` is taken directly from the case names of Enum in Native Kakao SDK, so it can differ if these case names are differently defined in Native Kakao SDK. However, in most cases, they are the same.
+:::
+
+## Example of Handling Errors
+
+You can check the actual `code` values by referring to the official Android and iOS API documentation.
+
+However, you can accurately distinguish and handle most errors using the following method:
+
+```tsx
+ selectSingleFriend({ mode: 'popup', options: {} })
+   .then((res) => showMessage({ message: formatJson(res) }))
+   .catch((e) => {
+     if (e && typeof e is 'object') {
+       if (e.code === 'TokenNotFound') {
+         showMessage({ type: 'warning', message: 'Failed to retrieve token' });
+       } else {
+         // ...
+       }
+     } else {
+       showMessage({ type: 'warning', message: 'Unknown error' });
+     }
+   })
+```
+
+## Package Error References
+
+In addition to errors in Kakao Native SDKs, there are also error `codes` specific to the `react-native-kakao`.
+
+The error codes for this package always have the prefix `Package-`.
+
+Here are the error codes:
+
+-  `Package-Unknown`: Any uncategorized errors such as unknown programming errors, failing to show `Activity` or `ViewController`, or failing to open a URL. You can get detailed information through `message`.
+-  `Package-APIResponseNotFound`: When a value that should be returned by the callback functions of the APIs in Kakao Native SDK does not exist even though `error` does not exist.
+-  `Package-SDKNotInitialized`: When the SDK has not been initialized at the time the Kakao API is to be used. Not all APIs return this error. It is often pre-checked in APIs that may crash the app if called without initializing the SDK.
+-  `Package-KakaoAppNotAvailable`: For example, when an API that requires the installation of KakaoTalk fails because access to Kakao-related apps is unavailable. This includes cases where Kakao-related apps are installed but the app does not have proper permission to open Kakao-related apps.
+-  `Package-Assertion`: When an assertion within the JavaScript logic of the package fails.
+
+
+## Android's ActivityNotFoundException
+
+APIs in Android that require `Context` operate through `getCurrentActivity()` provided by the React Native Module.
+
+This is because `ReactApplicationContext` can lead to unexpected results as it demands additional flags for actions like `startActivity` or information about the theme.
+
+Thus, an error is returned even if `getCurrentActivity()` returns `null`.
