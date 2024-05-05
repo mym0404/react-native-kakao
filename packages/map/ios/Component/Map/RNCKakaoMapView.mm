@@ -120,7 +120,6 @@ NSString* APP_NAME = @"openmap";
       [self.map hideCompass];
     }
   }
-
   [super updateProps:props oldProps:oldProps];
   if (self.map && _shouldForceUpdatePropsForInitialRender) {
     _shouldForceUpdatePropsForInitialRender = NO;
