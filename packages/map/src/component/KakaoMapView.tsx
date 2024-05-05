@@ -21,6 +21,9 @@ interface KakaoMapProps extends ViewProps {
   poiClickable?: boolean;
   poiScale?: 'small' | 'regular' | 'large' | 'xlarge';
   language?: 'ko' | 'en';
+
+  isShowScaleBar?: boolean;
+  isShowCompass?: boolean;
 }
 interface KakaoMapRef {}
 
@@ -38,6 +41,8 @@ const KakaoMapView = forwardRef(
       cameraMinLevel = Const.nullNumber,
       cameraMaxLevel = Const.nullNumber,
       cameraAnimationDuration = 0,
+      isShowScaleBar = true,
+      isShowCompass = true,
       ...rest
     }: KakaoMapProps,
     ref: ForwardedRef<KakaoMapRef>,
@@ -65,6 +70,8 @@ const KakaoMapView = forwardRef(
         poiScale={poiScale}
         language={language}
         overlays={overlays}
+        isShowScaleBar={isShowScaleBar}
+        isShowCompass={isShowCompass}
         {...rest}
       />
     );

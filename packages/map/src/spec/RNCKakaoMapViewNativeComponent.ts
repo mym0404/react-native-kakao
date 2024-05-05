@@ -23,6 +23,9 @@ interface Props extends ViewProps {
   cameraMinLevel?: Double;
   cameraMaxLevel?: Double;
   cameraAnimationDuration?: Double;
+
+  isShowScaleBar?: boolean;
+  isShowCompass?: boolean;
 }
 
 // type ComponentType = HostComponent<Props>;

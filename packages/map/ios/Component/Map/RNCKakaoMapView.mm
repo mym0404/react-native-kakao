@@ -106,6 +106,21 @@ NSString* APP_NAME = @"openmap";
   if (check(p.language != n.language))
     [self.map setLanguage:n.language == "en" ? @"en" : @"ko"];
 
+  if (check(p.isShowScaleBar != n.isShowScaleBar)) {
+    if (n.isShowScaleBar) {
+      [self.map showScaleBar];
+    } else {
+      [self.map hideScaleBar];
+    }
+  }
+  if (check(p.isShowCompass != n.isShowCompass)) {
+    if (n.isShowCompass) {
+      [self.map showCompass];
+    } else {
+      [self.map hideCompass];
+    }
+  }
+
   [super updateProps:props oldProps:oldProps];
   if (self.map && _shouldForceUpdatePropsForInitialRender) {
     _shouldForceUpdatePropsForInitialRender = NO;
