@@ -40,7 +40,7 @@ def supportsNamespace() {
 
 android {
     if (supportsNamespace()) {
-        namespace "net.mjstudio.rnkakao.navi"
+        namespace "net.mjstudio.rnkakao.map"
 
         sourceSets {
             main {
@@ -105,13 +105,13 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:${Versions.kotlin}"
 
     api coreProject
-    implementation "com.kakao.sdk:v2-navi:${Versions.navi}"
+    implementation "com.kakao.maps.open:android:${Versions.map}"
 }
 
 if (isNewArchitectureEnabled()) {
     react {
         jsRootDir = file("../src/")
-        libraryName = "RNCKakaoNavi"
-        codegenJavaPackageName = "net.mjstudio.rnkakao.navi"
+        libraryName = "RNCKakaoMap"
+        codegenJavaPackageName = "net.mjstudio.rnkakao.map"
     }
 }

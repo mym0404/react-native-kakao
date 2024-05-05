@@ -1,4 +1,4 @@
-package net.mjstudio.rnkakao.navi
+package net.mjstudio.rnkakao.map
 
 import com.facebook.react.TurboReactPackage
 import com.facebook.react.bridge.NativeModule
@@ -6,13 +6,13 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.module.model.ReactModuleInfo
 import com.facebook.react.module.model.ReactModuleInfoProvider
 
-class RNCKakaoNaviPackage : TurboReactPackage() {
+class RNCKakaoMapPackage : TurboReactPackage() {
   override fun getModule(
     name: String,
     reactContext: ReactApplicationContext,
   ): NativeModule? {
-    return if (name == RNCKakaoNaviModule.NAME) {
-      RNCKakaoNaviModule(reactContext)
+    return if (name == RNCKakaoMapModule.NAME) {
+      RNCKakaoMapModule(reactContext)
     } else {
       null
     }
@@ -22,10 +22,10 @@ class RNCKakaoNaviPackage : TurboReactPackage() {
     return ReactModuleInfoProvider {
       val moduleInfos: MutableMap<String, ReactModuleInfo> = HashMap()
       val isTurboModule: Boolean = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
-      moduleInfos[RNCKakaoNaviModule.NAME] =
+      moduleInfos[RNCKakaoMapModule.NAME] =
         ReactModuleInfo(
-          RNCKakaoNaviModule.NAME,
-          RNCKakaoNaviModule.NAME,
+          RNCKakaoMapModule.NAME,
+          RNCKakaoMapModule.NAME,
           false, // canOverrideExistingModule
           false, // needsEagerInit
           false, // isCxxModule
