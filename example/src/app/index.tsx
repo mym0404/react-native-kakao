@@ -90,6 +90,11 @@ export default function Page() {
               );
           }}
         />
+        <Link href={'/map'}>
+          <Txt textDecorationLine={'underline'} align={'center'}>
+            {'@react-native-kakao/map'}
+          </Txt>
+        </Link>
         <Link href={'/user'}>
           <Txt textDecorationLine={'underline'} align={'center'}>
             {'@react-native-kakao/user'}
