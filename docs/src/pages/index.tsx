@@ -34,7 +34,7 @@ function HomepageHeader() {
 
 export default function Home(): JSX.Element {
   return (
-    <Layout title={`RNKakao`} description="Kakao SDK All In One Solution">
+    <Layout title={`React Native Kakao`} description="Kakao SDK All In One Solution">
       <HomepageHeader />
       <main>
         <HomepageFeatures />
