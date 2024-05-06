@@ -29,20 +29,3 @@ export interface KakaoAccessTokenInfo {
 ```tsx
 getAccessToken()
 ```
-
-## Access Token 설정하기 (Web)
-
-`setAccessTokenWeb()`함수를 이용해 웹 로그인 성공 시 Redirect URL에 search parameter로 `code`로 온 값을 Kakao SDK를 사용하기 위해 저장할 수 있습니다.
-
-### 예시
-
-로그인의 Redirect URl로 설정한 페이지에서 다음과 같이 `setAccessTokenWeb`을 호출합니다.
-
-```tsx
-const { code } = useGlobalSearchParams<{ code?: string }>();
-useEffect(() => {
-  if (code) {
-    setAccessTokenWeb(code);
-  }
-}, [code]);
-```
