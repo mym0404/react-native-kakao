@@ -13432,15 +13432,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"husky@npm:^9.0.11":
-  version: 9.0.11
-  resolution: "husky@npm:9.0.11"
-  bin:
-    husky: bin.mjs
-  checksum: 10/8a9b7cb9dc8494b470b3b47b386e65d579608c6206da80d3cc8b71d10e37947264af3dfe00092368dad9673b51d2a5ee87afb4b2291e77ba9e7ec1ac36e56cd1
-  languageName: node
-  linkType: hard
-
 "hyphenate-style-name@npm:^1.0.3":
   version: 1.0.4
   resolution: "hyphenate-style-name@npm:1.0.4"
@@ -20764,7 +20755,6 @@ __metadata:
     eslint: "npm:8.57.0"
     eslint-plugin-jest: "npm:^28.2.0"
     fs-extra: "npm:^11.2.0"
-    husky: "npm:^9.0.11"
     jest: "npm:^29.7.0"
     prettier: "npm:3.2.5"
     react: "npm:18.2.0"
