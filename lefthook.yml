@@ -1,0 +1,58 @@
+pre-commit:
+  parallel: true
+  commands:
+    lint:js:
+      glob: "*.{js,ts,jsx,tsx}"
+      run: yarn eslint --cache --max-warnings=0 {staged_files}
+    lint:objc:
+      glob: "packages/**/*.{h,mm,m,hpp,cpp,c}"
+      run: bash ./script/clang-lint.sh {staged_files}
+    lint:swift:
+      glob: "packages/**/*.swift"
+      run: bash ./script/swift-lint.sh {staged_files}
+    lint:kotlin:
+      glob: "packages/**/*.kt"
+      run: bash ./script/ktlint-lint.sh {staged_files}
+    typecheck:
+      glob: "*.{ts,tsx}"
+      run: yarn tsc --noEmit
+
+format:
+  parallel: true
+  commands:
+    format:objc:
+      glob: "packages/**/*.{h,mm,m,hpp,cpp,c}"
+      run: bash ./script/clang-format.sh {all_files}
+    lint:swift:
+      glob: "packages/**/*.{swift}"
+      run: bash ./script/swift-format.sh {all_files}
+    format:kotlin:
+      glob: "packages/**/*.kt"
+      run: bash ./script/ktlint-format.sh {all_files}
+
+check:
+  parallel: true
+  commands:
+    lint:js:
+      glob: "*.{js,ts,jsx,tsx}"
+      run: yarn eslint --cache --max-warnings=0 {all_files}
+    lint:objc:
+      glob: "packages/**/*.{h,mm,m,hpp,cpp,c}"
+      run: bash ./script/clang-lint.sh {all_files}
+    lint:swift:
+      glob: "packages/**/*.swift"
+      run: bash ./script/swift-lint.sh {all_files}
+    lint:kotlin:
+      glob: "packages/**/*.kt"
+      run: bash ./script/ktlint-lint.sh {all_files}
+    typecheck:
+      glob: "*.{ts,tsx}"
+      run: yarn tsc --noEmit
+    build:
+      run: yarn build
+
+
+commit-msg:
+  commands:
+    commitlint:
+      run: npx --no-install commitlint --edit
