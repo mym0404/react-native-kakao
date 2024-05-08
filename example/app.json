@@ -49,7 +49,8 @@
           "android": {
             "extraMavenRepos": [
               "https://repository.map.naver.com/archive/maven",
-              "https://devrepo.kakao.com/nexus/content/groups/public/"
+              "https://devrepo.kakao.com/nexus/content/groups/public/",
+              "https://devrepo.kakao.com/nexus/repository/kakaomap-releases/"
             ],
             "minSdkVerson": 26,
             "newArchEnabled": true

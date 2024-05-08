@@ -1,6 +1,6 @@
 {
-  "name": "@react-native-kakao/core",
-  "description": "React Native Kakao Core SDK",
+  "name": "@react-native-kakao/map",
+  "description": "React Native Kakao Map SDK",
   "version": "2.2.0",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -23,9 +23,7 @@
     "!**/__tests__",
     "!**/__fixtures__",
     "!**/__mocks__",
-    "!**/.*",
-    "expo-config-plugin/build",
-    "app.plugin.js"
+    "!**/.*"
   ],
   "author": "MJ Studio <mym0404@gmail.com> (https://github.com/mym0404)",
   "homepage": "https://rnkakao.dev",
@@ -36,8 +34,7 @@
     "codegen:android": "cd ../../example/android && ./gradlew generateCodegenArtifactsFromSchema",
     "codegen:ios": "node ../../example/node_modules/react-native/scripts/generate-codegen-artifacts.js --path example/ --outputPath ../../example/ios",
     "codegen": "yarn codegen:android && yarn codegen:ios",
-    "build:expo-config-plugin": "tsc --project ./expo-config-plugin",
-    "prepack": "yarn build:expo-config-plugin && bob build",
+    "prepack": "bob build",
     "clean": "del-cli android/ lib"
   },
   "keywords": [
@@ -48,17 +45,16 @@
     "javascript",
     "react",
     "expo",
-    "kakao-login",
-    "kakao-auth",
-    "kakao-core",
     "kakao-navi",
-    "kakao-channel",
-    "kakaotalk"
+    "kakao-navigation",
+    "kakao-api",
+    "login",
+    "auth"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/mym0404/react-native-kakao.git",
-    "directory": "packages/core"
+    "directory": "packages/navi"
   },
   "license": "MIT",
   "publishConfig": {
@@ -66,8 +62,8 @@
     "access": "public"
   },
   "devDependencies": {
-    "@expo/config-plugins": "7.8.4",
-    "@types/crypto-js": "^4",
+    "@react-native-kakao/core": "2.2.0",
+    "@types/invariant": "^2",
     "@types/jest": "^29.5.5",
     "@types/react": "^18.2.44",
     "del-cli": "^5.1.0",
@@ -78,6 +74,7 @@
     "typescript": "5.1.6"
   },
   "peerDependencies": {
+    "@react-native-kakao/core": "2.2.0",
     "react": "*",
     "react-native": "*"
   },
@@ -106,43 +103,14 @@
     ]
   },
   "codegenConfig": {
-    "name": "RNCKakaoCoreSpec",
+    "name": "RNCKakaoMapSpec",
     "type": "all",
     "jsSrcsDir": "src",
     "android": {
-      "javaPackageName": "net.mjstudio.rnkakao.core"
+      "javaPackageName": "net.mjstudio.rnkakao.map"
     }
   },
-  "sdkVersions": {
-    "ios": {
-      "core": "2.22.0",
-      "share": "2.22.0",
-      "user": "2.22.0",
-      "navi": "2.22.0",
-      "friend": "2.22.0",
-      "talk": "2.22.0",
-      "map": "2.10.4"
-    },
-    "android": {
-      "minSdk": 21,
-      "targetSdk": 33,
-      "compileSdk": 33,
-      "kotlin": "1.7.0",
-      "ndk": "21.4.7075529",
-      "androidGradlePlugin": "7.2.1",
-      "core": "2.20.1",
-      "share": "2.20.1",
-      "user": "2.20.1",
-      "navi": "2.20.1",
-      "friend": "2.20.1",
-      "talk": "2.20.1",
-      "map": "2.10.3"
-    }
-  },
-  "gitHead": "57203ed1725b209e814da7cfbb71b36f52d24210",
   "dependencies": {
-    "crypto-js": "^4.2.0",
-    "query-string": "^9.0.0",
-    "return-fetch": "^0.4.5"
+    "@mj-studio/js-util": "1.1.3"
   }
 }
