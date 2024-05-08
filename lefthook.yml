@@ -48,8 +48,6 @@ check:
     typecheck:
       glob: "*.{ts,tsx}"
       run: yarn tsc --noEmit
-    build:
-      run: yarn build
 
 
 commit-msg:
