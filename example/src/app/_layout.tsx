@@ -1,6 +1,5 @@
 import { useEffect, useRef } from 'react';
 import FlashMessage from 'react-native-flash-message';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { capitalize } from '@mj-studio/js-util';
 import { useMount } from '@mj-studio/react-util';
 import Core from '@react-native-kakao/core';
@@ -14,7 +13,7 @@ import { Txt } from '../component/Txt';
 import AppTheme from '../design/AppTheme';
 
 export default function RootLayout() {
-  const { top } = useSafeAreaInsets();
+  // const { top } = useSafeAreaInsets();
 
   const { code } = useGlobalSearchParams<{ code?: string }>();
   const accessTokenIssued = useRef(false);
