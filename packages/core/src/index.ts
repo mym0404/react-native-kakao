@@ -34,7 +34,7 @@ const Native: Spec = Module
 export async function initializeKakaoSDK(
   appKey: string,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  options: { web?: { javascriptKey: string; restApiKey: string } },
+  options?: { web?: { javascriptKey: string; restApiKey: string } },
 ): Promise<void> {
   Native.initializeKakaoSDK(appKey);
 }
