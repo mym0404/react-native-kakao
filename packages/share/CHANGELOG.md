@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.1](https://github.com/mym0404/react-native-kakao/compare/v2.2.0...v2.2.1) (2024-05-14)
+
+**Note:** Version bump only for package @react-native-kakao/share
+
 ## [2.2.0](https://github.com/mym0404/react-native-kakao/compare/v2.1.0...v2.2.0) (2024-05-04)
 
 ### Features

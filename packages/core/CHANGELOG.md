@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.1](https://github.com/mym0404/react-native-kakao/compare/v2.2.0...v2.2.1) (2024-05-14)
+
+### Features
+
+* **map:** ios base impl ([d29ccea](https://github.com/mym0404/react-native-kakao/commit/d29ccead8ea34067da9c48e169e9472a741f7f02))
+* **map:** makes android build ([e138927](https://github.com/mym0404/react-native-kakao/commit/e1389271863010797769e03744de3c70ced22ec0))
+
+### Bug Fixes
+
+* **core:** remove redundant second parameter of initialization api ([ac1b272](https://github.com/mym0404/react-native-kakao/commit/ac1b272ee8f9163dbd88cabcefa639ba66732176))
+
 ## [2.2.0](https://github.com/mym0404/react-native-kakao/compare/v2.1.0...v2.2.0) (2024-05-04)
 
 ### Features
