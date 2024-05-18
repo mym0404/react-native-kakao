@@ -112,7 +112,7 @@
       "javaPackageName": "net.mjstudio.rnkakao.social"
     }
   },
-  "gitHead": "57203ed1725b209e814da7cfbb71b36f52d24210",
+  "gitHead": "5ca9177f7ac369140ffb58d3c1285c2e5c96057d",
   "dependencies": {
     "@mj-studio/js-util": "1.1.3"
   }

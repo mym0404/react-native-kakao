@@ -1,6 +1,9 @@
 #import "RNCKakaoNavi.h"
+#if __has_include("RNCKakaoNavi-Swift.h")
 #import "RNCKakaoNavi-Swift.h"
-
+#else
+#import <RNCKakaoNavi/RNCKakaoNavi-Swift.h>
+#endif
 @implementation RNCKakaoNavi
 
 - (RNCKakaoNaviManager*)manager {

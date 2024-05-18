@@ -1,5 +1,9 @@
 #import "RNCKakaoCore.h"
+#if __has_include("RNCKakaoCore-Swift.h")
 #import "RNCKakaoCore-Swift.h"
+#else
+#import <RNCKakaoCore/RNCKakaoCore-Swift.h>
+#endif
 
 @implementation RNCKakaoCore
 
