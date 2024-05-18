@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.2](https://github.com/mym0404/react-native-kakao/compare/v2.2.1...v2.2.2) (2024-05-18)
+
+### Features
+
+* **ios:** support static framework pod config ([cfe5dc3](https://github.com/mym0404/react-native-kakao/commit/cfe5dc35ac0addf09ae945b419d97077dafdedfd))
+
 ## [2.2.1](https://github.com/mym0404/react-native-kakao/compare/v2.2.0...v2.2.1) (2024-05-14)
 
 **Note:** Version bump only for package @react-native-kakao/navi
