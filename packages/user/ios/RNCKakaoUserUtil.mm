@@ -6,7 +6,11 @@
 //
 
 #import "RNCKakaoUserUtil.h"
+#if __has_include("RNCKakaoUser-Swift.h")
 #import "RNCKakaoUser-Swift.h"
+#else
+#import <RNCKakaoUser/RNCKakaoUser-Swift.h>
+#endif
 
 @implementation RNCKakaoUserUtil
 + (BOOL)isKakaoTalkLoginUrl:(NSURL*)url {

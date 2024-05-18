@@ -1,5 +1,9 @@
 #import "RNCKakaoChannel.h"
+#if __has_include("RNCKakaoChannel-Swift.h")
 #import "RNCKakaoChannel-Swift.h"
+#else
+#import <RNCKakaoChannel/RNCKakaoChannel-Swift.h>
+#endif
 
 @implementation RNCKakaoChannel
 

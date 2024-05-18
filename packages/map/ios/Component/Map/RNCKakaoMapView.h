@@ -6,7 +6,6 @@
 //
 
 #import "RCTFabricComponentsPlugins.h"
-#import "Util.h"
 #import <KakaoMapsSDK/KakaoMapsSDK-Swift.h>
 #import <KakaoMapsSDK/KakaoMapsSDK.h>
 #import <React/RCTViewComponentView.h>

@@ -1,5 +1,9 @@
 #import "RNCKakaoShare.h"
+#if __has_include("RNCKakaoShare-Swift.h")
 #import "RNCKakaoShare-Swift.h"
+#else
+#import <RNCKakaoShare/RNCKakaoShare-Swift.h>
+#endif
 
 @implementation RNCKakaoShare
 

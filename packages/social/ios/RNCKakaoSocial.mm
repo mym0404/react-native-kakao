@@ -1,5 +1,10 @@
 #import "RNCKakaoSocial.h"
+
+#if __has_include("RNCKakaoSocial-Swift.h")
 #import "RNCKakaoSocial-Swift.h"
+#else
+#import <RNCKakaoSocial/RNCKakaoSocial-Swift.h>
+#endif
 
 @implementation RNCKakaoSocial
 
