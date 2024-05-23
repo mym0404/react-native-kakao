@@ -3,6 +3,7 @@ package net.mjstudio.rnkakao.share
 import android.content.ActivityNotFoundException
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.kakao.sdk.common.util.KakaoCustomTabsClient
@@ -29,6 +30,7 @@ class RNCKakaoShareModule internal constructor(context: ReactApplicationContext)
       return NAME
     }
 
+    @ReactMethod
     override fun shareOrSendMeOrSendFriendOrWhatever(
       sendType: String,
       templateType: String,
