@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.3](https://github.com/mym0404/react-native-kakao/compare/v2.2.2...v2.2.3) (2024-05-23)
+
+### Bug Fixes
+
+* **share:** fix android old arch ([86d6276](https://github.com/mym0404/react-native-kakao/commit/86d6276c61ee84e87ac1ce8cfb5f560fabd11537))
+
 ## [2.2.2](https://github.com/mym0404/react-native-kakao/compare/v2.2.1...v2.2.2) (2024-05-18)
 
 ### Features
