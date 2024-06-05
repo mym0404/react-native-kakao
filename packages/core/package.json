@@ -34,7 +34,7 @@
     "prepare": "husky",
     "release": "./script/release.sh",
     "codegen:android": "cd ../../example/android && ./gradlew generateCodegenArtifactsFromSchema",
-    "codegen:ios": "node ../../example/node_modules/react-native/scripts/generate-codegen-artifacts.js --path example/ --outputPath ../../example/ios",
+    "codegen:ios": "react-native codegen --path example/ --outputPath ../../example/ios",
     "codegen": "yarn codegen:android && yarn codegen:ios",
     "build:expo-config-plugin": "tsc --project ./expo-config-plugin",
     "prepack": "yarn build:expo-config-plugin && bob build",

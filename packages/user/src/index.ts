@@ -122,7 +122,7 @@ export function login({
   scopes,
 }: {
   serviceTerms?: string[];
-  prompts?: ('Loign' | 'Create' | 'Cert' | 'UnifyDaum' | 'SelectAccount')[];
+  prompts?: ('Login' | 'Create' | 'Cert' | 'UnifyDaum' | 'SelectAccount')[];
   scopes?: string[];
   useKakaoAccountLogin?: boolean;
   web?: {
