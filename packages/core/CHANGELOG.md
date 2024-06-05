@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.4](https://github.com/mym0404/react-native-kakao/compare/v2.2.3...v2.2.4) (2024-06-05)
+
+### Bug Fixes
+
+* typo in `login` function parameter 'prompt' ([50f7fed](https://github.com/mym0404/react-native-kakao/commit/50f7fedccacf30e77bc2be8a4601bb47e6a92175))
+
 ## [2.2.3](https://github.com/mym0404/react-native-kakao/compare/v2.2.2...v2.2.3) (2024-05-23)
 
 **Note:** Version bump only for package @react-native-kakao/core
