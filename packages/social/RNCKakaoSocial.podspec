@@ -55,7 +55,6 @@ Pod::Spec.new do |s|
   end
 
   s.dependency          'RNCKakaoCore'
-  s.dependency          'RNCKakaoUser'
 
   # Kakao dependencies
   s.dependency          'KakaoSDKFriend', friend_sdk_version
