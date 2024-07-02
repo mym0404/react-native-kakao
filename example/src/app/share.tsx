@@ -40,6 +40,8 @@ import { Txt } from '../component/Txt';
 const link: KakaoTemplateLink = {
   webUrl: 'https://mjstudio.net',
   mobileWebUrl: 'https://mjstudio.net',
+  iosExecutionParams: {},
+  androidExecutionParams: {},
 };
 
 const social: KakaoTemplateSocial = {
@@ -197,7 +199,7 @@ export default function Page() {
           shareFeedTemplate({
             template: feed,
             serverCallbackArgs: {},
-          });
+          }).catch((e) => showMessage({ type: 'warning', message: e.message }));
         }}
       />
       <Btn
@@ -205,7 +207,7 @@ export default function Page() {
         onPress={() => {
           sendFeedTemplateToMe({
             template: feed,
-          });
+          }).catch((e) => showMessage({ type: 'warning', message: e.message }));
         }}
       />
       <Btn
@@ -225,7 +227,7 @@ export default function Page() {
           shareListTemplate({
             template: list,
             serverCallbackArgs: {},
-          });
+          }).catch((e) => showMessage({ type: 'warning', message: e.message }));
         }}
       />
       <Btn
@@ -233,7 +235,7 @@ export default function Page() {
         onPress={() => {
           sendListTemplateToMe({
             template: list,
-          });
+          }).catch((e) => showMessage({ type: 'warning', message: e.message }));
         }}
       />
       <Btn
@@ -253,7 +255,7 @@ export default function Page() {
           shareLocationTemplate({
             template: location,
             serverCallbackArgs: {},
-          });
+          }).catch((e) => showMessage({ type: 'warning', message: e.message }));
         }}
       />
       <Btn
@@ -261,7 +263,7 @@ export default function Page() {
         onPress={() => {
           sendLocationTemplateToMe({
             template: location,
-          });
+          }).catch((e) => showMessage({ type: 'warning', message: e.message }));
         }}
       />
       <Btn
@@ -281,7 +283,7 @@ export default function Page() {
           shareCommerceTemplate({
             template: commerce,
             serverCallbackArgs: {},
-          });
+          }).catch((e) => showMessage({ type: 'warning', message: e.message }));
         }}
       />
       <Btn
@@ -289,7 +291,7 @@ export default function Page() {
         onPress={() => {
           sendCommerceTemplateToMe({
             template: commerce,
-          });
+          }).catch((e) => showMessage({ type: 'warning', message: e.message }));
         }}
       />
       <Btn
@@ -309,7 +311,7 @@ export default function Page() {
           shareTextTemplate({
             template: text,
             serverCallbackArgs: {},
-          });
+          }).catch((e) => showMessage({ type: 'warning', message: e.message }));
         }}
       />
       <Btn
@@ -317,7 +319,7 @@ export default function Page() {
         onPress={() => {
           sendTextTemplateToMe({
             template: text,
-          });
+          }).catch((e) => showMessage({ type: 'warning', message: e.message }));
         }}
       />
       <Btn
@@ -337,7 +339,7 @@ export default function Page() {
           shareCalendarTemplate({
             template: calendar,
             serverCallbackArgs: {},
-          });
+          }).catch((e) => showMessage({ type: 'warning', message: e.message }));
         }}
       />
       <Btn
@@ -345,7 +347,7 @@ export default function Page() {
         onPress={() => {
           sendCalendarTemplateToMe({
             template: calendar,
-          });
+          }).catch((e) => showMessage({ type: 'warning', message: e.message }));
         }}
       />
       <Btn

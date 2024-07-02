@@ -1,4 +1,5 @@
 import { NativeModules, Platform } from 'react-native';
+import type { Double, UnsafeObject } from 'react-native/Libraries/Types/CodegenTypes';
 
 import type {
   KakaoCalendarTemplate,
@@ -16,6 +17,7 @@ import type {
   KakaoTextTemplate,
   Spec,
 } from './spec/NativeKakaoShare';
+import { swapMobileExecutionParamsFieldValueIntoStringInIOS } from './util/swapMobileExecutionParamsFieldValueIntoStringInIOS';
 
 export type {
   KakaoTemplateSocial,
@@ -55,6 +57,33 @@ const Native: Spec = Module
       },
     );
 
+function shareOrSendMeOrSendFriendOrWhatever(
+  /* share, send-me, send-friend */
+  sendType: string,
+  /* custom, feed, list, location, commerce, text, calendar */
+  templateType: string,
+  /* only for custom */
+  templateId: Double,
+  /* only for default templates */
+  templateJson: UnsafeObject,
+  /* only for pass friend uuid directly */
+  receiverUuids: ReadonlyArray<string>,
+  useWebBrowserIfKakaoTalkNotAvailable: boolean,
+  templateArgs: Readonly<{ [key: string]: string }>,
+  serverCallbackArgs: Readonly<{ [key: string]: string }>,
+): Promise<any> {
+  return Native.shareOrSendMeOrSendFriendOrWhatever(
+    sendType,
+    templateType,
+    templateId,
+    swapMobileExecutionParamsFieldValueIntoStringInIOS(templateJson),
+    receiverUuids,
+    useWebBrowserIfKakaoTalkNotAvailable,
+    templateArgs,
+    serverCallbackArgs,
+  );
+}
+
 const SendTypes = { share: 'share', sendMe: 'send-me', sendFriend: 'send-friend' };
 const TemplateTypes = {
   custom: 'custom',
@@ -77,7 +106,7 @@ export function shareCustomTemplate({
   templateArgs?: Record<string, string>;
   serverCallbackArgs?: Record<string, string>;
 }) {
-  return Native.shareOrSendMeOrSendFriendOrWhatever(
+  return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.share,
     TemplateTypes.custom,
     templateId,
@@ -96,7 +125,7 @@ export function sendCustomTemplateToMe({
   templateId: number;
   templateArgs?: Record<string, string>;
 }) {
-  return Native.shareOrSendMeOrSendFriendOrWhatever(
+  return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.sendMe,
     TemplateTypes.custom,
     templateId,
@@ -117,7 +146,7 @@ export function sendCustomTemplateToFriends({
   templateArgs?: Record<string, string>;
   receiverUuids: string[];
 }): Promise<string[]> {
-  return Native.shareOrSendMeOrSendFriendOrWhatever(
+  return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.sendFriend,
     TemplateTypes.custom,
     templateId,
@@ -138,7 +167,7 @@ export function shareFeedTemplate({
   useWebBrowserIfKakaoTalkNotAvailable?: boolean;
   serverCallbackArgs?: Record<string, string>;
 }) {
-  return Native.shareOrSendMeOrSendFriendOrWhatever(
+  return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.share,
     TemplateTypes.feed,
     -1,
@@ -151,7 +180,7 @@ export function shareFeedTemplate({
 }
 
 export function sendFeedTemplateToMe({ template }: { template: KakaoFeedTemplate }) {
-  return Native.shareOrSendMeOrSendFriendOrWhatever(
+  return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.sendMe,
     TemplateTypes.feed,
     -1,
@@ -170,7 +199,7 @@ export function sendFeedTemplateToFriends({
   template: KakaoFeedTemplate;
   receiverUuids: string[];
 }): Promise<string[]> {
-  return Native.shareOrSendMeOrSendFriendOrWhatever(
+  return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.sendFriend,
     TemplateTypes.feed,
     -1,
@@ -191,7 +220,7 @@ export function shareListTemplate({
   useWebBrowserIfKakaoTalkNotAvailable?: boolean;
   serverCallbackArgs?: Record<string, string>;
 }) {
-  return Native.shareOrSendMeOrSendFriendOrWhatever(
+  return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.share,
     TemplateTypes.list,
     -1,
@@ -204,7 +233,7 @@ export function shareListTemplate({
 }
 
 export function sendListTemplateToMe({ template }: { template: KakaoListTemplate }) {
-  return Native.shareOrSendMeOrSendFriendOrWhatever(
+  return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.sendMe,
     TemplateTypes.list,
     -1,
@@ -223,7 +252,7 @@ export function sendListTemplateToFriends({
   template: KakaoListTemplate;
   receiverUuids: string[];
 }): Promise<string[]> {
-  return Native.shareOrSendMeOrSendFriendOrWhatever(
+  return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.sendFriend,
     TemplateTypes.list,
     -1,
@@ -244,7 +273,7 @@ export function shareLocationTemplate({
   useWebBrowserIfKakaoTalkNotAvailable?: boolean;
   serverCallbackArgs?: Record<string, string>;
 }) {
-  return Native.shareOrSendMeOrSendFriendOrWhatever(
+  return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.share,
     TemplateTypes.location,
     -1,
@@ -257,7 +286,7 @@ export function shareLocationTemplate({
 }
 
 export function sendLocationTemplateToMe({ template }: { template: KakaoLocationTemplate }) {
-  return Native.shareOrSendMeOrSendFriendOrWhatever(
+  return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.sendMe,
     TemplateTypes.location,
     -1,
@@ -276,7 +305,7 @@ export function sendLocationTemplateToFriends({
   template: KakaoLocationTemplate;
   receiverUuids: string[];
 }): Promise<string[]> {
-  return Native.shareOrSendMeOrSendFriendOrWhatever(
+  return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.sendFriend,
     TemplateTypes.location,
     -1,
@@ -297,7 +326,7 @@ export function shareCommerceTemplate({
   useWebBrowserIfKakaoTalkNotAvailable?: boolean;
   serverCallbackArgs?: Record<string, string>;
 }) {
-  return Native.shareOrSendMeOrSendFriendOrWhatever(
+  return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.share,
     TemplateTypes.commerce,
     -1,
@@ -310,7 +339,7 @@ export function shareCommerceTemplate({
 }
 
 export function sendCommerceTemplateToMe({ template }: { template: KakaoCommerceTemplate }) {
-  return Native.shareOrSendMeOrSendFriendOrWhatever(
+  return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.sendMe,
     TemplateTypes.commerce,
     -1,
@@ -329,7 +358,7 @@ export function sendCommerceTemplateToFriends({
   template: KakaoCommerceTemplate;
   receiverUuids: string[];
 }): Promise<string[]> {
-  return Native.shareOrSendMeOrSendFriendOrWhatever(
+  return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.sendFriend,
     TemplateTypes.commerce,
     -1,
@@ -350,7 +379,7 @@ export function shareTextTemplate({
   useWebBrowserIfKakaoTalkNotAvailable?: boolean;
   serverCallbackArgs?: Record<string, string>;
 }) {
-  return Native.shareOrSendMeOrSendFriendOrWhatever(
+  return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.share,
     TemplateTypes.text,
     -1,
@@ -363,7 +392,7 @@ export function shareTextTemplate({
 }
 
 export function sendTextTemplateToMe({ template }: { template: KakaoTextTemplate }) {
-  return Native.shareOrSendMeOrSendFriendOrWhatever(
+  return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.sendMe,
     TemplateTypes.text,
     -1,
@@ -382,7 +411,7 @@ export function sendTextTemplateToFriends({
   template: KakaoTextTemplate;
   receiverUuids: string[];
 }): Promise<string[]> {
-  return Native.shareOrSendMeOrSendFriendOrWhatever(
+  return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.sendFriend,
     TemplateTypes.text,
     -1,
@@ -403,7 +432,7 @@ export function shareCalendarTemplate({
   useWebBrowserIfKakaoTalkNotAvailable?: boolean;
   serverCallbackArgs?: Record<string, string>;
 }) {
-  return Native.shareOrSendMeOrSendFriendOrWhatever(
+  return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.share,
     TemplateTypes.calendar,
     -1,
@@ -416,7 +445,7 @@ export function shareCalendarTemplate({
 }
 
 export function sendCalendarTemplateToMe({ template }: { template: KakaoCalendarTemplate }) {
-  return Native.shareOrSendMeOrSendFriendOrWhatever(
+  return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.sendMe,
     TemplateTypes.calendar,
     -1,
@@ -435,7 +464,7 @@ export function sendCalendarTemplateToFriends({
   template: KakaoCalendarTemplate;
   receiverUuids: string[];
 }): Promise<string[]> {
-  return Native.shareOrSendMeOrSendFriendOrWhatever(
+  return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.sendFriend,
     TemplateTypes.calendar,
     -1,
