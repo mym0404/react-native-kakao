@@ -110,6 +110,6 @@
   },
   "gitHead": "5ca9177f7ac369140ffb58d3c1285c2e5c96057d",
   "dependencies": {
-    "@mj-studio/js-util": "1.1.3"
+    "@mj-studio/js-util": "1.1.14"
   }
 }
