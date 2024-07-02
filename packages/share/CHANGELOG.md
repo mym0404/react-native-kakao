@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.5](https://github.com/mym0404/react-native-kakao/compare/v2.2.4...v2.2.5) (2024-07-02)
+
+### Bug Fixes
+
+* **share:** ios: swap mobile execution params fielkd values into string in iOS ([1d7a4c9](https://github.com/mym0404/react-native-kakao/commit/1d7a4c92d66a483287bcc47512f3238e0e2ba39e)), closes [#35](https://github.com/mym0404/react-native-kakao/issues/35)
+
 ## [2.2.4](https://github.com/mym0404/react-native-kakao/compare/v2.2.3...v2.2.4) (2024-06-05)
 
 **Note:** Version bump only for package @react-native-kakao/share
