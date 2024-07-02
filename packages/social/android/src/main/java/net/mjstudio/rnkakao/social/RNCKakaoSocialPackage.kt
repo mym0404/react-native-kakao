@@ -10,16 +10,15 @@ class RNCKakaoSocialPackage : TurboReactPackage() {
   override fun getModule(
     name: String,
     reactContext: ReactApplicationContext,
-  ): NativeModule? {
-    return if (name == RNCKakaoSocialModule.NAME) {
+  ): NativeModule? =
+    if (name == RNCKakaoSocialModule.NAME) {
       RNCKakaoSocialModule(reactContext)
     } else {
       null
     }
-  }
 
-  override fun getReactModuleInfoProvider(): ReactModuleInfoProvider {
-    return ReactModuleInfoProvider {
+  override fun getReactModuleInfoProvider(): ReactModuleInfoProvider =
+    ReactModuleInfoProvider {
       val moduleInfos: MutableMap<String, ReactModuleInfo> = HashMap()
       val isTurboModule: Boolean = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
       moduleInfos[RNCKakaoSocialModule.NAME] =
@@ -33,5 +32,4 @@ class RNCKakaoSocialPackage : TurboReactPackage() {
         )
       moduleInfos
     }
-  }
 }

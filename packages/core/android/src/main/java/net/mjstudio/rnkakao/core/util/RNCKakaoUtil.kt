@@ -71,9 +71,7 @@ fun Promise.rejectWith(e: Throwable) {
   }
 }
 
-inline fun <reified T> ReadableArray.filterIsInstance(): List<T> {
-  return toArrayList().filterIsInstance<T>()
-}
+inline fun <reified T> ReadableArray.filterIsInstance(): List<T> = toArrayList().filterIsInstance<T>()
 
 fun ReadableArray.filterIsReadableMap(): List<ReadableMap> {
   val ret = mutableListOf<ReadableMap>()
@@ -144,9 +142,7 @@ fun WritableMap.putD(
 fun WritableMap.putL(
   key: String,
   value: Long?,
-): WritableMap {
-  return putD(key, value?.toDouble())
-}
+): WritableMap = putD(key, value?.toDouble())
 
 fun WritableMap.putS(
   key: String,
@@ -156,17 +152,11 @@ fun WritableMap.putS(
   return this
 }
 
-fun argMap(): WritableMap {
-  return Arguments.createMap()
-}
+fun argMap(): WritableMap = Arguments.createMap()
 
-fun argArr(): WritableArray {
-  return Arguments.createArray()
-}
+fun argArr(): WritableArray = Arguments.createArray()
 
-fun ReadableMap.toStringMap(): Map<String, String> {
-  return toHashMap().filterValues { it is String }.mapValues { it.value.toString() }
-}
+fun ReadableMap.toStringMap(): Map<String, String> = toHashMap().filterValues { it is String }.mapValues { it.value.toString() }
 
 fun ReadableMap.getIntElseNull(key: String): Int? {
   if (hasKey(key)) return getInt(key)
@@ -197,9 +187,7 @@ object RNCKakaoUtil {
   fun diffSec(
     d1: Date,
     d2: Date,
-  ): Long {
-    return (d1.time - d2.time) / 1000L
-  }
+  ): Long = (d1.time - d2.time) / 1000L
 }
 
 val Date.unix: Long

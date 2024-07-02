@@ -1,16 +1,22 @@
 package net.mjstudio.rnkakao.core.util
 
-sealed class RNCKakaoException(message: String) : Exception(message) {
+sealed class RNCKakaoException(
+  message: String,
+) : Exception(message) {
   abstract val code: String
 }
 
-class RNCKakaoUnknownException(message: String? = null) : RNCKakaoException(
-  "Unknown error from package. This can be a bug of react-native-kakao package. message: ${message ?: "None"}",
-) {
+class RNCKakaoUnknownException(
+  message: String? = null,
+) : RNCKakaoException(
+    "Unknown error from package. This can be a bug of react-native-kakao package. message: ${message ?: "None"}",
+  ) {
   override val code: String = "Package-Unknown"
 }
 
-class RNCKakaoResponseNotFoundException(name: String) : RNCKakaoException("The API response from Kakao Native SDK missing. name: $name") {
+class RNCKakaoResponseNotFoundException(
+  name: String,
+) : RNCKakaoException("The API response from Kakao Native SDK missing. name: $name") {
   override val code: String = "Package-APIResponseNotFound"
 }
 
@@ -18,11 +24,15 @@ class RNCKakaoSdkNotInitializedException : RNCKakaoException("The SDK is not ini
   override val code: String = "Package-SDKNotInitialized"
 }
 
-enum class KakaoApp(val appName: String) {
+enum class KakaoApp(
+  val appName: String,
+) {
   TALK("talk"),
   NAVI("navi"),
 }
 
-class RNCKakaoAppNotAvailableException(val app: KakaoApp) : RNCKakaoException("Kakao application is not available. app: ${app.appName}") {
+class RNCKakaoAppNotAvailableException(
+  val app: KakaoApp,
+) : RNCKakaoException("Kakao application is not available. app: ${app.appName}") {
   override val code: String = "Package-KakaoAppNotAvailable"
 }

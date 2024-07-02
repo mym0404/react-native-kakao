@@ -108,8 +108,8 @@ object RNCKakaoShareTemplates {
       buttonTitle = map.getString("buttonTitle"),
     )
 
-  private fun createListTemplate(map: ReadableMap): ListTemplate {
-    return ListTemplate(
+  private fun createListTemplate(map: ReadableMap): ListTemplate =
+    ListTemplate(
       headerTitle = map.getString("headerTitle") ?: "",
       headerLink = map.getMap("headerLink")?.toLink() ?: Link(),
       contents =
@@ -118,7 +118,6 @@ object RNCKakaoShareTemplates {
       buttons = map.getArray("buttons")?.filterIsReadableMap()?.map { it.toButton() },
       buttonTitle = map.getString("buttonTitle"),
     )
-  }
 
   private fun createLocationTemplate(map: ReadableMap) =
     LocationTemplate(

@@ -7,24 +7,23 @@ import com.kakao.sdk.common.KakaoSdk
 import com.kakao.sdk.common.util.Utility
 import net.mjstudio.rnkakao.core.util.onMain
 
-class RNCKakaoCoreModule internal constructor(context: ReactApplicationContext) :
-  KakaoCoreSpec(context) {
-    override fun getName(): String {
-      return NAME
+class RNCKakaoCoreModule internal constructor(
+  context: ReactApplicationContext,
+) : KakaoCoreSpec(context) {
+  override fun getName(): String = NAME
+
+  @ReactMethod
+  override fun initializeKakaoSDK(appKey: String) =
+    onMain {
+      KakaoSdk.init(context = reactApplicationContext, appKey = appKey)
     }
 
-    @ReactMethod
-    override fun initializeKakaoSDK(appKey: String) =
-      onMain {
-        KakaoSdk.init(context = reactApplicationContext, appKey = appKey)
-      }
-
-    @ReactMethod
-    override fun getKeyHashAndroid(promise: Promise) {
-      promise.resolve(Utility.getKeyHash(reactApplicationContext))
-    }
-
-    companion object {
-      const val NAME = "RNCKakaoCore"
-    }
+  @ReactMethod
+  override fun getKeyHashAndroid(promise: Promise) {
+    promise.resolve(Utility.getKeyHash(reactApplicationContext))
   }
+
+  companion object {
+    const val NAME = "RNCKakaoCore"
+  }
+}

@@ -27,62 +27,61 @@ import net.mjstudio.rnkakao.core.util.getDoubleElseNull
 import net.mjstudio.rnkakao.core.util.onMain
 import net.mjstudio.rnkakao.core.util.rejectWith
 
-class RNCKakaoNaviModule internal constructor(context: ReactApplicationContext) :
-  KakaoNaviSpec(context) {
-    override fun getName(): String {
-      return NAME
-    }
+class RNCKakaoNaviModule internal constructor(
+  context: ReactApplicationContext,
+) : KakaoNaviSpec(context) {
+  override fun getName(): String = NAME
 
-    override fun navigateOrShareTo(
-      destination: ReadableMap,
-      option: ReadableMap?,
-      viaList: ReadableArray?,
-      openWebInstallUrlIfNaviAppNotAvailable: Boolean?,
-      isShare: Boolean?,
-      promise: Promise,
-    ) = onMain {
-      val context =
-        currentActivity ?: run {
-          promise.rejectWith(ActivityNotFoundException())
-          return@onMain
-        }
-
-      if (NaviClient.instance.isKakaoNaviInstalled(reactApplicationContext)) {
-        if (isShare == true) {
-          context.startActivity(
-            NaviClient.instance.shareDestinationIntent(
-              destination.toLocation(),
-              option?.toOption(),
-              viaList?.filterIsReadableMap()?.map { it.toLocation() },
-            ),
-          )
-        } else {
-          context.startActivity(
-            NaviClient.instance.navigateIntent(
-              destination.toLocation(),
-              option?.toOption(),
-              viaList?.filterIsReadableMap()?.map { it.toLocation() },
-            ),
-          )
-        }
-        promise.resolve(true)
-      } else if (openWebInstallUrlIfNaviAppNotAvailable == true) {
-        context.startActivity(
-          Intent(
-            Intent.ACTION_VIEW,
-            Uri.parse(Constants.WEB_NAVI_INSTALL),
-          ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP),
-        )
-        promise.resolve(false)
-      } else {
-        promise.resolve(false)
+  override fun navigateOrShareTo(
+    destination: ReadableMap,
+    option: ReadableMap?,
+    viaList: ReadableArray?,
+    openWebInstallUrlIfNaviAppNotAvailable: Boolean?,
+    isShare: Boolean?,
+    promise: Promise,
+  ) = onMain {
+    val context =
+      currentActivity ?: run {
+        promise.rejectWith(ActivityNotFoundException())
+        return@onMain
       }
-    }
 
-    companion object {
-      const val NAME = "RNCKakaoNavi"
+    if (NaviClient.instance.isKakaoNaviInstalled(reactApplicationContext)) {
+      if (isShare == true) {
+        context.startActivity(
+          NaviClient.instance.shareDestinationIntent(
+            destination.toLocation(),
+            option?.toOption(),
+            viaList?.filterIsReadableMap()?.map { it.toLocation() },
+          ),
+        )
+      } else {
+        context.startActivity(
+          NaviClient.instance.navigateIntent(
+            destination.toLocation(),
+            option?.toOption(),
+            viaList?.filterIsReadableMap()?.map { it.toLocation() },
+          ),
+        )
+      }
+      promise.resolve(true)
+    } else if (openWebInstallUrlIfNaviAppNotAvailable == true) {
+      context.startActivity(
+        Intent(
+          Intent.ACTION_VIEW,
+          Uri.parse(Constants.WEB_NAVI_INSTALL),
+        ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP),
+      )
+      promise.resolve(false)
+    } else {
+      promise.resolve(false)
     }
   }
+
+  companion object {
+    const val NAME = "RNCKakaoNavi"
+  }
+}
 
 private fun ReadableMap.toLocation() =
   Location(
