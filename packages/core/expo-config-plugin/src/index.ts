@@ -1,4 +1,5 @@
-import { type ConfigPlugin, createRunOncePlugin } from '@expo/config-plugins';
+import type { ConfigPlugin } from 'expo/config-plugins';
+import { createRunOncePlugin } from 'expo/config-plugins';
 
 import type { KakaoAndroidConfig, KakaoIosConfig } from './type';
 import { withAndroid } from './withAndroid';

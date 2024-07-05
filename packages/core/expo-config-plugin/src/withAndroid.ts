@@ -1,5 +1,5 @@
-import { AndroidConfig, type ConfigPlugin, withAndroidManifest } from '@expo/config-plugins';
-import type { ManifestActivity } from '@expo/config-plugins/build/android/Manifest';
+import type { ConfigPlugin } from 'expo/config-plugins';
+import { AndroidConfig, withAndroidManifest } from 'expo/config-plugins';
 
 import type { KakaoAndroidConfig } from './type';
 
@@ -20,7 +20,7 @@ const withAndroid: ConfigPlugin<{
   config = withAndroidManifest(config, (config) => {
     const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
 
-    mainApplication.activity?.push(<ManifestActivity>{
+    mainApplication.activity?.push(<AndroidConfig.Manifest.ManifestActivity>{
       $: {},
     });
 
@@ -29,7 +29,7 @@ const withAndroid: ConfigPlugin<{
       activity,
     }: {
       activityName: string;
-      activity: ManifestActivity;
+      activity: AndroidConfig.Manifest.ManifestActivity;
     }) => {
       mainApplication.activity = [
         ...(mainApplication.activity || []).filter(
