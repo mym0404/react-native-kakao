@@ -3,7 +3,7 @@ import {
   WarningAggregator,
   withAppDelegate,
   withInfoPlist,
-} from '@expo/config-plugins';
+} from 'expo/config-plugins';
 
 import type { KakaoIosConfig } from './type';
 
