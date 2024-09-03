@@ -2,6 +2,7 @@ package net.mjstudio.rnkakao.map
 
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.ReactMethod
 import com.kakao.vectormap.KakaoMapSdk
 
 class RNCKakaoMapModule internal constructor(
