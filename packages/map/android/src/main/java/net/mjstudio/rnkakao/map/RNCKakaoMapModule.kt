@@ -9,6 +9,7 @@ class RNCKakaoMapModule internal constructor(
 ) : KakaoMapSpec(context) {
   override fun getName(): String = NAME
 
+  @ReactMethod
   override fun initializeKakaoMapSDK(
     appKey: String,
     promise: Promise,

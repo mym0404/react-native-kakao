@@ -32,6 +32,7 @@ class RNCKakaoNaviModule internal constructor(
 ) : KakaoNaviSpec(context) {
   override fun getName(): String = NAME
 
+  @ReactMethod
   override fun navigateOrShareTo(
     destination: ReadableMap,
     option: ReadableMap?,
