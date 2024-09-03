@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.6](https://github.com/mym0404/react-native-kakao/compare/v2.2.5...v2.2.6) (2024-09-03)
+
+### Bug Fixes
+
+* Add missing @ReactMethod ([0ed2c08](https://github.com/mym0404/react-native-kakao/commit/0ed2c0869e2c69bc1c2ba417bf46a741f0aa81e4))
+* Add missing @ReactMethod import ([8c8b205](https://github.com/mym0404/react-native-kakao/commit/8c8b205947de57e20a9e2b9a7db29198bd381405))
+
 ## [2.2.5](https://github.com/mym0404/react-native-kakao/compare/v2.2.4...v2.2.5) (2024-07-02)
 
 **Note:** Version bump only for package @react-native-kakao/navi
