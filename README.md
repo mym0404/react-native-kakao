@@ -64,7 +64,7 @@ please select the package link from below.
 
 These are our really cool sponsors!
 
-<!-- sponsors --><a href="https://github.com/esc5221"><img src="https:&#x2F;&#x2F;avatars.githubusercontent.com&#x2F;u&#x2F;37990664?u&#x3D;9fa860e8a4bc9f6a340f89acbc3c505589228d83&amp;v&#x3D;4" width="60px" alt="최병욱" /></a><a href="https://github.com/jun-jaehyuk-lee"><img src="https:&#x2F;&#x2F;avatars.githubusercontent.com&#x2F;u&#x2F;100741856?v&#x3D;4" width="60px" alt="JUN" /></a><a href="https://github.com/floydkim"><img src="https:&#x2F;&#x2F;avatars.githubusercontent.com&#x2F;u&#x2F;22050211?u&#x3D;73cd1a5d8d17351fa4764bf5391a1fc5c096650f&amp;v&#x3D;4" width="60px" alt="Floyd Kim" /></a><a href="https://github.com/zeallat"><img src="https:&#x2F;&#x2F;avatars.githubusercontent.com&#x2F;u&#x2F;7078066?u&#x3D;80d346f9026a166f41302e2120e6d8845b6f7699&amp;v&#x3D;4" width="60px" alt="Jimmy (Ho Jun Lee)" /></a><!-- sponsors -->
+<!-- sponsors -->* [최병욱]() - esc5221* [JUN]() - jun-jaehyuk-lee* [Floyd Kim]() - floydkim* [Jimmy (Ho Jun Lee)]() - zeallat<!-- sponsors -->
 
 ## Contributing
 
