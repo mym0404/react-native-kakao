@@ -24,5 +24,6 @@ jobs:
       - name: Deploy README.md 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:
+          token: ${{ secrets.PAT }}
           branch: main
           folder: '.'
