@@ -17,3 +17,6 @@ jobs:
         with:
           token: ${{ secrets.PAT }}
           file: 'README.md'
+
+      - name: Update README.md
+        run: git push origin main
