@@ -60,6 +60,12 @@ please select the package link from below.
 
 - [Quick Start](https://rnkakao.dev)
 
+## Sponsors
+
+These are our really cool sponsors!
+
+<!-- sponsors --><!-- sponsors -->
+
 ## Contributing
 
 - [Contributing](https://github.com/mym0404/react-native-kakao/blob/main/CONTRIBUTING.md)
