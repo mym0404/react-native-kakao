@@ -28,3 +28,4 @@ jobs:
           token: ${{ secrets.PAT }}
           branch: main
           folder: '.'
+          commit-message: 'chore: [skip ci] update sponspors 💖'
