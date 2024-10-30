@@ -19,5 +19,10 @@ jobs:
           file: 'README.md'
           active-only: false
 
-      - name: Update README.md
-        run: git push origin main
+      # ⚠️ Note: You can use any deployment step here to automatically push the README
+      # changes back to your branch.
+      - name: Deploy README.md 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: main
+          folder: '.'
