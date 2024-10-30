@@ -12,14 +12,11 @@
 
 RCT_EXPORT_MODULE()
 
-RCT_EXPORT_METHOD(navigateOrShareTo
-                  : (NSDictionary*)destination option
-                  : (NSDictionary*)option viaList
-                  : (NSArray*)viaList openWebInstallUrlIfNaviAppNotAvailable
-                  : (NSNumber*)openWebInstallUrlIfNaviAppNotAvailable isShare
-                  : (NSNumber*)isShare resolve
-                  : (RCTPromiseResolveBlock)resolve reject
-                  : (RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(navigateOrShareTo : (NSDictionary*)destination option : (NSDictionary*)
+                      option viaList : (NSArray*)viaList openWebInstallUrlIfNaviAppNotAvailable : (
+                          NSNumber*)openWebInstallUrlIfNaviAppNotAvailable isShare : (NSNumber*)
+                          isShare resolve : (RCTPromiseResolveBlock)
+                              resolve reject : (RCTPromiseRejectBlock)reject) {
   [[self manager] navigateOrShareTo:destination
                                       option:option
                                      viaList:viaList

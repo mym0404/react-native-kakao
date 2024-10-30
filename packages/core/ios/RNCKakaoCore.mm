@@ -17,9 +17,8 @@ RCT_EXPORT_METHOD(initializeKakaoSDK : (NSString*)appKey) {
   [[self manager] initializeKakaoSDK:appKey];
 }
 
-RCT_EXPORT_METHOD(getKeyHashAndroid
-                  : (RCTPromiseResolveBlock)resolve reject
-                  : (RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(getKeyHashAndroid : (RCTPromiseResolveBlock)
+                      resolve reject : (RCTPromiseRejectBlock)reject) {
   resolve(nil);
 }
 

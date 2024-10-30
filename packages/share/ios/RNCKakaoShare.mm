@@ -20,17 +20,13 @@ RCT_EXPORT_MODULE()
 // RNC_KAKAO_SHARE_EXPORT_DEFAULT_TEMPLATE(shareTextTemplate, text)
 // RNC_KAKAO_SHARE_EXPORT_DEFAULT_TEMPLATE(shareCalendarTemplate, calendar)
 
-RCT_EXPORT_METHOD(shareOrSendMeOrSendFriendOrWhatever
-                  : (NSString*)sendType templateType
-                  : (NSString*)templateType templateId
-                  : (double)templateId templateJson
-                  : (NSDictionary*)templateJson receiverUuids
-                  : (NSArray*)receiverUuids useWebBrowserIfKakaoTalkNotAvailable
-                  : (BOOL)useWebBrowserIfKakaoTalkNotAvailable templateArgs
-                  : (NSDictionary*)templateArgs serverCallbackArgs
-                  : (NSDictionary*)serverCallbackArgs resolve
-                  : (RCTPromiseResolveBlock)resolve reject
-                  : (RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(
+    shareOrSendMeOrSendFriendOrWhatever : (NSString*)sendType templateType : (NSString*)
+        templateType templateId : (double)templateId templateJson : (NSDictionary*)templateJson
+            receiverUuids : (NSArray*)receiverUuids useWebBrowserIfKakaoTalkNotAvailable : (BOOL)
+                useWebBrowserIfKakaoTalkNotAvailable templateArgs : (NSDictionary*)
+                    templateArgs serverCallbackArgs : (NSDictionary*)serverCallbackArgs resolve : (
+                        RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
   [[self manager] shareOrSendMeOrSendFriendOrWhatever:sendType
                                          templateType:templateType
                                            templateId:templateId
