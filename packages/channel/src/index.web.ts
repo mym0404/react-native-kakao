@@ -17,9 +17,13 @@ declare const Kakao: {
 const KakaoChannel: KakaoChannelAPI = {
   followChannel: (channelPublicId: string): Promise<boolean> =>
     kRunWebAPI(async () => {
-      await Kakao.Channel.followChannel({ channelPublicId });
+      const result = await Kakao.Channel.followChannel({ channelPublicId });
 
-      return true;
+      if (result && channelPublicId === result.channel_public_id && result.status === 'success') {
+        return true;
+      }
+
+      return false;
     }),
   addChannel: (channelPublicId: string): Promise<void> =>
     kRunWebAPI(() => Kakao.Channel.addChannel({ channelPublicId })),
