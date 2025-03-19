@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="77px" height="80px" viewBox="0 0 77 80" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>design-thinking / finding-topics</title>
+    <defs>
+        <circle id="path-1" cx="62" cy="6" r="3"></circle>
+        <circle id="path-2" cx="72" cy="50" r="3"></circle>
+        <circle id="path-3" cx="69" cy="36" r="3"></circle>
+        <circle id="path-4" cx="46" cy="33" r="3"></circle>
+        <circle id="path-5" cx="39" cy="3" r="3"></circle>
+        <circle id="path-6" cx="16" cy="46" r="3"></circle>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Dark-Previews-10" transform="translate(-88.000000, -1765.000000)">
+            <g id="design-thinking-/-finding-topics" transform="translate(89.000000, 1766.000000)">
+                <path d="M34.1413902,43.1393709 C40.95993,47.0760567 49.6787632,44.7398524 53.615449,37.9213125 C57.5521348,31.1027727 55.2159305,22.3839395 48.3973907,18.4472537 C41.5788508,14.5105679 32.8600176,16.8467722 28.9233318,23.665312 C24.986646,30.4838519 27.3228503,39.202685 34.1413902,43.1393709 Z" id="Oval" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M34.0159081,48.3652689 C42.6952104,51.9607784 52.9063408,48.6535244 57.7308019,40.2973126 C62.9797163,31.2059261 59.8647772,19.5808153 50.7733907,14.3319008 C41.6820042,9.08298639 30.0568934,12.1979255 24.807979,21.289312 C19.9695448,29.6697257 22.2379598,40.2030701 29.743264,45.9105595" id="Path" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M28.79539,52.3989148 C30.5000249,53.3830863 31.084076,55.5627946 30.0999046,57.2674295 L19.2410298,76.4605047 C18.2568583,78.1651397 16.07715,78.7491907 14.372515,77.7650193 C12.6678801,76.7808478 12.083829,74.6011395 13.0680005,72.8965046 L23.9268753,53.7034294 C24.9110467,51.9987944 27.090755,51.4147434 28.79539,52.3989148 Z" id="Rectangle" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path>
+                <line x1="33.8230665" y1="48.4427238" x2="30.4123971" y2="54.3501765" id="Path-1532" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></line>
+                <line x1="29.7077136" y1="46.0667237" x2="26.2970442" y2="51.9741764" id="Path-1532" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></line>
+                <polygon id="Triangle" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" points="14.8500005 3.94000021 20.1960007 14.6320006 9.50400033 14.6320006"></polygon>
+                <polygon id="Triangle" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" points="61.1820021 50.2720018 65.3400023 58.5880021 57.024002 58.5880021"></polygon>
+                <polygon id="Triangle" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" points="68 14 71 20 65 20"></polygon>
+                <polygon id="Triangle" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" points="41.3160003 23 38.5440002 31.3160003 33 25.7720001"></polygon>
+                <polygon id="Rectangle" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" points="-2.27373675e-13 25.324001 8.31600029 25.324001 8.31600029 33.6400012 -2.27373675e-13 33.6400012"></polygon>
+                <polygon id="Rectangle" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" points="45.1580001 56.2776999 48.6935341 59.8132339 45.1580001 63.3487678 41.6224662 59.8132339"></polygon>
+                <g id="nucleus" transform="translate(62.000000, 6.000000) rotate(-90.000000) translate(-62.000000, -6.000000) " stroke="currentColor">
+                    <circle stroke-width="1.5" stroke-linejoin="round" fill="#818181" fill-rule="evenodd" cx="62" cy="6" r="2.25"></circle>
+                    <use stroke-width="1" xlink:href="#path-1"></use>
+                </g>
+                <g id="nucleus" transform="translate(72.000000, 50.000000) rotate(-90.000000) translate(-72.000000, -50.000000) " stroke="currentColor">
+                    <circle stroke-width="1.5" stroke-linejoin="round" fill="#818181" fill-rule="evenodd" cx="72" cy="50" r="2.25"></circle>
+                    <use stroke-width="1" xlink:href="#path-2"></use>
+                </g>
+                <g id="nucleus" transform="translate(69.000000, 36.000000) rotate(-90.000000) translate(-69.000000, -36.000000) " stroke="currentColor">
+                    <circle stroke-width="1.5" stroke-linejoin="round" fill="#818181" fill-rule="evenodd" cx="69" cy="36" r="2.25"></circle>
+                    <use stroke-width="1" xlink:href="#path-3"></use>
+                </g>
+                <g id="nucleus" transform="translate(46.000000, 33.000000) rotate(-90.000000) translate(-46.000000, -33.000000) " stroke="currentColor">
+                    <circle stroke-width="1.5" stroke-linejoin="round" fill="#818181" fill-rule="evenodd" cx="46" cy="33" r="2.25"></circle>
+                    <use stroke-width="1" xlink:href="#path-4"></use>
+                </g>
+                <g id="nucleus" transform="translate(39.000000, 3.000000) rotate(-90.000000) translate(-39.000000, -3.000000) " stroke="currentColor">
+                    <circle stroke-width="1.5" stroke-linejoin="round" fill="#818181" fill-rule="evenodd" cx="39" cy="3" r="2.25"></circle>
+                    <use stroke-width="1" xlink:href="#path-5"></use>
+                </g>
+                <g id="nucleus" transform="translate(16.000000, 46.000000) rotate(-90.000000) translate(-16.000000, -46.000000) " stroke="currentColor">
+                    <circle stroke-width="1.5" stroke-linejoin="round" fill="#818181" fill-rule="evenodd" cx="16" cy="46" r="2.25"></circle>
+                    <use stroke-width="1" xlink:href="#path-6"></use>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
