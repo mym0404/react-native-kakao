@@ -1,6 +1,7 @@
 {
   "expo": {
     "name": "Kakao Example",
+    "newArchEnabled": true,
     "owner": "react-native-kakao",
     "slug": "react-native-kakao-example",
     "description": "Demonstrates the functionality and various capabilities of React Native Kakao",
