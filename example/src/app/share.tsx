@@ -1,5 +1,6 @@
 import { showMessage } from 'react-native-flash-message';
 import {
+  type KakaoCalendarTemplate,
   type KakaoCommerceTemplate,
   type KakaoFeedTemplate,
   type KakaoListTemplate,
@@ -30,7 +31,6 @@ import {
   shareLocationTemplate,
   shareTextTemplate,
 } from '@react-native-kakao/share';
-import type { KakaoCalendarTemplate } from '@react-native-kakao/share/lib/typescript/src/spec/NativeKakaoShare';
 import { selectMultipleFriends } from '@react-native-kakao/social';
 
 import { Btn } from '../component/Btn';

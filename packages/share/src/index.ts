@@ -32,6 +32,7 @@ export type {
   KakaoListTemplate,
   KakaoFeedTemplate,
   KakaoCommerceTemplate,
+  KakaoCalendarTemplate,
 };
 
 const LINKING_ERROR =
