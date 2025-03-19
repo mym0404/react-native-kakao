@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.7](https://github.com/mym0404/react-native-kakao/compare/v2.2.6...v2.2.7) (2025-03-19)
+
+### Bug Fixes
+
+* followChannel method response in web ([a802f5e](https://github.com/mym0404/react-native-kakao/commit/a802f5efced1dd25f07fbab7519a3a793ab71e85))
+
 ## [2.2.6](https://github.com/mym0404/react-native-kakao/compare/v2.2.5...v2.2.6) (2024-09-03)
 
 **Note:** Version bump only for package @react-native-kakao/channel

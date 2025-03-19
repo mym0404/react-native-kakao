@@ -1,7 +1,7 @@
 {
   "name": "@react-native-kakao/share",
   "description": "React Native Kakao Share SDK",
-  "version": "2.2.6",
+  "version": "2.2.7",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
   "types": "lib/typescript/src/index.d.ts",
@@ -61,7 +61,7 @@
     "access": "public"
   },
   "devDependencies": {
-    "@react-native-kakao/core": "2.2.6",
+    "@react-native-kakao/core": "2.2.7",
     "@types/jest": "^29.5.5",
     "@types/react": "^18.2.44",
     "del-cli": "^5.1.0",
@@ -72,7 +72,7 @@
     "typescript": "5.1.6"
   },
   "peerDependencies": {
-    "@react-native-kakao/core": "2.2.6",
+    "@react-native-kakao/core": "2.2.7",
     "react": "*",
     "react-native": "*"
   },
