@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.0](https://github.com/mym0404/react-native-kakao/compare/v2.2.7...v2.3.0) (2025-03-19)
+
+### Features
+
+* remove map package + fix 0.77 android build error ([a427094](https://github.com/mym0404/react-native-kakao/commit/a427094265d30ab2ce16f47b7cfcfffcb99de5b6))
+* remove map package + fix 0.77 android build error ([5809b31](https://github.com/mym0404/react-native-kakao/commit/5809b317aba3c6032b23ccbbfb3186a8b203fbd6))
+
 ## [2.2.7](https://github.com/mym0404/react-native-kakao/compare/v2.2.6...v2.2.7) (2025-03-19)
 
 ### Bug Fixes
