@@ -77,7 +77,7 @@ fun ReadableArray.filterIsReadableMap(): List<ReadableMap> {
   val ret = mutableListOf<ReadableMap>()
   for (i in 0 until this.size()) {
     if (getType(i) == ReadableType.Map) {
-      ret.add(getMap(i))
+      getMap(i)?.let { ret.add(it) }
     }
   }
   return ret

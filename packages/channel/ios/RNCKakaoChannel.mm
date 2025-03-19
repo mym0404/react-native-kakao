@@ -48,7 +48,7 @@ RCT_EXPORT_METHOD(openChatChannelUrl : (NSString*)channelPublicId resolve : (RCT
   [[self manager] openChatChannelUrl:channelPublicId resolve:resolve reject:reject];
 }
 
-RCT_EXPORT_METHOD(channels : (nullable NSArray*)channelPublicIds resolve : (RCTPromiseResolveBlock)
+RCT_EXPORT_METHOD(channels : (NSArray*)channelPublicIds resolve : (RCTPromiseResolveBlock)
                       resolve reject : (RCTPromiseRejectBlock)reject) {
   [[self manager] channels:channelPublicIds resolve:resolve reject:reject];
 }

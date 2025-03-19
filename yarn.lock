@@ -6295,28 +6295,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@react-native-kakao/map@workspace:packages/map":
-  version: 0.0.0-use.local
-  resolution: "@react-native-kakao/map@workspace:packages/map"
-  dependencies:
-    "@mj-studio/js-util": "npm:1.1.3"
-    "@react-native-kakao/core": "npm:2.2.7"
-    "@types/invariant": "npm:^2"
-    "@types/jest": "npm:^29.5.5"
-    "@types/react": "npm:^18.2.44"
-    del-cli: "npm:^5.1.0"
-    jest: "npm:^29.7.0"
-    react: "npm:18.2.0"
-    react-native: "npm:0.74.0"
-    react-native-builder-bob: "npm:^0.20.0"
-    typescript: "npm:5.1.6"
-  peerDependencies:
-    "@react-native-kakao/core": 2.2.7
-    react: "*"
-    react-native: "*"
-  languageName: unknown
-  linkType: soft
-
 "@react-native-kakao/navi@workspace:packages/navi":
   version: 0.0.0-use.local
   resolution: "@react-native-kakao/navi@workspace:packages/navi"

@@ -3,7 +3,6 @@ import FlashMessage from 'react-native-flash-message';
 import { capitalize } from '@mj-studio/js-util';
 import { useMount } from '@mj-studio/react-util';
 import Core from '@react-native-kakao/core';
-import { KakaoMap } from '@react-native-kakao/map';
 import { issueAccessTokenWithCodeWeb, setAccessTokenWeb } from '@react-native-kakao/user';
 import { StyledSystemProvider } from '@react-native-styled-system/core';
 import { Stack, useGlobalSearchParams } from 'expo-router';
@@ -40,7 +39,6 @@ export default function RootLayout() {
         restApiKey: '8b32d258f3f3fb553d86cfaa20964077',
       },
     });
-    KakaoMap.initializeKakaoMapSDK('fb975c77483d1edbe69467fca6bb2a6e').then(console.log);
   });
 
   return (

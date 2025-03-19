@@ -54,7 +54,7 @@ export function openChatChannelUrl(channelPublicId: string): Promise<string> {
   return Native.openChatChannelUrl(channelPublicId);
 }
 
-export function channels({ channelPublicIds }: { channelPublicIds?: string[] } = {}): Promise<
+export function channels({ channelPublicIds = [] }: { channelPublicIds?: string[] } = {}): Promise<
   KakaoChannel[]
 > {
   return Native.channels(channelPublicIds);
