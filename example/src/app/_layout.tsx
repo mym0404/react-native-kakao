@@ -62,7 +62,7 @@ export default function RootLayout() {
             headerTintColor: 'white',
             headerStyle: { backgroundColor: 'black' },
             headerTitle: (props) => <Txt weight={'bold'}>{capitalize(props.children)}</Txt>,
-            animation: 'ios',
+            animation: 'fade_from_bottom',
           }}
         />
       </Box>

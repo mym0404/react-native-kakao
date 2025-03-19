@@ -1,4 +1,4 @@
-import { forwardRef, type PropsWithChildren, type Ref } from 'react';
+import { forwardRef, type PropsWithChildren } from 'react';
 import type { TouchableOpacityProps } from 'react-native';
 import { TouchableOpacity } from 'react-native';
 import type { SxProps } from '@react-native-styled-system/core';
@@ -8,7 +8,7 @@ import { Txt } from './Txt';
 
 type BtnProps = PropsWithChildren<TouchableOpacityProps & SxProps & { title: string }>;
 
-const Btn = forwardRef((props: BtnProps, ref: Ref<TouchableOpacity>) => {
+const Btn = forwardRef((props: BtnProps, ref: any) => {
   const { getStyle, filteredProps } = useSx(props, {
     fallback: {
       bg: 'primary600',

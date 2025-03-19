@@ -12,6 +12,7 @@ const defaultConfig = getDefaultConfig(__dirname);
 // List all packages under `packages/`
 const workspaces = fs
   .readdirSync(packages)
+  .filter((p) => p !== 'map')
   .map((p) => path.join(packages, p))
   .filter((p) => fs.statSync(p).isDirectory() && fs.existsSync(path.join(p, 'package.json')));
 
