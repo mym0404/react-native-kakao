@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.0](https://github.com/mym0404/react-native-kakao/compare/v2.3.0...v2.4.0) (2025-05-03)
+
+### Bug Fixes
+
+* **web:** return type of `user - me()` ([9be6177](https://github.com/mym0404/react-native-kakao/commit/9be61774067f620c8366fc9b81f6d32225c96852))
+
 ## [2.3.0](https://github.com/mym0404/react-native-kakao/compare/v2.2.7...v2.3.0) (2025-03-19)
 
 **Note:** Version bump only for package @react-native-kakao/user

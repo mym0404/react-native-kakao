@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.0](https://github.com/mym0404/react-native-kakao/compare/v2.3.0...v2.4.0) (2025-05-03)
+
+### Features
+
+* **expo:** support swift AppDelegate from config plugin ([c415e47](https://github.com/mym0404/react-native-kakao/commit/c415e47aa3ba04b1516c47a828b31d6b2347af32))
+
 ## [2.3.0](https://github.com/mym0404/react-native-kakao/compare/v2.2.7...v2.3.0) (2025-03-19)
 
 ### Features
