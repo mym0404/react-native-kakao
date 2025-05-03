@@ -1,9 +1,5 @@
-import {
-  type ConfigPlugin,
-  WarningAggregator,
-  withAppDelegate,
-  withInfoPlist,
-} from 'expo/config-plugins';
+import { insertContentsInsideSwiftFunctionBlock } from '@expo/config-plugins/build/ios/codeMod';
+import { type ConfigPlugin, withAppDelegate, withInfoPlist } from 'expo/config-plugins';
 
 import type { KakaoIosConfig } from './type';
 
@@ -68,10 +64,10 @@ const withIos: ConfigPlugin<{
 };
 
 const withKakaoUserSdkAppDelegate: ConfigPlugin = (config) => {
-  const importRctLinkingManager = '#import <React/RCTLinkingManager.h>';
-  const importMod = '#import <RNCKakaoUser/RNCKakaoUserUtil.h>';
+  const modifyObjcContents = (contents: string): string => {
+    const importRctLinkingManager = '#import <React/RCTLinkingManager.h>';
+    const importMod = '#import <RNCKakaoUser/RNCKakaoUserUtil.h>';
 
-  const modifyContents = (contents: string): string => {
     if (!contents.includes(importRctLinkingManager)) {
       contents = `${importRctLinkingManager}\n${contents}`;
     }
@@ -95,15 +91,36 @@ const withKakaoUserSdkAppDelegate: ConfigPlugin = (config) => {
     return contents;
   };
 
+  const modifySwiftContents = (contents: string): string => {
+    const importAnchor = 'import Expo';
+    const importMod = 'import RNCKakaoUser';
+
+    if (!contents.includes(importAnchor)) {
+      contents = `${importAnchor}\n${contents}`;
+    }
+
+    if (!contents.includes(importMod)) {
+      contents = contents.replace(importAnchor, importAnchor + '\n' + importMod);
+    }
+
+    if (!contents.includes('RNCKakaoUserUtil.handleOpen(url)')) {
+      contents = insertContentsInsideSwiftFunctionBlock(
+        contents,
+        'application(_:open:options:)',
+        'if(RNCKakaoUserUtil.isKakaoTalkLoginUrl(url)) { return RNCKakaoUserUtil.handleOpen(url) }',
+        { position: 'head' },
+      );
+    }
+
+    return contents;
+  };
+
   return withAppDelegate(config, (props) => {
     const { modResults } = props;
     if (['objc', 'objcpp'].includes(modResults.language)) {
-      modResults.contents = modifyContents(modResults.contents);
-    } else {
-      WarningAggregator.addWarningIOS(
-        'withKakaoUserSdkAppDelegate',
-        'Swift AppDelegate files are not supported yet.',
-      );
+      modResults.contents = modifyObjcContents(modResults.contents);
+    } else if (modResults.language === 'swift') {
+      modResults.contents = modifySwiftContents(modResults.contents);
     }
 
     return props;
