@@ -1,5 +1,6 @@
 import '@expo/metro-runtime';
 
+import React from 'react';
 import { registerRootComponent } from 'expo';
 import { ExpoRoot } from 'expo-router';
 
@@ -7,7 +8,7 @@ import { ExpoRoot } from 'expo-router';
 export function App() {
   const ctx = require.context('./app'); //Path with src folder
 
-  return <ExpoRoot context={ctx} />;
+  return React.createElement(ExpoRoot, { context: ctx });
 }
 
 registerRootComponent(App);

@@ -104,7 +104,7 @@
   },
   "codegenConfig": {
     "name": "RNCKakaoChannelSpec",
-    "type": "all",
+    "type": "modules",
     "jsSrcsDir": "src",
     "android": {
       "javaPackageName": "net.mjstudio.rnkakao.channel"

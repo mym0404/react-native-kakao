@@ -104,7 +104,7 @@
   },
   "codegenConfig": {
     "name": "RNCKakaoNaviSpec",
-    "type": "all",
+    "type": "modules",
     "jsSrcsDir": "src",
     "android": {
       "javaPackageName": "net.mjstudio.rnkakao.navi"

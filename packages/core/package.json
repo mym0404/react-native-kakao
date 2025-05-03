@@ -113,7 +113,7 @@
   },
   "codegenConfig": {
     "name": "RNCKakaoCoreSpec",
-    "type": "all",
+    "type": "modules",
     "jsSrcsDir": "src",
     "android": {
       "javaPackageName": "net.mjstudio.rnkakao.core"
@@ -126,8 +126,7 @@
       "user": "2.22.0",
       "navi": "2.22.0",
       "friend": "2.22.0",
-      "talk": "2.22.0",
-      "map": "2.10.4"
+      "talk": "2.22.0"
     },
     "android": {
       "minSdk": 21,
@@ -141,8 +140,7 @@
       "user": "2.20.1",
       "navi": "2.20.1",
       "friend": "2.20.1",
-      "talk": "2.20.1",
-      "map": "2.10.3"
+      "talk": "2.20.1"
     }
   },
   "gitHead": "5ca9177f7ac369140ffb58d3c1285c2e5c96057d",

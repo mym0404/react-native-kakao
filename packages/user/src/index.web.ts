@@ -152,13 +152,25 @@ const KakaoUser: KakaoUserAPI = {
     ),
   me: () =>
     kRunWebAPI(async () => {
-      const ret = camelCaseObject(await Kakao.API.request({ url: '/v2/user/me' })) as KakaoUser;
+      const ret: any = camelCaseObject(await Kakao.API.request({ url: '/v2/user/me' }));
+      const kakaoAccount = ret.kakaoAccount ?? {};
+      const properties = ret.properties ?? {};
 
       return {
         ...ret,
+        ...properties,
+        ...kakaoAccount,
+        email: kakaoAccount.email,
+        name: null,
+        nickname: kakaoAccount.profile.nickname,
+        profileImageUrl: properties.profileImage,
+        thumbnailImageUrl: properties.thumbnailImage,
+        phoneNumber: kakaoAccount.profile.phoneNumber,
+        isEmailValid: ret.isEmailValid,
+        isEmailVerified: ret.isEmailVerified,
         connectedAt: isoToUnix(ret.connectedAt),
         synchedAt: isoToUnix(ret.synchedAt),
-      };
+      } as KakaoUser;
     }),
 };
 

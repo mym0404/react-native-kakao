@@ -81,19 +81,19 @@ export interface KakaoShippingAddress {
 export interface KakaoUser {
   id: number;
   email: string;
-  name: string;
+  name?: string | null;
   nickname: string;
   profileImageUrl: string;
   thumbnailImageUrl: string;
-  phoneNumber: string;
-  ageRange: string;
-  birthday: string;
-  birthdayType: string;
-  birthyear: string;
-  gender: string;
+  phoneNumber?: string | null;
+  ageRange?: string | null;
+  birthday?: string | null;
+  birthdayType?: string | null;
+  birthyear?: string | null;
+  gender?: string | null;
   isEmailValid: boolean;
   isEmailVerified: boolean;
-  isKorean: boolean;
+  isKorean?: boolean;
   ageRangeNeedsAgreement?: boolean;
   birthdayNeedsAgreement?: boolean;
   birthyearNeedsAgreement?: boolean;
