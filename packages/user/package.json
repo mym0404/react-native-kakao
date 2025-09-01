@@ -26,7 +26,7 @@
     "!**/.*"
   ],
   "author": "MJ Studio <mym0404@gmail.com> (https://github.com/mym0404)",
-  "homepage": "https://rnkakao.dev",
+  "homepage": "https://rnkakao.mjstudio.net",
   "scripts": {
     "test": "jest",
     "prepare": "husky",

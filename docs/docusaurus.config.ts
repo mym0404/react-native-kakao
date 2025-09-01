@@ -12,9 +12,9 @@ const coverImage = 'img/social-card.png';
 const config: Config = {
   title: title,
   tagline: description,
-  favicon: 'https://rnkakao.dev/favicon.ico',
+  favicon: 'https://rnkakao.mjstudio.net/favicon.ico',
 
-  url: 'https://rnkakao.dev',
+  url: 'https://rnkakao.mjstudio.net',
   baseUrl: '/',
 
   organizationName: repoOrg,

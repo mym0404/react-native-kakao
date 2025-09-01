@@ -1,0 +1,9 @@
+{
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "destination": "https://rnkakao.mjstudio.net/$1",
+      "permanent": true
+    }
+  ]
+}

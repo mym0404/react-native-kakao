@@ -16,7 +16,7 @@
     "url": "git+https://github.com/mym0404/react-native-kakao.git"
   },
   "author": "MJ Studio <mym0404@gmail.com> (https://github.com/mym0404)",
-  "homepage": "https://rnkakao.dev",
+  "homepage": "https://rnkakao.mjstudio.net",
   "scripts": {
     "example": "yarn workspace kakao-example",
     "test": "jest",
@@ -85,7 +85,7 @@
     "typescript": "5.3.3",
     "zx": "^8.0.2"
   },
-  "packageManager": "yarn@4.1.1",
+  "packageManager": "yarn@4.9.4+sha512.7b1cb0b62abba6a537b3a2ce00811a843bea02bcf53138581a6ae5b1bf563f734872bd47de49ce32a9ca9dcaff995aa789577ffb16811da7c603dcf69e73750b",
   "commitlint": {
     "extends": [
       "@commitlint/config-conventional"
