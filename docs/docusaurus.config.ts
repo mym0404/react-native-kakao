@@ -122,6 +122,13 @@ const config: Config = {
   } satisfies Preset.ThemeConfig,
 
   plugins: ['docusaurus-plugin-sass'],
+  scripts: [
+    {
+      'src': 'https://umami.mjstudio.net/script.js',
+      'defer': true,
+      'data-website-id': '7adeb2cb-3cbd-4844-93a8-a4065d9da255',
+    },
+  ],
 };
 
 export default config;
