@@ -20,10 +20,6 @@ const withAndroid: ConfigPlugin<{
   config = withAndroidManifest(config, (config) => {
     const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
 
-    mainApplication.activity?.push(<AndroidConfig.Manifest.ManifestActivity>{
-      $: {},
-    });
-
     const injectActivity = ({
       activityName,
       activity,
