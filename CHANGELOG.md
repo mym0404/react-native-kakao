@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.1](https://github.com/mym0404/react-native-kakao/compare/v2.4.0...v2.4.1) (2025-11-11)
+
+### Features
+
+* add Umami analytics and improve TypeScript types in docs ([e58c337](https://github.com/mym0404/react-native-kakao/commit/e58c337267213abc8384d7ddffbb35854cbedc27))
+* add Vercel redirect configuration for domain migration ([5a8d279](https://github.com/mym0404/react-native-kakao/commit/5a8d2797d562a2a2506f3aeb257de36b05a5fedc))
+
+### Bug Fixes
+
+* **android:** use reactApplication.currentActivity ([4fe463a](https://github.com/mym0404/react-native-kakao/commit/4fe463a271a065c04f9b2518ddb4ceef9bc4b193))
+
 ## [2.4.0](https://github.com/mym0404/react-native-kakao/compare/v2.3.0...v2.4.0) (2025-05-03)
 
 ### Features

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.1](https://github.com/mym0404/react-native-kakao/compare/v2.4.0...v2.4.1) (2025-11-11)
+
+### Bug Fixes
+
+* **android:** use reactApplication.currentActivity ([4fe463a](https://github.com/mym0404/react-native-kakao/commit/4fe463a271a065c04f9b2518ddb4ceef9bc4b193))
+
 ## [2.4.0](https://github.com/mym0404/react-native-kakao/compare/v2.3.0...v2.4.0) (2025-05-03)
 
 **Note:** Version bump only for package @react-native-kakao/social
