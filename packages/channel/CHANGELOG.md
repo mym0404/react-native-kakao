@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.2](https://github.com/mym0404/react-native-kakao/compare/v2.4.1...v2.4.2) (2025-11-11)
+
+**Note:** Version bump only for package @react-native-kakao/channel
+
 ## [2.4.1](https://github.com/mym0404/react-native-kakao/compare/v2.4.0...v2.4.1) (2025-11-11)
 
 **Note:** Version bump only for package @react-native-kakao/channel
