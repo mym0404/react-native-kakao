@@ -65,7 +65,7 @@ class RNCKakaoSocialModule internal constructor(
     promise: Promise,
   ) = onMain {
     val context =
-      currentActivity ?: run {
+      reactApplicationContext.currentActivity ?: run {
         promise.reject(ActivityNotFoundException())
         return@onMain
       }
