@@ -249,7 +249,11 @@ import SafariServices
       } else if var defaultTemplate {
         do {
           let templatable = try generateTemplatable(templateType, &defaultTemplate)
-          ShareApi.shared.shareDefault(templatable: templatable, completion: shareCompletion)
+          ShareApi.shared.shareDefault(
+            templatable: templatable,
+            serverCallbackArgs: serverCallbackArgs,
+            completion: shareCompletion
+          )
         } catch {
           RNCKakaoUtil.reject(reject, error)
         }
@@ -286,7 +290,10 @@ import SafariServices
         do {
           let templatable = try generateTemplatable(templateType, &defaultTemplate)
 
-          if let url = ShareApi.shared.makeDefaultUrl(templatable: templatable) {
+          if let url = ShareApi.shared.makeDefaultUrl(
+            templatable: templatable,
+            serverCallbackArgs: serverCallbackArgs
+          ) {
             let safariViewController = SFSafariViewController(url: url)
             safariViewController.modalTransitionStyle = .crossDissolve
             safariViewController.modalPresentationStyle = .overCurrentContext
