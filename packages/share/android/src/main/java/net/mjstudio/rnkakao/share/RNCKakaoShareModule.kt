@@ -86,12 +86,15 @@ class RNCKakaoShareModule internal constructor(
         promise,
       )
     }
+
     "send-me" -> {
       runSendToMe(templateType, templateId, null, templateArgs, promise)
     }
+
     "send-friend" -> {
       runSendToFriends(templateType, receiverUuids, templateId, null, templateArgs, promise)
     }
+
     else -> {
       promise.rejectWith(RNCKakaoUnknownException("Unknown sendType: $sendType"))
     }
@@ -117,12 +120,15 @@ class RNCKakaoShareModule internal constructor(
         promise,
       )
     }
+
     "send-me" -> {
       runSendToMe(templateType, null, template, null, promise)
     }
+
     "send-friend" -> {
       runSendToFriends(templateType, receiverUuids, null, template, null, promise)
     }
+
     else -> {
       promise.rejectWith(RNCKakaoUnknownException("Unknown sendType: $sendType"))
     }
