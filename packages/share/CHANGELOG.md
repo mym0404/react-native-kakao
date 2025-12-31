@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.3](https://github.com/mym0404/react-native-kakao/compare/v2.4.2...v2.4.3) (2025-12-31)
+
+### Bug Fixes
+
+* pass serverCallbackArgs when templateId is not provided ([a10094a](https://github.com/mym0404/react-native-kakao/commit/a10094a3e56f491574866c824bb05022f06b6b21))
+
 ## [2.4.2](https://github.com/mym0404/react-native-kakao/compare/v2.4.1...v2.4.2) (2025-11-11)
 
 **Note:** Version bump only for package @react-native-kakao/share
