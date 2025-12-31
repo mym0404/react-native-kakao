@@ -6450,7 +6450,7 @@ __metadata:
   resolution: "@react-native-kakao/channel@workspace:packages/channel"
   dependencies:
     "@mj-studio/js-util": "npm:^1.0.34"
-    "@react-native-kakao/core": "npm:2.4.3"
+    "@react-native-kakao/core": "npm:2.4.4"
     "@types/invariant": "npm:^2"
     "@types/jest": "npm:^29.5.5"
     "@types/react": "npm:^18.2.44"
@@ -6461,13 +6461,13 @@ __metadata:
     react-native-builder-bob: "npm:^0.20.0"
     typescript: "npm:5.1.6"
   peerDependencies:
-    "@react-native-kakao/core": 2.4.3
+    "@react-native-kakao/core": 2.4.4
     react: "*"
     react-native: "*"
   languageName: unknown
   linkType: soft
 
-"@react-native-kakao/core@npm:2.4.3, @react-native-kakao/core@workspace:packages/core":
+"@react-native-kakao/core@npm:2.4.4, @react-native-kakao/core@workspace:packages/core":
   version: 0.0.0-use.local
   resolution: "@react-native-kakao/core@workspace:packages/core"
   dependencies:
@@ -6499,7 +6499,7 @@ __metadata:
   resolution: "@react-native-kakao/navi@workspace:packages/navi"
   dependencies:
     "@mj-studio/js-util": "npm:1.1.3"
-    "@react-native-kakao/core": "npm:2.4.3"
+    "@react-native-kakao/core": "npm:2.4.4"
     "@types/invariant": "npm:^2"
     "@types/jest": "npm:^29.5.5"
     "@types/react": "npm:^18.2.44"
@@ -6510,7 +6510,7 @@ __metadata:
     react-native-builder-bob: "npm:^0.20.0"
     typescript: "npm:5.1.6"
   peerDependencies:
-    "@react-native-kakao/core": 2.4.3
+    "@react-native-kakao/core": 2.4.4
     react: "*"
     react-native: "*"
   languageName: unknown
@@ -6521,7 +6521,7 @@ __metadata:
   resolution: "@react-native-kakao/share@workspace:packages/share"
   dependencies:
     "@mj-studio/js-util": "npm:1.1.14"
-    "@react-native-kakao/core": "npm:2.4.3"
+    "@react-native-kakao/core": "npm:2.4.4"
     "@types/jest": "npm:^29.5.5"
     "@types/react": "npm:^18.2.44"
     del-cli: "npm:^5.1.0"
@@ -6531,7 +6531,7 @@ __metadata:
     react-native-builder-bob: "npm:^0.20.0"
     typescript: "npm:5.1.6"
   peerDependencies:
-    "@react-native-kakao/core": 2.4.3
+    "@react-native-kakao/core": 2.4.4
     react: "*"
     react-native: "*"
   languageName: unknown
@@ -6542,7 +6542,7 @@ __metadata:
   resolution: "@react-native-kakao/social@workspace:packages/social"
   dependencies:
     "@mj-studio/js-util": "npm:1.1.3"
-    "@react-native-kakao/core": "npm:2.4.3"
+    "@react-native-kakao/core": "npm:2.4.4"
     "@types/invariant": "npm:^2"
     "@types/jest": "npm:^29.5.5"
     "@types/react": "npm:^18.2.44"
@@ -6553,7 +6553,7 @@ __metadata:
     react-native-builder-bob: "npm:^0.20.0"
     typescript: "npm:5.1.6"
   peerDependencies:
-    "@react-native-kakao/core": 2.4.3
+    "@react-native-kakao/core": 2.4.4
     react: "*"
     react-native: "*"
   languageName: unknown
@@ -6564,7 +6564,7 @@ __metadata:
   resolution: "@react-native-kakao/user@workspace:packages/user"
   dependencies:
     "@mj-studio/js-util": "npm:1.1.3"
-    "@react-native-kakao/core": "npm:2.4.3"
+    "@react-native-kakao/core": "npm:2.4.4"
     "@types/invariant": "npm:^2"
     "@types/jest": "npm:^29.5.5"
     "@types/react": "npm:^18.2.44"
@@ -6575,7 +6575,7 @@ __metadata:
     react-native-builder-bob: "npm:^0.20.0"
     typescript: "npm:5.1.6"
   peerDependencies:
-    "@react-native-kakao/core": 2.4.3
+    "@react-native-kakao/core": 2.4.4
     react: "*"
     react-native: "*"
   languageName: unknown
