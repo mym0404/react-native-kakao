@@ -23,7 +23,7 @@ jobs:
 
       - name: Install Ktlint
         shell: bash
-        run: brew install ktlint
+        run: curl -sSLO https://github.com/pinterest/ktlint/releases/download/1.8.0/ktlint && chmod a+x ktlint && sudo mv ktlint /usr/local/bin/
 
       - name: Check
         run: yarn t

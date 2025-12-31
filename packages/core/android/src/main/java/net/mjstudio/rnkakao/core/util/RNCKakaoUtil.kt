@@ -39,16 +39,19 @@ fun Promise.rejectWith(e: Throwable) {
           userInfo.putBoolean("isInvalidTokenError", e.isInvalidTokenError())
           reject(e.reason.name, e.msg, userInfo)
         }
+
         is ApiError -> {
           userInfo.putBoolean("isApiFailed", true)
           userInfo.putBoolean("isInvalidTokenError", e.isInvalidTokenError())
           reject(e.reason.name, e.msg, userInfo)
         }
+
         is AuthError -> {
           userInfo.putBoolean("isAuthFailed", true)
           userInfo.putBoolean("isInvalidTokenError", e.isInvalidTokenError())
           reject(e.reason.name, e.msg, userInfo)
         }
+
         is AppsError -> {
           userInfo.putBoolean("isAppsFailed", true)
           userInfo.putBoolean("isInvalidTokenError", e.isInvalidTokenError())
@@ -56,10 +59,12 @@ fun Promise.rejectWith(e: Throwable) {
         }
       }
     }
+
     is RNCKakaoException -> {
       userInfo.putBoolean("isPackageError", true)
       reject(e.code, e.message, userInfo)
     }
+
     else -> {
       userInfo.putBoolean("isPackageError", true)
       reject(
