@@ -155,21 +155,21 @@ import RNCKakaoCore
   }
 }
 
-/// /// 친구 피커의 이름
-/// final public let title: String?
-/// /// 친구 피커 모드
-/// final public let viewAppearance: KakaoSDKFriendCore.ViewAppearance?
-/// /// 친구 피커의 방향
-/// final public let orientation: KakaoSDKFriendCore.PickerOrientation?
-/// /// 친구 검색 기능 사용 여부
-/// final public let enableSearch: Bool?
-/// /// 내 프로필 표시 여부
-/// final public let showMyProfile: Bool?
-/// /// 즐겨찾기 친구 표시 여부
-/// final public let showFavorite: Bool?
-/// /// 선택한 친구 표시 여부 (멀티 피커에만 사용 가능)
-/// public var showPickedFriend: Bool?
-/// /// 선택 가능한 친구 수의 최대값
-/// public var maxPickableCount: Int?
-/// /// 선택 가능한 친구 수의 최소값
-/// public var minPickableCount: Int?
+// /// 친구 피커의 이름
+// final public let title: String?
+// /// 친구 피커 모드
+// final public let viewAppearance: KakaoSDKFriendCore.ViewAppearance?
+// /// 친구 피커의 방향
+// final public let orientation: KakaoSDKFriendCore.PickerOrientation?
+// /// 친구 검색 기능 사용 여부
+// final public let enableSearch: Bool?
+// /// 내 프로필 표시 여부
+// final public let showMyProfile: Bool?
+// /// 즐겨찾기 친구 표시 여부
+// final public let showFavorite: Bool?
+// /// 선택한 친구 표시 여부 (멀티 피커에만 사용 가능)
+// public var showPickedFriend: Bool?
+// /// 선택 가능한 친구 수의 최대값
+// public var maxPickableCount: Int?
+// /// 선택 가능한 친구 수의 최소값
+// public var minPickableCount: Int?
