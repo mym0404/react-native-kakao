@@ -148,7 +148,7 @@ object RNCKakaoShareTemplates {
   private fun createCalendarTemplate(map: ReadableMap) =
     CalendarTemplate(
       id = map.getString("id")!!,
-      idType = if (map.getString("id") == "event") EVENT else CALENDAR,
+      idType = if (map.getString("idType") == "event") EVENT else CALENDAR,
       content = map.getMap("content")!!.toContent(),
       buttons = map.getArray("buttons")?.filterIsReadableMap()?.map { it.toButton() },
     )
