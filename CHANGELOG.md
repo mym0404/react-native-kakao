@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## <small>2.4.5 (2026-03-14)</small>
+
+* chore: bump zx ([ff6a65b](https://github.com/mym0404/react-native-kakao/commit/ff6a65b))
+* chore: unconscious commit 🎲 ([76869f2](https://github.com/mym0404/react-native-kakao/commit/76869f2))
+* chore: update node version to v22 ([730460e](https://github.com/mym0404/react-native-kakao/commit/730460e))
+* fix: print swift lint target file names ([5ac6139](https://github.com/mym0404/react-native-kakao/commit/5ac6139))
+* fix: use correct field name for idType in CalendarTemplate on Android ([dd6846d](https://github.com/mym0404/react-native-kakao/commit/dd6846d))
+* docs: add hierarchical AGENTS guides for native modules ([7b7ea60](https://github.com/mym0404/react-native-kakao/commit/7b7ea60))
+
 ## <small>2.4.4 (2025-12-31)</small>
 
 * chore: bump lerna ([9950c51](https://github.com/mym0404/react-native-kakao/commit/9950c51))

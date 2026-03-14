@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## <small>2.4.5 (2026-03-14)</small>
+
+* chore: unconscious commit 🎲 ([76869f2](https://github.com/mym0404/react-native-kakao/commit/76869f2))
+
 ## <small>2.4.4 (2025-12-31)</small>
 
 **Note:** Version bump only for package @react-native-kakao/social

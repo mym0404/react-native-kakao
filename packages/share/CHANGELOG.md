@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## <small>2.4.5 (2026-03-14)</small>
+
+* fix: use correct field name for idType in CalendarTemplate on Android ([dd6846d](https://github.com/mym0404/react-native-kakao/commit/dd6846d))
+* docs: add hierarchical AGENTS guides for native modules ([7b7ea60](https://github.com/mym0404/react-native-kakao/commit/7b7ea60))
+
 ## <small>2.4.4 (2025-12-31)</small>
 
 **Note:** Version bump only for package @react-native-kakao/share
