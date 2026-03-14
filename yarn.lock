@@ -7946,7 +7946,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/fs-extra@npm:^11, @types/fs-extra@npm:^11.0.4":
+"@types/fs-extra@npm:^11":
   version: 11.0.4
   resolution: "@types/fs-extra@npm:11.0.4"
   dependencies:
@@ -8129,7 +8129,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>=20.12.5":
+"@types/node@npm:*":
   version: 20.12.7
   resolution: "@types/node@npm:20.12.7"
   dependencies:
@@ -24333,7 +24333,7 @@ __metadata:
     react-native-builder-bob: "npm:0.40.7"
     turbo: "npm:1.13.3"
     typescript: "npm:5.3.3"
-    zx: "npm:^8.0.2"
+    zx: "npm:8.8.5"
   languageName: unknown
   linkType: soft
 
@@ -28230,19 +28230,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zx@npm:^8.0.2":
-  version: 8.0.2
-  resolution: "zx@npm:8.0.2"
-  dependencies:
-    "@types/fs-extra": "npm:^11.0.4"
-    "@types/node": "npm:>=20.12.5"
-  dependenciesMeta:
-    "@types/fs-extra":
-      optional: true
-    "@types/node":
-      optional: true
+"zx@npm:8.8.5":
+  version: 8.8.5
+  resolution: "zx@npm:8.8.5"
   bin:
     zx: build/cli.js
-  checksum: 10/189e83f6f4ce9ca13a41db522bbe8314bdc416653edc542f496659ddc91faac5f51f0512a03e991c36f00e936b94e25d1da0e6658b6ba600f9738837fe596382
+  checksum: 10/29e68a7a2f37b58e1140404655ec5d2f1ab1ab93f385d97192b37929972de61826a106bbc12bbf1fbd29bc649e119cad897c0c1b1751d4e9e01bc7d7629dc86e
   languageName: node
   linkType: hard
