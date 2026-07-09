@@ -40,6 +40,7 @@ class RNCKakaoUserModule internal constructor(
     prompts: ReadableArray?,
     useKakaoAccountLogin: Boolean,
     scopes: ReadableArray?,
+    nonce: String?,
     promise: Promise,
   ) = onMain {
     val context =
@@ -90,6 +91,7 @@ class RNCKakaoUserModule internal constructor(
       UserApiClient.instance.loginWithNewScopes(
         context,
         scopes = scopes.filterIsInstance<String>(),
+        nonce = nonce,
         callback = callback,
       )
     } else if (UserApiClient.instance.isKakaoTalkLoginAvailable(context) &&
@@ -100,6 +102,7 @@ class RNCKakaoUserModule internal constructor(
     ) {
       UserApiClient.instance.loginWithKakaoTalk(
         context,
+        nonce = nonce,
         serviceTerms = serviceTerms?.filterIsInstance<String>()?.ifEmpty { null },
         callback = callback,
       )
@@ -119,6 +122,7 @@ class RNCKakaoUserModule internal constructor(
                 else -> null
               }
             }?.ifEmpty { null },
+        nonce = nonce,
         serviceTerms = serviceTerms?.filterIsInstance<String>()?.ifEmpty { null },
         callback = callback,
       )

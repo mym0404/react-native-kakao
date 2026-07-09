@@ -120,6 +120,7 @@ export function login({
   prompts,
   useKakaoAccountLogin,
   scopes,
+  web,
 }: {
   serviceTerms?: string[];
   prompts?: ('Login' | 'Create' | 'Cert' | 'UnifyDaum' | 'SelectAccount')[];
@@ -151,6 +152,7 @@ export function login({
     prompts ?? [],
     useKakaoAccountLogin ?? false,
     scopes ?? [],
+    web?.nonce,
   );
 }
 
