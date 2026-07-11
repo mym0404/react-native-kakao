@@ -120,11 +120,13 @@ export function login({
   prompts,
   useKakaoAccountLogin,
   scopes,
+  nonce,
 }: {
   serviceTerms?: string[];
   prompts?: ('Login' | 'Create' | 'Cert' | 'UnifyDaum' | 'SelectAccount')[];
   scopes?: string[];
   useKakaoAccountLogin?: boolean;
+  nonce?: string;
   web?: {
     redirectUri: string;
     scope?: string[];
@@ -151,6 +153,7 @@ export function login({
     prompts ?? [],
     useKakaoAccountLogin ?? false,
     scopes ?? [],
+    nonce,
   );
 }
 

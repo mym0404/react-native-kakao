@@ -17,6 +17,7 @@ export interface Spec extends TurboModule {
     prompts: string[],
     useKakaoAccountLogin: boolean,
     scopes?: string[],
+    nonce?: string,
   ): Promise<KakaoLoginToken>;
   logout(): Promise<void>;
   unlink(): Promise<void>;

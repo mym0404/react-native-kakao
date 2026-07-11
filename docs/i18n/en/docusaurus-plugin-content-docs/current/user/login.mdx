@@ -53,6 +53,14 @@ If `scopes` are provided, it always executes login with a Kakao account.
 
 -  `useKakaoAccountLogin`: Attempt login with a Kakao account instead of KakaoTalk.
 
+-  `nonce`: A value used to prevent ID token replay attacks. The value you pass is returned in the `nonce` claim of the issued ID token.
+
+Refer to the [Official Documentation](https://developers.kakao.com/docs/latest/ko/kakaologin/utilize#parameter-for-security) for details.
+
+:::info
+Only meaningful for apps with OpenID Connect enabled.
+:::
+
 :::warning Warning
 Errors will be thrown under the following conditions:
 -  If `useKakaoAccountLogin` does not exist or is `false`, `prompts` and `scopes` cannot be passed.

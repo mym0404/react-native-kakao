@@ -13,6 +13,7 @@ abstract class KakaoUserSpec internal constructor(
     prompts: ReadableArray?,
     useKakaoAccountLogin: Boolean,
     scopes: ReadableArray?,
+    nonce: String?,
     promise: Promise,
   )
 

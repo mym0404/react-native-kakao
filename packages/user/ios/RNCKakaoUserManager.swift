@@ -32,6 +32,7 @@ import RNCKakaoCore
     prompts: [String],
     useKakaoAccountLogin: Bool,
     scopes: [String],
+    nonce: String?,
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
@@ -61,22 +62,35 @@ import RNCKakaoCore
       }
 
       if !scopes.isEmpty {
-        UserApi.shared.loginWithKakaoAccount(scopes: scopes, completion: callback)
+        UserApi.shared.loginWithKakaoAccount(scopes: scopes, nonce: nonce, completion: callback)
       } else if UserApi.isKakaoTalkLoginAvailable(), !useKakaoAccountLogin {
         UserApi.shared
-          .loginWithKakaoTalk(serviceTerms: emptyArrayToNil(serviceTerms), completion: callback)
+          .loginWithKakaoTalk(
+            serviceTerms: emptyArrayToNil(serviceTerms),
+            nonce: nonce,
+            completion: callback
+          )
       } else {
         var _prompts: [Prompt] = []
         for p in prompts {
-          if p == "Login" { _prompts.append(.Login) }
-          if p == "Cert" { _prompts.append(.Cert) }
-          if p == "Create" { _prompts.append(.Create) }
-          if p == "UnifyDaum" { _prompts.append(.UnifyDaum) }
+          if p == "Login" {
+            _prompts.append(.Login)
+          }
+          if p == "Cert" {
+            _prompts.append(.Cert)
+          }
+          if p == "Create" {
+            _prompts.append(.Create)
+          }
+          if p == "UnifyDaum" {
+            _prompts.append(.UnifyDaum)
+          }
         }
         UserApi.shared
           .loginWithKakaoAccount(
             prompts: emptyArrayToNil(_prompts),
             serviceTerms: emptyArrayToNil(serviceTerms),
+            nonce: nonce,
             completion: callback
           )
       }
@@ -313,7 +327,9 @@ import RNCKakaoCore
   }
 
   private func emptyArrayToNil<T>(_ arr: [T]?) -> [T]? {
-    if arr == nil || arr?.isEmpty == true { return nil }
+    if arr == nil || arr?.isEmpty == true {
+      return nil
+    }
     return arr
   }
 }
