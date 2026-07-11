@@ -134,7 +134,13 @@ jobs:
     steps:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: "26.0"
+          xcode-version: "26.2"
+      - name: Ensure iOS Simulator runtime
+        run: |
+          simulator_version=$(xcrun --sdk iphonesimulator --show-sdk-version)
+          if ! xcrun simctl list runtimes | grep -Fq "iOS ${simulator_version}"; then
+            xcodebuild -downloadPlatform iOS -buildVersion "${simulator_version}"
+          fi
       - name: Checkout
         uses: actions/checkout@v4
 
