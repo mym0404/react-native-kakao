@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## <small>2.4.6 (2026-07-11)</small>
+
+* Merge pull request #73 from oesnuj/fix/kakao-login-nonce ([fac2330](https://github.com/mym0404/react-native-kakao/commit/fac2330)), closes [#73](https://github.com/mym0404/react-native-kakao/issues/73)
+
 ## <small>2.4.5 (2026-03-14)</small>
 
 * docs: add hierarchical AGENTS guides for native modules ([7b7ea60](https://github.com/mym0404/react-native-kakao/commit/7b7ea60))

@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## <small>2.4.6 (2026-07-11)</small>
+
+* Merge pull request #73 from oesnuj/fix/kakao-login-nonce ([fac2330](https://github.com/mym0404/react-native-kakao/commit/fac2330)), closes [#73](https://github.com/mym0404/react-native-kakao/issues/73)
+* fix: stabilize iOS CI toolchain ([ef73ac8](https://github.com/mym0404/react-native-kakao/commit/ef73ac8))
+
 ## <small>2.4.5 (2026-03-14)</small>
 
 * chore: bump zx ([ff6a65b](https://github.com/mym0404/react-native-kakao/commit/ff6a65b))
