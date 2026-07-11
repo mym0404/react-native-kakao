@@ -57,6 +57,14 @@ login()
 
 - `useKakaoAccountLogin`: 항상 카카오톡이 아닌 카카오 계정으로 로그인을 시도합니다.
 
+- `nonce`: ID 토큰 재생 공격을 방지하기 위한 검증 값입니다. 전달한 값이 발급되는 ID 토큰의 `nonce` claim에 포함되어 반환됩니다.
+
+자세한 내용은 [공식 문서](https://developers.kakao.com/docs/latest/ko/kakaologin/utilize#parameter-for-security)를 참고해주세요.
+
+:::info
+OpenID Connect를 활성화한 앱에서만 의미가 있습니다.
+:::
+
 
 :::warning 경고
 다음과 같은 조건으로 사용한다면 에러를 던집니다.
