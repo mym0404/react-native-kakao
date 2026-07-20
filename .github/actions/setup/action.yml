@@ -1,17 +1,15 @@
 name: Setup
-description: Setup Node.js and install dependencies
+description: Setup development tools and install dependencies
 
 runs:
   using: composite
   steps:
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
+    - name: Setup mise
+      uses: jdx/mise-action@v3
       with:
-        node-version-file: .nvmrc
-
-    - name: Enable Corepack
-      run: corepack enable
-      shell: bash
+        version: 2026.7.7
+        install: true
+        cache: true
 
     - name: Cache dependencies
       id: yarn-cache

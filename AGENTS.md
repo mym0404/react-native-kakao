@@ -15,6 +15,14 @@ Read in this order:
    - `/packages/user/AGENTS.md`
 4. `/example/AGENTS.md` (integration verification gates)
 
+## Development toolchain
+
+- Use mise for all repository-managed development tools.
+- Treat `/mise.toml` as the single source of truth for Node.js, Yarn, and native lint tool versions.
+- Install and activate mise, then run `mise install` from the repository root before installing dependencies.
+- Run `yarn install --immutable` after mise installs the pinned toolchain.
+- Do not use Corepack, `.nvmrc`, or other version files to manage repository tool versions.
+
 ## Global non-negotiables
 
 - Define the API in TypeScript spec first, then implement Android + iOS + web parity.
