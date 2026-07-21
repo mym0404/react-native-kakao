@@ -1,0 +1,6 @@
+[tools]
+node = "22.23.1"
+yarn = "4.11.0"
+ktlint = "1.8.0"
+clang-format = "22.1.8"
+swiftformat = "0.62.1"

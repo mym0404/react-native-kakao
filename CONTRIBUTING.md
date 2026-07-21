@@ -7,9 +7,10 @@ the [code of conduct](./CODE_OF_CONDUCT.md).
 
 The `package.json` file contains various scripts for common tasks:
 
-**Installiation, Build**
+**Installation and Build**
 
-- `yarn`: setup project by installing dependencies.
+- `mise install`: install the project toolchain.
+- `yarn install --immutable`: install project dependencies.
 - `yarn build`: build packages
 
 **Validation**
@@ -56,15 +57,17 @@ It contains the following packages:
 - The library packages in the `packages/` directory.
 - An example app in the `example/` directory.
 
-To get started with the project, run `yarn` in the root directory to install the required
-dependencies for each package:
+Install and activate [mise](https://mise.jdx.dev/getting-started.html), then run the following
+commands in the project root. The committed `mise.toml` pins Node.js, Yarn, ClangFormat,
+SwiftFormat, and Ktlint to the versions used by CI.
 
 ```sh
-yarn
+mise install
+yarn install --immutable
 ```
 
 > Since the project relies on Yarn workspaces, you cannot use [`npm`](https://github.com/npm/cli)
-> for development.
+> for development. Yarn is managed by mise; do not enable Corepack for this project.
 
 The [example app](/example/) demonstrates usage of the library. You need to run it to test any
 changes you make.
@@ -128,14 +131,14 @@ Our pre-commit hooks verify that your commit message matches this format when co
 ### Linting and tests
 
 [ESLint](https://eslint.org/), [Prettier](https://prettier.io/), [TypeScript](https://www.typescriptlang.org/),
-[ClangFormat](https://clang.llvm.org/docs/ClangFormat.html), [SwiftFormat](https://github.com/apple/swift-format), [Ktlint](https://pinterest.github.io/ktlint/latest/install/setup/)
+[ClangFormat](https://clang.llvm.org/docs/ClangFormat.html), [SwiftFormat](https://github.com/nicklockwood/SwiftFormat), [Ktlint](https://pinterest.github.io/ktlint/latest/install/setup/)
 
 We use [TypeScript](https://www.typescriptlang.org/) for type
 checking, [ESLint](https://eslint.org/) with [Prettier](https://prettier.io/) for linting and
 formatting the code, and [Jest](https://jestjs.io/) for testing.
 
 In iOS project, we
-use [ClangFormat](https://clang.llvm.org/docs/ClangFormat.html), [SwiftFormat](https://github.com/apple/swift-format)
+use [ClangFormat](https://clang.llvm.org/docs/ClangFormat.html), [SwiftFormat](https://github.com/nicklockwood/SwiftFormat)
 for formatting and linting.
 
 In Android project, we use [Ktlint](https://pinterest.github.io/ktlint/latest/install/setup/) for
