@@ -57,11 +57,14 @@ Rebuild the corresponding platform whenever app code changes.
 
 The output contains six PNGs, JUnit, installation and test logs, the generated `.ad` flow, `summary.json`, and `index.html`.
 agent-device also stores screenshot copies and per-step logs under `native/`.
+iOS prepares and health-checks the XCTest runner before testing, with a ten-minute startup limit.
+Its preparation log and daemon diagnostics are saved in `prepare.log` and `device-state/`.
 Build logs are written to `build/e2e/<platform>/build.log`.
 A failed navigation step or missing PNG produces exit code 1. Automatic retries are disabled.
 The first Home check allows 60 seconds for cold device helper startup. Later checks use the default timeout.
 On failure, the script also attempts to save `failure.png` using the native device tool.
-Reported test time excludes app installation and builds; enabling video includes recording time.
+Reported test time excludes app installation, iOS runner preparation, and builds; enabling video includes recording time.
+`summary.json` records installation and preparation times separately.
 
 ## GitHub CI and PR comments
 

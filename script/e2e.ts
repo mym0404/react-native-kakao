@@ -163,8 +163,10 @@ const main = async () => {
   let error = '';
   let durationSeconds = 0;
   let installSeconds = 0;
+  let prepareSeconds = 0;
   const started = performance.now();
   try {
+    console.log(`Installing ${platform} app on ${device}...`);
     await logCommand(
       platform === 'android'
         ? $`adb -s ${device} install -r ${app}`
@@ -172,6 +174,28 @@ const main = async () => {
       resolve(output, 'install.log'),
     );
     installSeconds = (performance.now() - started) / 1000;
+
+    if (platform === 'ios') {
+      console.log('Preparing the iOS XCTest runner...');
+
+      const stateDir = resolve(output, 'device-state');
+      const prepareStarted = performance.now();
+      try {
+        await logCommand(
+          $`agent-device prepare ios-runner --platform ios --udid ${device} --state-dir ${stateDir} --timeout 600000`,
+          resolve(output, 'prepare.log'),
+        );
+      } finally {
+        // Test uses its own daemon; release the prepared runner lease first.
+        await logCommand(
+          $`agent-device daemon stop --state-dir ${stateDir}`,
+          resolve(output, 'prepare-stop.log'),
+        );
+        prepareSeconds = (performance.now() - prepareStarted) / 1000;
+      }
+    }
+
+    console.log(`Verifying ${platform} menus...`);
 
     const testStarted = performance.now();
     try {
@@ -217,6 +241,7 @@ const main = async () => {
     status,
     durationSeconds,
     installSeconds,
+    prepareSeconds,
     screenshots: captured.length,
     expectedScreenshots: screens.length,
     video: values.video,

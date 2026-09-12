@@ -227,7 +227,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: e2e-ios
-          path: build/e2e/ios/
+          path: |
+            build/e2e/ios/
+            !build/e2e/ios/device-state/daemon.json
           retention-days: 14
           overwrite: true
           if-no-files-found: warn
@@ -298,7 +300,7 @@ jobs:
               ...rows,
               '',
               'Verifies screen entry and titles. Excludes login, feature actions, and pixel comparisons.',
-              'Time excludes app installation and builds. For tests that did not run, check build and device setup logs.',
+              'Time excludes app installation, iOS runner preparation, and builds. For tests that did not run, check build and device setup logs.',
               'Open `index.html` from the artifact ZIP to compare screenshots. PNGs, JUnit, and logs are retained for 14 days.',
             ].join('\n');
             await core.summary.addRaw(body).write();
