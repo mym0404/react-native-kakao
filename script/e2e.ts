@@ -1,6 +1,7 @@
 #!/usr/bin/env bun
 import { mkdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
+import { setTimeout as sleep } from 'node:timers/promises';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import { $, type ProcessPromise } from 'zx';
@@ -9,6 +10,7 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const appId = 'com.rnkakao.example';
 const screens = ['home', 'user', 'share', 'navi', 'social', 'channel'];
 const iosBuild = resolve(root, 'build/e2e/ios-build');
+const timeoutMs = 180000;
 const logCommand = async (command: ProcessPromise, path: string) => {
   const result = await command.nothrow();
   await writeFile(path, result.stdout + result.stderr);
@@ -131,12 +133,13 @@ const main = async () => {
   }));
   const titleSelector = 'id="screen-title"';
   const homeTitle = `wait ${JSON.stringify(`${titleSelector} text="Index"`)}`;
+  const settle = 'wait 500';
   const body = [
     `context platform=${platform}`,
     `open ${appId} --relaunch`,
     // Cold CI devices install and start the snapshot helper during the first wait.
     `${homeTitle} 60000`,
-    'wait 500',
+    settle,
     'screenshot "${OUTPUT}/00-home.png"',
     'scroll bottom',
     ...screenshots.slice(1).flatMap(({ screen, file }, index) => {
@@ -150,7 +153,7 @@ const main = async () => {
       return [
         `press ${JSON.stringify(selector)}`,
         `wait ${JSON.stringify(`${titleSelector} text="${title}"`)}`,
-        'wait 500',
+        settle,
         `screenshot "\${OUTPUT}/${file}"`,
         ...(index < screens.length - 2 ? ['back', homeTitle] : []),
       ];
@@ -164,16 +167,45 @@ const main = async () => {
   let durationSeconds = 0;
   let installSeconds = 0;
   let prepareSeconds = 0;
-  const started = performance.now();
   try {
+    if (platform === 'android') {
+      console.log('Waiting for the Android package service...');
+
+      const prepareStarted = performance.now();
+      const requiredSamples = 3;
+      let readySamples = 0;
+      let preparationLog = '';
+      // A cold emulator can restart system_server after sys.boot_completed becomes 1.
+      while (readySamples < requiredSamples && performance.now() - prepareStarted < timeoutMs) {
+        const result = await $`adb -s ${device} shell pm path android`.timeout(10000).nothrow();
+        preparationLog += `${result.stdout}${result.stderr}`;
+        readySamples =
+          result.exitCode === 0 && result.stdout.startsWith('package:') ? readySamples + 1 : 0;
+
+        if (readySamples < requiredSamples) {
+          await sleep(2000);
+        }
+      }
+
+      prepareSeconds = (performance.now() - prepareStarted) / 1000;
+      await writeFile(resolve(output, 'prepare.log'), preparationLog);
+      if (readySamples < requiredSamples) {
+        throw new Error(
+          `Android package service did not become ready within ${timeoutMs / 1000} seconds.`,
+        );
+      }
+    }
+
     console.log(`Installing ${platform} app on ${device}...`);
+
+    const installStarted = performance.now();
     await logCommand(
       platform === 'android'
         ? $`adb -s ${device} install -r ${app}`
         : $`xcrun simctl install ${device} ${app}`,
       resolve(output, 'install.log'),
     );
-    installSeconds = (performance.now() - started) / 1000;
+    installSeconds = (performance.now() - installStarted) / 1000;
 
     if (platform === 'ios') {
       console.log('Preparing the iOS XCTest runner...');
@@ -200,7 +232,7 @@ const main = async () => {
     const testStarted = performance.now();
     try {
       await logCommand(
-        $`agent-device test ${flow} --platform ${platform} ${platform === 'ios' ? '--udid' : '--serial'} ${device} --artifacts-dir ${resolve(output, 'native')} --report-junit ${resolve(output, 'junit.xml')} --timeout 180000 --retries 0 -e ${`OUTPUT=${output}`} ${values.video ? ['--record-video'] : []}`,
+        $`agent-device test ${flow} --platform ${platform} ${platform === 'ios' ? '--udid' : '--serial'} ${device} --artifacts-dir ${resolve(output, 'native')} --report-junit ${resolve(output, 'junit.xml')} --timeout ${timeoutMs} --retries 0 -e ${`OUTPUT=${output}`} ${values.video ? ['--record-video'] : []}`,
         resolve(output, 'test.log'),
       );
     } finally {
