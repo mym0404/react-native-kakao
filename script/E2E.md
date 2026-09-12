@@ -69,7 +69,8 @@ Reported test time excludes app installation, iOS runner preparation, and builds
 ## GitHub CI and PR comments
 
 The existing `build-android (new)` and `build-ios (new)` jobs build Release apps and run the same script.
-Android uses an API 35 x86_64 emulator on Ubuntu. iOS uses an iPhone 17 Pro Simulator with Xcode 26.2.
+Android uses the Medium Phone profile with API 37.1, a 16 KB Google Play image, and 4 GB RAM on Ubuntu.
+The local PoC uses the ARM64 image; CI uses x86_64. iOS uses an iPhone 17 Pro Simulator with Xcode 26.2.
 The Android old-architecture build and existing required check names remain in place.
 A cached build-success result never skips E2E execution. Gradle and Pods dependency caches are reused.
 

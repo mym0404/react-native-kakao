@@ -145,10 +145,11 @@ jobs:
         if: matrix.arch == 'new'
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 35
-          target: google_apis
+          api-level: '37.1'
+          target: google_apis_playstore_ps16k
           arch: x86_64
-          profile: pixel_7
+          profile: medium_phone
+          ram-size: 4096M
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot -camera-back none
           script: yarn e2e test android --device emulator-5554 --output build/e2e/android
