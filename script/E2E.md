@@ -75,7 +75,7 @@ A cached build-success result never skips E2E execution. Gradle and Pods depende
 
 The workflow uploads output directories as GitHub Actions artifacts on success or failure and retains them for 14 days.
 For same-repository PRs, it updates one comment with each platform's result, test time, screenshot count, and download link.
-If a build or device preparation fails before testing begins, the comment reports `Not run`.
+If a build or simulator boot fails before the script starts, the comment reports `Not run`.
 Results from an older commit do not overwrite the latest PR comment.
 
 Fork PRs also run builds and E2E tests and upload artifacts.
