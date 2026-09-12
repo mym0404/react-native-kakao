@@ -134,7 +134,8 @@ const main = async () => {
   const body = [
     `context platform=${platform}`,
     `open ${appId} --relaunch`,
-    homeTitle,
+    // Cold CI devices install and start the snapshot helper during the first wait.
+    `${homeTitle} 60000`,
     'wait 500',
     'screenshot "${OUTPUT}/00-home.png"',
     'scroll bottom',
@@ -190,6 +191,16 @@ const main = async () => {
     }
   } catch (cause) {
     error = cause instanceof Error ? cause.message : String(cause);
+
+    const failureScreenshot = resolve(output, 'failure.png');
+    await (
+      platform === 'android'
+        ? $`adb -s ${device} exec-out screencap -p > ${failureScreenshot}`
+        : $`xcrun simctl io ${device} screenshot ${failureScreenshot}`
+    )
+      .timeout(15000)
+      .nothrow()
+      .catch(() => undefined);
   }
 
   const captured: typeof screenshots = [];

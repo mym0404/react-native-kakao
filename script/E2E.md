@@ -59,6 +59,8 @@ The output contains six PNGs, JUnit, installation and test logs, the generated `
 agent-device also stores screenshot copies and per-step logs under `native/`.
 Build logs are written to `build/e2e/<platform>/build.log`.
 A failed navigation step or missing PNG produces exit code 1. Automatic retries are disabled.
+The first Home check allows 60 seconds for cold device helper startup. Later checks use the default timeout.
+On failure, the script also attempts to save `failure.png` using the native device tool.
 Reported test time excludes app installation and builds; enabling video includes recording time.
 
 ## GitHub CI and PR comments
