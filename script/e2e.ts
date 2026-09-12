@@ -11,6 +11,7 @@ const appId = 'com.rnkakao.example';
 const screens = ['home', 'user', 'share', 'navi', 'social', 'channel'];
 const iosBuild = resolve(root, 'build/e2e/ios-build');
 const timeoutMs = 180000;
+const adbTimeoutMs = 10000;
 const logCommand = async (command: ProcessPromise, path: string) => {
   const result = await command.nothrow();
   await writeFile(path, result.stdout + result.stderr);
@@ -177,7 +178,9 @@ const main = async () => {
       let preparationLog = '';
       // A cold emulator can restart system_server after sys.boot_completed becomes 1.
       while (readySamples < requiredSamples && performance.now() - prepareStarted < timeoutMs) {
-        const result = await $`adb -s ${device} shell pm path android`.timeout(10000).nothrow();
+        const result = await $`adb -s ${device} shell pm path android`
+          .timeout(adbTimeoutMs)
+          .nothrow();
         preparationLog += `${result.stdout}${result.stderr}`;
         readySamples =
           result.exitCode === 0 && result.stdout.startsWith('package:') ? readySamples + 1 : 0;
@@ -247,6 +250,13 @@ const main = async () => {
     }
   } catch (cause) {
     error = cause instanceof Error ? cause.message : String(cause);
+
+    if (platform === 'android') {
+      await logCommand(
+        $`adb -s ${device} logcat -d -t 1000`.timeout(adbTimeoutMs),
+        resolve(output, 'logcat.log'),
+      ).catch(() => undefined);
+    }
 
     const failureScreenshot = resolve(output, 'failure.png');
     await (

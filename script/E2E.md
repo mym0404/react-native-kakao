@@ -65,13 +65,14 @@ Build logs are written to `build/e2e/<platform>/build.log`.
 A failed navigation step or missing PNG produces exit code 1. Automatic retries are disabled.
 The first Home check allows 60 seconds for cold device helper startup. Later checks use the default timeout.
 On failure, the script also attempts to save `failure.png` using the native device tool.
+Android failures also save the latest 1,000 logcat entries to `logcat.log`.
 Reported test time excludes app installation, device preparation, and builds; enabling video includes recording time.
 `summary.json` records installation and preparation times separately.
 
 ## GitHub CI and PR comments
 
 The existing `build-android (new)` and `build-ios (new)` jobs build Release apps and run the same script.
-Android uses the Medium Phone profile with API 37.1, a 16 KB Google Play image, and 4 GB RAM on Ubuntu.
+Android uses the Medium Phone profile with API 37.1, a 16 KB Google Play image, 4 GB RAM, and software graphics rendering on Ubuntu.
 The local PoC uses the ARM64 image; CI uses x86_64. iOS uses an iPhone 17 Pro Simulator with Xcode 26.2.
 The Android old-architecture build and existing required check names remain in place.
 A cached build-success result never skips E2E execution. Gradle and Pods dependency caches are reused.

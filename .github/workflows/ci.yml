@@ -151,7 +151,7 @@ jobs:
           profile: medium_phone
           ram-size: 4096M
           disable-animations: true
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot -camera-back none
+          emulator-options: -no-window -gpu software -noaudio -no-boot-anim -no-snapshot -camera-back none
           script: yarn e2e test android --device emulator-5554 --output build/e2e/android
 
       - name: Upload Android E2E evidence
