@@ -214,10 +214,10 @@ const main = async () => {
   await writeFile(resolve(output, 'summary.json'), `${JSON.stringify(summary, null, 2)}\n`);
   await writeFile(
     resolve(output, 'index.html'),
-    `<!doctype html><html lang="ko"><meta charset="utf-8"><title>Example E2E · ${platform}</title>
+    `<!doctype html><html lang="en"><meta charset="utf-8"><title>Example E2E · ${platform}</title>
 <style>body{font:16px system-ui;margin:32px;background:#111;color:#eee}main{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px}img{width:100%}a{color:#9cf}figure{margin:0}</style>
-<h1>${platform} · ${status}</h1><p>${durationSeconds.toFixed(2)}초 · ${captured.length}/${screens.length}개 화면</p>
-<p><a href="test.log">실행 로그</a> · <a href="junit.xml">JUnit</a></p>
+<h1>${platform} · ${status}</h1><p>${durationSeconds.toFixed(2)}s · ${captured.length}/${screens.length} screens</p>
+<p><a href="test.log">Test log</a> · <a href="junit.xml">JUnit</a></p>
 <main>${captured.map(({ screen, file }) => `<figure><figcaption>${screen}</figcaption><a href="${file}"><img src="${file}" alt="${screen}"></a></figure>`).join('')}</main></html>`,
   );
   console.log(`${platform}: ${status}, ${durationSeconds.toFixed(2)}s. Results: ${output}`);

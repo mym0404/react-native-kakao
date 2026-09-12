@@ -268,6 +268,7 @@ jobs:
             });
             const runUrl = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
             const rows = [];
+            const expectedScreenshots = 6;
             for (const platform of ['android', 'ios']) {
               const artifact = artifacts.find(({ name }) => name === `e2e-${platform}`);
               let result;
@@ -280,25 +281,25 @@ jobs:
                 result.platform !== platform ||
                 !['passed', 'failed'].includes(result.status) ||
                 !Number.isFinite(result.durationSeconds) || result.durationSeconds < 0 ||
-                !Number.isInteger(result.screenshots) || result.screenshots < 0 || result.screenshots > 6
+                !Number.isInteger(result.screenshots) || result.screenshots < 0 || result.screenshots > expectedScreenshots
               )) throw new Error(`Invalid ${platform} E2E summary`);
-              const status = result ? (result.status === 'passed' ? '✅ 통과' : '❌ 실패') : '⚠️ 미실행';
-              const seconds = result ? `${result.durationSeconds.toFixed(2)}초` : '—';
-              const screenshots = result ? `${result.screenshots}/6` : '—';
-              const link = artifact ? `[다운로드](${runUrl}/artifacts/${artifact.id})` : `[CI 로그](${runUrl})`;
+              const status = result ? (result.status === 'passed' ? '✅ Passed' : '❌ Failed') : '⚠️ Not run';
+              const seconds = result ? `${result.durationSeconds.toFixed(2)}s` : '—';
+              const screenshots = result ? `${result.screenshots}/${expectedScreenshots}` : '—';
+              const link = artifact ? `[Download](${runUrl}/artifacts/${artifact.id})` : `[CI logs](${runUrl})`;
               rows.push(`| ${platform} | ${status} | ${seconds} | ${screenshots} | ${link} |`);
             }
             const body = [
               marker, '', '## Example E2E · agent-device', '',
-              `커밋: ${process.env.PR_HEAD_SHA} · [CI 실행](${runUrl})`, '',
-              '홈 → User → 홈 → Share → 홈 → Navi → 홈 → Social → 홈 → Channel', '',
-              '| 플랫폼 | 결과 | 테스트 시간 | 스크린샷 | 산출물 |',
+              `Commit: ${process.env.PR_HEAD_SHA} · [CI run](${runUrl})`, '',
+              'Home → User → Home → Share → Home → Navi → Home → Social → Home → Channel', '',
+              '| Platform | Result | Test time | Screenshots | Artifacts |',
               '| --- | --- | ---: | ---: | --- |',
               ...rows,
               '',
-              '제목과 화면 진입을 검증해요. 로그인·기능 버튼·픽셀 비교는 포함하지 않아요.',
-              '시간은 앱 설치와 빌드를 제외해요. 미실행이면 빌드·기기 준비 로그를 확인해요.',
-              '산출물 ZIP의 `index.html`에서 화면을 비교할 수 있어요. PNG·JUnit·실행 로그를 14일간 보관해요.',
+              'Verifies screen entry and titles. Excludes login, feature actions, and pixel comparisons.',
+              'Time excludes app installation and builds. For tests that did not run, check build and device setup logs.',
+              'Open `index.html` from the artifact ZIP to compare screenshots. PNGs, JUnit, and logs are retained for 14 days.',
             ].join('\n');
             await core.summary.addRaw(body).write();
             const comments = await github.paginate(github.rest.issues.listComments, { owner, repo, issue_number });
