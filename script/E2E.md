@@ -28,7 +28,7 @@ adb devices
 xcrun simctl list devices booted
 ```
 
-Build the Release app with the new architecture. The default Android ABI follows the host CPU.
+Build the Debug app with the new architecture. The default Android ABI follows the host CPU.
 Use `--abi arm64-v8a` or `--abi x86_64` when the emulator uses a different ABI.
 
 ```sh
@@ -36,7 +36,14 @@ mise exec -- yarn e2e build android
 mise exec -- yarn e2e build ios
 ```
 
-Replace the example IDs below with your device IDs. These commands install and test the app without rebuilding it:
+Start Metro in another terminal for the platform under test:
+
+```sh
+mise exec -- yarn e2e metro android
+mise exec -- yarn e2e metro ios
+```
+
+Replace the example IDs below with your device IDs. These commands install the Debug app, connect it to Metro, and run the test without rebuilding it:
 
 ```sh
 mise exec -- yarn e2e test android --device emulator-5554
@@ -45,13 +52,13 @@ mise exec -- yarn e2e test ios --device SIMULATOR_UDID
 
 Each run writes to `build/e2e/<platform>/<timestamp>/`.
 Open `index.html` to view all six screens together.
-Rebuild the corresponding platform whenever app code changes.
+Rebuild only when native code or native build inputs change. JavaScript and TypeScript changes are loaded from Metro.
 
 ## Options and artifacts
 
 | Option          | Behavior                                                                                   |
 | --------------- | ------------------------------------------------------------------------------------------ |
-| `--app PATH`    | Install an existing APK or Simulator `.app`. Use a Release build with the new architecture |
+| `--app PATH`    | Install an existing APK or Simulator `.app`. Use a Debug build with the new architecture   |
 | `--output PATH` | Use a specific output directory. Refuse to overwrite a previous run containing `run.json`  |
 | `--video`       | Record the same navigation flow to an MP4 under `native/`                                  |
 | `--help`        | Print command usage                                                                        |
@@ -62,7 +69,7 @@ Android waits for three successful package-service and unlocked-user checks befo
 This covers cold emulators that restart framework services after reporting boot completion.
 iOS prepares and health-checks the XCTest runner before testing, with a ten-minute startup limit.
 Preparation is logged in `prepare.log`; iOS daemon diagnostics are saved in `device-state/`.
-Build logs are written to `build/e2e/<platform>/build.log`.
+Build logs are written to `build/e2e/<platform>/build.log`. CI also saves Metro output as `metro.log`.
 A failed navigation step or missing PNG produces exit code 1. Automatic retries are disabled.
 The first Home check allows 60 seconds for cold device helper startup. Later checks use the default timeout.
 On failure, the script also attempts to save `failure.png` using the native device tool.
@@ -72,13 +79,13 @@ Reported test time excludes app installation, device preparation, and builds; en
 
 ## GitHub CI and PR comments
 
-The existing `build-android (new)` and `build-ios (new)` jobs build Release apps and run the same script.
+The existing `build-android (new)` and `build-ios (new)` jobs build Debug apps, start Metro, and run the same script.
 Android uses the Medium Phone profile with API 37.1, a 16 KB Google Play image, 4 GB RAM, and software graphics rendering on Ubuntu.
 `GLDirectMem` and `HasSharedSlotsHostMemoryAllocator` are enabled explicitly because API 37's gralloc mapper requires both for DMA readback during screenshots and system composition.
 The local PoC uses the ARM64 image; CI uses x86_64. iOS uses an iPhone 17 Pro Simulator with Xcode 26.2.
 The Android old-architecture build and existing required check names remain in place.
-GitHub Actions caches the Android Release APK and iOS Release Simulator app by their build inputs.
-An exact cache hit skips only the Release build; E2E verification still runs and creates fresh evidence.
+GitHub Actions caches the Android Debug APK and iOS Debug Simulator app by their native build inputs.
+An exact cache hit skips only the Debug build. Metro still serves the current JavaScript and TypeScript, and E2E verification creates fresh evidence.
 Gradle and Pods dependency caches are also reused.
 
 The workflow uploads output directories as GitHub Actions artifacts on success or failure and retains them for 14 days.
