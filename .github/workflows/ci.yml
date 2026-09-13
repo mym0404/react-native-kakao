@@ -300,6 +300,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup GitHub CLI
+        uses: jdx/mise-action@v3
+        with:
+          version: 2026.7.7
+          install_args: gh
+          tool_versions: |
+            gh 2.100.0
+
       - name: Download E2E evidence
         uses: actions/download-artifact@v4
         with:
@@ -311,6 +319,7 @@ jobs:
         uses: actions/github-script@v7
         env:
           PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          GH_TOKEN: ${{ secrets.PAT }}
         with:
           script: |
             await require('./script/e2e-report.js')({ github, context, core });
