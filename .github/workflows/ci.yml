@@ -128,10 +128,10 @@ jobs:
         run: |
           yarn turbo run ci:android:build:${{matrix.arch}} --cache-dir="${{ env.TURBO_CACHE_DIR }}" --single-package
 
-      - name: Cache Android E2E Release app
+      - name: Restore Android E2E Release app
         if: matrix.arch == 'new'
         id: android-e2e-release-cache
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: |
             example/android/app/build/outputs/apk/release/app-release.apk
@@ -143,6 +143,15 @@ jobs:
         env:
           JAVA_OPTS: '-XX:MaxHeapSize=6g'
         run: yarn e2e build android --abi x86_64
+
+      - name: Save Android E2E Release app
+        if: matrix.arch == 'new' && steps.android-e2e-release-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            example/android/app/build/outputs/apk/release/app-release.apk
+            build/e2e/android/build.log
+          key: ${{ steps.android-e2e-release-cache.outputs.cache-primary-key }}
 
       - name: Enable KVM
         if: matrix.arch == 'new'
@@ -205,9 +214,9 @@ jobs:
       - name: Convert Arch
         run: yarn ${{matrix.arch}}
 
-      - name: Cache iOS E2E Release app
+      - name: Restore iOS E2E Release app
         id: ios-e2e-release-cache
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: |
             build/e2e/ios-build/Build/Products/Release-iphonesimulator/KakaoExample.app
@@ -233,6 +242,15 @@ jobs:
       - name: Build Release app for E2E
         if: steps.ios-e2e-release-cache.outputs.cache-hit != 'true'
         run: yarn e2e build ios
+
+      - name: Save iOS E2E Release app
+        if: steps.ios-e2e-release-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            build/e2e/ios-build/Build/Products/Release-iphonesimulator/KakaoExample.app
+            build/e2e/ios/build.log
+          key: ${{ steps.ios-e2e-release-cache.outputs.cache-primary-key }}
 
       - name: Boot E2E Simulator
         run: |
