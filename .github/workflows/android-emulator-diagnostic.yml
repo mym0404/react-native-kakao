@@ -26,16 +26,17 @@ jobs:
           ram-size: 4096M
           emulator-options: -no-window -gpu software -feature GLDirectMem,HasSharedSlotsHostMemoryAllocator -noaudio -no-boot-anim -no-snapshot -camera-back none
           pre-emulator-launch-script: cat ~/.android/avd/test.avd/config.ini > diagnostic/avd.ini
-          script: |
-            trap 'adb logcat -d > diagnostic/logcat.log' EXIT
-            for sample in $(seq 1 90); do state=$(adb shell am get-started-user-state 0); echo "$state" >> diagnostic/ready.log; if [ "$state" = RUNNING_UNLOCKED ]; then break; fi; sleep 2; done
-            test "$state" = RUNNING_UNLOCKED
-            adb shell am start -W -a android.settings.SETTINGS > diagnostic/launch.log
-            sleep 5
-            adb exec-out screencap -p > diagnostic/settings.png
-            python3 -c 'from pathlib import Path; assert Path("diagnostic/settings.png").read_bytes().startswith(bytes.fromhex("89504e470d0a1a0a"))'
-            sleep 30
-            adb exec-out screencap -p > diagnostic/settings-later.png
+          script: >-
+            set -e;
+            trap 'adb logcat -d > diagnostic/logcat.log' EXIT;
+            for sample in $(seq 1 90); do state=$(adb shell am get-started-user-state 0 || true); echo "$state" >> diagnostic/ready.log; if [ "$state" = RUNNING_UNLOCKED ]; then break; fi; sleep 2; done;
+            test "$state" = RUNNING_UNLOCKED;
+            adb shell am start -W -a android.settings.SETTINGS > diagnostic/launch.log;
+            sleep 5;
+            adb exec-out screencap -p > diagnostic/settings.png;
+            python3 -c 'from pathlib import Path; assert Path("diagnostic/settings.png").read_bytes().startswith(bytes.fromhex("89504e470d0a1a0a"))';
+            sleep 30;
+            adb exec-out screencap -p > diagnostic/settings-later.png;
             python3 -c 'from pathlib import Path; assert Path("diagnostic/settings-later.png").read_bytes().startswith(bytes.fromhex("89504e470d0a1a0a"))'
       - uses: actions/upload-artifact@v4
         if: always()
