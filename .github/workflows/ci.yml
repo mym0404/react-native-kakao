@@ -128,8 +128,18 @@ jobs:
         run: |
           yarn turbo run ci:android:build:${{matrix.arch}} --cache-dir="${{ env.TURBO_CACHE_DIR }}" --single-package
 
-      - name: Build Release app for E2E
+      - name: Cache Android E2E Release app
         if: matrix.arch == 'new'
+        id: android-e2e-release-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            example/android/app/build/outputs/apk/release/app-release.apk
+            build/e2e/android/build.log
+          key: ${{ runner.os }}-e2e-android-release-new-x86_64-jdk17-v1-${{ hashFiles('mise.toml', 'yarn.lock', 'package.json', 'packages/*/package.json', 'packages/*/src/**', 'packages/*/android/**', 'example/package.json', 'example/src/**', 'example/assets/**', 'example/app.json', 'example/babel.config.js', 'example/metro.config.js', 'example/react-native.config.js', 'example/android/app/**', 'example/android/build.gradle', 'example/android/gradle.properties', 'example/android/gradle/**', 'example/android/settings.gradle', 'script/arch-convert.sh') }}
+
+      - name: Build Release app for E2E
+        if: matrix.arch == 'new' && steps.android-e2e-release-cache.outputs.cache-hit != 'true'
         env:
           JAVA_OPTS: '-XX:MaxHeapSize=6g'
         run: yarn e2e build android --abi x86_64
@@ -195,6 +205,15 @@ jobs:
       - name: Convert Arch
         run: yarn ${{matrix.arch}}
 
+      - name: Cache iOS E2E Release app
+        id: ios-e2e-release-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            build/e2e/ios-build/Build/Products/Release-iphonesimulator/KakaoExample.app
+            build/e2e/ios/build.log
+          key: ${{ runner.os }}-e2e-ios-release-new-xcode26.2-v1-${{ hashFiles('mise.toml', 'yarn.lock', 'package.json', 'packages/*/package.json', 'packages/*/src/**', 'packages/*/ios/**', 'packages/*/*.podspec', 'example/package.json', 'example/src/**', 'example/assets/**', 'example/app.json', 'example/babel.config.js', 'example/metro.config.js', 'example/react-native.config.js', 'example/Gemfile.lock', 'example/ios/**', 'script/arch-convert.sh') }}
+
       - name: Cache cocoapods
         id: cocoapods-cache
         uses: actions/cache@v4
@@ -212,6 +231,7 @@ jobs:
           NO_FLIPPER: 1
 
       - name: Build Release app for E2E
+        if: steps.ios-e2e-release-cache.outputs.cache-hit != 'true'
         run: yarn e2e build ios
 
       - name: Boot E2E Simulator

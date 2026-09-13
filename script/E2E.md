@@ -77,7 +77,9 @@ Android uses the Medium Phone profile with API 37.1, a 16 KB Google Play image, 
 `GLDirectMem` and `HasSharedSlotsHostMemoryAllocator` are enabled explicitly because API 37's gralloc mapper requires both for DMA readback during screenshots and system composition.
 The local PoC uses the ARM64 image; CI uses x86_64. iOS uses an iPhone 17 Pro Simulator with Xcode 26.2.
 The Android old-architecture build and existing required check names remain in place.
-A cached build-success result never skips E2E execution. Gradle and Pods dependency caches are reused.
+GitHub Actions caches the Android Release APK and iOS Release Simulator app by their build inputs.
+An exact cache hit skips only the Release build; E2E verification still runs and creates fresh evidence.
+Gradle and Pods dependency caches are also reused.
 
 The workflow uploads output directories as GitHub Actions artifacts on success or failure and retains them for 14 days.
 For same-repository PRs, it updates one comment with each platform's result, test time, screenshot count, and download link.
