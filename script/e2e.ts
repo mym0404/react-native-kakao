@@ -138,6 +138,7 @@ const main = async () => {
   const body = [
     `context platform=${platform}`,
     `open ${appId} --relaunch`,
+    ...(platform === 'android' ? [`press ${JSON.stringify('role="button" label="OK"')}`] : []),
     // Cold CI devices install and start the snapshot helper during the first wait.
     `${homeTitle} 60000`,
     settle,

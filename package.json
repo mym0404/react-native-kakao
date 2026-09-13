@@ -90,8 +90,5 @@
     "extends": [
       "@commitlint/config-conventional"
     ]
-  },
-  "resolutions": {
-    "expo-modules-core@npm:2.3.12": "patch:expo-modules-core@npm%3A2.3.12#~/.yarn/patches/expo-modules-core-npm-2.3.12-8d14aa8c52.patch"
   }
 }
