@@ -74,6 +74,8 @@ Reported test time excludes app installation, device preparation, and builds; en
 The existing `build-android (new)` and `build-ios (new)` jobs build Release apps and run the same script.
 Android uses the Medium Phone profile with API 37.1, a 16 KB Google Play image, 4 GB RAM, and software graphics rendering on Ubuntu.
 `GLDirectMem` and `HasSharedSlotsHostMemoryAllocator` are enabled explicitly because API 37's gralloc mapper requires both for DMA readback during screenshots and system composition.
+The Yarn patch for `expo-modules-core@2.3.12` backports [Expo's 16 KB build fix](https://github.com/expo/expo/pull/37446).
+It enables flexible page sizes when compiling the native library, so the Android compatibility dialog does not block the first screen.
 The local PoC uses the ARM64 image; CI uses x86_64. iOS uses an iPhone 17 Pro Simulator with Xcode 26.2.
 The Android old-architecture build and existing required check names remain in place.
 A cached build-success result never skips E2E execution. Gradle and Pods dependency caches are reused.

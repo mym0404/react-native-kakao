@@ -1,0 +1,12 @@
+diff --git a/android/build.gradle b/android/build.gradle
+index 9914a746c4c1eeaa18b915f601891037f9d32a5e..650c48f941ec49ee316b75df8765b8aa063cc2af 100644
+--- a/android/build.gradle
++++ b/android/build.gradle
+@@ -85,6 +85,7 @@ android {
+       cmake {
+         abiFilters(*reactNativeArchitectures())
+         arguments "-DANDROID_STL=c++_shared",
++          "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON",
+           "-DREACT_NATIVE_DIR=${expoModuleExtension.reactNativeDir}",
+           "-DREACT_NATIVE_TARGET_VERSION=${expoModuleExtension.reactNativeVersion.minor}",
+           "-DUSE_HERMES=${USE_HERMES}",
