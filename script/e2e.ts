@@ -170,7 +170,7 @@ const main = async () => {
   let prepareSeconds = 0;
   try {
     if (platform === 'android') {
-      console.log('Waiting for the Android package service...');
+      console.log('Waiting for Android services and an unlocked user...');
 
       const prepareStarted = performance.now();
       const requiredSamples = 3;
@@ -178,12 +178,17 @@ const main = async () => {
       let preparationLog = '';
       // A cold emulator can restart system_server after sys.boot_completed becomes 1.
       while (readySamples < requiredSamples && performance.now() - prepareStarted < timeoutMs) {
-        const result = await $`adb -s ${device} shell pm path android`
-          .timeout(adbTimeoutMs)
-          .nothrow();
+        const result =
+          await $`adb -s ${device} shell ${'pm path android && am get-started-user-state $(am get-current-user)'}`
+            .timeout(adbTimeoutMs)
+            .nothrow();
         preparationLog += `${result.stdout}${result.stderr}`;
         readySamples =
-          result.exitCode === 0 && result.stdout.startsWith('package:') ? readySamples + 1 : 0;
+          result.exitCode === 0 &&
+          result.stdout.startsWith('package:') &&
+          result.stdout.trim().endsWith('RUNNING_UNLOCKED')
+            ? readySamples + 1
+            : 0;
 
         if (readySamples < requiredSamples) {
           await sleep(2000);
@@ -194,7 +199,7 @@ const main = async () => {
       await writeFile(resolve(output, 'prepare.log'), preparationLog);
       if (readySamples < requiredSamples) {
         throw new Error(
-          `Android package service did not become ready within ${timeoutMs / 1000} seconds.`,
+          `Android services and user did not become ready within ${timeoutMs / 1000} seconds.`,
         );
       }
     }
@@ -253,7 +258,7 @@ const main = async () => {
 
     if (platform === 'android') {
       await logCommand(
-        $`adb -s ${device} logcat -d -t 1000`.timeout(adbTimeoutMs),
+        $`adb -s ${device} logcat -d`.timeout(adbTimeoutMs),
         resolve(output, 'logcat.log'),
       ).catch(() => undefined);
     }

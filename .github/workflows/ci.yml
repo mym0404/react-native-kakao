@@ -151,7 +151,8 @@ jobs:
           profile: medium_phone
           ram-size: 4096M
           disable-animations: true
-          emulator-options: -no-window -gpu software -noaudio -no-boot-anim -no-snapshot -camera-back none
+          # API 37's gralloc mapper requires DMA readback, which depends on GLDirectMem.
+          emulator-options: -no-window -gpu software -feature GLDirectMem -noaudio -no-boot-anim -no-snapshot -camera-back none
           script: yarn e2e test android --device emulator-5554 --output build/e2e/android
 
       - name: Upload Android E2E evidence

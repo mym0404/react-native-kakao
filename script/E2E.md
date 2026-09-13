@@ -57,7 +57,7 @@ Rebuild the corresponding platform whenever app code changes.
 
 The output contains six PNGs, JUnit, installation and test logs, the generated `.ad` flow, `summary.json`, and `index.html`.
 agent-device also stores screenshot copies and per-step logs under `native/`.
-Android waits for three successful package-service checks before installation, with a three-minute limit.
+Android waits for three successful package-service and unlocked-user checks before installation, with a three-minute limit.
 This covers cold emulators that restart framework services after reporting boot completion.
 iOS prepares and health-checks the XCTest runner before testing, with a ten-minute startup limit.
 Preparation is logged in `prepare.log`; iOS daemon diagnostics are saved in `device-state/`.
@@ -65,7 +65,7 @@ Build logs are written to `build/e2e/<platform>/build.log`.
 A failed navigation step or missing PNG produces exit code 1. Automatic retries are disabled.
 The first Home check allows 60 seconds for cold device helper startup. Later checks use the default timeout.
 On failure, the script also attempts to save `failure.png` using the native device tool.
-Android failures also save the latest 1,000 logcat entries to `logcat.log`.
+Android failures also save the available logcat buffer, including boot failures, to `logcat.log`.
 Reported test time excludes app installation, device preparation, and builds; enabling video includes recording time.
 `summary.json` records installation and preparation times separately.
 
@@ -73,6 +73,7 @@ Reported test time excludes app installation, device preparation, and builds; en
 
 The existing `build-android (new)` and `build-ios (new)` jobs build Release apps and run the same script.
 Android uses the Medium Phone profile with API 37.1, a 16 KB Google Play image, 4 GB RAM, and software graphics rendering on Ubuntu.
+`GLDirectMem` is enabled explicitly because API 37's gralloc mapper requires DMA readback for screenshots and system composition.
 The local PoC uses the ARM64 image; CI uses x86_64. iOS uses an iPhone 17 Pro Simulator with Xcode 26.2.
 The Android old-architecture build and existing required check names remain in place.
 A cached build-success result never skips E2E execution. Gradle and Pods dependency caches are reused.
