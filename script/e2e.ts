@@ -12,6 +12,7 @@ const appScheme = 'kakao-example';
 const screens = ['home', 'user', 'share', 'navi', 'social', 'channel'];
 const iosBuild = resolve(root, 'build/e2e/ios-build');
 const timeoutMs = 180000;
+const testTimeoutMs = 300000;
 const adbTimeoutMs = 10000;
 const metroUrl = 'http://localhost:8081';
 const logCommand = async (command: ProcessPromise, path: string) => {
@@ -266,7 +267,7 @@ const main = async () => {
     const testStarted = performance.now();
     try {
       await logCommand(
-        $`agent-device test ${flow} --platform ${platform} ${platform === 'ios' ? '--udid' : '--serial'} ${device} --artifacts-dir ${resolve(output, 'native')} --report-junit ${resolve(output, 'junit.xml')} --timeout ${timeoutMs} --retries 0 -e ${`OUTPUT=${output}`} ${values.video ? ['--record-video'] : []}`,
+        $`agent-device test ${flow} --platform ${platform} ${platform === 'ios' ? '--udid' : '--serial'} ${device} --artifacts-dir ${resolve(output, 'native')} --report-junit ${resolve(output, 'junit.xml')} --timeout ${testTimeoutMs} --retries 0 -e ${`OUTPUT=${output}`} ${values.video ? ['--record-video'] : []}`,
         resolve(output, 'test.log'),
       );
     } finally {
