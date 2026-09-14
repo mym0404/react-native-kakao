@@ -295,18 +295,13 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       actions: read
+      contents: write
       pull-requests: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Setup GitHub CLI
-        uses: jdx/mise-action@v3
         with:
-          version: 2026.7.7
-          install_args: gh
-          tool_versions: |
-            gh 2.100.0
+          persist-credentials: false
 
       - name: Download E2E evidence
         uses: actions/download-artifact@v4
@@ -314,12 +309,29 @@ jobs:
           pattern: e2e-*
           path: e2e-results
 
+      - name: Prepare E2E screenshots
+        if: always()
+        run: |
+          for platform in android ios; do
+            mkdir -p "e2e-images/e2e-$platform"
+            cp e2e-results/e2e-$platform/*.png "e2e-images/e2e-$platform/" 2>/dev/null || true
+          done
+
+      - name: Publish E2E screenshots
+        if: always()
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: e2e-images
+          target-folder: e2e/pr-${{ github.event.pull_request.number }}
+          clean: true
+          commit-message: 'ci: publish E2E screenshots for PR #${{ github.event.pull_request.number }}'
+
       - name: Comment E2E results
         if: always()
         uses: actions/github-script@v7
         env:
           PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-          GH_TOKEN: ${{ secrets.PAT }}
         with:
           script: |
             await require('./script/e2e-report.js')({ github, context, core });

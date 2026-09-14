@@ -7,6 +7,7 @@ import { parseArgs } from 'node:util';
 import { $, type ProcessPromise } from 'zx';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const appId = 'com.rnkakao.example';
 const appScheme = 'kakao-example';
 const screens = ['home', 'user', 'share', 'navi', 'social', 'channel'];
 const iosBuild = resolve(root, 'build/e2e/ios-build');
@@ -144,8 +145,10 @@ const main = async () => {
   const titleSelector = 'id="screen-title"';
   const homeTitle = `wait ${JSON.stringify(`${titleSelector} text="Index"`)}`;
   const settle = 'wait 500';
+  const devClientUrl = `${appScheme}://expo-development-client/?url=${encodeURIComponent(metroUrl)}`;
   const body = [
     `context platform=${platform}`,
+    `open ${appId} --relaunch --metro-host localhost --metro-port 8081 --launch-url ${JSON.stringify(devClientUrl)}`,
     ...(platform === 'android' ? [`press ${JSON.stringify('role="button" label="OK"')}`] : []),
     // Cold CI devices install and start the snapshot helper during the first wait.
     `${homeTitle} 60000`,
@@ -250,21 +253,10 @@ const main = async () => {
       resolve(output, 'metro-status.log'),
     );
 
-    const devClientUrl =
-      `${appScheme}://expo-development-client/?url=${encodeURIComponent(metroUrl)}`;
     if (platform === 'android') {
       await logCommand(
         $`adb -s ${device} reverse tcp:8081 tcp:8081`,
         resolve(output, 'metro-reverse.log'),
-      );
-      await logCommand(
-        $`adb -s ${device} shell am start -W -a android.intent.action.VIEW -d ${devClientUrl}`,
-        resolve(output, 'metro-connect.log'),
-      );
-    } else {
-      await logCommand(
-        $`xcrun simctl openurl ${device} ${devClientUrl}`,
-        resolve(output, 'metro-connect.log'),
       );
     }
 

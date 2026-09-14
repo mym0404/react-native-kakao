@@ -1,5 +1,6 @@
 const fs = require('node:fs/promises');
-const { execFileSync } = require('node:child_process');
+const platforms = ['android', 'ios'];
+const screens = ['home', 'user', 'share', 'navi', 'social', 'channel'];
 
 module.exports = async ({ github, context, core }) => {
   const { owner, repo } = context.repo;
@@ -18,8 +19,12 @@ module.exports = async ({ github, context, core }) => {
   const runUrl = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
   const rows = [];
   const imagePaths = new Map();
-  const expectedScreenshots = 6;
-  for (const platform of ['android', 'ios']) {
+  const failurePaths = new Map();
+  const expectedScreenshots = screens.length;
+  const imageUrl = (path) =>
+    `https://raw.githubusercontent.com/${owner}/${repo}/gh-pages/e2e/pr-${issue_number}/${path.replace('e2e-results/', '')}?sha=${process.env.PR_HEAD_SHA}`;
+
+  for (const platform of platforms) {
     let result;
     try {
       result = JSON.parse(await fs.readFile(`e2e-results/e2e-${platform}/summary.json`, 'utf8'));
@@ -47,12 +52,26 @@ module.exports = async ({ github, context, core }) => {
     const screenshots = result ? `${result.screenshots}/${expectedScreenshots}` : '—';
     rows.push(`| ${platform} | ${status} | ${seconds} | ${screenshots} |`);
 
-    for (const [index, screen] of ['home', 'user', 'share', 'navi', 'social', 'channel'].entries()) {
+    for (const [index, screen] of screens.entries()) {
       const path = `e2e-results/e2e-${platform}/${String(index).padStart(2, '0')}-${screen}.png`;
-      const exists = await fs.stat(path).then(() => true).catch(() => false);
+      const exists = await fs
+        .stat(path)
+        .then(() => true)
+        .catch(() => false);
+
       if (exists) {
         imagePaths.set(`${platform}-${screen}`, path);
       }
+    }
+
+    const failurePath = `e2e-results/e2e-${platform}/failure.png`;
+    const failureExists = await fs
+      .stat(failurePath)
+      .then(() => true)
+      .catch(() => false);
+
+    if (failureExists) {
+      failurePaths.set(platform, failurePath);
     }
   }
 
@@ -72,15 +91,21 @@ module.exports = async ({ github, context, core }) => {
     'Verifies screen entry and titles. Excludes login, feature actions, and pixel comparisons.',
     'Time excludes app installation, device preparation, and builds. For tests that did not run, check build and device setup logs.',
   ];
-  const screenshotRows = ['home', 'user', 'share', 'navi', 'social', 'channel'].map(
-    (screen) => {
-      const cells = ['android', 'ios'].map((platform) => {
-        const path = imagePaths.get(`${platform}-${screen}`);
-        return path ? `![${platform} ${screen}](${path})` : '—';
-      });
-      return `| ${screen} | ${cells.join(' | ')} |`;
-    },
-  );
+
+  const screenshotRows = screens.map((screen) => {
+    const cells = platforms.map((platform) => {
+      const path = imagePaths.get(`${platform}-${screen}`);
+
+      return path ? `![${platform} ${screen}](${imageUrl(path)})` : '—';
+    });
+
+    return `| ${screen} | ${cells.join(' | ')} |`;
+  });
+
+  const failureRows = [...failurePaths].map(([platform, path]) => {
+    return `| ${platform} | ![${platform} failure](${imageUrl(path)}) |`;
+  });
+
   const body = [
     ...summary,
     '',
@@ -89,6 +114,16 @@ module.exports = async ({ github, context, core }) => {
     '| Screen | Android | iOS |',
     '| --- | --- | --- |',
     ...screenshotRows,
+    ...(failureRows.length
+      ? [
+          '',
+          '### Failure screenshots',
+          '',
+          '| Platform | Screenshot |',
+          '| --- | --- |',
+          ...failureRows,
+        ]
+      : []),
   ].join('\n');
   await core.summary.addRaw(summary.join('\n')).write();
 
@@ -98,37 +133,19 @@ module.exports = async ({ github, context, core }) => {
     issue_number,
   });
 
-  const previous = comments.filter(
+  const previous = comments.find(
     ({ body: commentBody, user }) =>
-      user?.login && commentBody?.startsWith(marker),
-  );
-  const bodyPath = `${process.env.RUNNER_TEMP ?? '.'}/e2e-comment.md`;
-  await fs.writeFile(bodyPath, `${body}\n`);
-  const attachmentArgs = [...imagePaths.values()].flatMap((path) => ['--attach', path]);
-  execFileSync(
-    'gh',
-    [
-      'pr',
-      'comment',
-      String(issue_number),
-      '--repo',
-      `${owner}/${repo}`,
-      '--body-file',
-      bodyPath,
-      ...attachmentArgs,
-    ],
-    { stdio: 'inherit' },
+      user?.login === 'github-actions[bot]' && commentBody?.startsWith(marker),
   );
 
-  for (const comment of previous) {
-    try {
-      execFileSync(
-        'gh',
-        ['api', '--method', 'DELETE', `repos/${owner}/${repo}/issues/comments/${comment.id}`],
-        { stdio: 'inherit' },
-      );
-    } catch {
-      core.warning(`Could not delete previous E2E comment ${comment.id}`);
-    }
+  if (previous) {
+    await github.rest.issues.updateComment({
+      owner,
+      repo,
+      comment_id: previous.id,
+      body,
+    });
+  } else {
+    await github.rest.issues.createComment({ owner, repo, issue_number, body });
   }
 };
