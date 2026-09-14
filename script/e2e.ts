@@ -152,9 +152,12 @@ const main = async () => {
     `context platform=${platform}`,
     `open ${appId} --relaunch --metro-host localhost --metro-port 8081 --launch-url ${JSON.stringify(devClientUrl)}`,
     'alert wait 30000',
+    'wait 2000',
     'alert accept',
     `wait ${JSON.stringify(devMenuContinue)} 30000`,
     `press ${JSON.stringify(devMenuContinue)}`,
+    'wait 500',
+    'back',
     // Cold CI devices install and start the snapshot helper during the first wait.
     `${homeTitle} 60000`,
     settle,
