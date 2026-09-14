@@ -143,13 +143,15 @@ const main = async () => {
     file: `${String(index).padStart(2, '0')}-${screen}.png`,
   }));
   const titleSelector = 'id="screen-title"';
+  const startupButton = `role="button" label="${platform === 'android' ? 'OK' : 'Open'}"`;
   const homeTitle = `wait ${JSON.stringify(`${titleSelector} text="Index"`)}`;
   const settle = 'wait 500';
   const devClientUrl = `${appScheme}://expo-development-client/?url=${encodeURIComponent(metroUrl)}`;
   const body = [
     `context platform=${platform}`,
     `open ${appId} --relaunch --metro-host localhost --metro-port 8081 --launch-url ${JSON.stringify(devClientUrl)}`,
-    ...(platform === 'android' ? [`press ${JSON.stringify('role="button" label="OK"')}`] : []),
+    `wait ${JSON.stringify(startupButton)} 30000`,
+    `press ${JSON.stringify(startupButton)}`,
     // Cold CI devices install and start the snapshot helper during the first wait.
     `${homeTitle} 60000`,
     settle,
