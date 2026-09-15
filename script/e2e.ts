@@ -149,8 +149,10 @@ const main = async () => {
   const devClientUrl = `${appScheme}://expo-development-client/?url=${encodeURIComponent(metroUrl)}&disableOnboarding=1`;
   const body = [
     `context platform=${platform}`,
-    `open ${appId} --relaunch --metro-host localhost --metro-port 8081 --launch-url ${JSON.stringify(devClientUrl)}`,
-    ...(platform === 'ios' ? [`press ${JSON.stringify('label="Open"')}`] : []),
+    platform === 'android'
+      ? `open ${appId} --relaunch --metro-host localhost --metro-port 8081 --launch-url ${JSON.stringify(devClientUrl)}`
+      : `open ${appId} --metro-host localhost --metro-port 8081`,
+    ...(platform === 'android' ? ['alert wait 30000', 'wait 2000', 'alert accept'] : []),
     // Cold CI devices install and start the snapshot helper during the first wait.
     `${homeTitle} 60000`,
     settle,
@@ -258,6 +260,11 @@ const main = async () => {
       await logCommand(
         $`adb -s ${device} reverse tcp:8081 tcp:8081`,
         resolve(output, 'metro-reverse.log'),
+      );
+    } else {
+      await logCommand(
+        $`xcrun simctl launch --terminate-running-process ${device} ${appId} --initialUrl ${`${metroUrl}?disableOnboarding=1`}`,
+        resolve(output, 'launch.log'),
       );
     }
 
