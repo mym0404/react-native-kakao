@@ -3,4 +3,6 @@ node_modules/
 #docs/
 **/.gradle/
 **/build
-script
+script/*
+!script/e2e.ts
+!script/e2e-report.js
