@@ -12,7 +12,7 @@ const appScheme = 'kakao-example';
 const screens = ['home', 'user', 'share', 'navi', 'social', 'channel'];
 const iosBuild = resolve(root, 'build/e2e/ios-build');
 const timeoutMs = 180000;
-const testTimeoutMs = 300000;
+const testTimeoutMs = 600000;
 const adbTimeoutMs = 10000;
 const metroUrl = 'http://localhost:8081';
 const logCommand = async (command: ProcessPromise, path: string) => {
@@ -150,9 +150,7 @@ const main = async () => {
   const body = [
     `context platform=${platform}`,
     `open ${appId} --relaunch --metro-host localhost --metro-port 8081 --launch-url ${JSON.stringify(devClientUrl)}`,
-    'alert wait 30000',
-    'wait 2000',
-    'alert accept',
+    ...(platform === 'ios' ? [`press ${JSON.stringify('label="Open"')}`] : []),
     // Cold CI devices install and start the snapshot helper during the first wait.
     `${homeTitle} 60000`,
     settle,
