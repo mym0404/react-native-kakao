@@ -11,7 +11,6 @@ import com.kakao.sdk.auth.model.Prompt.CERT
 import com.kakao.sdk.auth.model.Prompt.CREATE
 import com.kakao.sdk.auth.model.Prompt.LOGIN
 import com.kakao.sdk.auth.model.Prompt.SELECT_ACCOUNT
-import com.kakao.sdk.auth.model.Prompt.UNIFY_DAUM
 import com.kakao.sdk.user.UserApiClient
 import net.mjstudio.rnkakao.core.util.RNCKakaoResponseNotFoundException
 import net.mjstudio.rnkakao.core.util.RNCKakaoUtil
@@ -117,7 +116,6 @@ class RNCKakaoUserModule internal constructor(
                 "Login" -> LOGIN
                 "Create" -> CREATE
                 "Cert" -> CERT
-                "UnifyDaum" -> UNIFY_DAUM
                 "SelectAccount" -> SELECT_ACCOUNT
                 else -> null
               }
@@ -351,10 +349,6 @@ class RNCKakaoUserModule internal constructor(
               putB(
                 "profileNeedsAgreement",
                 user.kakaoAccount?.profileNeedsAgreement,
-              )
-              putB(
-                "ciNeedsAgreement",
-                user.kakaoAccount?.ciNeedsAgreement,
               )
               putB(
                 "nameNeedsAgreement",

@@ -102,7 +102,6 @@ export interface KakaoUser {
   isKoreanNeedsAgreement?: boolean;
   phoneNumberNeedsAgreement?: boolean;
   profileNeedsAgreement?: boolean;
-  ciNeedsAgreement?: boolean;
   nameNeedsAgreement?: boolean;
   profileImageNeedsAgreement?: boolean;
   profileNicknameNeedsAgreement?: boolean;
@@ -123,7 +122,7 @@ export function login({
   nonce,
 }: {
   serviceTerms?: string[];
-  prompts?: ('Login' | 'Create' | 'Cert' | 'UnifyDaum' | 'SelectAccount')[];
+  prompts?: ('Login' | 'Create' | 'Cert' | 'SelectAccount')[];
   scopes?: string[];
   useKakaoAccountLogin?: boolean;
   nonce?: string;

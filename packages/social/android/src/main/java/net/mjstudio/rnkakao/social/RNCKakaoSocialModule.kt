@@ -5,15 +5,21 @@ import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableMap
-import com.kakao.sdk.friend.client.PickerClient
-import com.kakao.sdk.friend.model.OpenPickerFriendRequestParams
-import com.kakao.sdk.friend.model.PickerOrientation
-import com.kakao.sdk.friend.model.PickerOrientation.LANDSCAPE
-import com.kakao.sdk.friend.model.PickerOrientation.PORTRAIT
-import com.kakao.sdk.friend.model.SelectedUsers
-import com.kakao.sdk.friend.model.ViewAppearance.AUTO
-import com.kakao.sdk.friend.model.ViewAppearance.DARK
-import com.kakao.sdk.friend.model.ViewAppearance.LIGHT
+import com.kakao.sdk.friend.client.selectFriend
+import com.kakao.sdk.friend.core.PickerClient
+import com.kakao.sdk.friend.core.model.OpenPickerFriendRequestParams
+import com.kakao.sdk.friend.core.model.PickerOrientation
+import com.kakao.sdk.friend.core.model.PickerOrientation.LANDSCAPE
+import com.kakao.sdk.friend.core.model.PickerOrientation.PORTRAIT
+import com.kakao.sdk.friend.core.model.SelectParams
+import com.kakao.sdk.friend.core.model.SelectedUsers
+import com.kakao.sdk.friend.core.model.SelectionMode.MULTIPLE
+import com.kakao.sdk.friend.core.model.SelectionMode.SINGLE
+import com.kakao.sdk.friend.core.model.ViewAppearance.AUTO
+import com.kakao.sdk.friend.core.model.ViewAppearance.DARK
+import com.kakao.sdk.friend.core.model.ViewAppearance.LIGHT
+import com.kakao.sdk.friend.core.model.ViewType.FULL
+import com.kakao.sdk.friend.core.model.ViewType.POPUP
 import com.kakao.sdk.talk.TalkApiClient
 import com.kakao.sdk.talk.model.FriendOrder
 import com.kakao.sdk.talk.model.Order
@@ -97,43 +103,45 @@ class RNCKakaoSocialModule internal constructor(
       }
     }
 
-    if (!multiple) {
-      if (mode == "popup") {
-        PickerClient.instance.selectFriendPopup(context, getParams(options), callback)
-      } else {
-        PickerClient.instance.selectFriend(context, getParams(options), callback)
-      }
-    } else {
-      if (mode == "popup") {
-        PickerClient.instance.selectFriendsPopup(context, getParams(options), callback)
-      } else {
-        PickerClient.instance.selectFriends(context, getParams(options), callback)
-      }
-    }
+    PickerClient.instance.selectFriend(
+      context,
+      getParams(multiple, options),
+      if (mode == "popup") POPUP else FULL,
+      callback,
+    )
   }
 
-  private fun getParams(options: ReadableMap?) =
-    OpenPickerFriendRequestParams(
-      title = options?.getString("title"),
-      viewAppearance =
-        when (options?.getString("viewAppearance")) {
-          "dark" -> DARK
-          "light" -> LIGHT
-          else -> AUTO
-        },
-      orientation =
-        when (options?.getString("orientation")) {
-          "portrait" -> PORTRAIT
-          "landscape" -> LANDSCAPE
-          else -> PickerOrientation.AUTO
-        },
-      enableSearch = options?.getBooleanElseNull("enableSearch"),
-      showMyProfile = options?.getBooleanElseNull("showMyProfile"),
-      showFavorite = options?.getBooleanElseNull("showFavorite"),
-      showPickedFriend = options?.getBooleanElseNull("showPickedFriend"),
-      maxPickableCount = options?.getIntElseNull("maxPickableCount"),
-      minPickableCount = options?.getIntElseNull("minPickableCount"),
-    )
+  private fun getParams(
+    multiple: Boolean,
+    options: ReadableMap?,
+  ) = OpenPickerFriendRequestParams(
+    viewAppearance =
+      when (options?.getString("viewAppearance")) {
+        "dark" -> DARK
+        "light" -> LIGHT
+        else -> AUTO
+      },
+    orientation =
+      when (options?.getString("orientation")) {
+        "portrait" -> PORTRAIT
+        "landscape" -> LANDSCAPE
+        else -> PickerOrientation.AUTO
+      },
+    enableSearch = options?.getBooleanElseNull("enableSearch") ?: true,
+    showMyProfile = options?.getBooleanElseNull("showMyProfile") ?: true,
+    showFavorite = options?.getBooleanElseNull("showFavorite") ?: true,
+    showPickedFriend = options?.getBooleanElseNull("showPickedFriend") ?: true,
+    selectParams =
+      if (multiple) {
+        SelectParams.friend(
+          MULTIPLE,
+          options?.getIntElseNull("minPickableCount") ?: 1,
+          options?.getIntElseNull("maxPickableCount") ?: 30,
+        )
+      } else {
+        SelectParams.friend(SINGLE)
+      },
+  )
 
   @ReactMethod
   override fun getFriends(

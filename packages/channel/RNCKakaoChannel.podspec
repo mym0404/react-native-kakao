@@ -1,4 +1,5 @@
 require "json"
+require_relative "../core/ios/kakao-sdk"
 
 package = JSON.parse(File.read(File.join(__dir__, "package.json")))
 corePackage = JSON.parse(File.read(File.join(__dir__, "..", "core", "package.json")))
@@ -52,5 +53,5 @@ Pod::Spec.new do |s|
   s.dependency          'RNCKakaoUser'
 
   # Kakao dependencies
-  s.dependency          'KakaoSDKTalk', talk_sdk_version
+  RNCKakaoSPM.dependency(s, talk_sdk_version, %w[KakaoSDKCommon KakaoSDKAuth KakaoSDKUser KakaoSDKTemplate KakaoSDKTalk])
 end
