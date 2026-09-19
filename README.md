@@ -46,7 +46,7 @@ please select the package link from below.
 
 [//]: # (The main package that you interface with is `App` &#40;`@react-native-kakao/app`&#41;)
 
-See the [compatibility table](https://rnkakao.mjstudio.net/en/docs/intro#compatibility) for SDK versions and verified environments.
+See the [compatibility table](https://rnkakao.mjstudio.net/en/docs/intro#compatibility) for SDK versions and minimum requirements.
 
 | Name | Downloads | Status |
 | --- | --- | --- |

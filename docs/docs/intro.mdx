@@ -10,35 +10,23 @@ sidebar_position: 1
 
 [React Native Kakao](https://github.com/mym0404/react-native-kakao)는 React Native용 카카오 SDK들을 모노레포로 일관성있게 관리합니다.
 
-사용하는 라이브러리와 React Native 버전에 따라 지원 환경이 달라집니다. 아래 호환성 표를 확인합니다.
-
 **Android, iOS, Web, New Architecture, Old Architecture, Expo**
 
 ## 호환성 {#compatibility}
 
-`2.4.6`은 기존 배포판이며, SPM 전환판은 아직 배포되지 않았습니다. 표의 아키텍처는 연동 코드가 존재하는 범위이며, 빌드와 실행을 확인한 조합은 검증 상태에 따로 표시합니다.
+| 라이브러리 버전 | iOS 최소 요건 | Android 최소 요건 | Kakao SDK 버전 |
+| --- | --- | --- | --- |
+| 2.4.6 | iOS 13 | API 23 | iOS 2.22.0 / Android 2.20.1 |
+| 다음 버전 (미배포) | React Native 0.75 / iOS 15 | API 23 | iOS 2.29.0 / Android 2.25.0 |
 
-| 라이브러리 버전 | RN 버전 구간 | 아키텍처 | 플랫폼 최소 요건 | Kakao SDK 버전 | 검증 상태 |
-| --- | --- | --- | --- | --- | --- |
-| 2.4.6 | 0.74 이하 | 기존·새 아키텍처 코드 포함 | iOS 13 / Android API 23 | iOS 2.22.0 / Android 2.20.1 | 기존 CocoaPods 연동. 이 구간 전체의 빌드는 미검증 |
-| 2.4.6 | 0.75~0.81 | 기존·새 아키텍처 코드 포함 | iOS 13 / Android API 23 | iOS 2.22.0 / Android 2.20.1 | 이 구간 전체의 빌드는 미검증 |
-| 2.4.6 | 0.82 이상 | RN에서 새 아키텍처만 허용 | RN 0.82 기준 iOS 15.1 / Android API 24 | iOS 2.22.0 / Android 2.20.1 | 빌드·실행 미검증 |
-| SPM 전환판 — 미배포 | 0.74 이하 | Android 기존·새 아키텍처 코드 유지 | iOS 설치 불가 / Android API 23 | iOS 2.29.0 / Android 2.25.0 | RN 0.74.7의 iOS 설치 거부 확인. Android 빌드 미검증 |
-| SPM 전환판 — 미배포 | 0.75~0.81 | 기존·새 아키텍처 코드 유지 | iOS 15 / Android API 23 | iOS 2.29.0 / Android 2.25.0 | RN 0.75.0 iOS 소비 앱은 기존·새 아키텍처 설치·빌드 확인, 실행 미검증. RN 0.79.2는 양 플랫폼 빌드·메뉴 E2E 확인. 0.81은 소스만 확인 |
-| SPM 전환판 — 미배포 | 0.82 이상 | RN에서 새 아키텍처만 허용 | RN 0.82 기준 iOS 15.1 / Android API 24 | iOS 2.29.0 / Android 2.25.0 | RN 0.82 연동 API 소스 확인. 빌드·실행 미검증 |
+사용하는 React Native·Expo가 더 높은 OS 버전을 요구하면 해당 요건을 따릅니다. React Native 0.82부터는 새 아키텍처만 사용할 수 있습니다.
 
-플랫폼 최소 요건은 Kakao SDK와 사용하는 RN·Expo SDK의 요구 사항 중 더 높은 값을 적용합니다. 예를 들어 RN 0.81은 iOS 15.1과 Android API 24 이상을 요구합니다. Android API 23은 이전 Kakao SDK에도 적용되던 요건이며, 이번 변경에서 라이브러리의 `minSdkVersion` 기본값을 이에 맞춥니다.
+## 업데이트 시 변경 사항 {#migration}
 
-iOS SPM 연동에 필요한 `spm_dependency`는 RN 0.75부터 제공됩니다. RN 0.74 이하에서는 SPM 전환판의 iOS 설치를 지원하지 않습니다. [RN 0.82부터는 기존 아키텍처를 사용할 수 없습니다](https://reactnative.dev/blog/2025/10/08/react-native-0.82). Expo에서도 포함된 RN 버전을 기준으로 확인합니다.
+다음 버전으로 업데이트할 때 아래 항목을 사용하는 코드만 수정합니다.
 
-RN 0.79.2의 CI에서는 Android 기존·새 아키텍처 빌드, iOS 새 아키텍처 빌드와 양 플랫폼 새 아키텍처 메뉴 E2E를 확인했습니다. 로컬에서는 양 플랫폼 기존·새 아키텍처 메뉴 E2E를 확인했으며, iOS 로컬 빌드는 RN의 `fmt` 컴파일 오류를 임시 우회한 결과입니다. iOS 기본 static library와 `use_frameworks! :linkage => :static` 빌드를 확인했습니다. Dynamic framework, 서명된 Archive, 실제 계정 인증 후 기능은 미검증입니다.
-
-## SPM 전환판 마이그레이션 {#migration}
-
-- 라이브러리는 기존처럼 CocoaPods로 설치하지만, Kakao iOS SDK와 전이 의존성은 SPM으로 가져옵니다. `package.json` 구조와 override 이름은 유지됩니다. [iOS 설치 절차](/docs/install-ios#sdk-installation)를 확인합니다.
-- iOS의 `sdkVersions.ios`와 `$KakaoCoreSDKVersion`, `$KakaoUserSDKVersion`, `$KakaoShareSDKVersion`, `$KakaoFriendSDKVersion`, `$KakaoTalkSDKVersion`, `$KakaoNaviSDKVersion`은 설치하는 모든 모듈에서 같은 정확한 버전을 지정해야 합니다. 버전 범위나 서로 다른 버전은 `pod install`에서 거부됩니다. override를 유지하더라도 이전 SDK와 현재 네이티브 코드의 호환성을 보장하지는 않습니다.
-- 친구 선택 옵션 `title`, 로그인 prompt `UnifyDaum`, 프로필 응답 `ciNeedsAgreement`가 제거됩니다. 사용하는 코드에서 해당 항목을 제거합니다. `SelectAccount`는 Android와 iOS 모두에서 사용할 수 있습니다.
-- 계정 차단 오류 코드가 Android의 `BlockedAction`, iOS의 `Blocked`에서 `BlockedAccount`로 변경됩니다. 오류 코드를 비교하는 분기문을 수정합니다.
+- 친구 선택 옵션 `title`, 로그인 prompt `UnifyDaum`, 프로필 응답 `ciNeedsAgreement`를 제거합니다.
+- 계정 차단 오류 코드를 비교한다면 Android의 `BlockedAction`, iOS의 `Blocked`를 `BlockedAccount`로 변경합니다.
 
 ## Highlights
 
@@ -53,7 +41,7 @@ RN 0.79.2의 CI에서는 Android 기존·새 아키텍처 빌드, iOS 새 아키
 - 📄 **Well documented**
   - full reference & installation documentation alongside detailed guides and FAQs
 - 🚀 **Wide supportability**
-  - **Android, iOS, Web, New Architecture, Old Architecture, Expo** — see the compatibility table above.
+  - **Android, iOS, Web, New Architecture, Old Architecture, Expo**
 - 🦋 **Robust error handling**
   - All SDK errors are forwarded to JS clearly, consistently for each platform.
 

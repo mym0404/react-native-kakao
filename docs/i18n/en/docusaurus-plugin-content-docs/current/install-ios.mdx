@@ -6,16 +6,8 @@ sidebar_position: 4
 ## iOS Settings
 
 :::info
-For Expo, the config plugin handles app configuration; configure the Kakao console manually. Check the [compatibility table](/docs/intro#compatibility) before installation.
+This document should be skipped except for the console setup if you are using Expo.
 :::
-
-## SDK installation {#sdk-installation}
-
-- Run `pod install` to install the library. Its podspecs register Kakao iOS SDK and transitive dependencies through SPM; do not add the packages manually in Xcode.
-- Call the standard React Native `react_native_post_install` helper in your Podfile's `post_install`.
-- The friend picker resource bundle is copied automatically during builds. If you use `-clonedSourcePackagesDirPath`, pass the same path as the Xcode build setting `KAKAO_SPM_SOURCE_PACKAGES_DIR`.
-- Check Kakao SDK and Alamofire versions in Xcode's `Package.resolved`, not `Podfile.lock`. Preserve this file in CI.
-- If overriding versions, check the constraints in the [migration guide](/docs/intro#migration).
 
 Refer to the [Kakao SDK Documentation](https://developers.kakao.com/docs/latest/ko/ios/getting-started) for more detailed information on the settings.
 

@@ -10,35 +10,23 @@ sidebar_position: 1
 
 [React Native Kakao](https://github.com/mym0404/react-native-kakao) manages Kakao SDKs for React Native in a monorepo for consistency.
 
-Available environments depend on the library and React Native versions. Check the compatibility table below.
-
 **Android, iOS, Web, New Architecture, Old Architecture, Expo**
 
 ## Compatibility {#compatibility}
 
-`2.4.6` is the existing release; the SPM transition is not yet released. The architecture column describes available integration code, while the verification column identifies combinations actually built and run.
+| Library version | Minimum iOS requirements | Minimum Android requirements | Kakao SDK versions |
+| --- | --- | --- | --- |
+| 2.4.6 | iOS 13 | API 23 | iOS 2.22.0 / Android 2.20.1 |
+| Next release (unreleased) | React Native 0.75 / iOS 15 | API 23 | iOS 2.29.0 / Android 2.25.0 |
 
-| Library version | RN versions | Architecture | Minimum platform requirements | Kakao SDK versions | Verification |
-| --- | --- | --- | --- | --- | --- |
-| 2.4.6 | 0.74 and earlier | Legacy/New Architecture code included | iOS 13 / Android API 23 | iOS 2.22.0 / Android 2.20.1 | Existing CocoaPods integration; the full range is not build-verified |
-| 2.4.6 | 0.75–0.81 | Legacy/New Architecture code included | iOS 13 / Android API 23 | iOS 2.22.0 / Android 2.20.1 | The full range is not build-verified |
-| 2.4.6 | 0.82 and later | RN permits New Architecture only | RN 0.82: iOS 15.1 / Android API 24 | iOS 2.22.0 / Android 2.20.1 | Build/runtime unverified |
-| SPM transition — unreleased | 0.74 and earlier | Android Legacy/New Architecture code retained | iOS installation unavailable / Android API 23 | iOS 2.29.0 / Android 2.25.0 | iOS installation rejection checked on RN 0.74.7; Android build unverified |
-| SPM transition — unreleased | 0.75–0.81 | Legacy/New Architecture code retained | iOS 15 / Android API 23 | iOS 2.29.0 / Android 2.25.0 | RN 0.75.0 iOS consumer installation/build passed on Legacy/New Architecture; runtime unverified. RN 0.79.2 built and menu E2E checked on both platforms. 0.81 source reviewed only |
-| SPM transition — unreleased | 0.82 and later | RN permits New Architecture only | RN 0.82: iOS 15.1 / Android API 24 | iOS 2.29.0 / Android 2.25.0 | RN 0.82 integration APIs reviewed; build/runtime unverified |
+If your React Native or Expo version requires a higher OS version, use that requirement. React Native 0.82 and later only allow the New Architecture.
 
-Use the higher platform requirement of the Kakao SDK and your RN/Expo SDK. For example, RN 0.81 requires iOS 15.1 and Android API 24. Android API 23 was already required by the previous Kakao SDK; this change aligns the library's default `minSdkVersion` with that requirement.
+## Upgrading {#migration}
 
-The `spm_dependency` helper required for iOS integration is available from RN 0.75. iOS installation of the SPM transition is not supported on RN 0.74 or earlier. [RN 0.82 removes the Legacy Architecture](https://reactnative.dev/blog/2025/10/08/react-native-0.82). For Expo, check its bundled RN version.
+When updating to the next release, change only code that uses the following:
 
-On RN 0.79.2, CI verified Android Legacy/New Architecture builds, an iOS New Architecture build, and New Architecture menu E2E on both platforms. Local menu E2E covered both architectures on both platforms; local iOS builds required a temporary workaround for an RN `fmt` compilation error. iOS default static-library and `use_frameworks! :linkage => :static` builds were checked. Dynamic frameworks, signed Archives, and flows requiring an authenticated account remain unverified.
-
-## SPM transition migration {#migration}
-
-- Keep installing the library through CocoaPods; Kakao iOS SDK and transitive dependencies are fetched through SPM. The `package.json` structure and override names are unchanged. Follow the [iOS installation steps](/docs/install-ios#sdk-installation).
-- The iOS `sdkVersions.ios` keys and `$KakaoCoreSDKVersion`, `$KakaoUserSDKVersion`, `$KakaoShareSDKVersion`, `$KakaoFriendSDKVersion`, `$KakaoTalkSDKVersion`, and `$KakaoNaviSDKVersion` overrides must specify the same exact version across installed modules. Version ranges and conflicting versions are rejected during `pod install`. Retaining overrides does not guarantee that older SDKs work with the current native code.
-- Remove the friend picker option `title`, login prompt `UnifyDaum`, and profile response field `ciNeedsAgreement` from consuming code. `SelectAccount` is now available on both Android and iOS.
-- The blocked-account error code changes from Android's `BlockedAction` and iOS's `Blocked` to `BlockedAccount`. Update any code that compares these error codes.
+- Remove the friend picker option `title`, login prompt `UnifyDaum`, and profile response field `ciNeedsAgreement`.
+- Replace Android's `BlockedAction` and iOS's `Blocked` with `BlockedAccount` in error-code comparisons.
 
 ## Highlights
 
@@ -53,7 +41,7 @@ On RN 0.79.2, CI verified Android Legacy/New Architecture builds, an iOS New Arc
 - 📄 **Well documented**
   - full reference & installation documentation alongside detailed guides and FAQs
 - 🚀 **Wide supportability**
-  - **Android, iOS, Web, New Architecture, Old Architecture, Expo** — see the compatibility table above.
+  - **Android, iOS, Web, New Architecture, Old Architecture, Expo**
 - 🦋 **Robust error handling**
   - All SDK errors are forwarded to JS clearly, consistently for each platform.
 
