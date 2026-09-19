@@ -6,17 +6,16 @@ sidebar_position: 4
 ## iOS Settings
 
 :::info
-Expo users must also meet the requirements below. The Expo config plugin handles app configuration; configure the Kakao console manually.
+For Expo, the config plugin handles app configuration; configure the Kakao console manually. Check the [compatibility table](/docs/intro#compatibility) before installation.
 :::
 
-## Requirements and SDK installation
+## SDK installation {#sdk-installation}
 
-- React Native 0.75+, Xcode 26+, and iOS 15+ are required. Use a higher iOS deployment target if your React Native version requires it.
-- Install the library through CocoaPods as before. Its podspecs register Kakao iOS SDK 2.29.0 and its transitive dependencies through SPM.
-- Your Podfile's `post_install` must call the standard React Native `react_native_post_install` helper. Do not add the Kakao package manually in Xcode.
-- The friend picker resource bundle is copied automatically during builds. If your CI uses a custom `-clonedSourcePackagesDirPath`, pass that same path as the Xcode build setting `KAKAO_SPM_SOURCE_PACKAGES_DIR`.
-- The existing `sdkVersions.ios` keys and `$KakaoCoreSDKVersion`, `$KakaoUserSDKVersion`, `$KakaoShareSDKVersion`, `$KakaoFriendSDKVersion`, `$KakaoTalkSDKVersion`, and `$KakaoNaviSDKVersion` overrides remain available. All installed modules must request the same exact version. Version ranges and conflicting versions fail during `pod install`.
-- Kakao SDK and Alamofire SPM versions are resolved in Xcode's `Package.resolved`, not `Podfile.lock`. Preserve that file in CI for reproducible dependency resolution.
+- Run `pod install` to install the library. Its podspecs register Kakao iOS SDK and transitive dependencies through SPM; do not add the packages manually in Xcode.
+- Call the standard React Native `react_native_post_install` helper in your Podfile's `post_install`.
+- The friend picker resource bundle is copied automatically during builds. If you use `-clonedSourcePackagesDirPath`, pass the same path as the Xcode build setting `KAKAO_SPM_SOURCE_PACKAGES_DIR`.
+- Check Kakao SDK and Alamofire versions in Xcode's `Package.resolved`, not `Podfile.lock`. Preserve this file in CI.
+- If overriding versions, check the constraints in the [migration guide](/docs/intro#migration).
 
 Refer to the [Kakao SDK Documentation](https://developers.kakao.com/docs/latest/ko/ios/getting-started) for more detailed information on the settings.
 

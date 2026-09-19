@@ -134,9 +134,9 @@ class RNCKakaoSocialModule internal constructor(
     selectParams =
       if (multiple) {
         SelectParams.friend(
-          MULTIPLE,
-          options?.getIntElseNull("minPickableCount") ?: 1,
-          options?.getIntElseNull("maxPickableCount") ?: 30,
+          mode = MULTIPLE,
+          minPickableCount = options?.getIntElseNull("minPickableCount") ?: 1,
+          maxPickableCount = options?.getIntElseNull("maxPickableCount") ?: 30,
         )
       } else {
         SelectParams.friend(SINGLE)

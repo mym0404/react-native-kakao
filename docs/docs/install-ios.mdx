@@ -6,17 +6,16 @@ sidebar_position: 4
 ## iOS 설정
 
 :::info
-Expo를 사용해도 아래 지원 환경을 확인해야 해요. 앱 설정은 Expo config plugin이 처리하므로 콘솔 설정만 직접 진행해요.
+Expo에서는 앱 설정을 config plugin이 처리하므로 콘솔 설정만 직접 진행합니다. 설치 전에 [호환성 표](/docs/intro#compatibility)를 확인합니다.
 :::
 
-## 지원 환경과 SDK 설치
+## SDK 설치 {#sdk-installation}
 
-- React Native 0.75 이상, Xcode 26 이상, iOS 15 이상이 필요해요. 사용하는 React Native 버전이 더 높은 iOS 버전을 요구하면 그 조건을 따라야 해요.
-- 라이브러리는 기존처럼 CocoaPods로 설치해요. podspec이 Kakao iOS SDK 2.29.0과 전이 의존성을 SPM으로 등록해요.
-- Podfile의 `post_install`에서 React Native 기본 설정인 `react_native_post_install`을 호출해야 해요. Xcode에 Kakao 패키지를 직접 추가할 필요는 없어요.
-- 친구 선택 화면의 리소스 번들도 빌드할 때 자동으로 복사해요. CI에서 `-clonedSourcePackagesDirPath`로 SPM 저장 경로를 변경했다면, 같은 경로를 Xcode 빌드 설정 `KAKAO_SPM_SOURCE_PACKAGES_DIR`에도 전달해야 해요.
-- 기존 `sdkVersions.ios` 키와 `$KakaoCoreSDKVersion`, `$KakaoUserSDKVersion`, `$KakaoShareSDKVersion`, `$KakaoFriendSDKVersion`, `$KakaoTalkSDKVersion`, `$KakaoNaviSDKVersion` override는 유지해요. 설치하는 모든 모듈의 버전은 같은 정확한 버전이어야 해요. 버전 범위나 서로 다른 버전을 지정하면 `pod install`이 실패해요.
-- Kakao SDK와 Alamofire의 SPM 버전은 `Podfile.lock`이 아닌 Xcode의 `Package.resolved`에서 확인해요. CI에서도 이 파일을 유지해야 같은 버전으로 빌드할 수 있어요.
+- `pod install`로 라이브러리를 설치합니다. podspec이 Kakao iOS SDK와 전이 의존성을 SPM에 등록하므로 Xcode에 패키지를 직접 추가하지 않습니다.
+- Podfile의 `post_install`에서 React Native 기본 설정인 `react_native_post_install`을 호출합니다.
+- 친구 선택 화면의 리소스 번들은 빌드할 때 자동으로 복사됩니다. `-clonedSourcePackagesDirPath`로 SPM 저장 경로를 변경했다면 같은 경로를 Xcode 빌드 설정 `KAKAO_SPM_SOURCE_PACKAGES_DIR`에도 전달합니다.
+- Kakao SDK와 Alamofire의 버전은 `Podfile.lock`이 아닌 Xcode의 `Package.resolved`에서 확인합니다. CI에서도 이 파일을 유지합니다.
+- 버전을 직접 지정하는 경우 [마이그레이션 안내](/docs/intro#migration)의 override 조건을 확인합니다.
 
 [Kakao SDK 문서](https://developers.kakao.com/docs/latest/ko/ios/getting-started)를 참고하여 설정에 관한 더 자세한 정보를 확인할 수 있습니다.
 
