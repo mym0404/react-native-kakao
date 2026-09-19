@@ -5,7 +5,7 @@ Use this file as the global source of truth for adding or changing native APIs.
 
 ## Communication
 
-Use English for all communication about this repository, including assistant responses, commit messages, PR titles and descriptions, issue discussions, review comments, documentation, and automated reports.
+Assistant responses have no language restriction. Use English for commit messages, PR titles and descriptions, issue discussions, review comments, documentation, and automated reports.
 
 ## Guide hierarchy
 
