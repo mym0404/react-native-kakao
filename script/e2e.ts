@@ -152,7 +152,9 @@ const main = async () => {
     platform === 'android'
       ? `open ${appId} --relaunch --metro-host localhost --metro-port 8081 --launch-url ${JSON.stringify(devClientUrl)}`
       : `open ${appId} --metro-host localhost --metro-port 8081`,
-    ...(platform === 'android' ? ['alert wait 30000', 'wait 2000', 'alert accept'] : []),
+    ...(platform === 'android'
+      ? ['alert wait 30000', 'wait 2000', 'alert accept']
+      : ['snapshot -i']),
     // Cold CI devices install and start the snapshot helper during the first wait.
     `${homeTitle} 60000`,
     settle,
