@@ -1,12 +1,8 @@
 # Run with: mise exec -- ruby script/test-kakao-spm.rb
 require 'cocoapods'
 require 'tmpdir'
-require_relative '../node_modules/react-native/scripts/cocoapods/spm'
+require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../packages/core/ios/kakao-sdk'
-
-def spm_dependency(spec, **options)
-  SPM.dependency(spec, **options)
-end
 
 def min_ios_version_supported
   '13.4'
