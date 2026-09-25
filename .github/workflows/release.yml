@@ -213,13 +213,18 @@ jobs:
         if: steps.current.outputs.matches == 'true'
         run: yarn install --immutable
 
-      - name: Verify publish plan
+      - name: Verify release branch
         if: steps.current.outputs.matches == 'true'
         env:
           RELEASE_BRANCH: ${{ github.ref_name }}
         run: |
-          yarn changeset publish-plan --output "${RUNNER_TEMP}/publish-plan.json"
-          node script/release-check.mjs "${RELEASE_BRANCH}" "${RUNNER_TEMP}/publish-plan.json"
+          if [[ "${RELEASE_BRANCH}" == "main" ]]; then
+            test ! -f .changeset/pre.json
+            jq -e '.version | contains("-") | not' packages/*/package.json
+          else
+            jq -e '.mode == "pre" and .tag == "next"' .changeset/pre.json
+            jq -e '.version | test("-next\\.[0-9]+$")' packages/*/package.json
+          fi
 
       - name: Publish packages
         if: steps.current.outputs.matches == 'true'
