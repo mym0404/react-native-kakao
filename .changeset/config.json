@@ -1,0 +1,25 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config/schema.json",
+  "changelog": "@changesets/cli/changelog",
+  "commit": false,
+  "format": false,
+  "fixed": [
+    [
+      "@react-native-kakao/channel",
+      "@react-native-kakao/core",
+      "@react-native-kakao/navi",
+      "@react-native-kakao/share",
+      "@react-native-kakao/social",
+      "@react-native-kakao/user"
+    ]
+  ],
+  "linked": [],
+  "access": "public",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "ignore": [],
+  "privatePackages": {
+    "version": false,
+    "tag": false
+  }
+}

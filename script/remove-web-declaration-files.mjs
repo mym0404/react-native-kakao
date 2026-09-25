@@ -126,11 +126,14 @@ const HEADING = `// @ts-nocheck
 
 const root = join(__dirname, '..');
 const workspaces = [];
-for (const file of fs.readdirSync('packages')) {
-  const p = join(root, 'packages', file);
+const packageRoot = join(root, 'packages');
+const packagePaths = argv._.length
+  ? argv._.map((directory) => path.resolve(directory))
+  : fs.readdirSync(packageRoot).map((directory) => join(packageRoot, directory));
+for (const p of packagePaths) {
   if (isDir(p) && isFile(join(p, 'package.json'))) {
     workspaces.push({
-      name: file,
+      name: path.basename(p),
       workspacePath: p,
       pkg: join(p, 'package.json'),
       pkgStr: read(join(p, 'package.json')),
