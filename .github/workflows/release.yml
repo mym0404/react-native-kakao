@@ -220,10 +220,10 @@ jobs:
         run: |
           if [[ "${RELEASE_BRANCH}" == "main" ]]; then
             test ! -f .changeset/pre.json
-            jq -e '.version | contains("-") | not' packages/*/package.json
+            jq -se 'all(.[]; .version | contains("-") | not)' packages/*/package.json
           else
             jq -e '.mode == "pre" and .tag == "next"' .changeset/pre.json
-            jq -e '.version | test("-next\\.[0-9]+$")' packages/*/package.json
+            jq -se 'all(.[]; .version | test("-next\\.[0-9]+$"))' packages/*/package.json
           fi
 
       - name: Publish packages
