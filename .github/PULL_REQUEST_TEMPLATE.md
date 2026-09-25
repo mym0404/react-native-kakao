@@ -17,3 +17,10 @@
 
 Fixes #<issue_number_goes_here> 🎯
 
+## Changeset
+
+- [ ] I added a meaningful changeset with the affected packages and a `patch`, `minor`, or `major`
+      bump.
+- [ ] This is a documentation, test, or tooling-only change that does not need a package release.
+
+<!-- Choose one option. An empty changeset is optional when no package release is needed. -->

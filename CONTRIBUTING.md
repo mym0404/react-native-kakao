@@ -11,7 +11,13 @@ The `package.json` file contains various scripts for common tasks:
 
 - `mise install`: install the project toolchain.
 - `yarn install --immutable`: install project dependencies.
-- `yarn build`: build packages
+- `yarn build`: build packages.
+
+**Release metadata**
+
+- `yarn changeset`: describe a publishable change and select its version bump.
+- `yarn release:version`: apply pending changesets and update the lockfile.
+- `yarn release`: build and publish the packages. This command is for release automation and maintainers.
 
 **Validation**
 
@@ -114,6 +120,46 @@ Make sure your code passes TypeScript and ESLint. Run the following to verify:
 yarn lint
 ```
 
+### Dependency versions
+
+- Put versions shared by multiple workspaces in the `catalog` in `.yarnrc.yml`, with one common
+  version for each dependency.
+- Use `workspace:*` for dependencies between this repository's packages, including peer
+  dependencies.
+- Keep external peer dependencies as explicit semver ranges so consumers can use supported
+  versions.
+
+### Changesets
+
+Add a changeset to every pull request that changes a published package's behavior or API:
+
+```sh
+yarn changeset
+```
+
+Select the affected packages, choose the version bump, and write a concise release note that says
+what changes for package users. Do not describe implementation details such as renamed local
+variables or CI steps.
+
+```md
+---
+'@react-native-kakao/user': patch
+---
+
+Prevent Kakao login from crashing when the native SDK returns a missing account.
+```
+
+- `patch`: a backward-compatible bug fix, for example fixing an Android login crash.
+- `minor`: a backward-compatible feature, for example adding a new share method.
+- `major`: a breaking change, for example removing or changing an existing public method.
+
+All six published packages use fixed versioning, so each release gives them the same version even
+when a changeset selects only the packages directly affected.
+
+Documentation, tests, and tooling-only changes do not need a package release. You may add an empty
+changeset with `yarn changeset --empty` when you want the pull request to record that decision.
+Contributors must not run `yarn release`, `yarn npm publish`, or publish packages manually.
+
 ### Commit message convention
 
 We follow the [conventional commits specification](https://www.conventionalcommits.org/en) for our
@@ -155,11 +201,45 @@ with [Docusaurus](https://docusaurus.io/) and is just maintained with
 If your API changes require changes to the documentation, you should include those changes in the
 documentation as well.
 
+### Release branches and automation
+
+`main` is the stable branch and publishes to npm's `latest` tag. `next` is the prerelease branch
+and publishes to the `next` tag. Contributor pull requests for stable fixes target `main`, while
+prerelease work targets `next`. Changesets creates or updates a version pull request only after a
+branch push passes CI. The version pull request is never merged automatically. Merging it runs
+`.github/workflows/release.yml`, which builds and publishes all six packages through npm Trusted
+Publishing for `mym0404/react-native-kakao`.
+
+The version pull request uses a dedicated `CHANGESETS_TOKEN` with repository contents and
+pull-request write access so its CI runs. Both classic and fine-grained personal access tokens
+work with the required repository permissions. npm publication uses Trusted Publishing instead
+of that token. Release commits must run CI and must not contain `[skip ci]`.
+
+For prereleases, maintainers initialize `next` with `yarn changeset pre enter next` and set
+`baseBranch` in `.changeset/config.json` to `next`. To promote a prerelease to stable:
+
+1. Create a promotion branch from `next`, run `yarn changeset pre exit`, and change `baseBranch` to
+   `main`.
+2. Merge that promotion branch into `main`. After CI passes, automation creates the stable version
+   pull request.
+3. Review and merge the stable version pull request to publish with the `latest` tag.
+4. Merge `main` back into `next`, run `yarn changeset pre enter next`, and restore `baseBranch` to
+   `next`.
+
+Let Changesets carry its state through this sequence. Do not manually delete `pre.json` or pending
+changeset files.
+
+The migration starts from repository version `2.4.7`, while npm's latest published version is
+`2.4.6`. The migration changeset is a real patch, so the first stable proposal is `2.4.8` and the
+first prerelease proposal is `2.4.8-next.0`.
+
 ### Sending a pull request
 
 When you're sending a pull request:
 
 - Prefer small pull requests focused on one change.
+- Add a meaningful changeset for published package changes, or identify the change as
+  documentation, tests, or tooling only.
 - Verify that linters and tests are passing.
 - Review the documentation to make sure it looks good.
 - Follow the pull request template when opening a pull request.
