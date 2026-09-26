@@ -30,7 +30,6 @@
   "author": "MJ Studio <mym0404@gmail.com> (https://github.com/mym0404)",
   "homepage": "https://rnkakao.mjstudio.net",
   "scripts": {
-    "test": "jest",
     "prepare": "husky",
     "codegen:android": "cd ../../example/android && ./gradlew generateCodegenArtifactsFromSchema",
     "codegen:ios": "react-native codegen --path example/ --outputPath ../../example/ios",
@@ -66,11 +65,9 @@
   },
   "devDependencies": {
     "@types/crypto-js": "^4",
-    "@types/jest": "catalog:",
     "@types/react": "catalog:",
     "del-cli": "catalog:",
     "expo": "catalog:",
-    "jest": "catalog:",
     "react": "catalog:",
     "react-native": "catalog:",
     "react-native-builder-bob": "catalog:",
@@ -91,12 +88,6 @@
     "example",
     "packages/*"
   ],
-  "jest": {
-    "preset": "react-native",
-    "modulePathIgnorePatterns": [
-      "<rootDir>/lib/"
-    ]
-  },
   "react-native-builder-bob": {
     "source": "src",
     "output": "lib",
