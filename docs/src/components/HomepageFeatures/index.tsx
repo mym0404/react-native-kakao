@@ -26,13 +26,7 @@ const FeatureList: FeatureItem[] = [
   {
     title: translate({ message: '지원 플랫폼' }),
     Svg: require('@site/static/img/building-community.svg').default,
-    description: (
-      <Translate>
-        {
-          'React Native Kakao는 React Native 0.76.0 이상의 Android, iOS, Web과 New Architecture를 지원합니다. Expo는 SDK 52 이상의 개발 빌드를 사용해야 합니다.'
-        }
-      </Translate>
-    ),
+    description: <Translate>{'Android, iOS, Web, Expo를 지원합니다.'}</Translate>,
   },
   {
     title: translate({ message: '일관된 개발자 경험과 동작' }),

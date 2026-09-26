@@ -29,8 +29,7 @@ iOS, Android and Web.
 - 📄 **Well documented**
   - full reference & installation documentation alongside detailed guides and FAQs
 - 🚀 **Wide supportability**
-  - supports **Android, iOS, and Web** on React Native 0.76.0 or newer with the New Architecture
-    enabled. Expo requires SDK 52 or newer and a development build; Expo Go is not supported.
+  - Supports **Android, iOS, Web, and Expo**.
 - 🦋 **Robust error handling**
   - All SDK errors are forwarded to JS clearly, consistently for each platform.
 

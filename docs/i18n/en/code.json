@@ -8,8 +8,8 @@
   "지원 플랫폼": {
     "message": "Supported platforms"
   },
-  "React Native Kakao는 React Native 0.76.0 이상의 Android, iOS, Web과 New Architecture를 지원합니다. Expo는 SDK 52 이상의 개발 빌드를 사용해야 합니다.": {
-    "message": "React Native Kakao supports Android, iOS, Web, and the New Architecture on React Native 0.76.0 or newer. Expo requires an SDK 52 or newer development build."
+  "Android, iOS, Web, Expo를 지원합니다.": {
+    "message": "Supports Android, iOS, Web, and Expo."
   },
   "일관된 개발자 경험과 동작": {
     "message": "Consistent developer experience and behavior"
