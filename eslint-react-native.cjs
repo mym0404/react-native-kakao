@@ -1,5 +1,6 @@
 const config = require('@react-native/eslint-config');
 
+// Keep React Native lint rules without Jest defaults because tests use node:test.
 module.exports = {
   ...config,
   plugins: config.plugins.filter((name) => name !== 'jest'),
