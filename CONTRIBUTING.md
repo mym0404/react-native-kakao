@@ -225,19 +225,23 @@ Keep the stable backport separate from normal `main` development:
 git switch v2
 git pull --ff-only
 git switch -c fix/v2-<topic>
-git cherry-pick <code-commit-from-main>
+git cherry-pick --no-commit <code-commit-from-main>
+git restore --source HEAD --staged --worktree .changeset
+git commit
 yarn changeset
 ```
 
-Cherry-pick only the code commit. Add a fresh changeset on the backport branch, then open its pull
-request against `v2`. Do not cherry-pick version commits, `.changeset/pre.json`, consumed changeset
-files, or other prerelease state from `main`.
+Cherry-pick only the code changes. The restore step excludes any original changeset included in the
+commit; add a fresh changeset on the backport branch, then open its pull request against `v2`. Do
+not cherry-pick version commits, `.changeset/pre.json`, consumed changeset files, or other
+prerelease state from `main`.
 
 #### Promote a main prerelease to stable
 
 Before promotion, fetch `v2` and compare its fixed package version with the stable base of the
 current `main` prerelease. For example, `2.4.9-next.1` has the stable base `2.4.9`. If `v2` has
-already published that version, synchronize the `v2` hotfix release into `main` first:
+already published that version or a higher one, synchronize the `v2` hotfix release into `main`
+first:
 
 ```sh
 git switch main
