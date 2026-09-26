@@ -3,6 +3,8 @@ import groovy.json.JsonSlurper
 
 String fileName = 'package.json'
 String jsonRoot = 'react-native'
+String architectureCheckRegistration = 'RNCKakaoArchitectureCheckRegistered'
+String reactExtensionName = 'react'
 
 File _corePkg = file('../../core/package.json')
 File _pkg = file('../package.json')
@@ -56,7 +58,34 @@ ext.applyPlugins = {
         project.pluginManager.apply('kotlin-android')
     }
 
-    if (rootProject.findProperty('newArchEnabled') == 'true') {
-        project.pluginManager.apply('com.facebook.react')
+    project.pluginManager.apply('com.facebook.react')
+}
+
+if (!rootProject.ext.has(architectureCheckRegistration)) {
+    rootProject.ext.set(architectureCheckRegistration, true)
+
+    gradle.projectsEvaluated {
+        rootProject.allprojects.findAll { appProject ->
+            appProject.pluginManager.hasPlugin('com.android.application') &&
+                appProject.extensions.findByName(reactExtensionName) != null
+        }.each { appProject ->
+            def reactExtension = appProject.extensions.findByName(reactExtensionName)
+            def reactNativePackage = reactExtension.reactNativeDir.file(fileName).get().asFile
+            def reactNativeVersion = new JsonSlurper().parse(reactNativePackage).version.tokenize('.')
+            int reactNativeMajor = reactNativeVersion[0] as int
+            int reactNativeMinor = reactNativeVersion[1] as int
+            boolean newArchitectureRequired = reactNativeMajor > 0 || reactNativeMinor >= 82
+            boolean newArchitectureEnabled = newArchitectureRequired ||
+                ['newArchEnabled', 'react.newArchEnabled'].any { propertyName ->
+                    appProject.findProperty(propertyName)?.toString()?.toBoolean()
+                }
+
+            if (!newArchitectureEnabled) {
+                throw new GradleException(
+                    '@react-native-kakao requires React Native\'s New Architecture. ' +
+                        'Set newArchEnabled=true or react.newArchEnabled=true.'
+                )
+            }
+        }
     }
 }

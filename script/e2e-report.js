@@ -24,6 +24,12 @@ module.exports = async ({ github, context, core }) => {
   const imageUrl = (path) =>
     `https://raw.githubusercontent.com/${owner}/${repo}/gh-pages/e2e/pr-${issue_number}/${path.replace('e2e-results/', '')}?sha=${process.env.PR_HEAD_SHA}`;
 
+  const imagePreview = (path, alt) => {
+    const url = imageUrl(path);
+
+    return `<a href="${url}"><img src="${url}" alt="${alt}" width="220"></a>`;
+  };
+
   for (const platform of platforms) {
     let result;
     try {
@@ -96,14 +102,14 @@ module.exports = async ({ github, context, core }) => {
     const cells = platforms.map((platform) => {
       const path = imagePaths.get(`${platform}-${screen}`);
 
-      return path ? `![${platform} ${screen}](${imageUrl(path)})` : '—';
+      return path ? imagePreview(path, `${platform} ${screen}`) : '—';
     });
 
     return `| ${screen} | ${cells.join(' | ')} |`;
   });
 
   const failureRows = [...failurePaths].map(([platform, path]) => {
-    return `| ${platform} | ![${platform} failure](${imageUrl(path)}) |`;
+    return `| ${platform} | ${imagePreview(path, `${platform} failure`)} |`;
   });
 
   const body = [

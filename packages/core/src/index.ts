@@ -1,35 +1,10 @@
-import { NativeModules, Platform } from 'react-native';
-
-import type { Spec } from './spec/NativeKakaoCore';
+import Native from './spec/NativeKakaoCore';
 import { kAssert } from './util/kAssert';
 import type { KakaoPackageErrorCodes } from './util/kCreateWebError';
 import { kCreateWebError } from './util/kCreateWebError';
 import { kFetch, kFetchFormUrlEncoded } from './util/kFetch';
 import kGlobalStorage from './util/kGlobalStorage';
 import { kRunWebAPI } from './util/kRunWebAPI';
-
-const LINKING_ERROR =
-  "The package '@react-native-kakao/core' doesn't seem to be linked. Make sure: \n\n" +
-  Platform.select({ ios: "- You have run 'pod install'\n", default: '' }) +
-  '- You rebuilt the app after installing the package\n' +
-  '- You are not using Expo Go\n';
-
-const isTurboModuleEnabled = global.__turboModuleProxy != null;
-
-const Module = isTurboModuleEnabled
-  ? require('./spec/NativeKakaoCore').default
-  : NativeModules.RNCKakaoCore;
-
-const Native: Spec = Module
-  ? Module
-  : new Proxy(
-      {},
-      {
-        get() {
-          throw new Error(LINKING_ERROR);
-        },
-      },
-    );
 
 export async function initializeKakaoSDK(
   appKey: string,

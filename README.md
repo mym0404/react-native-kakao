@@ -29,7 +29,7 @@ iOS, Android and Web.
 - 📄 **Well documented**
   - full reference & installation documentation alongside detailed guides and FAQs
 - 🚀 **Wide supportability**
-  - first class supports for **Android, iOS, Web, New Architecture, Old Architecture, even Expo**
+  - Supports **Android, iOS, Web, and Expo**.
 - 🦋 **Robust error handling**
   - All SDK errors are forwarded to JS clearly, consistently for each platform.
 

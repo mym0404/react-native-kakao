@@ -1,17 +1,17 @@
 package net.mjstudio.rnkakao.channel
 
-import com.facebook.react.TurboReactPackage
+import com.facebook.react.BaseReactPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.module.model.ReactModuleInfo
 import com.facebook.react.module.model.ReactModuleInfoProvider
 
-class RNCKakaoChannelPackage : TurboReactPackage() {
+class RNCKakaoChannelPackage : BaseReactPackage() {
   override fun getModule(
     name: String,
     reactContext: ReactApplicationContext,
   ): NativeModule? =
-    if (name == RNCKakaoChannelModule.NAME) {
+    if (name == NativeKakaoChannelSpec.NAME) {
       RNCKakaoChannelModule(reactContext)
     } else {
       null
@@ -20,15 +20,14 @@ class RNCKakaoChannelPackage : TurboReactPackage() {
   override fun getReactModuleInfoProvider(): ReactModuleInfoProvider =
     ReactModuleInfoProvider {
       val moduleInfos: MutableMap<String, ReactModuleInfo> = HashMap()
-      val isTurboModule: Boolean = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
-      moduleInfos[RNCKakaoChannelModule.NAME] =
+      moduleInfos[NativeKakaoChannelSpec.NAME] =
         ReactModuleInfo(
-          RNCKakaoChannelModule.NAME,
-          RNCKakaoChannelModule.NAME,
+          NativeKakaoChannelSpec.NAME,
+          RNCKakaoChannelModule::class.java.name,
           false, // canOverrideExistingModule
           false, // needsEagerInit
           false, // isCxxModule
-          isTurboModule, // isTurboModule
+          true, // isTurboModule
         )
       moduleInfos
     }

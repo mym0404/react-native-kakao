@@ -35,14 +35,10 @@ Read in this order:
 ## Global non-negotiables
 
 - Define the API in TypeScript spec first, then implement Android + iOS + web parity.
-- Keep dual-architecture compatibility (`android/src/newarch` and `android/src/oldarch`) unless there is explicit policy to drop legacy support.
+- Support React Native 0.76.0 or newer with the New Architecture enabled.
 - Do not rename native module IDs casually. Keep `TurboModuleRegistry.getEnforcing<Spec>('RNCKakaoX')` aligned with native registration names.
 - Keep `.mm` thin and delegate platform logic to Swift manager classes.
-- Keep `index.ts` runtime loading shape unchanged:
-  - `global.__turboModuleProxy` check
-  - `require('./spec/Native...').default` for Turbo
-  - `NativeModules.RNCKakaoX` fallback for old architecture
-  - `LINKING_ERROR` proxy for unlinked state
+- Import the generated TurboModule contract directly from `src/spec/NativeKakao*.ts` in `index.ts`.
 - If `src/spec` changes, regenerate codegen artifacts before finishing.
 
 ## Cross-platform API change sequence
@@ -51,9 +47,7 @@ Read in this order:
 2. Update `packages/<module>/src/index.ts`
 3. Update `packages/<module>/src/index.web.ts`
 4. Update Android:
-   - `android/src/oldarch/*Spec.kt`
-   - `android/src/newarch/*Spec.kt` (usually inheritance shell, keep aligned)
-   - `android/src/main/java/.../RNCKakao*Module.kt`
+   - `android/src/main/java/.../RNCKakao*Module.kt` (extend the generated spec directly)
 5. Update iOS:
    - `ios/RNCKakao*.h`
    - `ios/RNCKakao*.mm`
@@ -69,17 +63,15 @@ Read in this order:
 
 ## Android rules
 
-- Keep package registration through `TurboReactPackage` and `ReactModuleInfoProvider`.
-- `BuildConfig.IS_NEW_ARCHITECTURE_ENABLED` drives TurboModule flags.
-- Keep Gradle new-arch source set wiring intact:
-  - `src/newarch`
-  - `${project.buildDir}/generated/source/codegen/java`
-- Do not remove `src/oldarch` support unless policy explicitly changes.
+- Keep package registration through `BaseReactPackage` and `ReactModuleInfoProvider`.
+- Extend the generated `NativeKakao*Spec` directly and use its generated module `NAME`.
+- Let the React Native Gradle plugin own Codegen tasks and generated source wiring; do not add manual Codegen source sets.
 
 ## iOS rules
 
-- Keep `#ifdef RCT_NEW_ARCH_ENABLED` split in headers and `.mm` implementations.
-- Keep `getTurboModule:` returning `NativeKakao*SpecJSI` in new architecture builds.
+- Implement the generated `NativeKakao*Spec` without legacy architecture conditionals.
+- Keep C++ bridge headers private to the pod so Swift imports do not parse generated C++ specs.
+- Keep `getTurboModule:` returning `NativeKakao*SpecJSI`.
 - Use Swift manager for SDK calls, threading, and result mapping.
 - Preserve Swift header compatibility imports:
   - `#if __has_include("RNCKakaoX-Swift.h")`
@@ -102,10 +94,8 @@ Read in this order:
 - Type/format/lint gates (hook + CI aligned):
   - `yarn lint`
   - `yarn typecheck`
-- Native integration gates:
-  - build/test paths in `.github/workflows/ci.yml`
-  - architecture conversion via `script/arch-convert.sh`
-- Example app must still compile in the target architecture(s).
+- Native integration gates use the build and E2E paths in `.github/workflows/ci.yml`.
+- Example app must compile and load every module with the New Architecture.
 
 ## When to add a new local AGENTS.md
 

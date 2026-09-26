@@ -29,9 +29,6 @@
   "homepage": "https://rnkakao.mjstudio.net",
   "scripts": {
     "prepare": "husky",
-    "codegen:android": "cd ../../example/android && ./gradlew generateCodegenArtifactsFromSchema",
-    "codegen:ios": "node ../../example/node_modules/react-native/scripts/generate-codegen-artifacts.js --path example/ --outputPath ../../example/ios",
-    "codegen": "yarn codegen:android && yarn codegen:ios",
     "prepack": "bob build && zx ../../script/remove-web-declaration-files.mjs .",
     "clean": "del-cli android/ lib"
   },
@@ -75,7 +72,7 @@
   "peerDependencies": {
     "@react-native-kakao/core": "workspace:*",
     "react": "*",
-    "react-native": "*"
+    "react-native": ">=0.76.0"
   },
   "workspaces": [
     "example",

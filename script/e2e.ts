@@ -83,25 +83,10 @@ const main = async () => {
       await logCommand(
         $({
           cwd: resolve(root, 'example/android'),
-        })`./gradlew :app:assembleDebug --no-daemon --console=plain -PnewArchEnabled=true -PreactNativeArchitectures=${abi}`,
+        })`./gradlew :app:assembleDebug --no-daemon --console=plain -PreactNativeArchitectures=${abi}`,
         buildLog,
       );
     } else {
-      const properties: unknown = JSON.parse(
-        await readFile(resolve(root, 'example/ios/Podfile.properties.json'), 'utf8'),
-      );
-
-      if (
-        !properties ||
-        typeof properties !== 'object' ||
-        !('newArchEnabled' in properties) ||
-        properties.newArchEnabled !== 'true'
-      ) {
-        throw new Error(
-          'Enable the new architecture and run yarn example pod:new before building.',
-        );
-      }
-
       await logCommand(
         $`xcodebuild -workspace example/ios/KakaoExample.xcworkspace -scheme KakaoExample -configuration Debug -sdk iphonesimulator -destination ${'generic/platform=iOS Simulator'} -derivedDataPath ${iosBuild} -quiet ARCHS=${process.arch === 'arm64' ? 'arm64' : 'x86_64'} ONLY_ACTIVE_ARCH=YES CODE_SIGNING_ALLOWED=NO COMPILER_INDEX_STORE_ENABLE=NO`,
         buildLog,

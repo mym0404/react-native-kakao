@@ -8,16 +8,15 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web --port=80",
-    "prebuild:android": "expo prebuild -p android",
-    "prebuild:android:clean": "expo prebuild -p android --clean",
-    "prebuild:ios": "expo prebuild -p ios && echo $(cat ios/.xcode.env) > ios/.xcode.env.local",
-    "prebuild:ios:clean": "expo prebuild -p ios --clean && echo $(cat ios/.xcode.env) > ios/.xcode.env.local",
+    "prebuild:android": "expo prebuild -p android --no-install",
+    "prebuild:android:clean": "expo prebuild -p android --clean --no-install",
+    "prebuild:ios": "expo prebuild -p ios --no-install && cp ios/.xcode.env ios/.xcode.env.local",
+    "prebuild:ios:clean": "expo prebuild -p ios --clean --no-install && cp ios/.xcode.env ios/.xcode.env.local",
     "prebuild": "yarn prebuild:android && yarn prebuild:ios",
     "prebuild:clean": "yarn prebuild:android:clean && yarn prebuild:ios:clean",
     "typecheck": "tsc --noEmit",
     "theme:gen": "generate-theme-type src/design/AppTheme.ts ./../node_modules/@react-native-styled-system/core/lib/typescript/src/@types/ThemedTypings.d.ts",
-    "pod:old": "cd ios && bundle install && RCT_NEW_ARCH_ENABLED=0 bundle exec pod install",
-    "pod:new": "cd ios && bundle install && RCT_NEW_ARCH_ENABLED=1 bundle exec pod install"
+    "pod": "cd ios && mise exec -- bundle install && mise exec -- bundle exec pod install"
   },
   "dependencies": {
     "@mj-studio/js-util": "catalog:",

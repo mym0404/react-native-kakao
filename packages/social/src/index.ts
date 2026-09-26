@@ -1,5 +1,3 @@
-import { NativeModules, Platform } from 'react-native';
-
 import type {
   KakaoTalkFriend,
   KakaoTalkFriendProfile,
@@ -8,8 +6,8 @@ import type {
   KakaoTalkGetFriendsOptions,
   KakaoTalkGetFriendsResult,
   KakaoTalkProfile,
-  Spec,
 } from './spec/NativeKakaoSocial';
+import Native from './spec/NativeKakaoSocial';
 
 export type {
   KakaoTalkProfile,
@@ -20,29 +18,6 @@ export type {
   KakaoTalkFriend,
   KakaoTalkGetFriendsResult,
 };
-
-const LINKING_ERROR =
-  "The package '@react-native-kakao/social' doesn't seem to be linked. Make sure: \n\n" +
-  Platform.select({ ios: "- You have run 'pod install'\n", default: '' }) +
-  '- You rebuilt the app after installing the package\n' +
-  '- You are not using Expo Go\n';
-
-const isTurboModuleEnabled = global.__turboModuleProxy != null;
-
-const Module = isTurboModuleEnabled
-  ? require('./spec/NativeKakaoSocial').default
-  : NativeModules.RNCKakaoSocial;
-
-const Native: Spec = Module
-  ? Module
-  : new Proxy(
-      {},
-      {
-        get() {
-          throw new Error(LINKING_ERROR);
-        },
-      },
-    );
 
 export function getTalkProfile(): Promise<KakaoTalkProfile> {
   return Native.getProfile();

@@ -30,24 +30,14 @@ The `package.json` file contains various scripts for common tasks:
 - `yarn android`: run the example app on Android
 - `yarn ios`: run the example app on iOS
 - `yarn dev`: run example app metro server
-- `yarn gen:android`: prebuild android expo directory
-- `yarn gen:android:clean`: clean and prebuild android expo directory
-- `yarn gen:ios`: prebuild ios expo directory
-- `yarn gen:ios:clean`: clean and prebuild ios expo directory
+- `yarn gen:android`: generate the Android Expo directory without installing dependencies
+- `yarn gen:ios`: generate the iOS Expo directory without installing dependencies
+- `yarn example pod`: install iOS dependencies after generating the iOS project
 
 **Util**
 
 - `yarn studio`: open Android Studio in example/android
 - `yarn xcode`: open Xcode in example/ios
-
-**Architecture Convert**
-
-- `new`: convert example project to new architecture
-- `old`: convert example project to old architecture
-- `new:pod`: convert example project to new architecture with pod install
-- `old:pod`: convert example project to old architecture with pod install
-- `old:clean`: convert example project to old architecture with clean project, pod install
-- `new:clean`: convert example project to old architecture with clean project, pod install
 
 **Codegen**
 
@@ -79,9 +69,11 @@ The [example app](/example/) demonstrates usage of the library. You need to run 
 changes you make.
 
 > [!IMPORTANT]
-> Our example app uses Expo. You should generate iOS and Android projects for development or building.
+> Our example app uses Expo SDK 52 or newer with the New Architecture enabled. Generate iOS and
+> Android projects for development or building; Expo Go cannot load these native modules.
 >
-> Please take a look at the scripts for handling Expo project generation and building.
+> `yarn gen:android` and `yarn gen:ios` only generate projects. Run `yarn example pod` once after
+> generating iOS when its native output or dependencies changed.
 > If you are having trouble building or running the Expo example project, you can run it directly from Android Studio or Xcode after the appropriate setup.
 
 It is configured to use the local version of the library, so any changes you make to the library's
@@ -97,13 +89,6 @@ find the source files at `Pods > Development Pods > RNCKakaoXXX`.
 To edit the Java or Kotlin files, run `yarn studio`
 
 You can use various commands from the root directory to work with the project.
-
-If you are building for a different architecture than your previous build, make sure to remove the
-build folders first. You can run the following command to cleanup all build folders:
-
-```sh
-yarn gen:clean
-```
 
 To confirm that the app is running with the new architecture, you can check the Metro logs for a
 message like this:
@@ -151,15 +136,15 @@ Prevent Kakao login from crashing when the native SDK returns a missing account.
 
 - `patch`: a backward-compatible bug fix, for example fixing an Android login crash.
 - `minor`: a backward-compatible feature, for example adding a new share method.
-- Breaking changes require a maintainer decision about the next major-version policy. Do not add a
-  `major` changeset while `main` and `v2` both remain on major version 2.
+- `major`: a breaking change targeting `main`. Keep `v2` backports backward-compatible.
 
 All six published packages use fixed versioning, so each release gives them the same version even
 when a changeset selects only the packages directly affected.
 
 Documentation, tests, and tooling-only changes do not need a package release. You may add an empty
 changeset with `yarn changeset --empty` when you want the pull request to record that decision.
-Contributors must not run `yarn release`, `yarn npm publish`, or publish packages manually.
+Contributors must not run `yarn release:version`, `yarn release`, `yarn npm publish`, or publish
+packages manually. Release automation applies versions and publishes packages.
 
 ### Commit message convention
 
@@ -206,9 +191,8 @@ documentation as well.
 
 ### Release branches and automation
 
-`v2` is the stable 2.x branch and publishes to npm's `latest` tag. `main` is the 2.x prerelease
-branch and publishes versions such as `2.4.8-next.0` to the `next` tag. Normal development targets
-`main`.
+`v2` is the stable maintenance branch and publishes to npm's `latest` tag. `main` is the
+prerelease branch and publishes to the `next` tag. Normal development targets `main`.
 
 For branch comparisons, use `yarn changeset status --since main` or `--since v2` to match the
 pull request's target branch.
@@ -218,8 +202,8 @@ or updates a version pull request when changesets are pending. The version pull 
 merged automatically; merging it triggers the automated npm publication for that branch and tag.
 
 After npm publication succeeds, the workflow creates one Git tag and GitHub Release for the shared
-version, such as `2.4.8` or `2.4.9-next.0`, without a `v` prefix. Releases from `main` are marked as
-prereleases. Package-specific Git tags and GitHub Releases are disabled.
+version, without a `v` prefix. Releases from `main` are marked as prereleases. Package-specific
+Git tags and GitHub Releases are disabled.
 
 If npm publication succeeds but GitHub Release creation fails, manually run the Release workflow
 on the same release branch. Already published npm versions are skipped, and the missing GitHub
@@ -248,75 +232,6 @@ Cherry-pick only the code changes. The restore step excludes any original change
 commit; add a fresh changeset on the backport branch, then open its pull request against `v2`. Do
 not cherry-pick version commits, `.changeset/pre.json`, consumed changeset files, or other
 prerelease state from `main`.
-
-#### Promote a main prerelease to stable
-
-Before promotion, fetch `v2` and compare its fixed package version with the stable base of the
-current `main` prerelease. For example, `2.4.9-next.1` has the stable base `2.4.9`. If `v2` has
-already published that version or a higher one, synchronize the `v2` hotfix release into `main`
-first:
-
-```sh
-git switch main
-git pull --ff-only
-git switch -c chore/sync-v2-<version>
-git fetch origin v2
-git cherry-pick <v2-version-pr-commit>
-```
-
-Resolve conflicts by setting only the six public package `version` fields to the stable `v2`
-version. Retain `main` code, dependency metadata, `.changeset/pre.json`, and every unconsumed
-changeset. Combine both changelog histories, then regenerate the lockfile from the resolved
-manifests with `yarn install --mode=update-lockfile`; do not take the `v2` package manifests or
-lockfile wholesale.
-
-Run `yarn changeset status`. If no real changeset remains, add a patch changeset describing the
-unreleased `main` work carried forward after the hotfix. Merge the synchronization pull request
-into `main`, then review and merge its generated prerelease version pull request. Confirm that npm
-published an unused next version, such as `2.4.10-next.0`, before promotion. Never reuse a stable
-version for different package contents.
-
-Create the promotion branch from that up-to-date `main`:
-
-```sh
-git switch main
-git pull --ff-only
-git switch -c release/v2-<version>
-yarn changeset pre exit
-```
-
-On that branch, commit the generated Changesets state and open the pull request against `v2`.
-If the pull request conflicts in Changesets files, keep the pre-exit state generated by the
-command. Do not delete pending changesets manually.
-
-After the promotion pull request merges, review and merge the generated version pull request on
-`v2`. Its merge publishes the stable packages to `latest`.
-
-After publication, create a synchronization branch from `main`. Cherry-pick only the stable version
-pull request commit or commits, rather than merging every `v2` commit:
-
-```sh
-git switch main
-git pull --ff-only
-git switch -c chore/sync-v2-<version>
-git fetch origin v2
-git cherry-pick <stable-version-pr-commit>
-```
-
-Resolve conflicts by retaining `main` code and dependency changes, and apply only the generated
-package versions, changelogs, and consumed changeset state from the stable release. Keep pending
-changesets that the stable release did not consume, then start a fresh prerelease cycle:
-
-```sh
-yarn changeset pre enter next
-```
-
-If the stable version pull request has multiple commits, cherry-pick each one in order. Review its
-file list before resolving conflicts. The synchronization must exclude unrelated `v2`-only code.
-Open this synchronization pull request against `main`.
-
-The current package version is `2.4.7`. The first stable proposal is `2.4.8`, and the first
-prerelease proposal is `2.4.8-next.0`.
 
 ### Sending a pull request
 

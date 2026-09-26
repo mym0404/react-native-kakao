@@ -26,9 +26,7 @@ import net.mjstudio.rnkakao.core.util.toStringMap
 
 class RNCKakaoShareModule internal constructor(
   context: ReactApplicationContext,
-) : KakaoShareSpec(context) {
-  override fun getName(): String = NAME
-
+) : NativeKakaoShareSpec(context) {
   @ReactMethod
   override fun shareOrSendMeOrSendFriendOrWhatever(
     sendType: String,
@@ -281,9 +279,5 @@ class RNCKakaoShareModule internal constructor(
     } else {
       promise.rejectWith(RNCKakaoAppNotAvailableException(TALK))
     }
-  }
-
-  companion object {
-    const val NAME = "RNCKakaoShare"
   }
 }

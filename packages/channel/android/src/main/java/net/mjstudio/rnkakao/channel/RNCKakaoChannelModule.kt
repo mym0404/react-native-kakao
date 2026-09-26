@@ -20,9 +20,7 @@ import net.mjstudio.rnkakao.core.util.unix
 
 class RNCKakaoChannelModule internal constructor(
   context: ReactApplicationContext,
-) : KakaoChannelSpec(context) {
-  override fun getName(): String = NAME
-
+) : NativeKakaoChannelSpec(context) {
   @ReactMethod
   override fun followChannel(
     channelPublicId: String,
@@ -174,9 +172,5 @@ class RNCKakaoChannelModule internal constructor(
         )
       }
     }
-  }
-
-  companion object {
-    const val NAME = "RNCKakaoChannel"
   }
 }
