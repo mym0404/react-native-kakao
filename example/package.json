@@ -16,7 +16,7 @@
     "prebuild:clean": "yarn prebuild:android:clean && yarn prebuild:ios:clean",
     "typecheck": "tsc --noEmit",
     "theme:gen": "generate-theme-type src/design/AppTheme.ts ./../node_modules/@react-native-styled-system/core/lib/typescript/src/@types/ThemedTypings.d.ts",
-    "pod": "cd ios && bundle install && bundle exec pod install"
+    "pod": "cd ios && mise exec -- bundle install && mise exec -- bundle exec pod install"
   },
   "dependencies": {
     "@mj-studio/js-util": "catalog:",
