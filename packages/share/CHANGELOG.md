@@ -261,6 +261,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 - **android:** fix spec old arch type ([e18d9a1](https://github.com/mym0404/react-native-kakao/commit/e18d9a15fd7c59f1265b443955a3f2ecb55aa402))
 
+## 2.4.8
+
+### Patch Changes
+
+- 256f3cf: Unify package builds and internal dependency versions with Yarn workspaces. Include the compiled Expo config plugin and omit web-only declarations from published packages. Manage coordinated stable and prerelease versions with Changesets.
+- Updated dependencies [256f3cf]
+  - @react-native-kakao/core@2.4.8
+
 ## 0.4.0 (2024-04-20)
 
 ### Features
