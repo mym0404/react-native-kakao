@@ -338,6 +338,36 @@ jobs:
         if: always() && env.E2E_IOS_DEVICE != ''
         run: xcrun simctl shutdown "$E2E_IOS_DEVICE"
 
+  ci-result:
+    needs: [changes, lint, build-android, build-ios]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify required CI results
+        shell: bash
+        env:
+          CHANGES_RESULT: ${{ needs.changes.result }}
+          LINT_RESULT: ${{ needs.lint.result }}
+          ANDROID_CHANGED: ${{ needs.changes.outputs.android }}
+          IOS_CHANGED: ${{ needs.changes.outputs.ios }}
+          ANDROID_RESULT: ${{ needs.build-android.result }}
+          IOS_RESULT: ${{ needs.build-ios.result }}
+        run: |
+          echo "changes=$CHANGES_RESULT lint=$LINT_RESULT"
+          echo "android=$ANDROID_CHANGED:$ANDROID_RESULT ios=$IOS_CHANGED:$IOS_RESULT"
+          for result in "$CHANGES_RESULT" "$LINT_RESULT"; do
+            if [[ "$result" != 'success' ]]; then
+              echo '::error::Change detection and lint must both succeed.'
+              exit 1
+            fi
+          done
+          for build in "$ANDROID_CHANGED:$ANDROID_RESULT" "$IOS_CHANGED:$IOS_RESULT"; do
+            case "$build" in
+              true:success|false:skipped) ;;
+              *) echo '::error::A required build did not succeed or a build was not intentionally skipped.'; exit 1 ;;
+            esac
+          done
+
   e2e-report:
     needs: [changes, build-android, build-ios]
     if: always() && !cancelled() && (needs.changes.outputs.android == 'true' || needs.changes.outputs.ios == 'true') && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
