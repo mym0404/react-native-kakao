@@ -182,7 +182,9 @@ Our pre-commit hooks verify that your commit message matches this format when co
 
 We use [TypeScript](https://www.typescriptlang.org/) for type
 checking, [ESLint](https://eslint.org/) with [Prettier](https://prettier.io/) for linting and
-formatting the code, and [Jest](https://jestjs.io/) for testing.
+formatting the code, and the built-in [Node.js test runner](https://nodejs.org/api/test.html) for testing.
+Run `yarn test` from the repository root to execute `script/**/*.test.js`. Tests import `test` from
+`node:test` and assertions from `node:assert/strict`.
 
 In iOS project, we
 use [ClangFormat](https://clang.llvm.org/docs/ClangFormat.html), [SwiftFormat](https://github.com/nicklockwood/SwiftFormat)

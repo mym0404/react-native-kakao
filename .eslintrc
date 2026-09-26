@@ -1,14 +1,13 @@
 {
   "root": true,
   "extends": [
-    "@react-native",
+    "./eslint-react-native.cjs",
     "prettier",
     "@mj-studio/eslint-config-react"
   ],
   "parserOptions": {
     "requireConfigFile": false
   },
-  "plugins": ["jest"],
   "rules": {
     "react-native/no-inline-styles": "off",
     "@typescript-eslint/no-shadow": "off",
