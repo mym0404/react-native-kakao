@@ -191,8 +191,8 @@ documentation as well.
 
 ### Release branches and automation
 
-`v2` is the stable maintenance branch and publishes to npm's `latest` tag. `main` is the
-prerelease branch and publishes to the `next` tag. Normal development targets `main`.
+`v2` is the stable maintenance branch. `main` publishes to npm's `next` tag in prerelease mode
+and to `latest` after exiting prerelease mode. Normal development targets `main`.
 
 For branch comparisons, use `yarn changeset status --since main` or `--since v2` to match the
 pull request's target branch.
@@ -202,7 +202,7 @@ or updates a version pull request when changesets are pending. The version pull 
 merged automatically; merging it triggers the automated npm publication for that branch and tag.
 
 After npm publication succeeds, the workflow creates one Git tag and GitHub Release for the shared
-version, without a `v` prefix. Releases from `main` are marked as prereleases. Package-specific
+version, without a `v` prefix. Versions with a `-next` suffix are marked as prereleases. Package-specific
 Git tags and GitHub Releases are disabled.
 
 If npm publication succeeds but GitHub Release creation fails, manually run the Release workflow

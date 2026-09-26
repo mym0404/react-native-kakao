@@ -159,9 +159,11 @@ jobs:
           if [[ "${RELEASE_BRANCH}" == "v2" ]]; then
             test ! -f .changeset/pre.json
             jq -se 'all(.[]; .version | test("^2\\.[0-9]+\\.[0-9]+$"))' packages/*/package.json
-          else
+          elif [[ -f .changeset/pre.json ]]; then
             jq -e '.mode == "pre" and .tag == "next"' .changeset/pre.json
             jq -se 'all(.[]; .version | test("^[0-9]+\\.[0-9]+\\.[0-9]+-next\\.[0-9]+$"))' packages/*/package.json
+          else
+            jq -se 'all(.[]; .version | test("^3\\.[0-9]+\\.[0-9]+$"))' packages/*/package.json
           fi
 
       - name: Publish packages
@@ -187,7 +189,7 @@ jobs:
             echo "Release ${version} already exists."
             exit 0
           fi
-          if [[ "${RELEASE_BRANCH}" == "main" ]]; then
+          if [[ "${version}" == *-next.* ]]; then
             release_flags=(--prerelease --latest=false)
           else
             release_flags=(--latest)
