@@ -27,6 +27,11 @@ Read in this order:
 - Run `yarn install --immutable` after mise installs the pinned toolchain.
 - Do not use Corepack, `.nvmrc`, or other version files to manage repository tool versions.
 
+## Changesets
+
+- For changes to published packages, use `yarn changeset` to add a `.changeset/*.md` file listing the affected package names, version bump type, and a short English description of the changes.
+- Documentation and tooling-only changes do not require a changeset.
+
 ## Global non-negotiables
 
 - Define the API in TypeScript spec first, then implement Android + iOS + web parity.
