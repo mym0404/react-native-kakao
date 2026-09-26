@@ -7,7 +7,6 @@
   <a href="https://www.npmjs.com/package/@react-native-kakao/core"><img src="https://img.shields.io/npm/dm/@react-native-kakao/core.svg?style=flat-square" alt="NPM downloads"></a>
   <a href="https://www.npmjs.com/package/@react-native-kakao/core"><img src="https://img.shields.io/npm/v/@react-native-kakao/core.svg?style=flat-square" alt="NPM version"></a>
   <a href="/LICENSE"><img src="https://img.shields.io/npm/l/@react-native-kakao/core.svg?style=flat-square" alt="License"></a>
-  <a href="https://github.com/lerna-lite/lerna-lite"><img src="https://img.shields.io/badge/maintained%20with-lerna--lite-e137ff?style=flat-square" alt="License"></a>
   <h3 align="center">Native Kakao SDK All In One Solution</h3>
   </p>
 </p>
@@ -30,7 +29,7 @@ iOS, Android and Web.
 - 📄 **Well documented**
   - full reference & installation documentation alongside detailed guides and FAQs
 - 🚀 **Wide supportability**
-  - first class supports for **Android, iOS, Web, New Architecture, Old Architecture, even Expo**
+  - Supports **Android, iOS, Web, and Expo**.
 - 🦋 **Robust error handling**
   - All SDK errors are forwarded to JS clearly, consistently for each platform.
 

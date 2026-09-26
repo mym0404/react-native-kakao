@@ -32,7 +32,8 @@ Relevant files:
 
 - Keep `RNCKakaoCore` module ID consistent across TS/Android/iOS.
 - Keep `.mm` thin and delegate to `RNCKakaoCoreManager.swift`.
-- Keep old/new architecture compatibility split untouched.
+- Import `NativeKakaoCore` directly from the TypeScript spec.
+- Extend the generated Android spec directly and keep the iOS bridge New Architecture-only.
 - Keep web behavior explicit in `index.web.ts` (no hidden fallback).
 
 ## Shared utility stability
@@ -52,7 +53,8 @@ Treat utility API changes as cross-package breaking risk.
 1. `yarn lint`
 2. `yarn typecheck`
 3. `yarn codegen`
-4. Regenerate example native projects if plugin/config changed:
+4. Regenerate example native projects without installing dependencies if plugin/config changed:
    - `yarn gen:android`
    - `yarn gen:ios`
-5. Verify example app build path via `/example/AGENTS.md`
+5. Install iOS pods once with `yarn example pod` when iOS native output changed.
+6. Verify example app build path via `/example/AGENTS.md`

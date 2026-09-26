@@ -68,7 +68,7 @@ module RNCKakaoSPM
 
   def self.dependency(spec, versions, products)
     unless respond_to?(:spm_dependency, true)
-      raise Pod::Informative, 'React Native Kakao requires React Native 0.75 or newer on iOS for Swift Package Manager integration.'
+      raise Pod::Informative, 'React Native Kakao requires React Native 0.76 or newer with Swift Package Manager integration available.'
     end
 
     versions = Array(versions).uniq

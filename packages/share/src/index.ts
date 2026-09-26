@@ -1,4 +1,3 @@
-import { NativeModules, Platform } from 'react-native';
 import type { Double, UnsafeObject } from 'react-native/Libraries/Types/CodegenTypes';
 
 import type {
@@ -15,8 +14,8 @@ import type {
   KakaoTemplateLink,
   KakaoTemplateSocial,
   KakaoTextTemplate,
-  Spec,
 } from './spec/NativeKakaoShare';
+import Native from './spec/NativeKakaoShare';
 import { swapMobileExecutionParamsFieldValueIntoStringInIOS } from './util/swapMobileExecutionParamsFieldValueIntoStringInIOS';
 
 export type {
@@ -34,29 +33,6 @@ export type {
   KakaoCommerceTemplate,
   KakaoCalendarTemplate,
 };
-
-const LINKING_ERROR =
-  "The package '@react-native-kakao/share' doesn't seem to be linked. Make sure: \n\n" +
-  Platform.select({ ios: "- You have run 'pod install'\n", default: '' }) +
-  '- You rebuilt the app after installing the package\n' +
-  '- You are not using Expo Go\n';
-
-const isTurboModuleEnabled = global.__turboModuleProxy != null;
-
-const Module = isTurboModuleEnabled
-  ? require('./spec/NativeKakaoShare').default
-  : NativeModules.RNCKakaoShare;
-
-const Native: Spec = Module
-  ? Module
-  : new Proxy(
-      {},
-      {
-        get() {
-          throw new Error(LINKING_ERROR);
-        },
-      },
-    );
 
 function shareOrSendMeOrSendFriendOrWhatever(
   /* share, send-me, send-friend */

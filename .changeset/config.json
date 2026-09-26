@@ -1,0 +1,15 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config/schema.json",
+  "fixed": [
+    [
+      "@react-native-kakao/channel",
+      "@react-native-kakao/core",
+      "@react-native-kakao/navi",
+      "@react-native-kakao/share",
+      "@react-native-kakao/social",
+      "@react-native-kakao/user"
+    ]
+  ],
+  "access": "public",
+  "format": false
+}

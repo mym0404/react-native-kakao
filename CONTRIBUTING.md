@@ -11,7 +11,13 @@ The `package.json` file contains various scripts for common tasks:
 
 - `mise install`: install the project toolchain.
 - `yarn install --immutable`: install project dependencies.
-- `yarn build`: build packages
+- `yarn build`: build packages.
+
+**Release metadata**
+
+- `yarn changeset`: describe a publishable change and select its version bump.
+- `yarn release:version`: apply pending changesets and update the lockfile.
+- `yarn release`: build and publish the packages. This command is for release automation and maintainers.
 
 **Validation**
 
@@ -24,24 +30,14 @@ The `package.json` file contains various scripts for common tasks:
 - `yarn android`: run the example app on Android
 - `yarn ios`: run the example app on iOS
 - `yarn dev`: run example app metro server
-- `yarn gen:android`: prebuild android expo directory
-- `yarn gen:android:clean`: clean and prebuild android expo directory
-- `yarn gen:ios`: prebuild ios expo directory
-- `yarn gen:ios:clean`: clean and prebuild ios expo directory
+- `yarn gen:android`: generate the Android Expo directory without installing dependencies
+- `yarn gen:ios`: generate the iOS Expo directory without installing dependencies
+- `yarn example pod`: install iOS dependencies after generating the iOS project
 
 **Util**
 
 - `yarn studio`: open Android Studio in example/android
 - `yarn xcode`: open Xcode in example/ios
-
-**Architecture Convert**
-
-- `new`: convert example project to new architecture
-- `old`: convert example project to old architecture
-- `new:pod`: convert example project to new architecture with pod install
-- `old:pod`: convert example project to old architecture with pod install
-- `old:clean`: convert example project to old architecture with clean project, pod install
-- `new:clean`: convert example project to old architecture with clean project, pod install
 
 **Codegen**
 
@@ -73,9 +69,11 @@ The [example app](/example/) demonstrates usage of the library. You need to run 
 changes you make.
 
 > [!IMPORTANT]
-> Our example app uses Expo. You should generate iOS and Android projects for development or building.
+> Our example app uses Expo SDK 52 or newer with the New Architecture enabled. Generate iOS and
+> Android projects for development or building; Expo Go cannot load these native modules.
 >
-> Please take a look at the scripts for handling Expo project generation and building.
+> `yarn gen:android` and `yarn gen:ios` only generate projects. Run `yarn example pod` once after
+> generating iOS when its native output or dependencies changed.
 > If you are having trouble building or running the Expo example project, you can run it directly from Android Studio or Xcode after the appropriate setup.
 
 It is configured to use the local version of the library, so any changes you make to the library's
@@ -92,13 +90,6 @@ To edit the Java or Kotlin files, run `yarn studio`
 
 You can use various commands from the root directory to work with the project.
 
-If you are building for a different architecture than your previous build, make sure to remove the
-build folders first. You can run the following command to cleanup all build folders:
-
-```sh
-yarn gen:clean
-```
-
 To confirm that the app is running with the new architecture, you can check the Metro logs for a
 message like this:
 
@@ -113,6 +104,47 @@ Make sure your code passes TypeScript and ESLint. Run the following to verify:
 ```sh
 yarn lint
 ```
+
+### Dependency versions
+
+- Put versions shared by multiple workspaces in the `catalog` in `.yarnrc.yml`, with one common
+  version for each dependency.
+- Use `workspace:*` for dependencies between this repository's packages, including peer
+  dependencies.
+- Keep external peer dependencies as explicit semver ranges so consumers can use supported
+  versions.
+
+### Changesets
+
+Add a changeset to every pull request that changes a published package's behavior or API:
+
+```sh
+yarn changeset
+```
+
+Select the affected packages, choose the version bump, and write a concise release note that says
+what changes for package users. Do not describe implementation details such as renamed local
+variables or CI steps.
+
+```md
+---
+'@react-native-kakao/user': patch
+---
+
+Prevent Kakao login from crashing when the native SDK returns a missing account.
+```
+
+- `patch`: a backward-compatible bug fix, for example fixing an Android login crash.
+- `minor`: a backward-compatible feature, for example adding a new share method.
+- `major`: a breaking change targeting `main`. Keep `v2` backports backward-compatible.
+
+All six published packages use fixed versioning, so each release gives them the same version even
+when a changeset selects only the packages directly affected.
+
+Documentation, tests, and tooling-only changes do not need a package release. You may add an empty
+changeset with `yarn changeset --empty` when you want the pull request to record that decision.
+Contributors must not run `yarn release:version`, `yarn release`, `yarn npm publish`, or publish
+packages manually. Release automation applies versions and publishes packages.
 
 ### Commit message convention
 
@@ -135,7 +167,9 @@ Our pre-commit hooks verify that your commit message matches this format when co
 
 We use [TypeScript](https://www.typescriptlang.org/) for type
 checking, [ESLint](https://eslint.org/) with [Prettier](https://prettier.io/) for linting and
-formatting the code, and [Jest](https://jestjs.io/) for testing.
+formatting the code, and the built-in [Node.js test runner](https://nodejs.org/api/test.html) for testing.
+Run `yarn test` from the repository root to execute `script/**/*.test.js`. Tests import `test` from
+`node:test` and assertions from `node:assert/strict`.
 
 In iOS project, we
 use [ClangFormat](https://clang.llvm.org/docs/ClangFormat.html), [SwiftFormat](https://github.com/nicklockwood/SwiftFormat)
@@ -155,11 +189,57 @@ with [Docusaurus](https://docusaurus.io/) and is just maintained with
 If your API changes require changes to the documentation, you should include those changes in the
 documentation as well.
 
+### Release branches and automation
+
+`v2` is the stable maintenance branch and publishes to npm's `latest` tag. `main` is the
+prerelease branch and publishes to the `next` tag. Normal development targets `main`.
+
+For branch comparisons, use `yarn changeset status --since main` or `--since v2` to match the
+pull request's target branch.
+
+The release workflow starts on pushes to either release branch and does not wait for CI. It creates
+or updates a version pull request when changesets are pending. The version pull request is never
+merged automatically; merging it triggers the automated npm publication for that branch and tag.
+
+After npm publication succeeds, the workflow creates one Git tag and GitHub Release for the shared
+version, without a `v` prefix. Releases from `main` are marked as prereleases. Package-specific
+Git tags and GitHub Releases are disabled.
+
+If npm publication succeeds but GitHub Release creation fails, manually run the Release workflow
+on the same release branch. Already published npm versions are skipped, and the missing GitHub
+Release is created. The branch must still contain that release version and its matching release mode.
+
+The version pull request uses a dedicated `CHANGESETS_TOKEN` with repository contents and
+pull-request write access. npm publication uses Trusted Publishing instead of that token.
+
+The old `next` branch is retired from development but remains available for history.
+
+#### Backport a fix to v2
+
+Keep the stable backport separate from normal `main` development:
+
+```sh
+git switch v2
+git pull --ff-only
+git switch -c fix/v2-<topic>
+git cherry-pick --no-commit <code-commit-from-main>
+git restore --source HEAD --staged --worktree .changeset
+git commit
+yarn changeset
+```
+
+Cherry-pick only the code changes. The restore step excludes any original changeset included in the
+commit; add a fresh changeset on the backport branch, then open its pull request against `v2`. Do
+not cherry-pick version commits, `.changeset/pre.json`, consumed changeset files, or other
+prerelease state from `main`.
+
 ### Sending a pull request
 
 When you're sending a pull request:
 
 - Prefer small pull requests focused on one change.
+- Add a meaningful changeset for published package changes, or identify the change as
+  documentation, tests, or tooling only.
 - Verify that linters and tests are passing.
 - Review the documentation to make sure it looks good.
 - Follow the pull request template when opening a pull request.

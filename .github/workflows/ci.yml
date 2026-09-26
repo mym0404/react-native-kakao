@@ -1,11 +1,9 @@
 name: CI
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - main
+      - v2
 
 permissions:
   contents: read
@@ -15,20 +13,50 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+    outputs:
+      android: ${{ steps.filter.outputs.android }}
+      ios: ${{ steps.filter.outputs.ios }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Detect build changes
+        id: filter
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const { detectBuildChanges } = require('./script/ci-changes.js');
+            await detectBuildChanges({ github, context, core });
+
+      - name: 'Checked base: ${{ steps.filter.outputs.base }}'
+        run: ':'
+
   lint:
     runs-on: macos-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Setup
         uses: ./.github/actions/setup
 
+      - name: Build packages
+        run: yarn build
+
       - name: Check
-        run: yarn t
+        run: |
+          yarn t
+          yarn test
 
 #      - name: Cache Gradle
-#        uses: actions/cache@v4
+#        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
 #        with:
 #          path: |
 #            ~/.gradle/wrapper
@@ -41,19 +69,19 @@ jobs:
 #    runs-on: ubuntu-latest
 #    steps:
 #      - name: Checkout
-#        uses: actions/checkout@v3
+#        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 #
 #      - name: Setup
 #        uses: ./.github/actions/setup
 #
 #      - name: Run unit tests
-#        run: yarn test --maxWorkers=2 --coverage
+#        run: yarn test
 #
 #  build-library:
 #    runs-on: ubuntu-latest
 #    steps:
 #      - name: Checkout
-#        uses: actions/checkout@v3
+#        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 #
 #      - name: Setup
 #        uses: ./.github/actions/setup
@@ -62,91 +90,61 @@ jobs:
 #        run: yarn prepare
 
   build-android:
+    needs: changes
+    if: needs.changes.outputs.android == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 45
-    strategy:
-      fail-fast: false
-      matrix:
-        arch: [old, new]
-    env:
-      TURBO_CACHE_DIR: .turbo/android-${{matrix.arch}}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: Convert Arch
-        run: yarn ${{matrix.arch}}
+      - name: Build packages
+        run: yarn build
 
-      - name: Cache turborepo for Android
-        if: matrix.arch == 'old'
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.TURBO_CACHE_DIR }}
-          key: ${{ runner.os }}-turborepo-android-${{ hashFiles('yarn.lock') }}-${{matrix.arch}}
-          restore-keys: |
-            ${{ runner.os }}-turborepo-android-${{matrix.arch}}-
-
-      - name: Check turborepo cache for Android
-        if: matrix.arch == 'old'
-        run: |
-          TURBO_CACHE_STATUS=$(node -p "($(yarn turbo run ci:android:build:${{matrix.arch}} --single-package --cache-dir="${{ env.TURBO_CACHE_DIR }}" --dry=json)).tasks.find(t => t.task === 'ci:android:build:${{matrix.arch}}').cache.status")
-
-          if [[ $TURBO_CACHE_STATUS == "HIT" ]]; then
-            echo "turbo_cache_hit=1" >> $GITHUB_ENV
-          fi
+      - name: Generate Android Example Project
+        run: yarn gen:android
 
       - name: Install JDK
-        if: env.turbo_cache_hit != 1
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
           distribution: 'zulu'
           java-version: '17'
 
       - name: Finalize Android SDK
-        if: env.turbo_cache_hit != 1
         run: |
           /bin/bash -c "yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null"
 
       - name: Cache Gradle
-        if: env.turbo_cache_hit != 1
-        uses: actions/cache@v4
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             ~/.gradle/wrapper
             ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('example/android/gradle/wrapper/gradle-wrapper.properties') }}-${{matrix.arch}}-${{ hashFiles('yarn.lock') }}-${{ hashFiles('**/package.json', '!node_modules/**') }}
+          key: ${{ runner.os }}-gradle-${{ hashFiles('example/android/gradle/wrapper/gradle-wrapper.properties') }}-${{ hashFiles('yarn.lock') }}-${{ hashFiles('package.json', 'example/package.json', 'docs/package.json', 'packages/*/package.json') }}
           restore-keys: |
-            ${{ runner.os }}-gradle-${{matrix.arch}}-${{ hashFiles('yarn.lock') }}-${{ hashFiles('**/package.json', '!node_modules/**') }}-
-
-      - name: Build example for Android
-        if: matrix.arch == 'old'
-        env:
-          JAVA_OPTS: '-XX:MaxHeapSize=6g'
-        run: |
-          yarn turbo run ci:android:build:${{matrix.arch}} --cache-dir="${{ env.TURBO_CACHE_DIR }}" --single-package
+            ${{ runner.os }}-gradle-${{ hashFiles('yarn.lock') }}-${{ hashFiles('package.json', 'example/package.json', 'docs/package.json', 'packages/*/package.json') }}-
 
       - name: Restore Android E2E Debug app
-        if: matrix.arch == 'new'
         id: android-e2e-debug-cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             example/android/app/build/outputs/apk/debug/app-debug.apk
             build/e2e/android/build.log
-          key: ${{ runner.os }}-e2e-android-debug-new-x86_64-jdk17-v1-${{ hashFiles('mise.toml', 'yarn.lock', '.yarn/patches/**', 'package.json', 'packages/*/package.json', 'packages/*/src/spec/**', 'packages/*/android/**', 'example/package.json', 'example/app.json', 'example/react-native.config.js', 'example/android/app/**', 'example/android/build.gradle', 'example/android/gradle.properties', 'example/android/gradle/**', 'example/android/settings.gradle', 'script/arch-convert.sh') }}
+          key: ${{ runner.os }}-e2e-android-debug-x86_64-jdk17-v1-${{ hashFiles('mise.toml', 'yarn.lock', '.yarn/patches/**', 'package.json', 'packages/*/package.json', 'packages/*/src/spec/**', 'packages/*/android/**', 'example/package.json', 'example/app.json', 'example/react-native.config.js', 'example/android/app/**', 'example/android/build.gradle', 'example/android/gradle.properties', 'example/android/gradle/**', 'example/android/settings.gradle') }}
 
       - name: Build Debug app for E2E
-        if: matrix.arch == 'new' && steps.android-e2e-debug-cache.outputs.cache-hit != 'true'
+        if: steps.android-e2e-debug-cache.outputs.cache-hit != 'true'
         env:
           JAVA_OPTS: '-XX:MaxHeapSize=6g'
         run: yarn e2e build android --abi x86_64
 
       - name: Save Android E2E Debug app
-        if: matrix.arch == 'new' && steps.android-e2e-debug-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        if: steps.android-e2e-debug-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             example/android/app/build/outputs/apk/debug/app-debug.apk
@@ -154,21 +152,18 @@ jobs:
           key: ${{ steps.android-e2e-debug-cache.outputs.cache-primary-key }}
 
       - name: Start Metro for Android E2E
-        if: matrix.arch == 'new'
         run: |
           mkdir -p build/e2e/android
           yarn e2e metro android > build/e2e/android/metro.log 2>&1 &
 
       - name: Enable KVM
-        if: matrix.arch == 'new'
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
       - name: Verify example menus on Android
-        if: matrix.arch == 'new'
-        uses: reactivecircus/android-emulator-runner@v2
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
         with:
           api-level: '37.1'
           target: google_apis_playstore_ps16k
@@ -181,8 +176,8 @@ jobs:
           script: yarn e2e test android --device emulator-5554 --output build/e2e/android
 
       - name: Upload Android E2E evidence
-        if: always() && matrix.arch == 'new'
-        uses: actions/upload-artifact@v4
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: e2e-android
           path: build/e2e/android/
@@ -191,13 +186,12 @@ jobs:
           if-no-files-found: warn
 
   build-ios:
+    needs: changes
+    if: needs.changes.outputs.ios == 'true'
     runs-on: macos-latest
     timeout-minutes: 45
-    strategy:
-      matrix:
-        arch: [new]
     steps:
-      - uses: maxim-lobanov/setup-xcode@v1
+      - uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0
         with:
           xcode-version: '26.2'
       - name: Ensure iOS Simulator runtime
@@ -207,43 +201,38 @@ jobs:
             xcodebuild -downloadPlatform iOS -buildVersion "${simulator_version}"
           fi
       - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.1.2'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: Convert Arch
-        run: yarn ${{matrix.arch}}
+      - name: Build packages
+        run: yarn build
+
+      - name: Generate iOS Example Project
+        run: yarn gen:ios
 
       - name: Restore iOS E2E Debug app
         id: ios-e2e-debug-cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             build/e2e/ios-build/Build/Products/Debug-iphonesimulator/KakaoExample.app
             build/e2e/ios/build.log
-          key: ${{ runner.os }}-e2e-ios-debug-new-xcode26.2-v1-${{ hashFiles('mise.toml', 'yarn.lock', '.yarn/patches/**', 'package.json', 'packages/*/package.json', 'packages/*/src/spec/**', 'packages/*/ios/**', 'packages/*/*.podspec', 'example/package.json', 'example/app.json', 'example/react-native.config.js', 'example/Gemfile.lock', 'example/ios/**', 'script/arch-convert.sh') }}
+          key: ${{ runner.os }}-e2e-ios-debug-xcode26.2-v1-${{ hashFiles('mise.toml', 'yarn.lock', '.yarn/patches/**', 'package.json', 'packages/*/package.json', 'packages/*/src/spec/**', 'packages/*/ios/**', 'packages/*/*.podspec', 'example/package.json', 'example/app.json', 'example/react-native.config.js', 'example/Gemfile.lock', 'example/ios/**') }}
 
       - name: Cache cocoapods
         id: cocoapods-cache
-        uses: actions/cache@v4
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             **/ios/Pods
-          key: ${{ runner.os }}-cocoapods-${{ hashFiles('example/ios/Podfile.lock') }}-${{matrix.arch}}
+          key: ${{ runner.os }}-cocoapods-${{ hashFiles('example/ios/Podfile.lock') }}
           restore-keys: |
-            ${{ runner.os }}-cocoapods-${{matrix.arch}}-
+            ${{ runner.os }}-cocoapods-
 
       - name: Install cocoapods
-#        if: env.turbo_cache_hit != 1 && steps.cocoapods-cache.outputs.cache-hit != 'true'
-        run: yarn pod:${{matrix.arch}}
-        env:
-          NO_FLIPPER: 1
+        run: yarn example pod
 
       - name: Build Debug app for E2E
         if: steps.ios-e2e-debug-cache.outputs.cache-hit != 'true'
@@ -251,7 +240,7 @@ jobs:
 
       - name: Save iOS E2E Debug app
         if: steps.ios-e2e-debug-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             build/e2e/ios-build/Build/Products/Debug-iphonesimulator/KakaoExample.app
@@ -265,7 +254,8 @@ jobs:
 
       - name: Boot E2E Simulator
         run: |
-          device_id=$(xcrun simctl create "Kakao E2E" "iPhone 17 Pro")
+          simulator_version=$(xcrun --sdk iphonesimulator --show-sdk-version)
+          device_id=$(xcrun simctl create "Kakao E2E" "iPhone 17 Pro" "com.apple.CoreSimulator.SimRuntime.iOS-${simulator_version//./-}")
           echo "E2E_IOS_DEVICE=$device_id" >> "$GITHUB_ENV"
           xcrun simctl boot "$device_id"
           xcrun simctl bootstatus "$device_id" -b
@@ -275,7 +265,7 @@ jobs:
 
       - name: Upload iOS E2E evidence
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: e2e-ios
           path: |
@@ -289,9 +279,39 @@ jobs:
         if: always() && env.E2E_IOS_DEVICE != ''
         run: xcrun simctl shutdown "$E2E_IOS_DEVICE"
 
+  ci-result:
+    needs: [changes, lint, build-android, build-ios]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify required CI results
+        shell: bash
+        env:
+          CHANGES_RESULT: ${{ needs.changes.result }}
+          LINT_RESULT: ${{ needs.lint.result }}
+          ANDROID_CHANGED: ${{ needs.changes.outputs.android }}
+          IOS_CHANGED: ${{ needs.changes.outputs.ios }}
+          ANDROID_RESULT: ${{ needs.build-android.result }}
+          IOS_RESULT: ${{ needs.build-ios.result }}
+        run: |
+          echo "changes=$CHANGES_RESULT lint=$LINT_RESULT"
+          echo "android=$ANDROID_CHANGED:$ANDROID_RESULT ios=$IOS_CHANGED:$IOS_RESULT"
+          for result in "$CHANGES_RESULT" "$LINT_RESULT"; do
+            if [[ "$result" != 'success' ]]; then
+              echo '::error::Change detection and lint must both succeed.'
+              exit 1
+            fi
+          done
+          for build in "$ANDROID_CHANGED:$ANDROID_RESULT" "$IOS_CHANGED:$IOS_RESULT"; do
+            case "$build" in
+              true:success|false:skipped) ;;
+              *) echo '::error::A required build did not succeed or a build was not intentionally skipped.'; exit 1 ;;
+            esac
+          done
+
   e2e-report:
-    needs: [build-android, build-ios]
-    if: always() && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    needs: [changes, build-android, build-ios]
+    if: always() && !cancelled() && (needs.changes.outputs.android == 'true' || needs.changes.outputs.ios == 'true') && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -299,12 +319,12 @@ jobs:
       pull-requests: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
       - name: Download E2E evidence
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           pattern: e2e-*
           path: e2e-results
@@ -319,7 +339,7 @@ jobs:
 
       - name: Publish E2E screenshots
         if: always()
-        uses: JamesIves/github-pages-deploy-action@v4
+        uses: JamesIves/github-pages-deploy-action@fa24774553152dd7873cd16ebd8d959b010c5445 # v4.9.0
         with:
           branch: gh-pages
           folder: e2e-images
@@ -329,7 +349,7 @@ jobs:
 
       - name: Comment E2E results
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         with:

@@ -12,6 +12,7 @@ const appScheme = 'kakao-example';
 const screens = ['home', 'user', 'share', 'navi', 'social', 'channel'];
 const iosBuild = resolve(root, 'build/e2e/ios-build');
 const timeoutMs = 180000;
+const screenTimeoutMs = 60000;
 const testTimeoutMs = 600000;
 const adbTimeoutMs = 10000;
 const metroUrl = 'http://localhost:8081';
@@ -82,25 +83,10 @@ const main = async () => {
       await logCommand(
         $({
           cwd: resolve(root, 'example/android'),
-        })`./gradlew :app:assembleDebug --no-daemon --console=plain -PnewArchEnabled=true -PreactNativeArchitectures=${abi}`,
+        })`./gradlew :app:assembleDebug --no-daemon --console=plain -PreactNativeArchitectures=${abi}`,
         buildLog,
       );
     } else {
-      const properties: unknown = JSON.parse(
-        await readFile(resolve(root, 'example/ios/Podfile.properties.json'), 'utf8'),
-      );
-
-      if (
-        !properties ||
-        typeof properties !== 'object' ||
-        !('newArchEnabled' in properties) ||
-        properties.newArchEnabled !== 'true'
-      ) {
-        throw new Error(
-          'Enable the new architecture and run yarn example pod:new before building.',
-        );
-      }
-
       await logCommand(
         $`xcodebuild -workspace example/ios/KakaoExample.xcworkspace -scheme KakaoExample -configuration Debug -sdk iphonesimulator -destination ${'generic/platform=iOS Simulator'} -derivedDataPath ${iosBuild} -quiet ARCHS=${process.arch === 'arm64' ? 'arm64' : 'x86_64'} ONLY_ACTIVE_ARCH=YES CODE_SIGNING_ALLOWED=NO COMPILER_INDEX_STORE_ENABLE=NO`,
         buildLog,
@@ -144,7 +130,7 @@ const main = async () => {
     file: `${String(index).padStart(2, '0')}-${screen}.png`,
   }));
   const titleSelector = 'id="screen-title"';
-  const homeTitle = `wait ${JSON.stringify(`${titleSelector} text="Index"`)}`;
+  const homeTitle = `wait ${JSON.stringify(`${titleSelector} text="Index"`)} ${screenTimeoutMs}`;
   const settle = 'wait 500';
   const devClientUrl = `${appScheme}://expo-development-client/?url=${encodeURIComponent(metroUrl)}&disableOnboarding=1`;
   const body = [
@@ -152,9 +138,11 @@ const main = async () => {
     platform === 'android'
       ? `open ${appId} --relaunch --metro-host localhost --metro-port 8081 --launch-url ${JSON.stringify(devClientUrl)}`
       : `open ${appId} --metro-host localhost --metro-port 8081`,
-    ...(platform === 'android' ? ['alert wait 30000', 'wait 2000', 'alert accept'] : []),
+    ...(platform === 'android'
+      ? ['alert wait 30000', 'wait 2000', 'alert accept']
+      : ['snapshot -i']),
     // Cold CI devices install and start the snapshot helper during the first wait.
-    `${homeTitle} 60000`,
+    homeTitle,
     settle,
     'screenshot "${OUTPUT}/00-home.png"',
     'scroll bottom',
@@ -168,7 +156,7 @@ const main = async () => {
 
       return [
         `press ${JSON.stringify(selector)}`,
-        `wait ${JSON.stringify(`${titleSelector} text="${title}"`)}`,
+        `wait ${JSON.stringify(`${titleSelector} text="${title}"`)} ${screenTimeoutMs}`,
         settle,
         `screenshot "\${OUTPUT}/${file}"`,
         ...(index < screens.length - 2 ? ['back', homeTitle] : []),

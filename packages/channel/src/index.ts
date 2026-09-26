@@ -1,31 +1,7 @@
-import { NativeModules, Platform } from 'react-native';
-
-import type { KakaoChannel, Spec } from './spec/NativeKakaoChannel';
+import type { KakaoChannel } from './spec/NativeKakaoChannel';
+import Native from './spec/NativeKakaoChannel';
 
 export type { KakaoChannel } from './spec/NativeKakaoChannel';
-const LINKING_ERROR =
-  "The package '@react-native-kakao/channel' doesn't seem to be linked. Make sure: \n\n" +
-  Platform.select({ ios: "- You have run 'pod install'\n", default: '' }) +
-  '- You rebuilt the app after installing the package\n' +
-  '- You are not using Expo Go\n';
-
-const isTurboModuleEnabled = global.__turboModuleProxy != null;
-
-const Module = isTurboModuleEnabled
-  ? require('./spec/NativeKakaoChannel').default
-  : NativeModules.RNCKakaoChannel;
-
-const Native: Spec = Module
-  ? Module
-  : new Proxy(
-      {},
-      {
-        get() {
-          throw new Error(LINKING_ERROR);
-        },
-      },
-    );
-
 export function followChannel(channelPublicId: string): Promise<boolean> {
   return Native.followChannel(channelPublicId);
 }

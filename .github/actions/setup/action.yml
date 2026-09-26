@@ -5,7 +5,7 @@ runs:
   using: composite
   steps:
     - name: Setup mise
-      uses: jdx/mise-action@v3
+      uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
       with:
         version: 2026.7.7
         install: true
@@ -13,12 +13,12 @@ runs:
 
     - name: Cache dependencies
       id: yarn-cache
-      uses: actions/cache@v4
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: |
           **/node_modules
           .yarn/install-state.gz
-        key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}-${{ hashFiles('**/package.json', '!node_modules/**') }}
+        key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}-${{ hashFiles('package.json', 'example/package.json', 'docs/package.json', 'packages/*/package.json') }}
         restore-keys: |
           ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
           ${{ runner.os }}-yarn-
@@ -27,17 +27,3 @@ runs:
       if: steps.yarn-cache.outputs.cache-hit != 'true'
       run: yarn install --immutable
       shell: bash
-
-    - name: Build
-      shell: bash
-      run: yarn build
-
-    - name: Generate Android Example Project
-      shell: bash
-      working-directory: example
-      run: yarn expo prebuild -p android --no-install
-
-    - name: Generate iOS Example Project
-      shell: bash
-      working-directory: example
-      run: yarn expo prebuild -p ios --no-install

@@ -4,10 +4,6 @@ require 'tmpdir'
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../packages/core/ios/kakao-sdk'
 
-def min_ios_version_supported
-  '13.4'
-end
-
 PodTargetProbe = Struct.new(:pod_name, :label, :dependent_targets) do
   def configuration_build_dir
     "${PODS_CONFIGURATION_BUILD_DIR}/#{label}"
@@ -16,7 +12,7 @@ end
 AggregateProbe = Struct.new(:pod_targets, :user_targets, :user_project)
 InstallerProbe = Struct.new(:pods_project, :aggregate_targets, :pod_targets)
 
-deployment_target = '15.0'
+deployment_target = min_ios_version_supported
 core_name = 'RNCKakaoCore'
 conflicting_version = '2.28.0'
 specs = Dir[File.expand_path('../packages/*/*.podspec', __dir__)].map { |path| Pod::Specification.from_file(path) }

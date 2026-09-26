@@ -1,31 +1,7 @@
-import { NativeModules, Platform } from 'react-native';
 import { is } from '@mj-studio/js-util';
 import { kAssert } from '@react-native-kakao/core';
 
-import type { Spec } from './spec/NativeKakaoUser';
-
-const LINKING_ERROR =
-  "The package '@react-native-kakao/user' doesn't seem to be linked. Make sure: \n\n" +
-  Platform.select({ ios: "- You have run 'pod install'\n", default: '' }) +
-  '- You rebuilt the app after installing the package\n' +
-  '- You are not using Expo Go\n';
-
-const isTurboModuleEnabled = global.__turboModuleProxy != null;
-
-const Module = isTurboModuleEnabled
-  ? require('./spec/NativeKakaoUser').default
-  : NativeModules.RNCKakaoUser;
-
-const Native: Spec = Module
-  ? Module
-  : new Proxy(
-      {},
-      {
-        get() {
-          throw new Error(LINKING_ERROR);
-        },
-      },
-    );
+import Native from './spec/NativeKakaoUser';
 
 export interface KakaoLoginToken {
   accessToken: string;

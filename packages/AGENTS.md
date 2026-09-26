@@ -7,7 +7,7 @@ This file defines the default implementation order and parity checks.
 
 - Add or change native-module APIs exposed to JS.
 - Keep Android, iOS, and web behavior aligned unless a platform limitation is explicit.
-- Keep both old/new architecture support unless policy says otherwise.
+- Support React Native 0.76.0 or newer with the New Architecture enabled.
 
 ## Canonical package skeleton
 
@@ -16,8 +16,6 @@ Each module should keep this baseline shape:
 - `src/spec/NativeKakaoX.ts`
 - `src/index.ts`
 - `src/index.web.ts`
-- `android/src/oldarch/*Spec.kt`
-- `android/src/newarch/*Spec.kt`
 - `android/src/main/java/.../RNCKakaoXModule.kt`
 - `android/src/main/java/.../RNCKakaoXPackage.kt`
 - `android/build.gradle`
@@ -32,31 +30,28 @@ Each module should keep this baseline shape:
 1. Update TS contract in `src/spec/NativeKakaoX.ts`.
 2. Update JS wrapper in `src/index.ts`.
 3. Update web implementation in `src/index.web.ts`.
-4. Update Android old/new specs and module implementation.
+4. Update the Android module implementation against the generated spec.
 5. Update iOS `.mm` exports and Swift manager logic.
 6. Regenerate codegen.
 7. Verify example integration.
 
 ## Required invariants
 
-- **Module ID parity**: `RNCKakaoX` must match across spec, Android module `NAME`, and iOS exports.
+- **Module ID parity**: `RNCKakaoX` must match across the TS spec, generated Android spec `NAME`, and iOS exports.
 - **Method parity**: every method in TS spec must exist in Android/iOS exports.
 - **Type parity**: nullable/optional fields must be mapped consistently across TS/Kotlin/Swift.
 - **Result-shape parity**: keys and nesting must match native/web outputs.
-- **Runtime loader parity**: keep `index.ts` Turbo fallback pattern unchanged.
+- **Runtime loader parity**: import the TurboModule directly from `src/spec/NativeKakaoX.ts`.
 
 ## Android checklist
 
-- Keep `TurboReactPackage` registration and `ReactModuleInfoProvider` wiring.
-- Keep `BuildConfig.IS_NEW_ARCHITECTURE_ENABLED` based turbo flag.
-- Preserve source set split:
-  - `src/newarch`
-  - `src/oldarch`
-  - generated codegen java path
+- Keep `BaseReactPackage` registration and `ReactModuleInfoProvider` wiring.
+- Extend the generated `NativeKakao*Spec` directly and use its generated module `NAME`.
+- Let the React Native Gradle plugin own Codegen tasks and generated source wiring.
 
 ## iOS checklist
 
-- Keep `#ifdef RCT_NEW_ARCH_ENABLED` split in `.h` and `.mm`.
+- Implement the generated spec without legacy architecture conditionals.
 - Keep `getTurboModule:` returning `NativeKakao*SpecJSI`.
 - Keep `.mm` as bridge forwarding layer; put SDK logic in Swift manager.
 - Keep Swift header include compatibility pattern intact.
@@ -73,7 +68,7 @@ Each module should keep this baseline shape:
 
 - `yarn lint`
 - `yarn typecheck`
-- example build path for target architecture (`old` and/or `new`)
+- New Architecture example build and E2E paths
 
 ## Which local guide to read next
 

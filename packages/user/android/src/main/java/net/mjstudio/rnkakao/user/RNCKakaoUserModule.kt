@@ -30,9 +30,7 @@ import java.util.Date
 
 class RNCKakaoUserModule internal constructor(
   context: ReactApplicationContext,
-) : KakaoUserSpec(context) {
-  override fun getName(): String = NAME
-
+) : NativeKakaoUserSpec(context) {
   @ReactMethod
   override fun login(
     serviceTerms: ReadableArray?,
@@ -391,8 +389,4 @@ class RNCKakaoUserModule internal constructor(
         }
       }
     }
-
-  companion object {
-    const val NAME = "RNCKakaoUser"
-  }
 }
