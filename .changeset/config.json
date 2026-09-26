@@ -1,8 +1,5 @@
 {
   "$schema": "https://unpkg.com/@changesets/config/schema.json",
-  "changelog": "@changesets/cli/changelog",
-  "commit": false,
-  "format": false,
   "fixed": [
     [
       "@react-native-kakao/channel",
@@ -13,12 +10,5 @@
       "@react-native-kakao/user"
     ]
   ],
-  "linked": [],
-  "access": "public",
-  "updateInternalDependencies": "patch",
-  "ignore": [],
-  "privatePackages": {
-    "version": false,
-    "tag": false
-  }
+  "access": "public"
 }
