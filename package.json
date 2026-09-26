@@ -26,7 +26,7 @@
     "format": "yarn lefthook run format",
     "clean": "yarn workspaces foreach -A --include '@react-native-kakao/*' run clean",
     "build": "yarn workspaces foreach -A --parallel --topological-dev --include '@react-native-kakao/*' run prepack",
-    "release": "yarn build && yarn changeset publish",
+    "release": "yarn build && yarn changeset publish --no-git-tag",
     "android": "yarn example android",
     "ios": "yarn example ios",
     "e2e": "bun script/e2e.ts",
