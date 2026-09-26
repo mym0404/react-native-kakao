@@ -1,90 +1,25 @@
 name: Release
 
 on:
-  workflow_run:
-    workflows:
-      - CI
-    types:
-      - completed
+  push:
     branches:
       - main
-      - next
-  workflow_dispatch:
-    inputs:
-      ci-run-id:
-        description: CI workflow run that verified the commit
-        required: true
-        type: string
-      verified-sha:
-        description: Commit verified by CI
-        required: true
-        type: string
+      - v2
 
 permissions:
   contents: read
 
 concurrency:
-  group: release-${{ github.event.workflow_run.head_branch || github.ref_name }}
+  group: release-${{ github.ref_name }}
   cancel-in-progress: false
 
 jobs:
-  dispatch:
-    if: >-
-      github.event_name == 'workflow_run' &&
-      github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.event == 'push' &&
-      github.event.workflow_run.head_repository.full_name == github.repository &&
-      (github.event.workflow_run.head_branch == 'main' ||
-      github.event.workflow_run.head_branch == 'next')
-    runs-on: ubuntu-latest
-    permissions:
-      actions: write
-    steps:
-      - name: Dispatch verified commit
-        env:
-          CI_RUN_ID: ${{ github.event.workflow_run.id }}
-          GH_TOKEN: ${{ github.token }}
-          RELEASE_BRANCH: ${{ github.event.workflow_run.head_branch }}
-          REPOSITORY: ${{ github.repository }}
-          VERIFIED_SHA: ${{ github.event.workflow_run.head_sha }}
-        run: >-
-          gh workflow run release.yml
-          --repo "${REPOSITORY}"
-          --ref "${RELEASE_BRANCH}"
-          -f "ci-run-id=${CI_RUN_ID}"
-          -f "verified-sha=${VERIFIED_SHA}"
-
   select-mode:
-    if: >-
-      github.event_name == 'workflow_dispatch' &&
-      inputs['verified-sha'] == github.sha &&
-      (github.ref_name == 'main' || github.ref_name == 'next')
     runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: read
     outputs:
       mode: ${{ steps.select.outputs.mode }}
     steps:
-      - name: Verify CI run
-        env:
-          CI_RUN_ID: ${{ inputs['ci-run-id'] }}
-          EXPECTED_SHA: ${{ github.sha }}
-          GH_TOKEN: ${{ github.token }}
-          RELEASE_BRANCH: ${{ github.ref_name }}
-          REPOSITORY: ${{ github.repository }}
-        run: |
-          [[ "${CI_RUN_ID}" =~ ^[0-9]+$ ]]
-          gh api "repos/${REPOSITORY}/actions/runs/${CI_RUN_ID}" | jq -e \
-            --arg branch "${RELEASE_BRANCH}" \
-            --arg sha "${EXPECTED_SHA}" \
-            '.path == ".github/workflows/ci.yml" and
-             .event == "push" and
-             .conclusion == "success" and
-             .head_branch == $branch and
-             .head_sha == $sha'
-
-      - name: Checkout verified commit
+      - name: Checkout release commit
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           ref: ${{ github.sha }}
@@ -117,9 +52,7 @@ jobs:
         run: yarn install --immutable
 
       - name: Select release mode
-        if: >-
-          steps.current.outputs.matches == 'true' &&
-          (github.ref_name != 'next' || hashFiles('.changeset/pre.json') != '')
+        if: steps.current.outputs.matches == 'true'
         id: select
         uses: changesets/action/select-mode@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
 
@@ -131,7 +64,7 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-      - name: Checkout verified commit
+      - name: Checkout release commit
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           ref: ${{ github.sha }}
@@ -181,7 +114,7 @@ jobs:
       contents: write
       id-token: write
     steps:
-      - name: Checkout verified commit
+      - name: Checkout release commit
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           ref: ${{ github.sha }}
@@ -218,12 +151,12 @@ jobs:
         env:
           RELEASE_BRANCH: ${{ github.ref_name }}
         run: |
-          if [[ "${RELEASE_BRANCH}" == "main" ]]; then
+          if [[ "${RELEASE_BRANCH}" == "v2" ]]; then
             test ! -f .changeset/pre.json
-            jq -se 'all(.[]; .version | contains("-") | not)' packages/*/package.json
+            jq -se 'all(.[]; .version | test("^2\\.[0-9]+\\.[0-9]+$"))' packages/*/package.json
           else
             jq -e '.mode == "pre" and .tag == "next"' .changeset/pre.json
-            jq -se 'all(.[]; .version | test("-next\\.[0-9]+$"))' packages/*/package.json
+            jq -se 'all(.[]; .version | test("^2\\.[0-9]+\\.[0-9]+-next\\.[0-9]+$"))' packages/*/package.json
           fi
 
       - name: Publish packages
