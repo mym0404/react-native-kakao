@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - v2
+      - v3
 
 permissions:
   contents: read
@@ -16,7 +17,7 @@ concurrency:
 
 jobs:
   select-mode:
-    if: github.ref_name == 'main' || github.ref_name == 'v2'
+    if: github.ref_name == 'main' || github.ref_name == 'v2' || github.ref_name == 'v3'
     runs-on: ubuntu-latest
     outputs:
       mode: ${{ steps.select.outputs.mode }}
@@ -156,12 +157,14 @@ jobs:
           RELEASE_BRANCH: ${{ github.ref_name }}
         run: |
           jq -se '[.[].version] | unique | length == 1' packages/*/package.json
-          if [[ "${RELEASE_BRANCH}" == "v2" ]]; then
-            test ! -f .changeset/pre.json
-            jq -se 'all(.[]; .version | test("^2\\.[0-9]+\\.[0-9]+$"))' packages/*/package.json
-          else
+          if [[ "${RELEASE_BRANCH}" == "main" && -f .changeset/pre.json ]]; then
             jq -e '.mode == "pre" and .tag == "next"' .changeset/pre.json
             jq -se 'all(.[]; .version | test("^[0-9]+\\.[0-9]+\\.[0-9]+-next\\.[0-9]+$"))' packages/*/package.json
+          elif [[ "${RELEASE_BRANCH}" == "main" ]]; then
+            jq -se 'all(.[]; .version | test("^3\\.[0-9]+\\.[0-9]+$"))' packages/*/package.json
+          else
+            test ! -f .changeset/pre.json
+            jq -se --arg major "${RELEASE_BRANCH#v}" 'all(.[]; .version | test("^" + $major + "\\.[0-9]+\\.[0-9]+$"))' packages/*/package.json
           fi
 
       - name: Publish packages
@@ -180,14 +183,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           RELEASE_SHA: ${{ github.sha }}
-          RELEASE_BRANCH: ${{ github.ref_name }}
         run: |
           version=$(jq -r '.version' packages/core/package.json)
           if gh release view "${version}" > /dev/null 2>&1; then
             echo "Release ${version} already exists."
             exit 0
           fi
-          if [[ "${RELEASE_BRANCH}" == "main" ]]; then
+          if [[ "${version}" == *-next.* ]]; then
             release_flags=(--prerelease --latest=false)
           else
             release_flags=(--latest)
