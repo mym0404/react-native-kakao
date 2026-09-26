@@ -17,6 +17,48 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      android: ${{ steps.filter.outputs.android }}
+      ios: ${{ steps.filter.outputs.ios }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect build changes
+        id: filter
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          if [[ "$EVENT_NAME" == 'pull_request' ]]; then
+            BASE_SHA=$(git merge-base "$BASE_SHA" "$HEAD_SHA")
+          elif ! git cat-file -e "${BASE_SHA}^{commit}" 2>/dev/null; then
+            echo 'android=true' >> "$GITHUB_OUTPUT"
+            echo 'ios=true' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          changed_files="$RUNNER_TEMP/ci-changed-files"
+          git diff --name-only --no-renames -z "$BASE_SHA" "$HEAD_SHA" > "$changed_files"
+          android=false
+          ios=false
+          while IFS= read -r -d '' file; do
+            case "$file" in
+              .changeset/*|docs/*|*.md) ;;
+              packages/*/android/*|example/android/*) android=true ;;
+              packages/*/ios/*|packages/*/*.podspec|example/ios/*|example/Gemfile*) ios=true ;;
+              *) android=true; ios=true ;;
+            esac
+          done < "$changed_files"
+          echo "android=$android" >> "$GITHUB_OUTPUT"
+          echo "ios=$ios" >> "$GITHUB_OUTPUT"
+
   lint:
     runs-on: macos-latest
     steps:
@@ -64,6 +106,8 @@ jobs:
 #        run: yarn prepare
 
   build-android:
+    needs: changes
+    if: needs.changes.outputs.android == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     strategy:
@@ -193,6 +237,8 @@ jobs:
           if-no-files-found: warn
 
   build-ios:
+    needs: changes
+    if: needs.changes.outputs.ios == 'true'
     runs-on: macos-latest
     timeout-minutes: 45
     strategy:
@@ -293,8 +339,8 @@ jobs:
         run: xcrun simctl shutdown "$E2E_IOS_DEVICE"
 
   e2e-report:
-    needs: [build-android, build-ios]
-    if: always() && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    needs: [changes, build-android, build-ios]
+    if: always() && !cancelled() && (needs.changes.outputs.android == 'true' || needs.changes.outputs.ios == 'true') && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     permissions:
       actions: read
