@@ -1,5 +1,13 @@
 # Change Log
 
+## 2.4.8
+
+### Patch Changes
+
+- 256f3cf: Unify package builds and internal dependency versions with Yarn workspaces. Include the compiled Expo config plugin and omit web-only declarations from published packages. Manage coordinated stable and prerelease versions with Changesets.
+- Updated dependencies [256f3cf]
+  - @react-native-kakao/core@2.4.8
+
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
