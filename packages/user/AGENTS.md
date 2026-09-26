@@ -42,7 +42,7 @@ When login callback behavior changes, review:
 1. Update `src/spec/NativeKakaoUser.ts`.
 2. Add wrapper and exported API in `src/index.ts`.
 3. Add web implementation in `src/index.web.ts`.
-4. Update Android old/new spec and `RNCKakaoUserModule.kt`.
+4. Update `RNCKakaoUserModule.kt` against the generated Android spec.
 5. Update iOS `RNCKakaoUser.mm` export + `RNCKakaoUserManager.swift` implementation.
 6. Regenerate codegen and verify example login/profile flows.
 

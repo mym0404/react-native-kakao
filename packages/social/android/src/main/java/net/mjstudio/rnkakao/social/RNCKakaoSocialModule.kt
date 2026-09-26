@@ -31,9 +31,7 @@ import net.mjstudio.rnkakao.core.util.rejectWith
 
 class RNCKakaoSocialModule internal constructor(
   context: ReactApplicationContext,
-) : KakaoSocialSpec(context) {
-  override fun getName(): String = NAME
-
+) : NativeKakaoSocialSpec(context) {
   @ReactMethod
   override fun getProfile(promise: Promise) =
     onMain {
@@ -185,9 +183,5 @@ class RNCKakaoSocialModule internal constructor(
         )
       }
     }
-  }
-
-  companion object {
-    const val NAME = "RNCKakaoSocial"
   }
 }

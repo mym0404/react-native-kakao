@@ -1,8 +1,8 @@
 const { execFileSync } = require('node:child_process');
 
 const buildJobs = {
-  android: ['build-android (old)', 'build-android (new)'],
-  ios: ['build-ios (new)'],
+  android: ['build-android'],
+  ios: ['build-ios'],
 };
 const platforms = Object.keys(buildJobs);
 const git = (args) => execFileSync('git', args, { encoding: 'utf8' }).trim();

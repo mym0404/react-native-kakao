@@ -115,6 +115,4 @@ yarn-error.*
 
 example/.watchman-cookie-*
 
-.turbo
-
 .eslintcache

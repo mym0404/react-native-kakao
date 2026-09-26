@@ -9,9 +9,7 @@ import net.mjstudio.rnkakao.core.util.onMain
 
 class RNCKakaoCoreModule internal constructor(
   context: ReactApplicationContext,
-) : KakaoCoreSpec(context) {
-  override fun getName(): String = NAME
-
+) : NativeKakaoCoreSpec(context) {
   @ReactMethod
   override fun initializeKakaoSDK(appKey: String) =
     onMain {
@@ -21,9 +19,5 @@ class RNCKakaoCoreModule internal constructor(
   @ReactMethod
   override fun getKeyHashAndroid(promise: Promise) {
     promise.resolve(Utility.getKeyHash(reactApplicationContext))
-  }
-
-  companion object {
-    const val NAME = "RNCKakaoCore"
   }
 }

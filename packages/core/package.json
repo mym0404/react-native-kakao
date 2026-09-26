@@ -31,9 +31,6 @@
   "homepage": "https://rnkakao.mjstudio.net",
   "scripts": {
     "prepare": "husky",
-    "codegen:android": "cd ../../example/android && ./gradlew generateCodegenArtifactsFromSchema",
-    "codegen:ios": "react-native codegen --path example/ --outputPath ../../example/ios",
-    "codegen": "yarn codegen:android && yarn codegen:ios",
     "build:expo-config-plugin": "tsc --project ./expo-config-plugin",
     "prepack": "yarn build:expo-config-plugin && bob build && zx ../../script/remove-web-declaration-files.mjs .",
     "clean": "del-cli android/ lib"
@@ -75,9 +72,9 @@
     "zx": "catalog:"
   },
   "peerDependencies": {
-    "expo": ">=47.0.0",
+    "expo": ">=52.0.0",
     "react": "*",
-    "react-native": "*"
+    "react-native": ">=0.76.0"
   },
   "peerDependenciesMeta": {
     "expo": {
@@ -123,9 +120,7 @@
       "minSdk": 21,
       "targetSdk": 33,
       "compileSdk": 33,
-      "kotlin": "1.7.0",
       "ndk": "21.4.7075529",
-      "androidGradlePlugin": "7.2.1",
       "core": "2.20.1",
       "share": "2.20.1",
       "user": "2.20.1",

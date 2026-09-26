@@ -16,8 +16,9 @@ Prepare the tools and dependencies from the repository root:
 mise install
 mise exec -- yarn install --immutable
 mise exec -- yarn build
-mise exec -- yarn new
-mise exec -- yarn example pod:new
+mise exec -- yarn gen:android
+mise exec -- yarn gen:ios
+mise exec -- yarn example pod
 ```
 
 Android requires the Android SDK and JDK; iOS requires Xcode and an iOS Simulator.
@@ -28,7 +29,7 @@ adb devices
 xcrun simctl list devices booted
 ```
 
-Build the Debug app with the new architecture. The default Android ABI follows the host CPU.
+Build the New Architecture Debug app. The default Android ABI follows the host CPU.
 Use `--abi arm64-v8a` or `--abi x86_64` when the emulator uses a different ABI.
 
 ```sh
@@ -56,12 +57,12 @@ Rebuild only when native code or native build inputs change. JavaScript and Type
 
 ## Options and artifacts
 
-| Option          | Behavior                                                                                   |
-| --------------- | ------------------------------------------------------------------------------------------ |
-| `--app PATH`    | Install an existing APK or Simulator `.app`. Use a Debug build with the new architecture   |
-| `--output PATH` | Use a specific output directory. Refuse to overwrite a previous run containing `run.json`  |
-| `--video`       | Record the same navigation flow to an MP4 under `native/`                                  |
-| `--help`        | Print command usage                                                                        |
+| Option          | Behavior                                                                                  |
+| --------------- | ----------------------------------------------------------------------------------------- |
+| `--app PATH`    | Install an existing New Architecture Debug APK or Simulator `.app`                        |
+| `--output PATH` | Use a specific output directory. Refuse to overwrite a previous run containing `run.json` |
+| `--video`       | Record the same navigation flow to an MP4 under `native/`                                 |
+| `--help`        | Print command usage                                                                       |
 
 The output contains six PNGs, JUnit, installation and test logs, the generated `.ad` flow, `summary.json`, and `index.html`.
 agent-device also stores screenshot copies and per-step logs under `native/`.
@@ -79,11 +80,10 @@ Reported test time excludes app installation, device preparation, and builds; en
 
 ## GitHub CI and PR comments
 
-The existing `build-android (new)` and `build-ios (new)` jobs build Debug apps, start Metro, and run the same script.
+The `build-android` and `build-ios` jobs build Debug apps, start Metro, and run the same script.
 Android uses the Medium Phone profile with API 37.1, a 16 KB Google Play image, 4 GB RAM, and software graphics rendering on Ubuntu.
 `GLDirectMem` and `HasSharedSlotsHostMemoryAllocator` are enabled explicitly because API 37's gralloc mapper requires both for DMA readback during screenshots and system composition.
 The local PoC uses the ARM64 image; CI uses x86_64. iOS uses an iPhone 17 Pro Simulator with Xcode 26.2.
-The Android old-architecture build and existing required check names remain in place.
 GitHub Actions caches the Android Debug APK and iOS Debug Simulator app by their native build inputs.
 An exact cache hit skips only the Debug build. Metro still serves the current JavaScript and TypeScript, and E2E verification creates fresh evidence.
 Gradle and Pods dependency caches are also reused.

@@ -5,11 +5,11 @@
   "로그인, 공유, 지도 등 따로 관리되고 있는 SDK들로부터의 버전 충돌을 완벽히 해결합니다. 또한, 누락된 API나 미구현 기능들을 포함합니다.": {
     "message": "Login, Share, Maps, and other separately managed SDKs completely resolve version conflicts.\nAdditionally, it includes missing APIs and unimplemented features."
   },
-  "모든 플랫폼과 아키텍처": {
-    "message": "All platforms and architectures"
+  "지원 플랫폼": {
+    "message": "Supported platforms"
   },
-  "React Native Kakao는 Android, iOS, Web모든 플랫폼을 지원할 뿐만 아니라 New, Old Architecture, 더 나아가 Expo까지 모두 지원합니다.": {
-    "message": "React Native Kakao supports all platforms including Android, iOS, and Web, as well as both New and Old Architectures, and even extends to Expo."
+  "React Native Kakao는 React Native 0.76.0 이상의 Android, iOS, Web과 New Architecture를 지원합니다. Expo는 SDK 52 이상의 개발 빌드를 사용해야 합니다.": {
+    "message": "React Native Kakao supports Android, iOS, Web, and the New Architecture on React Native 0.76.0 or newer. Expo requires an SDK 52 or newer development build."
   },
   "일관된 개발자 경험과 동작": {
     "message": "Consistent developer experience and behavior"

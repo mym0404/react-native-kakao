@@ -19,15 +19,15 @@ Fixes #<issue_number_goes_here> 🎯
 
 ## Target branch
 
-- [ ] `main`: normal development for the 2.x prerelease line.
+- [ ] `main`: normal development for the 3.x prerelease line.
 - [ ] `v2`: stable backport with code-only cherry-picks and a fresh changeset.
 
 <!-- Do not target the retired `next` branch. -->
 
 ## Changeset
 
-- [ ] I added a meaningful changeset with the affected packages and a `patch` or `minor` bump.
+- [ ] I added a meaningful changeset with the affected packages and the appropriate `patch`, `minor`, or `major` bump.
 - [ ] This is a documentation, test, or tooling-only change that does not need a package release.
 
 <!-- Choose one option. An empty changeset is optional when no package release is needed. -->
-<!-- Breaking changes require a maintainer decision about the next major-version policy. -->
+<!-- Use major changesets for breaking changes on main. Keep v2 backports backward-compatible. -->

@@ -66,17 +66,24 @@ test('reuse only successful native checks for the same PR base and commit histor
         conclusion: 'success',
         steps: [{ name: `Checked base: ${recordedBase}`, conclusion: 'success' }],
       },
-      ...['build-android (old)', 'build-android (new)', 'build-ios (new)'].map((name) => ({
+      ...['build-android', 'build-ios'].map((name) => ({
         name,
         conclusion: states[name] ?? 'success',
       })),
     ];
 
     const skipped = jobs({
-      'build-android (old)': 'skipped',
-      'build-android (new)': 'skipped',
-      'build-ios (new)': 'skipped',
+      'build-android': 'skipped',
+      'build-ios': 'skipped',
     });
+
+    const oldMatrixJobs = [
+      jobs()[0],
+      ...['build-android (old)', 'build-android (new)', 'build-ios (new)'].map((name) => ({
+        name,
+        conclusion: 'success',
+      })),
+    ];
 
     const cases = [
       { name: 'docs after success', expected: same },
@@ -105,19 +112,20 @@ test('reuse only successful native checks for the same PR base and commit histor
       { name: 'jobs API failure', jobsError: true, expected: both },
       {
         name: 'Android failure',
-        jobs: { 1: jobs({ 'build-android (new)': 'failure' }) },
+        jobs: { 1: jobs({ 'build-android': 'failure' }) },
         expected: androidOnly,
       },
       {
         name: 'iOS cancellation',
-        jobs: { 1: jobs({ 'build-ios (new)': 'cancelled' }) },
+        jobs: { 1: jobs({ 'build-ios': 'cancelled' }) },
         expected: iosOnly,
       },
       {
-        name: 'missing Android matrix job',
-        jobs: { 1: jobs().filter(({ name }) => name !== 'build-android (old)') },
+        name: 'missing Android job',
+        jobs: { 1: jobs().filter(({ name }) => name !== 'build-android') },
         expected: androidOnly,
       },
+      { name: 'old matrix history is not reusable', jobs: { 1: oldMatrixJobs }, expected: both },
       {
         name: 'skipped builds are not success',
         pages: [[run(2, docs)]],
@@ -135,14 +143,14 @@ test('reuse only successful native checks for the same PR base and commit histor
         name: 'latest failed build cannot reuse older success',
         head: laterDocs,
         pages: [[run(2, docs), run(1)]],
-        jobs: { 2: jobs({ 'build-android (new)': 'failure' }) },
+        jobs: { 2: jobs({ 'build-android': 'failure' }) },
         expected: androidOnly,
       },
       {
         name: 'independent platform baselines',
         head: laterDocs,
         pages: [[run(2, docs), run(1)]],
-        jobs: { 2: jobs({ 'build-ios (new)': 'skipped' }) },
+        jobs: { 2: jobs({ 'build-ios': 'skipped' }) },
         expected: same,
       },
       {
@@ -154,7 +162,7 @@ test('reuse only successful native checks for the same PR base and commit histor
       {
         name: 'push after Android failure',
         push: true,
-        jobs: { 1: jobs({ 'build-android (old)': 'failure' }, 'refs/heads/main') },
+        jobs: { 1: jobs({ 'build-android': 'failure' }, 'refs/heads/main') },
         expected: androidOnly,
       },
     ];

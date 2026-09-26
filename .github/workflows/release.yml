@@ -161,7 +161,7 @@ jobs:
             jq -se 'all(.[]; .version | test("^2\\.[0-9]+\\.[0-9]+$"))' packages/*/package.json
           else
             jq -e '.mode == "pre" and .tag == "next"' .changeset/pre.json
-            jq -se 'all(.[]; .version | test("^2\\.[0-9]+\\.[0-9]+-next\\.[0-9]+$"))' packages/*/package.json
+            jq -se 'all(.[]; .version | test("^3\\.[0-9]+\\.[0-9]+-next\\.[0-9]+$"))' packages/*/package.json
           fi
 
       - name: Publish packages

@@ -30,9 +30,7 @@ import net.mjstudio.rnkakao.core.util.rejectWith
 
 class RNCKakaoNaviModule internal constructor(
   context: ReactApplicationContext,
-) : KakaoNaviSpec(context) {
-  override fun getName(): String = NAME
-
+) : NativeKakaoNaviSpec(context) {
   @ReactMethod
   override fun navigateOrShareTo(
     destination: ReadableMap,
@@ -78,10 +76,6 @@ class RNCKakaoNaviModule internal constructor(
     } else {
       promise.resolve(false)
     }
-  }
-
-  companion object {
-    const val NAME = "RNCKakaoNavi"
   }
 }
 

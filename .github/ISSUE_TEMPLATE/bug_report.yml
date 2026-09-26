@@ -27,7 +27,7 @@ body:
     attributes:
       label: Version of react-native
       description: What version of react-native are you running?
-      placeholder: ex. 0.74.0
+      placeholder: ex. 0.76.0
     validations:
       required: true
   - type: dropdown
@@ -51,16 +51,6 @@ body:
         - Physcial Device
     validations:
       required: true
-  - type: dropdown
-    id: architecture
-    attributes:
-      label: What architecture types of react native are you seeing the problem on?
-      multiple: true
-      options:
-        - Old Architecture(Bridge)
-        - New Architecture(Fabric)
-    validations:
-      required: true
   - type: input
     id: device-version
     attributes:
@@ -69,10 +59,10 @@ body:
       placeholder: ex. Android 34, iOS 17.4
   - type: checkboxes
     attributes:
-      label: Expo App
-      description: Are you using Expo?
+      label: Expo development build
+      description: Are you using an Expo SDK 52 or newer development build? Expo Go is not supported.
       options:
-        - label: I am using Expo
+        - label: I am using an Expo development build
   - type: textarea
     id: what-happened
     attributes:
