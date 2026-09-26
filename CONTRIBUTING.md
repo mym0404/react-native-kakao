@@ -212,6 +212,10 @@ The release workflow starts on pushes to either release branch and does not wait
 or updates a version pull request when changesets are pending. The version pull request is never
 merged automatically; merging it triggers the automated npm publication for that branch and tag.
 
+After npm publication succeeds, the workflow creates one Git tag and GitHub Release for the shared
+version, such as `2.4.8` or `2.4.9-next.0`, without a `v` prefix. Releases from `main` are marked as
+prereleases. Package-specific Git tags and GitHub Releases are disabled; existing ones are preserved.
+
 The version pull request uses a dedicated `CHANGESETS_TOKEN` with repository contents and
 pull-request write access. npm publication uses Trusted Publishing instead of that token.
 

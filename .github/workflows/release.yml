@@ -151,6 +151,7 @@ jobs:
         env:
           RELEASE_BRANCH: ${{ github.ref_name }}
         run: |
+          jq -se '[.[].version] | unique | length == 1' packages/*/package.json
           if [[ "${RELEASE_BRANCH}" == "v2" ]]; then
             test ! -f .changeset/pre.json
             jq -se 'all(.[]; .version | test("^2\\.[0-9]+\\.[0-9]+$"))' packages/*/package.json
@@ -160,8 +161,32 @@ jobs:
           fi
 
       - name: Publish packages
+        id: publish
         if: steps.current.outputs.matches == 'true'
         uses: changesets/action/publish@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
         with:
           github-token: ${{ github.token }}
           script: yarn release
+          create-github-releases: false
+          push-git-tags: false
+
+      - name: Create version tag and GitHub release
+        if: steps.current.outputs.matches == 'true' && steps.publish.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_SHA: ${{ github.sha }}
+          RELEASE_BRANCH: ${{ github.ref_name }}
+        run: |
+          version=$(jq -r '.version' packages/core/package.json)
+          if gh release view "${version}" > /dev/null 2>&1; then
+            echo "Release ${version} already exists."
+            exit 0
+          fi
+          if [[ "${RELEASE_BRANCH}" == "main" ]]; then
+            release_flags=(--prerelease --latest=false)
+          else
+            release_flags=(--latest)
+          fi
+          gh release create "${version}" --target "${RELEASE_SHA}" \
+            --title "${version}" --generate-notes "${release_flags[@]}"
