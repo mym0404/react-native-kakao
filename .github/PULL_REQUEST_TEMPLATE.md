@@ -17,10 +17,17 @@
 
 Fixes #<issue_number_goes_here> 🎯
 
+## Target branch
+
+- [ ] `main`: normal development for the 2.x prerelease line.
+- [ ] `v2`: stable backport with code-only cherry-picks and a fresh changeset.
+
+<!-- Do not target the retired `next` branch. -->
+
 ## Changeset
 
-- [ ] I added a meaningful changeset with the affected packages and a `patch`, `minor`, or `major`
-      bump.
+- [ ] I added a meaningful changeset with the affected packages and a `patch` or `minor` bump.
 - [ ] This is a documentation, test, or tooling-only change that does not need a package release.
 
 <!-- Choose one option. An empty changeset is optional when no package release is needed. -->
+<!-- Breaking changes require a maintainer decision about the next major-version policy. -->
