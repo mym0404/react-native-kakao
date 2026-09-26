@@ -19,8 +19,8 @@ Fixes #<issue_number_goes_here> 🎯
 
 ## Target branch
 
-- [ ] `main`: normal development for the 3.x prerelease line.
-- [ ] `v2`: stable backport with code-only cherry-picks and a fresh changeset.
+- [ ] `main`: normal development and prereleases.
+- [ ] Stable maintenance branch: backward-compatible code backport with a fresh changeset.
 
 <!-- Do not target the retired `next` branch. -->
 
@@ -30,4 +30,4 @@ Fixes #<issue_number_goes_here> 🎯
 - [ ] This is a documentation, test, or tooling-only change that does not need a package release.
 
 <!-- Choose one option. An empty changeset is optional when no package release is needed. -->
-<!-- Use major changesets for breaking changes on main. Keep v2 backports backward-compatible. -->
+<!-- Use major changesets for breaking changes on main. Keep stable backports backward-compatible. -->
