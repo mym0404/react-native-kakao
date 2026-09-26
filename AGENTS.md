@@ -27,6 +27,25 @@ Read in this order:
 - Run `yarn install --immutable` after mise installs the pinned toolchain.
 - Do not use Corepack, `.nvmrc`, or other version files to manage repository tool versions.
 
+## Changesets and releases
+
+- Read the Changesets and release sections in `/CONTRIBUTING.md` before preparing a release, backport, or promotion.
+- Add a changeset with `yarn changeset` for changes to published package behavior, APIs, or package contents. Select the affected packages and describe the user-visible change in English.
+- Use `patch` for compatible fixes and `minor` for compatible features. Breaking changes require a maintainer decision about the next major version; both active release branches currently target v2.
+- Documentation, tests, and tooling-only changes do not require a release changeset. Do not bump a package solely to test release automation.
+- Keep the six public packages in one fixed version group. Let the generated version PR update package versions and changelogs; do not edit them manually in ordinary change PRs.
+- Target `main` for development and `2.x.x-next.N` prereleases published to npm's `next` tag. Target `v2` for stable `2.x.x` releases and backports published to `latest`. The old `next` branch is not a release target.
+- Keep `baseBranch` omitted from `.changeset/config.json`. Use `yarn changeset status --since main` or `--since v2` for comparisons against the intended PR target.
+- For backports, carry only the required code changes and add a fresh changeset for `v2`; exclude version commits and prerelease state.
+- For stable promotion, run `yarn changeset pre exit` on a promotion branch targeting `v2`. After publication, synchronize the stable version PR's metadata into `main` and start the next cycle with `yarn changeset pre enter next`, preserving unrelated development and pending changesets.
+- `.github/workflows/release.yml` runs independently of CI on `main` and `v2` pushes: pending changesets produce a version PR, and merging that PR publishes the packages. Do not enable automatic merging of version PRs or publish manually unless explicitly requested.
+- Preserve npm Trusted Publishing and the dedicated `CHANGESETS_TOKEN` used to create version PRs.
+- Create one Git tag and GitHub Release per shared version, such as `2.4.8` or `2.4.9-next.0`, without a `v` prefix. Keep package-specific tag and Release generation disabled. Mark prereleases as prerelease/non-latest and stable releases as latest.
+- Preserve historical version tags and Releases, including legacy `v`-prefixed ones. When package-specific cleanup is requested, target only the matching `@react-native-kakao/<package>@<version>` entries.
+- Review Release notes against that version's changelog entries; exclude unrelated historical changes and unnecessary user mentions.
+- Verify publication using npm dist-tags for all six packages and verify the Git tag's target commit and GitHub Release flags. A successful workflow alone is not proof of registry publication.
+- If npm publication succeeded but Release creation failed, manually rerun the Release workflow on the same branch while it still contains the matching release version and mode. Already published npm versions are skipped.
+
 ## Global non-negotiables
 
 - Define the API in TypeScript spec first, then implement Android + iOS + web parity.
