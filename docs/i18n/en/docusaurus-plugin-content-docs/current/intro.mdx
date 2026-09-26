@@ -10,6 +10,22 @@ sidebar_position: 1
 
 [React Native Kakao](https://github.com/mym0404/react-native-kakao) manages Kakao SDKs for React Native in a monorepo for consistency.
 
+## Compatibility {#compatibility}
+
+| Library version | Minimum iOS requirements | Minimum Android requirements | Kakao SDK versions |
+| --- | --- | --- | --- |
+| 2.4.6 | iOS 13 | API 23 | iOS 2.22.0 / Android 2.20.1 |
+| Next release (unreleased) | iOS 15.1 | API 24 | iOS 2.29.0 / Android 2.25.0 |
+
+The next release requires React Native 0.76 or later with the New Architecture enabled. Expo integrations require SDK 52 or later. If your React Native or Expo version requires a higher OS version, use that requirement.
+
+## Upgrading {#migration}
+
+When updating to the next release, change only code that uses the following:
+
+- Remove the friend picker option `title`, login prompt `UnifyDaum`, and profile response field `ciNeedsAgreement`.
+- Replace Android's `BlockedAction` and iOS's `Blocked` with `BlockedAccount` in error-code comparisons.
+
 ## Highlights
 
 - ❤️ **No version conflicts**
