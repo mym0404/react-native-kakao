@@ -10,5 +10,6 @@
       "@react-native-kakao/user"
     ]
   ],
-  "access": "public"
+  "access": "public",
+  "format": false
 }
