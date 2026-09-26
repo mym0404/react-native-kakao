@@ -214,7 +214,11 @@ merged automatically; merging it triggers the automated npm publication for that
 
 After npm publication succeeds, the workflow creates one Git tag and GitHub Release for the shared
 version, such as `2.4.8` or `2.4.9-next.0`, without a `v` prefix. Releases from `main` are marked as
-prereleases. Package-specific Git tags and GitHub Releases are disabled; existing ones are preserved.
+prereleases. Package-specific Git tags and GitHub Releases are disabled.
+
+If npm publication succeeds but GitHub Release creation fails, manually run the Release workflow
+on the same release branch. Already published npm versions are skipped, and the missing GitHub
+Release is created. The branch must still contain that release version and its matching release mode.
 
 The version pull request uses a dedicated `CHANGESETS_TOKEN` with repository contents and
 pull-request write access. npm publication uses Trusted Publishing instead of that token.

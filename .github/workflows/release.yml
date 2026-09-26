@@ -1,6 +1,7 @@
 name: Release
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -15,6 +16,7 @@ concurrency:
 
 jobs:
   select-mode:
+    if: github.ref_name == 'main' || github.ref_name == 'v2'
     runs-on: ubuntu-latest
     outputs:
       mode: ${{ steps.select.outputs.mode }}
@@ -108,7 +110,9 @@ jobs:
 
   publish:
     needs: select-mode
-    if: needs.select-mode.outputs.mode == 'publish'
+    if: >-
+      needs.select-mode.outputs.mode == 'publish' ||
+      (github.event_name == 'workflow_dispatch' && needs.select-mode.outputs.mode == 'none')
     runs-on: ubuntu-latest
     permissions:
       contents: write
