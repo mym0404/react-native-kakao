@@ -6,3 +6,5 @@ node_modules/
 script/*
 !script/e2e.ts
 !script/e2e-report.js
+!script/ci-changes.js
+!script/ci-changes.test.js
