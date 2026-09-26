@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## <small>2.4.7 (2026-09-06)</small>
+## 2.4.7 (2026-09-06)
 
 * fix(android): skip explicit Kotlin plugin when AGP registers the kotlin extension (#78) ([db93491](https://github.com/mym0404/react-native-kakao/commit/db93491)), closes [#78](https://github.com/mym0404/react-native-kakao/issues/78)
 
