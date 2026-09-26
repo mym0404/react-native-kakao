@@ -1,7 +1,7 @@
 {
   "name": "@react-native-kakao/channel",
   "description": "React Native Kakao Channel SDK",
-  "version": "2.4.8",
+  "version": "3.0.0",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
   "types": "lib/typescript/src/index.d.ts",

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 3.0.0
+
+### Major Changes
+
+- f077598: Require React Native 0.76 or later with the New Architecture. Expo integrations require SDK 52 or later.
+
+### Patch Changes
+
+- Updated dependencies [f077598]
+  - @react-native-kakao/core@3.0.0
+
 ## 2.4.8
 
 ### Patch Changes
