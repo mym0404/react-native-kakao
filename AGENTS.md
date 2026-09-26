@@ -70,6 +70,7 @@ Read in this order:
 ## iOS rules
 
 - Implement the generated `NativeKakao*Spec` without legacy architecture conditionals.
+- Keep C++ bridge headers private to the pod so Swift imports do not parse generated C++ specs.
 - Keep `getTurboModule:` returning `NativeKakao*SpecJSI`.
 - Use Swift manager for SDK calls, threading, and result mapping.
 - Preserve Swift header compatibility imports:

@@ -16,6 +16,7 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/mym0404/react-native-kakao.git", :tag => "#{s.version}" }
 
   s.source_files = "ios/**/*.{h,m,mm,swift}"
+  s.private_header_files = "ios/RNCKakaoShare.h"
 
   install_modules_dependencies(s)
 
