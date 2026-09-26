@@ -136,7 +136,7 @@ Prevent Kakao login from crashing when the native SDK returns a missing account.
 
 - `patch`: a backward-compatible bug fix, for example fixing an Android login crash.
 - `minor`: a backward-compatible feature, for example adding a new share method.
-- `major`: a breaking change targeting `main`. Keep `v2` backports backward-compatible.
+- `major`: a breaking change targeting `main`. Keep `v2` and `v3` backports backward-compatible.
 
 All six published packages use fixed versioning, so each release gives them the same version even
 when a changeset selects only the packages directly affected.
@@ -191,18 +191,18 @@ documentation as well.
 
 ### Release branches and automation
 
-`v2` is the stable maintenance branch. `main` publishes to npm's `next` tag in prerelease mode
-and to `latest` after exiting prerelease mode. Normal development targets `main`.
+`v2` and `v3` are stable maintenance branches. `main` publishes prereleases to npm's `next` tag.
+Normal development targets `main`.
 
-For branch comparisons, use `yarn changeset status --since main` or `--since v2` to match the
-pull request's target branch.
+For branch comparisons, use `yarn changeset status --since main`, `--since v2`, or `--since v3`
+to match the pull request's target branch.
 
-The release workflow starts on pushes to either release branch and does not wait for CI. It creates
+The release workflow starts on pushes to any release branch and does not wait for CI. It creates
 or updates a version pull request when changesets are pending. The version pull request is never
 merged automatically; merging it triggers the automated npm publication for that branch and tag.
 
 After npm publication succeeds, the workflow creates one Git tag and GitHub Release for the shared
-version, without a `v` prefix. Versions with a `-next` suffix are marked as prereleases. Package-specific
+version, without a `v` prefix. Releases from `main` are marked as prereleases. Package-specific
 Git tags and GitHub Releases are disabled.
 
 If npm publication succeeds but GitHub Release creation fails, manually run the Release workflow
@@ -214,9 +214,10 @@ pull-request write access. npm publication uses Trusted Publishing instead of th
 
 The old `next` branch is retired from development but remains available for history.
 
-#### Backport a fix to v2
+#### Backport a fix to v2 or v3
 
-Keep the stable backport separate from normal `main` development:
+Keep the stable backport separate from normal `main` development. Replace `v2` with `v3` for a
+v3 backport:
 
 ```sh
 git switch v2
@@ -229,9 +230,9 @@ yarn changeset
 ```
 
 Cherry-pick only the code changes. The restore step excludes any original changeset included in the
-commit; add a fresh changeset on the backport branch, then open its pull request against `v2`. Do
-not cherry-pick version commits, `.changeset/pre.json`, consumed changeset files, or other
-prerelease state from `main`.
+commit; add a fresh changeset on the backport branch, then open its pull request against the
+matching stable branch. Do not cherry-pick version commits, `.changeset/pre.json`, consumed
+changeset files, or other prerelease state from `main`.
 
 ### Sending a pull request
 
