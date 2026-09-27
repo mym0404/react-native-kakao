@@ -3,6 +3,11 @@ appId: com.rnkakao.example
 - launchApp
 - runFlow:
     when:
+      visible: Android App Compatibility
+    commands:
+      - tapOn: Don't Show Again
+- runFlow:
+    when:
       true: ${RECORD_VIDEO == "true"}
     commands:
       - startRecording: menus
