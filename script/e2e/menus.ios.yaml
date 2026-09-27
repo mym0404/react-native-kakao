@@ -1,0 +1,74 @@
+appId: com.rnkakao.example
+---
+- launchApp
+- runFlow:
+    when:
+      true: ${RECORD_VIDEO == "true"}
+    commands:
+      - startRecording: menus
+- assertVisible:
+    id: screen-title
+    text: Index
+- takeScreenshot: 00-home
+- scrollUntilVisible:
+    element:
+      id: menu-user
+- tapOn:
+    id: menu-user
+- assertVisible:
+    id: screen-title
+    text: User
+- takeScreenshot: 01-user
+- tapOn: index
+- assertVisible:
+    id: screen-title
+    text: Index
+- scrollUntilVisible:
+    element:
+      id: menu-share
+- tapOn:
+    id: menu-share
+- assertVisible:
+    id: screen-title
+    text: Share
+- takeScreenshot: 02-share
+- tapOn: index
+- assertVisible:
+    id: screen-title
+    text: Index
+- scrollUntilVisible:
+    element:
+      id: menu-navi
+- tapOn:
+    id: menu-navi
+- assertVisible:
+    id: screen-title
+    text: Navi
+- takeScreenshot: 03-navi
+- tapOn: index
+- assertVisible:
+    id: screen-title
+    text: Index
+- scrollUntilVisible:
+    element:
+      id: menu-social
+- tapOn:
+    id: menu-social
+- assertVisible:
+    id: screen-title
+    text: Social
+- takeScreenshot: 04-social
+- tapOn: index
+- assertVisible:
+    id: screen-title
+    text: Index
+- scrollUntilVisible:
+    element:
+      id: menu-channel
+- tapOn:
+    id: menu-channel
+- assertVisible:
+    id: screen-title
+    text: Channel
+- takeScreenshot: 05-channel
+- stopRecording

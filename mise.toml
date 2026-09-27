@@ -7,4 +7,4 @@ ktlint = "1.8.0"
 clang-format = "22.1.8"
 swiftformat = "0.62.1"
 ccache = { version = "4.14", os = ["macos"] }
-"npm:agent-device" = "0.21.15"
+maestro = "cli-2.10.0"

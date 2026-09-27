@@ -106,6 +106,12 @@ jobs:
           path: example/android/app/build/outputs/apk/release/app-release.apk
           key: ${{ runner.os }}-e2e-android-release-${{ runner.arch }}-x86_64-jdk17-v2-${{ hashFiles('mise.toml', '.yarnrc.yml', 'yarn.lock', '.yarn/patches/**', 'package.json', 'tsconfig.json', 'packages/*/package.json', 'packages/*/tsconfig.json', 'packages/*/tsconfig.build.json', 'packages/*/src/**', 'packages/*/android/**', 'packages/core/expo-config-plugin/**', 'packages/core/app.plugin.js', 'example/package.json', 'example/app.json', 'example/src/**', 'example/assets/**', 'example/tsconfig.json', 'example/babel.config.js', 'example/metro.config.js', 'example/react-native.config.js', 'script/e2e/e2e-build.ts', 'script/e2e/e2e-log.ts') }}
 
+      - name: Install JDK
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
       - name: Setup
         uses: ./.github/actions/setup
 
@@ -116,12 +122,6 @@ jobs:
       - name: Generate Android Example Project
         if: steps.android-e2e-release-cache.outputs.cache-hit != 'true'
         run: yarn gen:android
-
-      - name: Install JDK
-        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
-        with:
-          distribution: 'zulu'
-          java-version: '17'
 
       - name: Finalize Android SDK
         run: |
@@ -185,9 +185,7 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: e2e-android
-          path: |
-            build/e2e/android/
-            !build/e2e/android/alert-state/**
+          path: build/e2e/android/
           retention-days: 14
           overwrite: true
           if-no-files-found: warn
@@ -217,6 +215,13 @@ jobs:
           if ! xcrun simctl list runtimes | grep -Fq "iOS ${simulator_version}"; then
             xcodebuild -downloadPlatform iOS -buildVersion "${simulator_version}"
           fi
+
+      - name: Install JDK
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
       - name: Setup
         uses: ./.github/actions/setup
 
@@ -304,9 +309,7 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: e2e-ios
-          path: |
-            build/e2e/ios/
-            !build/e2e/ios/device-state/daemon.json
+          path: build/e2e/ios/
           retention-days: 14
           overwrite: true
           if-no-files-found: warn
