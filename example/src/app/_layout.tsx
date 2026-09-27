@@ -59,11 +59,7 @@ export default function RootLayout() {
             contentStyle: { backgroundColor: 'black' },
             headerTintColor: 'white',
             headerStyle: { backgroundColor: 'black' },
-            headerTitle: (props) => (
-              <Txt testID={'screen-title'} weight={'bold'}>
-                {capitalize(props.children)}
-              </Txt>
-            ),
+            headerTitle: (props) => <Txt weight={'bold'}>{capitalize(props.children)}</Txt>,
             animation: 'fade_from_bottom',
           }}
         />

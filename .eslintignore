@@ -4,5 +4,3 @@ node_modules/
 **/.gradle/
 **/build
 script/*
-!script/e2e.ts
-!script/e2e-report.js

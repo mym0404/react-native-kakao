@@ -22,11 +22,7 @@ export default function Page() {
   });
 
   return (
-    <StyledScrollView
-      testID={'home-scroll'}
-      flex={1}
-      contentContainerSx={{ pt: 12, pb: 48, alignItems: 'center', px: 4 }}
-    >
+    <StyledScrollView flex={1} contentContainerSx={{ pt: 12, pb: 48, alignItems: 'center', px: 4 }}>
       <Animated.Image
         source={require('../../assets/icon.png')}
         style={[
@@ -94,27 +90,27 @@ export default function Page() {
               );
           }}
         />
-        <Link testID={'menu-user'} href={'/user'}>
+        <Link href={'/user'}>
           <Txt textDecorationLine={'underline'} align={'center'}>
             {'@react-native-kakao/user'}
           </Txt>
         </Link>
-        <Link testID={'menu-share'} href={'/share'}>
+        <Link href={'/share'}>
           <Txt textDecorationLine={'underline'} align={'center'}>
             {'@react-native-kakao/share'}
           </Txt>
         </Link>
-        <Link testID={'menu-navi'} href={'/navi'}>
+        <Link href={'/navi'}>
           <Txt textDecorationLine={'underline'} align={'center'}>
             {'@react-native-kakao/navi'}
           </Txt>
         </Link>
-        <Link testID={'menu-social'} href={'/social'}>
+        <Link href={'/social'}>
           <Txt textDecorationLine={'underline'} align={'center'}>
             {'@react-native-kakao/social'}
           </Txt>
         </Link>
-        <Link testID={'menu-channel'} href={'/channel'}>
+        <Link href={'/channel'}>
           <Txt textDecorationLine={'underline'} align={'center'}>
             {'@react-native-kakao/channel'}
           </Txt>

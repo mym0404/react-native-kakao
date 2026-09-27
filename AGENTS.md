@@ -94,11 +94,11 @@ Read in this order:
 
 ## Verification gates
 
-- Type/format/lint gates (hook + CI aligned):
+- Local type/format/lint gates:
   - `yarn lint`
   - `yarn typecheck`
 - Native integration gates:
-  - build/test paths in `.github/workflows/ci.yml`
+  - build paths in `.github/workflows/ci.yml`
   - architecture conversion via `script/arch-convert.sh`
 - Example app must still compile in the target architecture(s).
 
