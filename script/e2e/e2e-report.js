@@ -5,7 +5,7 @@ const screens = ['home', 'user', 'share', 'navi', 'social', 'channel'];
 module.exports = async ({ github, context, core }) => {
   const { owner, repo } = context.repo;
   const issue_number = context.issue.number;
-  const marker = '<!-- example-agent-device-e2e -->';
+  const marker = '<!-- example-maestro-e2e -->';
   const { data: pr } = await github.rest.pulls.get({
     owner,
     repo,
@@ -84,7 +84,7 @@ module.exports = async ({ github, context, core }) => {
   const summary = [
     marker,
     '',
-    '## Example E2E · agent-device',
+    '## Example E2E · Maestro',
     '',
     `Commit: ${process.env.PR_HEAD_SHA} · [CI run](${runUrl})`,
     '',

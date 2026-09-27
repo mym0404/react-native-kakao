@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
-import { mkdir, readFile, stat, writeFile } from 'node:fs/promises';
-import { dirname, resolve } from 'node:path';
+import { copyFile, mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
+import { dirname, join, resolve } from 'node:path';
 import { setTimeout as sleep } from 'node:timers/promises';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
@@ -10,10 +10,8 @@ import { buildE2EApp, iosBuild } from './e2e-build';
 import { logCommand } from './e2e-log';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
-const appId = 'com.rnkakao.example';
 const screens = ['home', 'user', 'share', 'navi', 'social', 'channel'];
 const timeoutMs = 180000;
-const screenTimeoutMs = 20000;
 const testTimeoutMs = 600000;
 const adbTimeoutMs = 10000;
 const main = async () => {
@@ -90,35 +88,8 @@ const main = async () => {
     screen,
     file: `${String(index).padStart(2, '0')}-${screen}.png`,
   }));
-  const titleSelector = 'id="screen-title"';
-  const homeTitle = `wait ${JSON.stringify(`${titleSelector} text="Index"`)} ${screenTimeoutMs}`;
-  const body = [
-    `context platform=${platform}`,
-    `open ${appId} --relaunch`,
-    ...(platform === 'android' ? ['settings animations off'] : []),
-    // Cold CI devices install and start the snapshot helper during the first wait.
-    homeTitle,
-    'screenshot "${OUTPUT}/00-home.png"',
-    'scroll bottom',
-    ...screenshots.slice(1).flatMap(({ screen, file }, index) => {
-      const title = screen.charAt(0).toUpperCase() + screen.slice(1);
-      // Android exposes the interactive button inside the testID-bearing parent.
-      const selector =
-        platform === 'android'
-          ? `role="button" label="@react-native-kakao/${screen}"`
-          : `id="menu-${screen}"`;
-
-      return [
-        `press ${JSON.stringify(selector)}`,
-        `wait ${JSON.stringify(`${titleSelector} text="${title}"`)} ${screenTimeoutMs}`,
-        `screenshot "\${OUTPUT}/${file}"`,
-        ...(index < screens.length - 2 ? ['back', homeTitle] : []),
-      ];
-    }),
-    'close',
-  ].join('\n');
-  const flow = resolve(output, 'menus.ad');
-  await writeFile(flow, `${body}\n`);
+  const flow = resolve(root, `script/e2e/menus.${platform}.yaml`);
+  const artifacts = resolve(output, 'maestro');
 
   let error = '';
   let durationSeconds = 0;
@@ -172,32 +143,10 @@ const main = async () => {
     installSeconds = (performance.now() - installStarted) / 1000;
 
     if (platform === 'android') {
-      const stateDir = resolve(output, 'alert-state');
-
       await logCommand(
-        $`agent-device open ${appId} --relaunch --platform android --serial ${device} --state-dir ${stateDir}`,
-        resolve(output, 'alert-open.log'),
+        $`adb -s ${device} shell ${'settings put global window_animation_scale 0 && settings put global transition_animation_scale 0 && settings put global animator_duration_scale 0'}`,
+        resolve(output, 'animations.log'),
       );
-
-      try {
-        const alertResult =
-          await $`agent-device alert get --platform android --serial ${device} --state-dir ${stateDir} --json`;
-        await writeFile(resolve(output, 'alert-get.log'), alertResult.stdout + alertResult.stderr);
-
-        const alertStatus: { data?: { alert?: unknown } } = JSON.parse(alertResult.stdout);
-
-        if (alertStatus.data?.alert) {
-          await logCommand(
-            $`agent-device alert accept --platform android --serial ${device} --state-dir ${stateDir}`,
-            resolve(output, 'alert-accept.log'),
-          );
-        }
-      } finally {
-        await logCommand(
-          $`agent-device close --platform android --serial ${device} --state-dir ${stateDir}`,
-          resolve(output, 'alert-close.log'),
-        );
-      }
     }
 
     if (platform === 'ios') {
@@ -205,24 +154,6 @@ const main = async () => {
         $`xcrun simctl spawn ${device} defaults write com.apple.Accessibility ReduceMotionEnabled -bool YES`,
         resolve(output, 'reduce-motion.log'),
       );
-
-      console.log('Preparing the iOS XCTest runner...');
-
-      const stateDir = resolve(output, 'device-state');
-      const prepareStarted = performance.now();
-      try {
-        await logCommand(
-          $`agent-device prepare ios-runner --platform ios --udid ${device} --state-dir ${stateDir} --timeout 600000`,
-          resolve(output, 'prepare.log'),
-        );
-      } finally {
-        // Test uses its own daemon; release the prepared runner lease first.
-        await logCommand(
-          $`agent-device daemon stop --state-dir ${stateDir}`,
-          resolve(output, 'prepare-stop.log'),
-        );
-        prepareSeconds = (performance.now() - prepareStarted) / 1000;
-      }
     }
 
     console.log(`Verifying ${platform} menus...`);
@@ -230,11 +161,21 @@ const main = async () => {
     const testStarted = performance.now();
     try {
       await logCommand(
-        $`agent-device test ${flow} --platform ${platform} ${platform === 'ios' ? '--udid' : '--serial'} ${device} --artifacts-dir ${resolve(output, 'native')} --report-junit ${resolve(output, 'junit.xml')} --timeout ${testTimeoutMs} --retries 0 -e ${`OUTPUT=${output}`} ${values.video ? ['--record-video'] : []}`,
+        $`maestro --device ${device} test ${flow} --format JUNIT --output ${resolve(output, 'junit.xml')} --test-output-dir ${artifacts} --debug-output ${artifacts} -e ${`RECORD_VIDEO=${values.video}`}`.timeout(
+          testTimeoutMs,
+        ),
         resolve(output, 'test.log'),
       );
     } finally {
       durationSeconds = (performance.now() - testStarted) / 1000;
+
+      const files = await readdir(artifacts, { recursive: true }).catch(() => []);
+      for (const { file } of screenshots) {
+        const screenshot = files.find((path) => path.endsWith(`/takeScreenshot/${file}`));
+        if (screenshot) {
+          await copyFile(join(artifacts, screenshot), resolve(output, file));
+        }
+      }
     }
 
     for (const { file } of screenshots) {

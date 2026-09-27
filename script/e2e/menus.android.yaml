@@ -1,0 +1,64 @@
+appId: com.rnkakao.example
+---
+- launchApp
+- runFlow:
+    when:
+      true: ${RECORD_VIDEO == "true"}
+    commands:
+      - startRecording: menus
+- assertVisible:
+    id: screen-title
+    text: Index
+- takeScreenshot: 00-home
+- scrollUntilVisible:
+    element: '@react-native-kakao/user'
+- tapOn: '@react-native-kakao/user'
+- assertVisible:
+    id: screen-title
+    text: User
+- takeScreenshot: 01-user
+- back
+- assertVisible:
+    id: screen-title
+    text: Index
+- scrollUntilVisible:
+    element: '@react-native-kakao/share'
+- tapOn: '@react-native-kakao/share'
+- assertVisible:
+    id: screen-title
+    text: Share
+- takeScreenshot: 02-share
+- back
+- assertVisible:
+    id: screen-title
+    text: Index
+- scrollUntilVisible:
+    element: '@react-native-kakao/navi'
+- tapOn: '@react-native-kakao/navi'
+- assertVisible:
+    id: screen-title
+    text: Navi
+- takeScreenshot: 03-navi
+- back
+- assertVisible:
+    id: screen-title
+    text: Index
+- scrollUntilVisible:
+    element: '@react-native-kakao/social'
+- tapOn: '@react-native-kakao/social'
+- assertVisible:
+    id: screen-title
+    text: Social
+- takeScreenshot: 04-social
+- back
+- assertVisible:
+    id: screen-title
+    text: Index
+- scrollUntilVisible:
+    element: '@react-native-kakao/channel'
+- tapOn: '@react-native-kakao/channel'
+- assertVisible:
+    id: screen-title
+    text: Channel
+- takeScreenshot: 05-channel
+- stopRecording
