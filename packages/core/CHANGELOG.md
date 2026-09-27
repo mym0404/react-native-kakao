@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 3.0.0-next.0
+
+### Major Changes
+
+- 8e19172: Upgrade Kakao Android SDK to 2.25.0 and iOS SDK to 2.29.0. Install the iOS SDK through Swift Package Manager while preserving CocoaPods installation and SDK version override names. Remove retired SDK options and response fields, and update blocked-account error codes.
+- f077598: Require React Native 0.76 or later with the New Architecture. Expo integrations require SDK 52 or later.
+
+### Patch Changes
+
+- 8e19172: Declare SPM resource bundles per pod while preserving resource-copy setup and cleanup across targets.
+
 ## 2.4.8
 
 ### Patch Changes
