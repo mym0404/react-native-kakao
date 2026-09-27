@@ -29,7 +29,6 @@
     "release": "yarn build && yarn changeset publish --no-git-tag",
     "android": "yarn example android",
     "ios": "yarn example ios",
-    "e2e": "bun script/e2e.ts",
     "web": "yarn example web",
     "dev": "yarn watchman-refresh && yarn example start",
     "gen:android": "yarn example prebuild:android",

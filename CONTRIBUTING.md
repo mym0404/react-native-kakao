@@ -64,8 +64,8 @@ It contains the following packages:
 - An example app in the `example/` directory.
 
 Install and activate [mise](https://mise.jdx.dev/getting-started.html), then run the following
-commands in the project root. The committed `mise.toml` pins Node.js, Yarn, ClangFormat,
-SwiftFormat, and Ktlint to the versions used by CI.
+commands in the project root. The committed `mise.toml` pins Node.js, Yarn, Bun,
+ClangFormat, SwiftFormat, and Ktlint. CI uses Node.js and Yarn for builds.
 
 ```sh
 mise install

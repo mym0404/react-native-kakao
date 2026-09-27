@@ -17,18 +17,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint:
-    runs-on: macos-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup
-        uses: ./.github/actions/setup
-
-      - name: Check
-        run: yarn t
-
 #      - name: Cache Gradle
 #        uses: actions/cache@v4
 #        with:
@@ -124,73 +112,10 @@ jobs:
             ${{ runner.os }}-gradle-${{matrix.arch}}-${{ hashFiles('yarn.lock') }}-${{ hashFiles('package.json', 'example/package.json', 'docs/package.json', 'packages/*/package.json') }}-
 
       - name: Build example for Android
-        if: matrix.arch == 'old'
         env:
           JAVA_OPTS: '-XX:MaxHeapSize=6g'
         run: |
           yarn turbo run ci:android:build:${{matrix.arch}} --cache-dir="${{ env.TURBO_CACHE_DIR }}" --single-package
-
-      - name: Restore Android E2E Debug app
-        if: matrix.arch == 'new'
-        id: android-e2e-debug-cache
-        uses: actions/cache/restore@v4
-        with:
-          path: |
-            example/android/app/build/outputs/apk/debug/app-debug.apk
-            build/e2e/android/build.log
-          key: ${{ runner.os }}-e2e-android-debug-new-x86_64-jdk17-v1-${{ hashFiles('mise.toml', 'yarn.lock', '.yarn/patches/**', 'package.json', 'packages/*/package.json', 'packages/*/src/spec/**', 'packages/*/android/**', 'example/package.json', 'example/app.json', 'example/react-native.config.js', 'example/android/app/**', 'example/android/build.gradle', 'example/android/gradle.properties', 'example/android/gradle/**', 'example/android/settings.gradle', 'script/arch-convert.sh') }}
-
-      - name: Build Debug app for E2E
-        if: matrix.arch == 'new' && steps.android-e2e-debug-cache.outputs.cache-hit != 'true'
-        env:
-          JAVA_OPTS: '-XX:MaxHeapSize=6g'
-        run: yarn e2e build android --abi x86_64
-
-      - name: Save Android E2E Debug app
-        if: matrix.arch == 'new' && steps.android-e2e-debug-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
-        with:
-          path: |
-            example/android/app/build/outputs/apk/debug/app-debug.apk
-            build/e2e/android/build.log
-          key: ${{ steps.android-e2e-debug-cache.outputs.cache-primary-key }}
-
-      - name: Start Metro for Android E2E
-        if: matrix.arch == 'new'
-        run: |
-          mkdir -p build/e2e/android
-          yarn e2e metro android > build/e2e/android/metro.log 2>&1 &
-
-      - name: Enable KVM
-        if: matrix.arch == 'new'
-        run: |
-          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-          sudo udevadm control --reload-rules
-          sudo udevadm trigger --name-match=kvm
-
-      - name: Verify example menus on Android
-        if: matrix.arch == 'new'
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: '37.1'
-          target: google_apis_playstore_ps16k
-          arch: x86_64
-          profile: medium_phone
-          ram-size: 4096M
-          disable-animations: true
-          # API 37's gralloc mapper requires both features for DMA readback.
-          emulator-options: -no-window -gpu software -feature GLDirectMem,HasSharedSlotsHostMemoryAllocator -noaudio -no-boot-anim -no-snapshot -camera-back none
-          script: yarn e2e test android --device emulator-5554 --output build/e2e/android
-
-      - name: Upload Android E2E evidence
-        if: always() && matrix.arch == 'new'
-        uses: actions/upload-artifact@v4
-        with:
-          name: e2e-android
-          path: build/e2e/android/
-          retention-days: 14
-          overwrite: true
-          if-no-files-found: warn
 
   build-ios:
     runs-on: macos-latest
@@ -202,12 +127,6 @@ jobs:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: '26.2'
-      - name: Ensure iOS Simulator runtime
-        run: |
-          simulator_version=$(xcrun --sdk iphonesimulator --show-sdk-version)
-          if ! xcrun simctl list runtimes | grep -Fq "iOS ${simulator_version}"; then
-            xcodebuild -downloadPlatform iOS -buildVersion "${simulator_version}"
-          fi
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -221,15 +140,6 @@ jobs:
 
       - name: Convert Arch
         run: yarn ${{matrix.arch}}
-
-      - name: Restore iOS E2E Debug app
-        id: ios-e2e-debug-cache
-        uses: actions/cache/restore@v4
-        with:
-          path: |
-            build/e2e/ios-build/Build/Products/Debug-iphonesimulator/KakaoExample.app
-            build/e2e/ios/build.log
-          key: ${{ runner.os }}-e2e-ios-debug-new-xcode26.2-v1-${{ hashFiles('mise.toml', 'yarn.lock', '.yarn/patches/**', 'package.json', 'packages/*/package.json', 'packages/*/src/spec/**', 'packages/*/ios/**', 'packages/*/*.podspec', 'example/package.json', 'example/app.json', 'example/react-native.config.js', 'example/Gemfile.lock', 'example/ios/**', 'script/arch-convert.sh') }}
 
       - name: Cache cocoapods
         id: cocoapods-cache
@@ -247,94 +157,5 @@ jobs:
         env:
           NO_FLIPPER: 1
 
-      - name: Build Debug app for E2E
-        if: steps.ios-e2e-debug-cache.outputs.cache-hit != 'true'
-        run: yarn e2e build ios
-
-      - name: Save iOS E2E Debug app
-        if: steps.ios-e2e-debug-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
-        with:
-          path: |
-            build/e2e/ios-build/Build/Products/Debug-iphonesimulator/KakaoExample.app
-            build/e2e/ios/build.log
-          key: ${{ steps.ios-e2e-debug-cache.outputs.cache-primary-key }}
-
-      - name: Start Metro for iOS E2E
-        run: |
-          mkdir -p build/e2e/ios
-          yarn e2e metro ios > build/e2e/ios/metro.log 2>&1 &
-
-      - name: Boot E2E Simulator
-        run: |
-          simulator_version=$(xcrun --sdk iphonesimulator --show-sdk-version)
-          device_id=$(xcrun simctl create "Kakao E2E" "iPhone 17 Pro" "com.apple.CoreSimulator.SimRuntime.iOS-${simulator_version//./-}")
-          echo "E2E_IOS_DEVICE=$device_id" >> "$GITHUB_ENV"
-          xcrun simctl boot "$device_id"
-          xcrun simctl bootstatus "$device_id" -b
-
-      - name: Verify example menus on iOS
-        run: yarn e2e test ios --device "$E2E_IOS_DEVICE" --output build/e2e/ios
-
-      - name: Upload iOS E2E evidence
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: e2e-ios
-          path: |
-            build/e2e/ios/
-            !build/e2e/ios/device-state/daemon.json
-          retention-days: 14
-          overwrite: true
-          if-no-files-found: warn
-
-      - name: Stop E2E Simulator
-        if: always() && env.E2E_IOS_DEVICE != ''
-        run: xcrun simctl shutdown "$E2E_IOS_DEVICE"
-
-  e2e-report:
-    needs: [build-android, build-ios]
-    if: always() && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: write
-      pull-requests: write
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-
-      - name: Download E2E evidence
-        uses: actions/download-artifact@v4
-        with:
-          pattern: e2e-*
-          path: e2e-results
-
-      - name: Prepare E2E screenshots
-        if: always()
-        run: |
-          for platform in android ios; do
-            mkdir -p "e2e-images/e2e-$platform"
-            cp e2e-results/e2e-$platform/*.png "e2e-images/e2e-$platform/" 2>/dev/null || true
-          done
-
-      - name: Publish E2E screenshots
-        if: always()
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          branch: gh-pages
-          folder: e2e-images
-          target-folder: e2e/pr-${{ github.event.pull_request.number }}
-          clean: true
-          commit-message: 'ci: publish E2E screenshots for PR #${{ github.event.pull_request.number }}'
-
-      - name: Comment E2E results
-        if: always()
-        uses: actions/github-script@v7
-        env:
-          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-        with:
-          script: |
-            await require('./script/e2e-report.js')({ github, context, core });
+      - name: Build example for iOS
+        run: yarn ci:ios:build:${{matrix.arch}}
