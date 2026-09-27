@@ -14,17 +14,14 @@ sidebar_position: 1
 
 | Library version | Minimum iOS requirements | Minimum Android requirements | Kakao SDK versions |
 | --- | --- | --- | --- |
-| 2.4.6 | iOS 13 | API 23 | iOS 2.22.0 / Android 2.20.1 |
-| Next release (unreleased) | iOS 15.1 | API 24 | iOS 2.29.0 / Android 2.25.0 |
+| v2 | iOS 13 | API 23 | iOS 2.22.0 / Android 2.20.1 |
+| v3 | iOS 15.1 | API 24 | iOS 2.29.0 / Android 2.25.0 |
 
-The next release requires React Native 0.76 or later with the New Architecture enabled. Expo integrations require SDK 52 or later. If your React Native or Expo version requires a higher OS version, use that requirement.
+v3 is not released yet and requires React Native 0.76 or later with the New Architecture enabled. Expo integrations require SDK 52 or later. If your React Native or Expo version requires a higher OS version, use that requirement.
 
-## Upgrading {#migration}
+## Migrating to v3 {#migration}
 
-When updating to the next release, change only code that uses the following:
-
-- Remove the friend picker option `title`, login prompt `UnifyDaum`, and profile response field `ciNeedsAgreement`.
-- Replace Android's `BlockedAction` and iOS's `Blocked` with `BlockedAccount` in error-code comparisons.
+See the [v3 migration guide](./migration-v3) for the changes required when updating from v2 to v3.
 
 ## Highlights
 

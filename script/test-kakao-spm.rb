@@ -43,10 +43,15 @@ Dir.mktmpdir('kakao-spm-test') do |directory|
   aggregate = AggregateProbe.new([core_pod, social_pod], [target], app)
   installer = InstallerProbe.new(pods, [aggregate], [core_pod, social_pod])
   Pod::Installer::TargetUUIDGenerator.new([pods]).generate!
-  root = pods.root_object
+  original_objects = pods.objects_by_uuid.dup
   2.times { SPM.apply_on_post_install(installer) }
-  101.times { pods.new(Xcodeproj::Project::Object::XCRemoteSwiftPackageReference) }
-  raise 'Root project UUID overwritten' unless pods.objects_by_uuid[root.uuid].equal?(root)
+  # Attach objects so duplicate UUIDs would overwrite live project entries.
+  200.times do |index|
+    reference = pods.new(Xcodeproj::Project::Object::XCRemoteSwiftPackageReference)
+    reference.repositoryURL = "https://example.com/uuid-probe-#{index}"
+    pods.root_object.package_references << reference
+  end
+  raise 'Existing project UUID overwritten' unless original_objects.all? { |uuid, object| pods.objects_by_uuid[uuid].equal?(object) }
   raise 'Duplicate products' unless core.package_product_dependencies.map(&:product_name).sort == products
   raise 'Dependency registry changed' unless SPM.instance_variable_get(:@dependencies_by_pod).equal?(dependencies)
   raise 'Dependent linked SDK twice' unless social.package_product_dependencies.empty?
@@ -114,5 +119,12 @@ Dir.mktmpdir('kakao-spm-test') do |directory|
   subset_core = subset.new_target(:static_library, core_name, :ios, deployment_target)
   SPM.apply_on_post_install(InstallerProbe.new(subset, [], [core_pod]))
   raise 'Core-only install links optional products' unless subset_core.package_product_dependencies.map(&:product_name).sort == %w[Alamofire KakaoSDKCommon]
+
+  # Resource ownership comes from the declaration, not the Social pod name.
+  RNCKakaoSPM.dependency(specs.find { |spec| spec.name == core_name }, '2.29.0', ['KakaoSDKCommon'], resources: [:friend])
+  installer.aggregate_targets = [AggregateProbe.new([core_pod], [target], app)]
+  RNCKakaoSPM.copy_resources(installer)
+  phase = target.shell_script_build_phases.find { |item| item.name == phase_name }
+  raise 'Declared resource owner ignored' unless phase && phase.shell_script.include?("set -- #{core_name}")
 end
 puts 'Kakao SPM checks passed'
