@@ -9,7 +9,7 @@ import { $ } from 'zx';
 import { buildE2EApp, iosBuild } from './e2e-build';
 import { logCommand } from './e2e-log';
 
-const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const appId = 'com.rnkakao.example';
 const screens = ['home', 'user', 'share', 'navi', 'social', 'channel'];
 const timeoutMs = 180000;

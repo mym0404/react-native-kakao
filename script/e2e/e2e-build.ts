@@ -4,7 +4,7 @@ import { $ } from 'zx';
 
 import { logCommand } from './e2e-log';
 
-const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 
 export const iosBuild = resolve(root, 'build/e2e/ios-build');
 
