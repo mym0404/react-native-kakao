@@ -13,7 +13,7 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const appId = 'com.rnkakao.example';
 const screens = ['home', 'user', 'share', 'navi', 'social', 'channel'];
 const timeoutMs = 180000;
-const screenTimeoutMs = 60000;
+const screenTimeoutMs = 20000;
 const testTimeoutMs = 600000;
 const adbTimeoutMs = 10000;
 const main = async () => {

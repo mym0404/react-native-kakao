@@ -64,11 +64,11 @@ export default function RootLayout() {
                 {capitalize(props.children)}
               </Txt>
             ),
-            animation: 'fade_from_bottom',
+            animation: 'none',
           }}
         />
       </Box>
-      <FlashMessage position={'top'} duration={5000} type={'success'} />
+      <FlashMessage position={'top'} duration={5000} type={'success'} animated={false} />
     </StyledSystemProvider>
   );
 }
