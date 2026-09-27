@@ -54,6 +54,9 @@
               "https://devrepo.kakao.com/nexus/repository/kakaomap-releases/"
             ],
             "minSdkVerson": 26
+          },
+          "ios": {
+            "ccacheEnabled": true
           }
         }
       ],

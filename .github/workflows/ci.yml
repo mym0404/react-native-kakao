@@ -99,13 +99,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
+      - name: Restore Android E2E Release app
+        id: android-e2e-release-cache
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: example/android/app/build/outputs/apk/release/app-release.apk
+          key: ${{ runner.os }}-e2e-android-release-${{ runner.arch }}-x86_64-jdk17-v2-${{ hashFiles('mise.toml', '.yarnrc.yml', 'yarn.lock', '.yarn/patches/**', 'package.json', 'tsconfig.json', 'packages/*/package.json', 'packages/*/tsconfig.json', 'packages/*/tsconfig.build.json', 'packages/*/src/**', 'packages/*/android/**', 'packages/core/expo-config-plugin/**', 'packages/core/app.plugin.js', 'example/package.json', 'example/app.json', 'example/src/**', 'example/assets/**', 'example/tsconfig.json', 'example/babel.config.js', 'example/metro.config.js', 'example/react-native.config.js', 'script/e2e-build.ts', 'script/e2e-log.ts') }}
+
       - name: Setup
         uses: ./.github/actions/setup
 
       - name: Build packages
+        if: steps.android-e2e-release-cache.outputs.cache-hit != 'true'
         run: yarn build
 
       - name: Generate Android Example Project
+        if: steps.android-e2e-release-cache.outputs.cache-hit != 'true'
         run: yarn gen:android
 
       - name: Install JDK
@@ -119,43 +128,38 @@ jobs:
           /bin/bash -c "yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null"
 
       - name: Cache Gradle
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        if: steps.android-e2e-release-cache.outputs.cache-hit != 'true'
+        id: android-gradle-cache
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             ~/.gradle/wrapper
             ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('example/android/gradle/wrapper/gradle-wrapper.properties') }}-${{ hashFiles('yarn.lock') }}-${{ hashFiles('package.json', 'example/package.json', 'docs/package.json', 'packages/*/package.json') }}
+          key: ${{ runner.os }}-gradle-${{ runner.arch }}-jdk17-v2-${{ hashFiles('mise.toml', 'yarn.lock', '.yarn/patches/**', 'package.json', 'example/package.json', 'example/app.json', 'packages/*/package.json') }}-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-gradle-${{ hashFiles('yarn.lock') }}-${{ hashFiles('package.json', 'example/package.json', 'docs/package.json', 'packages/*/package.json') }}-
+            ${{ runner.os }}-gradle-${{ runner.arch }}-jdk17-v2-${{ hashFiles('mise.toml', 'yarn.lock', '.yarn/patches/**', 'package.json', 'example/package.json', 'example/app.json', 'packages/*/package.json') }}-
 
-      - name: Restore Android E2E Debug app
-        id: android-e2e-debug-cache
-        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: |
-            example/android/app/build/outputs/apk/debug/app-debug.apk
-            build/e2e/android/build.log
-          key: ${{ runner.os }}-e2e-android-debug-x86_64-jdk17-v1-${{ hashFiles('mise.toml', 'yarn.lock', '.yarn/patches/**', 'package.json', 'packages/*/package.json', 'packages/*/src/spec/**', 'packages/*/android/**', 'example/package.json', 'example/app.json', 'example/react-native.config.js', 'example/android/app/**', 'example/android/build.gradle', 'example/android/gradle.properties', 'example/android/gradle/**', 'example/android/settings.gradle') }}
-
-      - name: Build Debug app for E2E
-        if: steps.android-e2e-debug-cache.outputs.cache-hit != 'true'
+      - name: Build Release app for E2E
+        if: steps.android-e2e-release-cache.outputs.cache-hit != 'true'
         env:
           JAVA_OPTS: '-XX:MaxHeapSize=6g'
         run: yarn e2e build android --abi x86_64
 
-      - name: Save Android E2E Debug app
-        if: steps.android-e2e-debug-cache.outputs.cache-hit != 'true'
+      - name: Save Gradle cache
+        if: steps.android-e2e-release-cache.outputs.cache-hit != 'true' && steps.android-gradle-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
-            example/android/app/build/outputs/apk/debug/app-debug.apk
-            build/e2e/android/build.log
-          key: ${{ steps.android-e2e-debug-cache.outputs.cache-primary-key }}
+            ~/.gradle/wrapper
+            ~/.gradle/caches
+          key: ${{ steps.android-gradle-cache.outputs.cache-primary-key }}
 
-      - name: Start Metro for Android E2E
-        run: |
-          mkdir -p build/e2e/android
-          yarn e2e metro android > build/e2e/android/metro.log 2>&1 &
+      - name: Save Android E2E Release app
+        if: steps.android-e2e-release-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: example/android/app/build/outputs/apk/release/app-release.apk
+          key: ${{ steps.android-e2e-release-cache.outputs.cache-primary-key }}
 
       - name: Enable KVM
         run: |
@@ -181,7 +185,9 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: e2e-android
-          path: build/e2e/android/
+          path: |
+            build/e2e/android/
+            !build/e2e/android/alert-state/**
           retention-days: 14
           overwrite: true
           if-no-files-found: warn
@@ -192,6 +198,16 @@ jobs:
     runs-on: macos-latest
     timeout-minutes: 45
     steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Restore iOS E2E Release app
+        id: ios-e2e-release-cache
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: build/e2e/ios-build/Build/Products/Release-iphonesimulator/KakaoExample.app
+          key: ${{ runner.os }}-e2e-ios-release-${{ runner.arch }}-xcode26.2-v2-${{ hashFiles('mise.toml', '.yarnrc.yml', 'yarn.lock', '.yarn/patches/**', 'package.json', 'tsconfig.json', 'packages/*/package.json', 'packages/*/tsconfig.json', 'packages/*/tsconfig.build.json', 'packages/*/*.podspec', 'packages/*/src/**', 'packages/*/ios/**', 'packages/core/expo-config-plugin/**', 'packages/core/app.plugin.js', 'example/package.json', 'example/app.json', 'example/src/**', 'example/assets/**', 'example/tsconfig.json', 'example/babel.config.js', 'example/metro.config.js', 'example/react-native.config.js', 'example/Gemfile', 'example/Gemfile.lock', 'script/e2e-build.ts', 'script/e2e-log.ts') }}
+
       - uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0
         with:
           xcode-version: '26.2'
@@ -201,57 +217,76 @@ jobs:
           if ! xcrun simctl list runtimes | grep -Fq "iOS ${simulator_version}"; then
             xcodebuild -downloadPlatform iOS -buildVersion "${simulator_version}"
           fi
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
       - name: Setup
         uses: ./.github/actions/setup
 
       - name: Build packages
+        if: steps.ios-e2e-release-cache.outputs.cache-hit != 'true'
         run: yarn build
 
       - name: Generate iOS Example Project
+        if: steps.ios-e2e-release-cache.outputs.cache-hit != 'true'
         run: yarn gen:ios
 
-      - name: Restore iOS E2E Debug app
-        id: ios-e2e-debug-cache
+      - name: Restore iOS compiler cache
+        if: steps.ios-e2e-release-cache.outputs.cache-hit != 'true'
+        id: ios-ccache
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
-          path: |
-            build/e2e/ios-build/Build/Products/Debug-iphonesimulator/KakaoExample.app
-            build/e2e/ios/build.log
-          key: ${{ runner.os }}-e2e-ios-debug-xcode26.2-v1-${{ hashFiles('mise.toml', 'yarn.lock', '.yarn/patches/**', 'package.json', 'packages/*/package.json', 'packages/*/src/spec/**', 'packages/*/ios/**', 'packages/*/*.podspec', 'example/package.json', 'example/app.json', 'example/react-native.config.js', 'example/Gemfile.lock', 'example/ios/**') }}
+          path: .ccache
+          key: ${{ runner.os }}-ccache-${{ runner.arch }}-xcode26.2-v1-${{ hashFiles('mise.toml', 'yarn.lock', 'example/package.json', 'packages/*/package.json') }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-ccache-${{ runner.arch }}-xcode26.2-v1-${{ hashFiles('mise.toml', 'yarn.lock', 'example/package.json', 'packages/*/package.json') }}-
+
+      - name: Prepare iOS compiler cache
+        if: steps.ios-e2e-release-cache.outputs.cache-hit != 'true'
+        env:
+          CCACHE_DIR: ${{ github.workspace }}/.ccache
+        run: |
+          ccache --max-size 1G
+          ccache --zero-stats
 
       - name: Cache cocoapods
+        if: steps.ios-e2e-release-cache.outputs.cache-hit != 'true'
         id: cocoapods-cache
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             **/ios/Pods
-          key: ${{ runner.os }}-cocoapods-${{ hashFiles('example/ios/Podfile.lock') }}
+          key: ${{ runner.os }}-cocoapods-xcode26.2-v2-${{ hashFiles('yarn.lock', 'example/Gemfile.lock', 'example/app.json', 'packages/*/*.podspec') }}
           restore-keys: |
-            ${{ runner.os }}-cocoapods-
+            ${{ runner.os }}-cocoapods-xcode26.2-v2-
 
       - name: Install cocoapods
+        if: steps.ios-e2e-release-cache.outputs.cache-hit != 'true'
         run: yarn example pod
 
-      - name: Build Debug app for E2E
-        if: steps.ios-e2e-debug-cache.outputs.cache-hit != 'true'
+      - name: Build Release app for E2E
+        if: steps.ios-e2e-release-cache.outputs.cache-hit != 'true'
+        env:
+          CCACHE_DIR: ${{ github.workspace }}/.ccache
+          CCACHE_COMPILERCHECK: content
         run: yarn e2e build ios
 
-      - name: Save iOS E2E Debug app
-        if: steps.ios-e2e-debug-cache.outputs.cache-hit != 'true'
+      - name: Show iOS compiler cache statistics
+        if: steps.ios-e2e-release-cache.outputs.cache-hit != 'true'
+        env:
+          CCACHE_DIR: ${{ github.workspace }}/.ccache
+        run: ccache --show-stats
+
+      - name: Save iOS compiler cache
+        if: steps.ios-e2e-release-cache.outputs.cache-hit != 'true' && steps.ios-ccache.outputs.cache-hit != 'true'
         uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
-          path: |
-            build/e2e/ios-build/Build/Products/Debug-iphonesimulator/KakaoExample.app
-            build/e2e/ios/build.log
-          key: ${{ steps.ios-e2e-debug-cache.outputs.cache-primary-key }}
+          path: .ccache
+          key: ${{ steps.ios-ccache.outputs.cache-primary-key }}
 
-      - name: Start Metro for iOS E2E
-        run: |
-          mkdir -p build/e2e/ios
-          yarn e2e metro ios > build/e2e/ios/metro.log 2>&1 &
+      - name: Save iOS E2E Release app
+        if: steps.ios-e2e-release-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: build/e2e/ios-build/Build/Products/Release-iphonesimulator/KakaoExample.app
+          key: ${{ steps.ios-e2e-release-cache.outputs.cache-primary-key }}
 
       - name: Boot E2E Simulator
         run: |
