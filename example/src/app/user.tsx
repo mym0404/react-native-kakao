@@ -34,10 +34,7 @@ export default function Page() {
   });
 
   return (
-    <StyledScrollView
-      flex={1}
-      contentContainerSx={{ pt: 12, pb: 48, alignItems: 'center', px: 4, gap: 4 }}
-    >
+    <StyledScrollView flex={1} contentContainerSx={{ pb: 48, alignItems: 'center', px: 4, gap: 4 }}>
       <Txt>{`Kakao Talk Available: ${isKakaoTalkEnable}`}</Txt>
       <Btn
         minW={px(240)}

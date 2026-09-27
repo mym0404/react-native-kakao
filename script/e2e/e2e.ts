@@ -4,26 +4,18 @@ import { dirname, resolve } from 'node:path';
 import { setTimeout as sleep } from 'node:timers/promises';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
-import { $, type ProcessPromise } from 'zx';
+import { $ } from 'zx';
 
-const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+import { buildE2EApp, iosBuild } from './e2e-build';
+import { logCommand } from './e2e-log';
+
+const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const appId = 'com.rnkakao.example';
-const appScheme = 'kakao-example';
 const screens = ['home', 'user', 'share', 'navi', 'social', 'channel'];
-const iosBuild = resolve(root, 'build/e2e/ios-build');
 const timeoutMs = 180000;
-const screenTimeoutMs = 60000;
+const screenTimeoutMs = 20000;
 const testTimeoutMs = 600000;
 const adbTimeoutMs = 10000;
-const metroUrl = 'http://localhost:8081';
-const logCommand = async (command: ProcessPromise, path: string) => {
-  const result = await command.nothrow();
-  await writeFile(path, result.stdout + result.stderr);
-  if (result.exitCode !== 0) {
-    throw new Error(`Command exited ${result.exitCode}. See ${path}`);
-  }
-};
-
 const main = async () => {
   const { positionals, values } = parseArgs({
     allowPositionals: true,
@@ -40,7 +32,6 @@ const main = async () => {
   const usage = `Usage:
   yarn e2e build android [--abi arm64-v8a|x86_64]
   yarn e2e build ios
-  yarn e2e metro android|ios
   yarn e2e test android|ios --device ID [--app PATH] [--output PATH] [--video]`;
 
   if (values.help) {
@@ -52,51 +43,21 @@ const main = async () => {
   const [operation, platform] = positionals;
   if (
     positionals.length !== 2 ||
-    !['build', 'metro', 'test'].includes(operation ?? '') ||
+    !['build', 'test'].includes(operation ?? '') ||
     (platform !== 'android' && platform !== 'ios')
   ) {
     throw new Error(usage);
   }
 
-  $.cwd = root;
-
-  if (operation === 'metro') {
-    $.env = { ...process.env, CI: '1' };
-    await $`yarn example start --dev-client --host localhost --port 8081`;
-
-    return;
-  }
-
   const platformDir = resolve(root, 'build/e2e', platform);
   if (operation === 'build') {
-    $.env = { ...process.env, NODE_ENV: 'development' };
-
-    const abi = values.abi ?? (process.arch === 'arm64' ? 'arm64-v8a' : 'x86_64');
-    if (!['arm64-v8a', 'x86_64'].includes(abi)) {
-      throw new Error('--abi must be arm64-v8a or x86_64');
-    }
-
     await mkdir(platformDir, { recursive: true });
-
-    const buildLog = resolve(platformDir, 'build.log');
-    if (platform === 'android') {
-      await logCommand(
-        $({
-          cwd: resolve(root, 'example/android'),
-        })`./gradlew :app:assembleDebug --no-daemon --console=plain -PreactNativeArchitectures=${abi}`,
-        buildLog,
-      );
-    } else {
-      await logCommand(
-        $`xcodebuild -workspace example/ios/KakaoExample.xcworkspace -scheme KakaoExample -configuration Debug -sdk iphonesimulator -destination ${'generic/platform=iOS Simulator'} -derivedDataPath ${iosBuild} -quiet ARCHS=${process.arch === 'arm64' ? 'arm64' : 'x86_64'} ONLY_ACTIVE_ARCH=YES CODE_SIGNING_ALLOWED=NO COMPILER_INDEX_STORE_ENABLE=NO`,
-        buildLog,
-      );
-    }
-
-    console.log(`Build passed. Log: ${buildLog}`);
+    await buildE2EApp({ platform, abi: values.abi, platformDir });
 
     return;
   }
+
+  $.cwd = root;
 
   const device = values.device;
   if (!device?.trim() || device.startsWith('-') || /[\r\n]/.test(device)) {
@@ -107,8 +68,8 @@ const main = async () => {
     root,
     values.app ??
       (platform === 'android'
-        ? 'example/android/app/build/outputs/apk/debug/app-debug.apk'
-        : `${iosBuild}/Build/Products/Debug-iphonesimulator/KakaoExample.app`),
+        ? 'example/android/app/build/outputs/apk/release/app-release.apk'
+        : `${iosBuild}/Build/Products/Release-iphonesimulator/KakaoExample.app`),
   );
 
   await stat(app).catch(() => {
@@ -131,19 +92,12 @@ const main = async () => {
   }));
   const titleSelector = 'id="screen-title"';
   const homeTitle = `wait ${JSON.stringify(`${titleSelector} text="Index"`)} ${screenTimeoutMs}`;
-  const settle = 'wait 500';
-  const devClientUrl = `${appScheme}://expo-development-client/?url=${encodeURIComponent(metroUrl)}&disableOnboarding=1`;
   const body = [
     `context platform=${platform}`,
-    platform === 'android'
-      ? `open ${appId} --relaunch --metro-host localhost --metro-port 8081 --launch-url ${JSON.stringify(devClientUrl)}`
-      : `open ${appId} --metro-host localhost --metro-port 8081`,
-    ...(platform === 'android'
-      ? ['alert wait 30000', 'wait 2000', 'alert accept']
-      : ['snapshot -i']),
+    `open ${appId} --relaunch`,
+    ...(platform === 'android' ? ['settings animations off'] : []),
     // Cold CI devices install and start the snapshot helper during the first wait.
     homeTitle,
-    settle,
     'screenshot "${OUTPUT}/00-home.png"',
     'scroll bottom',
     ...screenshots.slice(1).flatMap(({ screen, file }, index) => {
@@ -157,7 +111,6 @@ const main = async () => {
       return [
         `press ${JSON.stringify(selector)}`,
         `wait ${JSON.stringify(`${titleSelector} text="${title}"`)} ${screenTimeoutMs}`,
-        settle,
         `screenshot "\${OUTPUT}/${file}"`,
         ...(index < screens.length - 2 ? ['back', homeTitle] : []),
       ];
@@ -218,7 +171,41 @@ const main = async () => {
     );
     installSeconds = (performance.now() - installStarted) / 1000;
 
+    if (platform === 'android') {
+      const stateDir = resolve(output, 'alert-state');
+
+      await logCommand(
+        $`agent-device open ${appId} --relaunch --platform android --serial ${device} --state-dir ${stateDir}`,
+        resolve(output, 'alert-open.log'),
+      );
+
+      try {
+        const alertResult =
+          await $`agent-device alert get --platform android --serial ${device} --state-dir ${stateDir} --json`;
+        await writeFile(resolve(output, 'alert-get.log'), alertResult.stdout + alertResult.stderr);
+
+        const alertStatus: { data?: { alert?: unknown } } = JSON.parse(alertResult.stdout);
+
+        if (alertStatus.data?.alert) {
+          await logCommand(
+            $`agent-device alert accept --platform android --serial ${device} --state-dir ${stateDir}`,
+            resolve(output, 'alert-accept.log'),
+          );
+        }
+      } finally {
+        await logCommand(
+          $`agent-device close --platform android --serial ${device} --state-dir ${stateDir}`,
+          resolve(output, 'alert-close.log'),
+        );
+      }
+    }
+
     if (platform === 'ios') {
+      await logCommand(
+        $`xcrun simctl spawn ${device} defaults write com.apple.Accessibility ReduceMotionEnabled -bool YES`,
+        resolve(output, 'reduce-motion.log'),
+      );
+
       console.log('Preparing the iOS XCTest runner...');
 
       const stateDir = resolve(output, 'device-state');
@@ -236,24 +223,6 @@ const main = async () => {
         );
         prepareSeconds = (performance.now() - prepareStarted) / 1000;
       }
-    }
-
-    console.log('Waiting for Metro...');
-    await logCommand(
-      $`curl --retry 60 --retry-delay 1 --retry-connrefused --fail --silent --show-error ${metroUrl}/status`,
-      resolve(output, 'metro-status.log'),
-    );
-
-    if (platform === 'android') {
-      await logCommand(
-        $`adb -s ${device} reverse tcp:8081 tcp:8081`,
-        resolve(output, 'metro-reverse.log'),
-      );
-    } else {
-      await logCommand(
-        $`xcrun simctl launch --terminate-running-process ${device} ${appId} --initialUrl ${`${metroUrl}?disableOnboarding=1`}`,
-        resolve(output, 'launch.log'),
-      );
     }
 
     console.log(`Verifying ${platform} menus...`);

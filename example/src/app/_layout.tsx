@@ -13,8 +13,6 @@ import { Txt } from '../component/Txt';
 import AppTheme from '../design/AppTheme';
 
 export default function RootLayout() {
-  // const { top } = useSafeAreaInsets();
-
   const { code } = useGlobalSearchParams<{ code?: string }>();
   const accessTokenIssued = useRef(false);
   useEffect(() => {
@@ -43,7 +41,7 @@ export default function RootLayout() {
 
   return (
     <StyledSystemProvider theme={AppTheme}>
-      <StatusBar style={'light'} />
+      <StatusBar style={'light'} hidden />
       <Box flex={1} bg={'bg'}>
         {/*<Link href={'/'}>*/}
         {/*  <RowCenter p={4} pt={px(top + 12)} gap={2}>*/}
@@ -64,11 +62,11 @@ export default function RootLayout() {
                 {capitalize(props.children)}
               </Txt>
             ),
-            animation: 'fade_from_bottom',
+            animation: 'none',
           }}
         />
       </Box>
-      <FlashMessage position={'top'} duration={5000} type={'success'} />
+      <FlashMessage position={'top'} duration={5000} type={'success'} animated={false} />
     </StyledSystemProvider>
   );
 }
