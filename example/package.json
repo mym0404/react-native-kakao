@@ -4,7 +4,7 @@
   "private": true,
   "main": "src/root.js",
   "scripts": {
-    "start": "expo start",
+    "start": "expo start --dev-client",
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web --port=80",
@@ -30,7 +30,6 @@
     "@react-native-styled-system/core": "~1.2.1",
     "expo": "catalog:",
     "expo-constants": "~17.1.5",
-    "expo-dev-client": "~5.1.8",
     "expo-linking": "~7.1.4",
     "expo-router": "~5.0.5",
     "expo-status-bar": "~2.2.3",
