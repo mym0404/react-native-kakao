@@ -109,24 +109,24 @@
   },
   "sdkVersions": {
     "ios": {
-      "core": "2.22.0",
-      "share": "2.22.0",
-      "user": "2.22.0",
-      "navi": "2.22.0",
-      "friend": "2.22.0",
-      "talk": "2.22.0"
+      "core": "2.29.0",
+      "share": "2.29.0",
+      "user": "2.29.0",
+      "navi": "2.29.0",
+      "friend": "2.29.0",
+      "talk": "2.29.0"
     },
     "android": {
-      "minSdk": 21,
+      "minSdk": 23,
       "targetSdk": 33,
       "compileSdk": 33,
       "ndk": "21.4.7075529",
-      "core": "2.20.1",
-      "share": "2.20.1",
-      "user": "2.20.1",
-      "navi": "2.20.1",
-      "friend": "2.20.1",
-      "talk": "2.20.1"
+      "core": "2.25.0",
+      "share": "2.25.0",
+      "user": "2.25.0",
+      "navi": "2.25.0",
+      "friend": "2.25.0",
+      "talk": "2.25.0"
     }
   },
   "dependencies": {

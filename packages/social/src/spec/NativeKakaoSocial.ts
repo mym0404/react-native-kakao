@@ -55,8 +55,6 @@ export interface KakaoTalkFriendProfile {
   profileThumbnailImage?: string;
 }
 export interface KakaoTalkFriendSelectOptions {
-  /** 친구 피커의 이름 */
-  title?: string;
   /** 친구 피커 테마 */
   viewAppearance?: 'auto' | 'light' | 'dark';
   /** 친구 피커의 기기 방향 */

@@ -1,0 +1,28 @@
+---
+sidebar_position: 2
+---
+
+# v2에서 v3로 마이그레이션
+
+v3로 업데이트하기 전에 [호환성 표](./intro#compatibility)에서 React Native, Expo, iOS, Android의 최소 요건을 확인합니다.
+
+v2 프로젝트에서 기존 아키텍처를 사용한다면 React Native의 새 아키텍처를 활성화합니다.
+
+## 제거된 API
+
+아래 항목을 사용하는 코드가 있다면 제거합니다.
+
+- 친구 선택 옵션 `title`
+- 로그인 prompt `UnifyDaum`
+- 프로필 응답 필드 `ciNeedsAgreement`
+
+`UnifyDaum`을 다른 로그인 prompt로 자동 대체하지 않습니다. 필요한 로그인 흐름에 맞는 prompt만 지정합니다.
+
+## 계정 차단 오류 코드
+
+오류 객체의 `code`를 직접 비교한다면 플랫폼별 기존 값을 `BlockedAccount`로 변경합니다.
+
+| 플랫폼  | v2              | v3               |
+| ------- | --------------- | ---------------- |
+| Android | `BlockedAction` | `BlockedAccount` |
+| iOS     | `Blocked`       | `BlockedAccount` |

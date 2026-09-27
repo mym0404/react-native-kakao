@@ -13,7 +13,7 @@ import RNCKakaoCore
     return AuthApi.isKakaoTalkLoginUrl(url)
   }
 
-  @objc public static func handleOpenUrl(_ url: URL) -> Bool {
+  @MainActor @objc public static func handleOpenUrl(_ url: URL) -> Bool {
     guard let _ = try? KakaoSDK.shared.appKey() else { return false }
     return AuthController.handleOpenUrl(url: url)
   }
@@ -82,8 +82,8 @@ import RNCKakaoCore
           if p == "Create" {
             _prompts.append(.Create)
           }
-          if p == "UnifyDaum" {
-            _prompts.append(.UnifyDaum)
+          if p == "SelectAccount" {
+            _prompts.append(.SelectAccount)
           }
         }
         UserApi.shared
@@ -291,7 +291,6 @@ import RNCKakaoCore
             "isKoreanNeedsAgreement": user.kakaoAccount?.isKoreanNeedsAgreement as Any,
             "phoneNumberNeedsAgreement": user.kakaoAccount?.phoneNumberNeedsAgreement as Any,
             "profileNeedsAgreement": user.kakaoAccount?.profileNeedsAgreement as Any,
-            "ciNeedsAgreement": user.kakaoAccount?.ciNeedsAgreement as Any,
             "nameNeedsAgreement": user.kakaoAccount?.nameNeedsAgreement as Any,
             "profileImageNeedsAgreement": user.kakaoAccount?.profileImageNeedsAgreement as Any,
             "profileNicknameNeedsAgreement": user.kakaoAccount?

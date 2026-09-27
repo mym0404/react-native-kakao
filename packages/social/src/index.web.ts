@@ -27,7 +27,6 @@ const KakaoSocial: KakaoSocialAPI = {
     kRunWebAPI(() => {
       return Kakao.Picker.selectFriend(
         filterNonNullishKeys({
-          title: options?.title,
           enableSearch: options?.enableSearch,
           showMyProfile: options?.showMyProfile,
           showFavorite: options?.showFavorite,
@@ -40,7 +39,6 @@ const KakaoSocial: KakaoSocialAPI = {
     kRunWebAPI(() => {
       return Kakao.Picker.selectFriends(
         filterNonNullishKeys({
-          title: options?.title,
           enableSearch: options?.enableSearch,
           showMyProfile: options?.showMyProfile,
           showFavorite: options?.showFavorite,
