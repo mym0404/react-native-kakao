@@ -52,8 +52,7 @@ Initially, there are not many settings to configure, but as you use other packag
 
 ## (Optional) Android Obfuscation Settings
 
-Refer to the [Android Settings](/docs/install-android) to inject proguard rules using the [expo-build-properties](https://docs.expo.dev/versions/latest/sdk/build-properties/)
-config plugin.
+When R8 code shrinking is enabled for an Android release build, the autolinked `@react-native-kakao/core` library supplies the Kakao rules automatically. No rule injection is needed for Kakao. You can use [expo-build-properties](https://docs.expo.dev/versions/latest/sdk/build-properties/) for rules required by other libraries or app code. See [Android Setup](/docs/install-android) if you link the core library manually.
 
 ## (Optional) Web Platform Support
 

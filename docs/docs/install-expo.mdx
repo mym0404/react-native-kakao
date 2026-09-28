@@ -6,11 +6,11 @@ sidebar_position: 6
 
 ## Expo 설정
 
-Expo는 간편하게 미리 구성된 [config plugin](https://docs.expo.dev/config-plugins/introduction/)를 사용할 수 있습니다.
+Expo에서는 미리 구성된 [config plugin](https://docs.expo.dev/config-plugins/introduction/)을 간편하게 사용할 수 있습니다.
 
 :::tip
-해당 패키지에서 제공하는 기능 외에 config plugin의 구성요소가 더 필요하다면
-[Android 설정](/docs/install-android)과 [iOS 설정](/docs/install-ios)를 참고하여 직접 작성해 사용할 수 있습니다.
+이 패키지가 제공하는 기능 외에 config plugin의 구성 요소가 더 필요하다면
+[Android 설정](/docs/install-android)과 [iOS 설정](/docs/install-ios)을 참고해 직접 작성하여 사용할 수 있습니다.
 :::
 
 ## expo-build-properties 설치
@@ -21,7 +21,7 @@ npx expo install expo-build-properties
 
 ## app.json 설정
 
-처음에 설정할 것은 많지 않지만, 다른 패키지들을 사용하면서 `android`와 `ios`에 필요한 설정을 추가하는 방식입니다.
+처음에는 설정할 항목이 많지 않지만, 다른 패키지를 사용할 때 `android`와 `ios`에 필요한 설정을 추가합니다.
 
 ```json title='app.json'
 "plugins": [
@@ -50,11 +50,10 @@ npx expo install expo-build-properties
 ]
 ```
 
-## (Optional) Android 난독화 설정
+## (선택) Android 코드 축소 설정
 
-[Android 설정](/docs/install-android)를 참고하여 [expo-build-properties](https://docs.expo.dev/versions/latest/sdk/build-properties/)
-config plugin으로 proguard rules를 주입해줄 수 있습니다.
+Android 릴리스 빌드에서 R8 코드 축소를 켜도 autolinking으로 연결된 `@react-native-kakao/core`의 Kakao 규칙이 앱 빌드에 자동으로 포함되므로 앱에 따로 추가할 필요가 없습니다. 다른 라이브러리나 앱 코드에 필요한 규칙은 [expo-build-properties](https://docs.expo.dev/versions/latest/sdk/build-properties/)로 별도로 설정할 수 있습니다. core 라이브러리를 직접 연결한다면 [Android 설정](/docs/install-android)을 참고하세요.
 
-## (Optional) Web 플랫폼 지원
+## (선택) Web 플랫폼 지원
 
-[Web 설정](/docs/install-web)을 참고하여 동일하게 진행되어야 합니다.
+[Web 설정](/docs/install-web)을 참고해 같은 방식으로 설정해야 합니다.
