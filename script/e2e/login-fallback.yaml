@@ -1,0 +1,38 @@
+appId: com.rnkakao.example
+---
+- scrollUntilVisible:
+    element: Login fallback E2E
+- tapOn: Login fallback E2E
+- assertVisible:
+    id: screen-title
+    text: Login E2E
+- tapOn:
+    id: login-e2e-talk-success
+- assertVisible:
+    id: login-e2e-result
+    text: 'talk-success: passed'
+- tapOn:
+    id: login-e2e-fallback-success
+- assertVisible:
+    id: login-e2e-result
+    text: 'talk-error-account-success: passed'
+- tapOn:
+    id: login-e2e-talk-cancel
+- assertVisible:
+    id: login-e2e-result
+    text: 'talk-cancel: passed'
+- tapOn:
+    id: login-e2e-account-error
+- assertVisible:
+    id: login-e2e-result
+    text: 'talk-error-account-error: passed'
+- tapOn:
+    id: login-e2e-talk-consent-cancel
+- assertVisible:
+    id: login-e2e-result
+    text: 'talk-consent-cancel: passed'
+- tapOn:
+    id: login-e2e-direct-account
+- assertVisible:
+    id: login-e2e-result
+    text: 'direct-account: passed'

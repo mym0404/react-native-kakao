@@ -1,6 +1,8 @@
 apply from: file('./../../core/android/package-json.gradle')
 def Versions = project.ext.RNCKakaoSdkVersions
 Project coreProject = project.ext.getWorkspaceProject("core")
+def rnkakaoE2E = (findProperty("rnkakaoE2E") ?: "false").toBoolean() &&
+    file("__fixtures__").isDirectory()
 
 project.ext.applyPlugins()
 
@@ -12,12 +14,17 @@ android {
     defaultConfig {
         minSdkVersion Versions.minSdk
         targetSdkVersion Versions.targetSdk
+        buildConfigField "boolean", "RNKAKAO_E2E", rnkakaoE2E.toString()
     }
 
     buildTypes {
         release {
             minifyEnabled false
         }
+    }
+
+    buildFeatures {
+        buildConfig true
     }
 
     lintOptions {
@@ -27,6 +34,10 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    if (rnkakaoE2E) {
+        sourceSets.main.java.srcDir "__fixtures__"
     }
 }
 
