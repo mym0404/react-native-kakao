@@ -11,6 +11,8 @@ import com.kakao.sdk.auth.model.Prompt.CERT
 import com.kakao.sdk.auth.model.Prompt.CREATE
 import com.kakao.sdk.auth.model.Prompt.LOGIN
 import com.kakao.sdk.auth.model.Prompt.SELECT_ACCOUNT
+import com.kakao.sdk.common.model.ClientError
+import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.UserApiClient
 import net.mjstudio.rnkakao.core.util.RNCKakaoResponseNotFoundException
 import net.mjstudio.rnkakao.core.util.RNCKakaoUtil
@@ -83,27 +85,7 @@ class RNCKakaoUserModule internal constructor(
         )
       }
     }
-
-    if (scopes?.filterIsInstance<String>()?.isEmpty() == false) {
-      UserApiClient.instance.loginWithNewScopes(
-        context,
-        scopes = scopes.filterIsInstance<String>(),
-        nonce = nonce,
-        callback = callback,
-      )
-    } else if (UserApiClient.instance.isKakaoTalkLoginAvailable(context) &&
-      !useKakaoAccountLogin &&
-      scopes
-        ?.filterIsInstance<String>()
-        ?.isEmpty() == true
-    ) {
-      UserApiClient.instance.loginWithKakaoTalk(
-        context,
-        nonce = nonce,
-        serviceTerms = serviceTerms?.filterIsInstance<String>()?.ifEmpty { null },
-        callback = callback,
-      )
-    } else {
+    val accountLogin = {
       UserApiClient.instance.loginWithKakaoAccount(
         context,
         prompts =
@@ -122,6 +104,37 @@ class RNCKakaoUserModule internal constructor(
         serviceTerms = serviceTerms?.filterIsInstance<String>()?.ifEmpty { null },
         callback = callback,
       )
+    }
+
+    if (scopes?.filterIsInstance<String>()?.isEmpty() == false) {
+      UserApiClient.instance.loginWithNewScopes(
+        context,
+        scopes = scopes.filterIsInstance<String>(),
+        nonce = nonce,
+        callback = callback,
+      )
+    } else if (UserApiClient.instance.isKakaoTalkLoginAvailable(context) &&
+      !useKakaoAccountLogin &&
+      scopes
+        ?.filterIsInstance<String>()
+        ?.isEmpty() == true
+    ) {
+      UserApiClient.instance.loginWithKakaoTalk(
+        context,
+        nonce = nonce,
+        serviceTerms = serviceTerms?.filterIsInstance<String>()?.ifEmpty { null },
+        callback = { token, error ->
+          if (error is ClientError && error.reason == ClientErrorCause.Cancelled) {
+            callback(token, error)
+          } else if (error != null || token == null) {
+            accountLogin()
+          } else {
+            callback(token, error)
+          }
+        },
+      )
+    } else {
+      accountLogin()
     }
   }
 
