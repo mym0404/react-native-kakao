@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 3.0.0-next.1
+
+### Patch Changes
+
+- 11da5f6: Ship Kakao SDK and Retrofit consumer R8 rules with the Android library.
+
 ## 3.0.0-next.0
 
 ### Major Changes
