@@ -70,29 +70,11 @@ Allow the use of the internet in the `AndroidManifest.xml` of Android.
     ...
 ```
 
-## Proguard Rules Setup
+## R8 Code Shrinking Rules
 
-If you are using the R8 compiler for obfuscation, the following syntax needs to be added to `proguard-rules.pro`.
+When the app includes the Android library from `@react-native-kakao/core`, its consumer rules for Kakao SDK 2.25.0 and Retrofit are applied automatically. Apps using React Native autolinking can enable R8 code shrinking (`minifyEnabled true`) for release builds without adding Kakao-specific rules to their own `proguard-rules.pro`. Apps using `@react-native-kakao/user` receive the same rules when core is linked.
 
-Usually, the React Native setup can be configured with `enableProguardInReleaseBuilds` in `android/app/build.gradle`.
-
-It is recommended to refer to the [official documentation](https://developers.kakao.com/docs/latest/ko/android/getting-started#project-pro-guard) for the latest rules.
-
-```text title='proguard-rules.pro'
-- keep class com.kakao.sdk.**.model.* { <fields>; }
-- keep class * extends com.google.gson.TypeAdapter
-
-# https://github.com/square/okhttp/pull/6792
--dontwarn org.bouncycastle.jsse.**
--dontwarn org.conscrypt.*
--dontwarn org.openjsse.**
-
-#------------------RETROFIT---------------------
-#R8 full mode strips generic signatures from return types if not kept.
--if interface * { @retrofit2.http.* public *** *(...); }
-- keep,allowoptimization,allowshrinking,allowobfuscation class <3>
-#-------------------END--------------------------
-```
+If autolinking is disabled, include the core Android library as a Gradle dependency. For a separate integration that cannot include the core library, copy `node_modules/@react-native-kakao/core/android/consumer-rules.pro` from the installed package into the app's `proguard-rules.pro`.
 
 ## Adding Gradle Dependency Repository
 
