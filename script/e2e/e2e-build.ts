@@ -18,7 +18,14 @@ export const buildE2EApp = async ({
   platformDir: string;
 }) => {
   $.cwd = root;
-  $.env = { ...process.env, NODE_ENV: 'production' };
+
+  const e2eEnv = {
+    ...process.env,
+    NODE_ENV: 'production',
+    EXPO_PUBLIC_RNKAKAO_E2E: '1',
+  };
+
+  $.env = e2eEnv;
 
   const buildAbi = abi ?? (process.arch === 'arm64' ? 'arm64-v8a' : 'x86_64');
   if (!['arm64-v8a', 'x86_64'].includes(buildAbi)) {
@@ -30,20 +37,19 @@ export const buildE2EApp = async ({
     await logCommand(
       $({
         cwd: resolve(root, 'example/android'),
-      })`./gradlew :app:assembleRelease --build-cache --no-daemon --console=plain -PreactNativeArchitectures=${buildAbi}`,
+      })`./gradlew :app:assembleRelease --build-cache --no-daemon --console=plain -PreactNativeArchitectures=${buildAbi} -PrnkakaoE2E=true`,
       buildLog,
     );
   } else {
     const ccachePath = (await $`command -v ccache`).stdout.trim();
     $.env = {
-      ...process.env,
-      NODE_ENV: 'production',
+      ...e2eEnv,
       CCACHE_CONFIGPATH: resolve(root, 'node_modules/react-native/scripts/xcode/ccache.conf'),
     };
 
     // Xcode 26 uses compiler launchers, so bypass the ccache wrappers configured by Pods.
     await logCommand(
-      $`xcodebuild -workspace example/ios/KakaoExample.xcworkspace -scheme KakaoExample -configuration Release -sdk iphonesimulator -destination ${'generic/platform=iOS Simulator'} -derivedDataPath ${iosBuild} -quiet ARCHS=${process.arch === 'arm64' ? 'arm64' : 'x86_64'} ONLY_ACTIVE_ARCH=YES CODE_SIGNING_ALLOWED=NO COMPILER_INDEX_STORE_ENABLE=NO CC=clang CXX=clang++ LD=clang LDPLUSPLUS=clang++ C_COMPILER_LAUNCHER=${ccachePath} CXX_COMPILER_LAUNCHER=${ccachePath}`,
+      $`xcodebuild -workspace example/ios/KakaoExample.xcworkspace -scheme KakaoExample -configuration Release -sdk iphonesimulator -destination ${'generic/platform=iOS Simulator'} -derivedDataPath ${iosBuild} -quiet ARCHS=${process.arch === 'arm64' ? 'arm64' : 'x86_64'} ONLY_ACTIVE_ARCH=YES CODE_SIGNING_ALLOWED=NO COMPILER_INDEX_STORE_ENABLE=NO SWIFT_ACTIVE_COMPILATION_CONDITIONS=${'$(inherited) RNKAKAO_E2E'} CC=clang CXX=clang++ LD=clang LDPLUSPLUS=clang++ C_COMPILER_LAUNCHER=${ccachePath} CXX_COMPILER_LAUNCHER=${ccachePath}`,
       buildLog,
     );
   }

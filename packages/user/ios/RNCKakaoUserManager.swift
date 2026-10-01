@@ -60,17 +60,7 @@ import RNCKakaoCore
           RNCKakaoUtil.reject(reject, RNCKakaoError.responseNotFound(name: "token"))
         }
       }
-
-      if !scopes.isEmpty {
-        UserApi.shared.loginWithKakaoAccount(scopes: scopes, nonce: nonce, completion: callback)
-      } else if UserApi.isKakaoTalkLoginAvailable(), !useKakaoAccountLogin {
-        UserApi.shared
-          .loginWithKakaoTalk(
-            serviceTerms: emptyArrayToNil(serviceTerms),
-            nonce: nonce,
-            completion: callback
-          )
-      } else {
+      let accountLogin = {
         var _prompts: [Prompt] = []
         for p in prompts {
           if p == "Login" {
@@ -86,13 +76,39 @@ import RNCKakaoCore
             _prompts.append(.SelectAccount)
           }
         }
-        UserApi.shared
-          .loginWithKakaoAccount(
-            prompts: emptyArrayToNil(_prompts),
-            serviceTerms: emptyArrayToNil(serviceTerms),
-            nonce: nonce,
-            completion: callback
-          )
+        self.loginWithKakaoAccount(
+          prompts: self.emptyArrayToNil(_prompts),
+          serviceTerms: self.emptyArrayToNil(serviceTerms),
+          nonce: nonce,
+          completion: callback
+        )
+      }
+
+      if !scopes.isEmpty {
+        UserApi.shared.loginWithKakaoAccount(scopes: scopes, nonce: nonce, completion: callback)
+      } else if isKakaoTalkLoginAvailable(nonce: nonce), !useKakaoAccountLogin {
+        let talkCallback = { (token: OAuthToken?, error: Error?) in
+          if let sdkError = error as? SdkError {
+            switch sdkError {
+            case .ClientFailed(.Cancelled, _),
+                 .AuthFailed(.AccessDenied, _):
+              callback(token, error)
+            default:
+              accountLogin()
+            }
+          } else if error != nil || token == nil {
+            accountLogin()
+          } else {
+            callback(token, error)
+          }
+        }
+        loginWithKakaoTalk(
+          serviceTerms: emptyArrayToNil(serviceTerms),
+          nonce: nonce,
+          completion: talkCallback
+        )
+      } else {
+        accountLogin()
       }
     }
   }
@@ -330,5 +346,59 @@ import RNCKakaoCore
       return nil
     }
     return arr
+  }
+
+  private func isKakaoTalkLoginAvailable(nonce: String?) -> Bool {
+    #if RNKAKAO_E2E
+      if RNCKakaoUserLoginE2E.isEnabled(nonce: nonce) {
+        return true
+      }
+    #endif
+    return UserApi.isKakaoTalkLoginAvailable()
+  }
+
+  private func loginWithKakaoTalk(
+    serviceTerms: [String]?,
+    nonce: String?,
+    completion: @escaping (OAuthToken?, Error?) -> Void
+  ) {
+    #if RNKAKAO_E2E
+      if RNCKakaoUserLoginE2E.loginWithKakaoTalk(
+        serviceTerms: serviceTerms,
+        nonce: nonce,
+        completion: completion
+      ) {
+        return
+      }
+    #endif
+    UserApi.shared.loginWithKakaoTalk(
+      serviceTerms: serviceTerms,
+      nonce: nonce,
+      completion: completion
+    )
+  }
+
+  private func loginWithKakaoAccount(
+    prompts: [Prompt]?,
+    serviceTerms: [String]?,
+    nonce: String?,
+    completion: @escaping (OAuthToken?, Error?) -> Void
+  ) {
+    #if RNKAKAO_E2E
+      if RNCKakaoUserLoginE2E.loginWithKakaoAccount(
+        prompts: prompts,
+        serviceTerms: serviceTerms,
+        nonce: nonce,
+        completion: completion
+      ) {
+        return
+      }
+    #endif
+    UserApi.shared.loginWithKakaoAccount(
+      prompts: prompts,
+      serviceTerms: serviceTerms,
+      nonce: nonce,
+      completion: completion
+    )
   }
 }

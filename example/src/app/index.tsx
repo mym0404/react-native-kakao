@@ -96,6 +96,13 @@ export default function Page() {
             {'@react-native-kakao/channel'}
           </Txt>
         </Link>
+        {process.env.EXPO_PUBLIC_RNKAKAO_E2E === '1' ? (
+          <Link testID={'menu-login-e2e'} href={'/login-e2e'}>
+            <Txt textDecorationLine={'underline'} align={'center'}>
+              {'Login fallback E2E'}
+            </Txt>
+          </Link>
+        ) : null}
       </Box>
     </StyledScrollView>
   );

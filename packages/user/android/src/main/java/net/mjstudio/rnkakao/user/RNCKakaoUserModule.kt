@@ -7,10 +7,13 @@ import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableArray
 import com.kakao.sdk.auth.AuthApiClient
 import com.kakao.sdk.auth.model.OAuthToken
+import com.kakao.sdk.auth.model.Prompt
 import com.kakao.sdk.auth.model.Prompt.CERT
 import com.kakao.sdk.auth.model.Prompt.CREATE
 import com.kakao.sdk.auth.model.Prompt.LOGIN
 import com.kakao.sdk.auth.model.Prompt.SELECT_ACCOUNT
+import com.kakao.sdk.common.model.ClientError
+import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.UserApiClient
 import net.mjstudio.rnkakao.core.util.RNCKakaoResponseNotFoundException
 import net.mjstudio.rnkakao.core.util.RNCKakaoUtil
@@ -27,6 +30,39 @@ import net.mjstudio.rnkakao.core.util.putL
 import net.mjstudio.rnkakao.core.util.rejectWith
 import net.mjstudio.rnkakao.core.util.unix
 import java.util.Date
+
+internal interface RNCKakaoUserLoginE2EContract {
+  fun isKakaoTalkLoginAvailable(): Boolean
+
+  fun loginWithKakaoTalk(
+    nonce: String?,
+    serviceTerms: List<String>?,
+    callback: (OAuthToken?, Throwable?) -> Unit,
+  )
+
+  fun loginWithKakaoAccount(
+    prompts: List<Prompt>?,
+    nonce: String?,
+    serviceTerms: List<String>?,
+    callback: (OAuthToken?, Throwable?) -> Unit,
+  )
+}
+
+private fun loadLoginE2E(
+  packageName: String,
+  nonce: String?,
+): RNCKakaoUserLoginE2EContract? {
+  if (!BuildConfig.RNKAKAO_E2E || packageName != "com.rnkakao.example" || nonce == null) {
+    return null
+  }
+
+  return runCatching {
+    Class
+      .forName("net.mjstudio.rnkakao.user.RNCKakaoUserLoginE2E")
+      .getDeclaredConstructor(String::class.java)
+      .newInstance(nonce) as RNCKakaoUserLoginE2EContract
+  }.getOrNull()
+}
 
 class RNCKakaoUserModule internal constructor(
   context: ReactApplicationContext,
@@ -83,6 +119,47 @@ class RNCKakaoUserModule internal constructor(
         )
       }
     }
+    val requestedServiceTerms = serviceTerms?.filterIsInstance<String>()?.ifEmpty { null }
+    val requestedPrompts =
+      prompts
+        ?.filterIsInstance<String>()
+        ?.mapNotNull {
+          when (it) {
+            "Login" -> LOGIN
+            "Create" -> CREATE
+            "Cert" -> CERT
+            "SelectAccount" -> SELECT_ACCOUNT
+            else -> null
+          }
+        }?.ifEmpty { null }
+    val loginE2E = loadLoginE2E(reactApplicationContext.packageName, nonce)
+
+    fun loginWithKakaoAccount(
+      accountPrompts: List<Prompt>?,
+      accountNonce: String?,
+      accountServiceTerms: List<String>?,
+      accountCallback: (OAuthToken?, Throwable?) -> Unit,
+    ) {
+      if (loginE2E != null) {
+        loginE2E.loginWithKakaoAccount(
+          prompts = accountPrompts,
+          nonce = accountNonce,
+          serviceTerms = accountServiceTerms,
+          callback = accountCallback,
+        )
+      } else {
+        UserApiClient.instance.loginWithKakaoAccount(
+          context,
+          prompts = accountPrompts,
+          nonce = accountNonce,
+          serviceTerms = accountServiceTerms,
+          callback = accountCallback,
+        )
+      }
+    }
+    val accountLogin = {
+      loginWithKakaoAccount(requestedPrompts, nonce, requestedServiceTerms, callback)
+    }
 
     if (scopes?.filterIsInstance<String>()?.isEmpty() == false) {
       UserApiClient.instance.loginWithNewScopes(
@@ -91,37 +168,41 @@ class RNCKakaoUserModule internal constructor(
         nonce = nonce,
         callback = callback,
       )
-    } else if (UserApiClient.instance.isKakaoTalkLoginAvailable(context) &&
+    } else if ((
+        loginE2E?.isKakaoTalkLoginAvailable() == true ||
+          UserApiClient.instance.isKakaoTalkLoginAvailable(context)
+      ) &&
       !useKakaoAccountLogin &&
       scopes
         ?.filterIsInstance<String>()
         ?.isEmpty() == true
     ) {
-      UserApiClient.instance.loginWithKakaoTalk(
-        context,
-        nonce = nonce,
-        serviceTerms = serviceTerms?.filterIsInstance<String>()?.ifEmpty { null },
-        callback = callback,
-      )
+      val talkCallback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
+        if (error is ClientError && error.reason == ClientErrorCause.Cancelled) {
+          callback(token, error)
+        } else if (error != null || token == null) {
+          accountLogin()
+        } else {
+          callback(token, error)
+        }
+      }
+
+      if (loginE2E != null) {
+        loginE2E.loginWithKakaoTalk(
+          nonce = nonce,
+          serviceTerms = requestedServiceTerms,
+          callback = talkCallback,
+        )
+      } else {
+        UserApiClient.instance.loginWithKakaoTalk(
+          context,
+          nonce = nonce,
+          serviceTerms = requestedServiceTerms,
+          callback = talkCallback,
+        )
+      }
     } else {
-      UserApiClient.instance.loginWithKakaoAccount(
-        context,
-        prompts =
-          prompts
-            ?.filterIsInstance<String>()
-            ?.mapNotNull {
-              when (it) {
-                "Login" -> LOGIN
-                "Create" -> CREATE
-                "Cert" -> CERT
-                "SelectAccount" -> SELECT_ACCOUNT
-                else -> null
-              }
-            }?.ifEmpty { null },
-        nonce = nonce,
-        serviceTerms = serviceTerms?.filterIsInstance<String>()?.ifEmpty { null },
-        callback = callback,
-      )
+      accountLogin()
     }
   }
 

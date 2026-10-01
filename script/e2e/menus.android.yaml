@@ -66,4 +66,9 @@ appId: com.rnkakao.example
     id: screen-title
     text: Channel
 - takeScreenshot: 05-channel
+- back
+- assertVisible:
+    id: screen-title
+    text: Index
+- runFlow: login-fallback.yaml
 - stopRecording
