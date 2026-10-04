@@ -11,6 +11,8 @@ import com.kakao.sdk.auth.model.Prompt.CERT
 import com.kakao.sdk.auth.model.Prompt.CREATE
 import com.kakao.sdk.auth.model.Prompt.LOGIN
 import com.kakao.sdk.auth.model.Prompt.SELECT_ACCOUNT
+import com.kakao.sdk.common.model.ClientError
+import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.UserApiClient
 import net.mjstudio.rnkakao.core.util.RNCKakaoResponseNotFoundException
 import net.mjstudio.rnkakao.core.util.RNCKakaoUtil
@@ -83,6 +85,28 @@ class RNCKakaoUserModule internal constructor(
         )
       }
     }
+    val requestedServiceTerms = serviceTerms?.filterIsInstance<String>()?.ifEmpty { null }
+    val requestedPrompts =
+      prompts
+        ?.filterIsInstance<String>()
+        ?.mapNotNull {
+          when (it) {
+            "Login" -> LOGIN
+            "Create" -> CREATE
+            "Cert" -> CERT
+            "SelectAccount" -> SELECT_ACCOUNT
+            else -> null
+          }
+        }?.ifEmpty { null }
+    val accountLogin = {
+      UserApiClient.instance.loginWithKakaoAccount(
+        context,
+        prompts = requestedPrompts,
+        nonce = nonce,
+        serviceTerms = requestedServiceTerms,
+        callback = callback,
+      )
+    }
 
     if (scopes?.filterIsInstance<String>()?.isEmpty() == false) {
       UserApiClient.instance.loginWithNewScopes(
@@ -97,31 +121,24 @@ class RNCKakaoUserModule internal constructor(
         ?.filterIsInstance<String>()
         ?.isEmpty() == true
     ) {
+      val talkCallback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
+        if (error is ClientError && error.reason == ClientErrorCause.Cancelled) {
+          callback(token, error)
+        } else if (error != null || token == null) {
+          accountLogin()
+        } else {
+          callback(token, error)
+        }
+      }
+
       UserApiClient.instance.loginWithKakaoTalk(
         context,
         nonce = nonce,
-        serviceTerms = serviceTerms?.filterIsInstance<String>()?.ifEmpty { null },
-        callback = callback,
+        serviceTerms = requestedServiceTerms,
+        callback = talkCallback,
       )
     } else {
-      UserApiClient.instance.loginWithKakaoAccount(
-        context,
-        prompts =
-          prompts
-            ?.filterIsInstance<String>()
-            ?.mapNotNull {
-              when (it) {
-                "Login" -> LOGIN
-                "Create" -> CREATE
-                "Cert" -> CERT
-                "SelectAccount" -> SELECT_ACCOUNT
-                else -> null
-              }
-            }?.ifEmpty { null },
-        nonce = nonce,
-        serviceTerms = serviceTerms?.filterIsInstance<String>()?.ifEmpty { null },
-        callback = callback,
-      )
+      accountLogin()
     }
   }
 
