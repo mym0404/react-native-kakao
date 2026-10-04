@@ -1,5 +1,13 @@
 # Change Log
 
+## 3.0.0-next.1
+
+### Patch Changes
+
+- 7fe35a2: Fall back to Kakao Account login when KakaoTalk login fails without user cancellation.
+- Updated dependencies [11da5f6]
+  - @react-native-kakao/core@3.0.0-next.1
+
 ## 3.0.0-next.0
 
 ### Major Changes
