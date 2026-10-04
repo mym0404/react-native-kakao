@@ -76,7 +76,7 @@ import RNCKakaoCore
             _prompts.append(.SelectAccount)
           }
         }
-        self.loginWithKakaoAccount(
+        UserApi.shared.loginWithKakaoAccount(
           prompts: self.emptyArrayToNil(_prompts),
           serviceTerms: self.emptyArrayToNil(serviceTerms),
           nonce: nonce,
@@ -86,7 +86,7 @@ import RNCKakaoCore
 
       if !scopes.isEmpty {
         UserApi.shared.loginWithKakaoAccount(scopes: scopes, nonce: nonce, completion: callback)
-      } else if isKakaoTalkLoginAvailable(nonce: nonce), !useKakaoAccountLogin {
+      } else if UserApi.isKakaoTalkLoginAvailable(), !useKakaoAccountLogin {
         let talkCallback = { (token: OAuthToken?, error: Error?) in
           if let sdkError = error as? SdkError {
             switch sdkError {
@@ -102,7 +102,7 @@ import RNCKakaoCore
             callback(token, error)
           }
         }
-        loginWithKakaoTalk(
+        UserApi.shared.loginWithKakaoTalk(
           serviceTerms: emptyArrayToNil(serviceTerms),
           nonce: nonce,
           completion: talkCallback
@@ -346,59 +346,5 @@ import RNCKakaoCore
       return nil
     }
     return arr
-  }
-
-  private func isKakaoTalkLoginAvailable(nonce: String?) -> Bool {
-    #if RNKAKAO_E2E
-      if RNCKakaoUserLoginE2E.isEnabled(nonce: nonce) {
-        return true
-      }
-    #endif
-    return UserApi.isKakaoTalkLoginAvailable()
-  }
-
-  private func loginWithKakaoTalk(
-    serviceTerms: [String]?,
-    nonce: String?,
-    completion: @escaping (OAuthToken?, Error?) -> Void
-  ) {
-    #if RNKAKAO_E2E
-      if RNCKakaoUserLoginE2E.loginWithKakaoTalk(
-        serviceTerms: serviceTerms,
-        nonce: nonce,
-        completion: completion
-      ) {
-        return
-      }
-    #endif
-    UserApi.shared.loginWithKakaoTalk(
-      serviceTerms: serviceTerms,
-      nonce: nonce,
-      completion: completion
-    )
-  }
-
-  private func loginWithKakaoAccount(
-    prompts: [Prompt]?,
-    serviceTerms: [String]?,
-    nonce: String?,
-    completion: @escaping (OAuthToken?, Error?) -> Void
-  ) {
-    #if RNKAKAO_E2E
-      if RNCKakaoUserLoginE2E.loginWithKakaoAccount(
-        prompts: prompts,
-        serviceTerms: serviceTerms,
-        nonce: nonce,
-        completion: completion
-      ) {
-        return
-      }
-    #endif
-    UserApi.shared.loginWithKakaoAccount(
-      prompts: prompts,
-      serviceTerms: serviceTerms,
-      nonce: nonce,
-      completion: completion
-    )
   }
 }

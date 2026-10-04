@@ -94,7 +94,7 @@ module.exports = async ({ github, context, core }) => {
     '| --- | --- | ---: | ---: |',
     ...rows,
     '',
-    'Verifies screen entry and titles plus synthetic KakaoTalk login success, account fallback, cancellation, account failure, and direct account login. Excludes other feature actions and pixel comparisons.',
+    'Verifies screen entry and titles. Excludes login, feature actions, and pixel comparisons.',
     'Time excludes app installation, device preparation, and builds. For tests that did not run, check build and device setup logs.',
   ];
 
