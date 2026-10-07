@@ -204,11 +204,11 @@ jobs:
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: build/e2e/ios-build/Build/Products/Release-iphonesimulator/KakaoExample.app
-          key: ${{ runner.os }}-e2e-ios-release-${{ runner.arch }}-xcode26.2-v2-${{ hashFiles('mise.toml', '.yarnrc.yml', 'yarn.lock', '.yarn/patches/**', 'package.json', 'tsconfig.json', 'packages/*/package.json', 'packages/*/tsconfig.json', 'packages/*/tsconfig.build.json', 'packages/*/*.podspec', 'packages/*/src/**', 'packages/*/ios/**', 'packages/core/expo-config-plugin/**', 'packages/core/app.plugin.js', 'example/package.json', 'example/app.json', 'example/src/**', 'example/assets/**', 'example/tsconfig.json', 'example/babel.config.js', 'example/metro.config.js', 'example/react-native.config.js', 'example/Gemfile', 'example/Gemfile.lock', 'script/e2e/e2e-build.ts', 'script/e2e/e2e-log.ts') }}
+          key: ${{ runner.os }}-e2e-ios-release-${{ runner.arch }}-xcode26.4-v2-${{ hashFiles('mise.toml', '.yarnrc.yml', 'yarn.lock', '.yarn/patches/**', 'package.json', 'tsconfig.json', 'packages/*/package.json', 'packages/*/tsconfig.json', 'packages/*/tsconfig.build.json', 'packages/*/*.podspec', 'packages/*/src/**', 'packages/*/ios/**', 'packages/core/expo-config-plugin/**', 'packages/core/app.plugin.js', 'example/package.json', 'example/app.json', 'example/src/**', 'example/assets/**', 'example/tsconfig.json', 'example/babel.config.js', 'example/metro.config.js', 'example/react-native.config.js', 'example/Gemfile', 'example/Gemfile.lock', 'script/e2e/e2e-build.ts', 'script/e2e/e2e-log.ts') }}
 
       - uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0
         with:
-          xcode-version: '26.2'
+          xcode-version: '26.4'
       - name: Ensure iOS Simulator runtime
         run: |
           simulator_version=$(xcrun --sdk iphonesimulator --show-sdk-version)
@@ -239,9 +239,9 @@ jobs:
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: .ccache
-          key: ${{ runner.os }}-ccache-${{ runner.arch }}-xcode26.2-v1-${{ hashFiles('mise.toml', 'yarn.lock', 'example/package.json', 'packages/*/package.json') }}-${{ github.sha }}
+          key: ${{ runner.os }}-ccache-${{ runner.arch }}-xcode26.4-v1-${{ hashFiles('mise.toml', 'yarn.lock', 'example/package.json', 'packages/*/package.json') }}-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-ccache-${{ runner.arch }}-xcode26.2-v1-${{ hashFiles('mise.toml', 'yarn.lock', 'example/package.json', 'packages/*/package.json') }}-
+            ${{ runner.os }}-ccache-${{ runner.arch }}-xcode26.4-v1-${{ hashFiles('mise.toml', 'yarn.lock', 'example/package.json', 'packages/*/package.json') }}-
 
       - name: Prepare iOS compiler cache
         if: steps.ios-e2e-release-cache.outputs.cache-hit != 'true'
@@ -258,9 +258,9 @@ jobs:
         with:
           path: |
             **/ios/Pods
-          key: ${{ runner.os }}-cocoapods-xcode26.2-v2-${{ hashFiles('yarn.lock', 'example/Gemfile.lock', 'example/app.json', 'packages/*/*.podspec') }}
+          key: ${{ runner.os }}-cocoapods-xcode26.4-v2-${{ hashFiles('yarn.lock', 'example/Gemfile.lock', 'example/app.json', 'packages/*/*.podspec') }}
           restore-keys: |
-            ${{ runner.os }}-cocoapods-xcode26.2-v2-
+            ${{ runner.os }}-cocoapods-xcode26.4-v2-
 
       - name: Install cocoapods
         if: steps.ios-e2e-release-cache.outputs.cache-hit != 'true'

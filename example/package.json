@@ -19,6 +19,7 @@
     "pod": "cd ios && mise exec -- bundle install && npx -y pod-install"
   },
   "dependencies": {
+    "@expo/metro-runtime": "~57.0.16",
     "@mj-studio/js-util": "catalog:",
     "@mj-studio/react-util": "^0.0.20",
     "@react-native-kakao/channel": "workspace:*",
@@ -29,29 +30,31 @@
     "@react-native-kakao/user": "workspace:*",
     "@react-native-styled-system/core": "~1.2.1",
     "expo": "catalog:",
-    "expo-constants": "~17.1.5",
-    "expo-linking": "~7.1.4",
-    "expo-router": "~5.0.5",
-    "expo-status-bar": "~2.2.3",
+    "expo-constants": "~57.0.21",
+    "expo-linking": "~57.0.12",
+    "expo-router": "~57.0.25",
+    "expo-splash-screen": "~57.0.9",
+    "expo-status-bar": "~57.0.1",
     "query-string": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-native": "catalog:",
     "react-native-flash-message": "^0.4.2",
-    "react-native-safe-area-context": "5.4.0",
-    "react-native-screens": "~4.10.0",
-    "react-native-web": "^0.20.0"
+    "react-native-safe-area-context": "~5.7.0",
+    "react-native-screens": "~4.26.0",
+    "react-native-web": "~0.21.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.25.2",
+    "@babel/core": "catalog:",
     "@babel/preset-env": "^7.25.3",
     "@babel/runtime": "^7.25.0",
     "babel-plugin-module-resolver": "^5.0.0",
-    "expo-build-properties": "~0.14.6",
-    "metro": "^0.82.2",
+    "babel-preset-expo": "~57.0.14",
+    "escape-string-regexp": "^4.0.0",
+    "expo-build-properties": "~57.0.22",
     "typescript": "catalog:"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=22.13.0"
   }
 }

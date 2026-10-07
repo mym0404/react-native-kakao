@@ -1,17 +1,10 @@
 {
   "expo": {
     "name": "Kakao Example",
-    "newArchEnabled": true,
     "owner": "react-native-kakao",
     "slug": "react-native-kakao-example",
     "description": "Demonstrates the functionality and various capabilities of React Native Kakao",
-    "privacy": "public",
     "version": "1.0.0",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#000000"
-    },
     "platforms": [
       "ios",
       "android",
@@ -27,12 +20,7 @@
         "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#000000"
       },
-      "package": "com.rnkakao.example",
-      "splash": {
-        "resizeMode": "contain",
-        "image": "./assets/icon.png",
-        "backgroundColor": "#000000"
-      }
+      "package": "com.rnkakao.example"
     },
     "web": {
       "bundler": "metro",
@@ -53,10 +41,11 @@
               "https://devrepo.kakao.com/nexus/content/groups/public/",
               "https://devrepo.kakao.com/nexus/repository/kakaomap-releases/"
             ],
-            "minSdkVerson": 26
+            "minSdkVersion": 26
           },
           "ios": {
-            "ccacheEnabled": true
+            "ccacheEnabled": true,
+            "enableSceneSupport": true
           }
         }
       ],
@@ -72,6 +61,18 @@
           "ios": {
             "handleKakaoOpenUrl": true,
             "naviApplicationQuerySchemes": true
+          }
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#000000",
+          "image": "./assets/icon.png",
+          "resizeMode": "contain",
+          "ios": {
+            "image": "./assets/splash.png",
+            "enableFullScreenImage_legacy": true
           }
         }
       ],

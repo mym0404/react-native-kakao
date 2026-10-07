@@ -9,7 +9,7 @@ A package API change is not complete until example verification passes.
 
 - Example uses workspace packages via `example/react-native.config.js`.
 - Prebuild-generated Android/iOS projects reflect real integration behavior.
-- The app keeps the New Architecture enabled in `app.json`.
+- The app uses the New Architecture required by Expo.
 
 ## Required checks after native API changes
 
