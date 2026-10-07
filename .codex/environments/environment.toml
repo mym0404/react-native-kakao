@@ -8,13 +8,3 @@ mise trust
 mise install
 mise exec -- yarn install --immutable
 mise exec -- yarn build'''
-
-[[actions]]
-name = "Prepare Android"
-icon = "tool"
-command = "mise exec -- yarn gen:android"
-
-[[actions]]
-name = "Prepare iOS"
-icon = "tool"
-command = "mise exec -- yarn gen:ios && mise exec -- yarn example pod"
