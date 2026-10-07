@@ -302,6 +302,8 @@ jobs:
           xcrun simctl bootstatus "$device_id" -b
 
       - name: Verify example menus on iOS
+        env:
+          MAESTRO_DRIVER_STARTUP_TIMEOUT: 180000
         run: yarn e2e test ios --device "$E2E_IOS_DEVICE" --output build/e2e/ios
 
       - name: Upload iOS E2E evidence
