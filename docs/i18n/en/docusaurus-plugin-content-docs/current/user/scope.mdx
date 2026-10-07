@@ -4,7 +4,7 @@ sidebar_position: 106
 
 # Consent Scope Information
 
-API related to user consent information.
+These APIs retrieve and revoke user consent.
 
 For more details, refer to the [Official Documentation](https://developers.kakao.com/docs/latest/ko/kakaologin/ios#check-consent).
 
@@ -14,7 +14,7 @@ For more details, refer to the [Official Documentation](https://developers.kakao
 
 Use `scopes(scopes?: string[])` to retrieve user consent items.
 
-The response will be of type `Promise<KakaoScopeInfo[]>`.
+The response type is `Promise<KakaoScopeInfo[]>`.
 
 ```tsx
 export type KakaoScopeInfo = {

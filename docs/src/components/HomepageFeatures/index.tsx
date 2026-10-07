@@ -18,7 +18,7 @@ const FeatureList: FeatureItem[] = [
     description: (
       <Translate>
         {
-          '로그인, 공유, 지도 등 따로 관리되고 있는 SDK들로부터의 버전 충돌을 완벽히 해결합니다. 또한, 누락된 API나 미구현 기능들을 포함합니다.'
+          '따로 관리하는 로그인, 공유, 지도 SDK 등의 버전 충돌을 해결합니다. 누락된 API와 미구현 기능도 포함합니다.'
         }
       </Translate>
     ),
@@ -34,7 +34,7 @@ const FeatureList: FeatureItem[] = [
     description: (
       <Translate>
         {
-          '플랫폼별 기능이 차이가 나지 않도록 코드 퀄리티를 유지합니다. 또한, 어떤 SDK를 사용하든 비슷한 형태의 API를 제공함으로써 개발자가 일관되고 편안한 개발 경험을 가질 수 있도록 합니다.'
+          '플랫폼별 기능에 차이가 나지 않도록 코드 품질을 유지합니다. 어떤 SDK를 사용하든 비슷한 형태의 API를 제공해 일관되고 편안하게 개발할 수 있도록 합니다.'
         }
       </Translate>
     ),

@@ -5,7 +5,7 @@ import CodeBlock from '@theme/CodeBlock';
 
 ## Send Message to Myself
 
-<Code>{`send${props.name[0].toUpperCase() + props.name.slice(1)}TemplateToMe`}</Code> to send a template message to yourself.
+Use <Code>{`send${props.name[0].toUpperCase() + props.name.slice(1)}TemplateToMe`}</Code> to send a template message to yourself.
 
 <CodeBlock language={'tsx'}>
 {`
@@ -31,7 +31,7 @@ export function send${props.name[0].toUpperCase() + props.name.slice(1)}Template
 </CodeBlock>
 
 - `template`: The template object.
-- `receiverUuids`: List of uuids of friends to whom the message will be sent. You can obtain this from the [social](/docs/social/intro) package's [Select KakaoTalk Friends](/docs/social/select-talk-friends) or [Get KakaoTalk Friends](/docs/social/get-friends).
+- `receiverUuids`: List of friend uuids to send the message to. You can obtain these from the [social](/docs/social/intro) package's [Select KakaoTalk Friends](/docs/social/select-talk-friends) or [Get KakaoTalk Friends](/docs/social/get-friends).
 
 :::info
 Refer to [Component Types](/docs/share/component-types) for detailed component types.

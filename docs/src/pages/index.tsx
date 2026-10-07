@@ -26,7 +26,7 @@ function HomepageHeader() {
         <p className={'hero__subtitle'}>{siteConfig.tagline}</p>
         <div className={styles.buttons}>
           <Link className={'button button--secondary button--lg'} to={'/docs/intro'}>
-            {'Getting Started - 5min ⏱️'}
+            {'Get started in 5 min'}
           </Link>
         </div>
       </div>
@@ -36,7 +36,7 @@ function HomepageHeader() {
 
 export default function Home(): JSX.Element {
   return (
-    <Layout title={'React Native Kakao'} description={'Kakao SDK All In One Solution'}>
+    <Layout title={'React Native Kakao'} description={'Kakao SDKs in one project'}>
       <HomepageHeader />
       <main>
         <HomepageFeatures />

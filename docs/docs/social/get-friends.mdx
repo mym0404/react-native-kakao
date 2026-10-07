@@ -8,13 +8,13 @@ sidebar_position: 4
 [공식 문서](https://developers.kakao.com/docs/latest/ko/kakaotalk-social/android#get-friends)
 
 :::info
-API를 사용하기 위해서 카카오 로그인 및 관련 동의 항목이 동의된 상태여야 합니다.
+API를 사용하려면 카카오 로그인을 완료하고 관련 동의 항목에 동의한 상태여야 합니다.
 
-피커와 친구 목록 가져오기 API는 사용 권한이 주어진 앱에서만 사용할 수 있습니다.
+피커와 친구 목록 가져오기 API는 사용 권한을 받은 앱에서만 사용할 수 있습니다.
 :::
 
 현재 로그인한 사용자의 카카오톡 친구 목록을 불러옵니다.
-요청 시 친구 목록의 정렬 순서, 한 페이지당 친구 수를 선택적으로 지정할 수 있습니다. 파라미터 없이 요청 시 기본 설정대로 요청이 전송됩니다.
+요청할 때 친구 목록의 정렬 순서와 페이지당 친구 수를 선택적으로 지정할 수 있습니다. 파라미터 없이 요청하면 기본 설정을 사용합니다.
 
 ## Usage
 
@@ -28,7 +28,7 @@ export function getFriends(params: {
 }): Promise<KakaoTalkGetFriendsResult>
 ```
 
-사용되는 타입들은 다음과 같습니다.
+타입은 다음과 같습니다.
 
 ```tsx
 /**

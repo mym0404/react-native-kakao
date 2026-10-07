@@ -2,7 +2,7 @@
 sidebar_position: 5
 ---
 
-# 사용자 정의 템플릿으로 메세지 공유하기
+# 사용자 정의 템플릿으로 메시지 공유하기
 ## 사용자 정의 템플릿
 
 [공식 문서](https://developers.kakao.com/docs/latest/ko/message/android-link#custom-template-msg)
@@ -11,7 +11,7 @@ sidebar_position: 5
 
 ## Usage
 
-`shareCustomTemplate()` 함수를 이용해 메세지를 보낼 수 있습니다.
+`shareCustomTemplate()` 함수를 이용해 메시지를 보낼 수 있습니다.
 
 이 함수는 다음과 같이 정의됩니다.
 
@@ -24,14 +24,14 @@ export function shareCustomTemplate(params: {
 });
 ```
 
-- `templateId`: 콘솔에서 지정한 메세지 템플릿입니다.
-- `useWebBrowserIfKakaoTalkNotAvailable`: 카카오톡이 사용 가능하지 않을 때 웹 브라우저를 이용해 공유를 할 것인지
+- `templateId`: 콘솔에서 지정한 메시지 템플릿입니다.
+- `useWebBrowserIfKakaoTalkNotAvailable`: 카카오톡을 사용할 수 없을 때 웹 브라우저로 공유할지
 여부입니다. 기본값은 `true`입니다.
-- `templateArgs`: 템플릿 인자들입니다. 모두 문자열만 값으로 전달되어야 합니다.
-- `serverCallbackArgs`: 서버 콜백 인자들입니다. 모두 문자열만 값으로 전달되어야 합니다.
+- `templateArgs`: 템플릿 인자입니다. 모든 값은 문자열로 전달해야 합니다.
+- `serverCallbackArgs`: 서버 콜백 인자입니다. 모든 값은 문자열로 전달해야 합니다.
 
 :::info
-자세한 컴포넌트들의 타입은 [컴포넌트 타입들](/docs/share/component-types)을 참고해주세요.
+자세한 컴포넌트 타입은 [컴포넌트 타입들](/docs/share/component-types)을 참고하세요.
 
-사용에 문제가 생긴다면 [Troubleshooting](/docs/share/troubleshooting)을 참고해주세요
+사용 중 문제가 생기면 [Troubleshooting](/docs/share/troubleshooting)을 참고하세요.
 :::
