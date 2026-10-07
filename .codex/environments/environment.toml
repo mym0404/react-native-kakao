@@ -7,7 +7,4 @@ script = '''
 mise trust
 mise install
 mise exec -- yarn install --immutable
-mise exec -- yarn build
-mise exec -- yarn prebuild:android
-mise exec -- yarn prebuild:ios
-mise exec -- yarn example pod'''
+mise exec -- yarn build'''
