@@ -25,22 +25,22 @@ See the [v3 migration guide](./migration-v3) for the changes required when updat
 
 ## Highlights
 
-- ❤️ **No version conflicts**
-  - managed and consistent versions of native SDKs ensure there are no version conflicts.
-- 🍎 **Consistent logic for each platform**
-  - same JS code => same android, ios, web logics are ensured.
-- ⚡️ **Easy coding, Fast development**
-  - all APIs are designed with the DX as the top priority.
-- 🎃 **Well typed**
-  - first class support for **Typescript** included
-- 📄 **Well documented**
-  - full reference & installation documentation alongside detailed guides and FAQs
-- 🚀 **Wide supportability**
+- **No version conflicts**
+  - Consistently managed native SDK versions prevent version conflicts.
+- **Consistent logic across platforms**
+  - The same JS code runs the same logic on Android, iOS, and Web.
+- **APIs designed for developer experience**
+  - All APIs put developer experience (DX) first.
+- **TypeScript support**
+  - Includes first-class support for **TypeScript**
+- **API references and setup guides**
+  - Includes full API references, installation documentation, detailed guides, and FAQs
+- **Supported platforms**
   - Supports **Android, iOS, Web, and Expo**.
-- 🦋 **Robust error handling**
-  - All SDK errors are forwarded to JS clearly, consistently for each platform.
+- **SDK error handling**
+  - All SDK errors are passed to JS clearly and consistently across platforms.
 
-## Youtube Tutorial (Install, Login, Expo)
+## YouTube Tutorial (Install, Login, Expo)
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/apRtsSIYMt0?si=6J8tp5q7rGSffJvT" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
@@ -48,21 +48,21 @@ See the [v3 migration guide](./migration-v3) for the changes required when updat
 
 :::tip
 This document does not cover all details about the basic configuration or APIs of the Kakao SDK.
-We recommend referring to the Official Documentation of Kakao SDK for the required functionalities.
+We recommend checking the official Kakao SDK documentation for the features you need.
 
-Minimal setup or APIs usage to utilize this package are covered.
+This documentation covers the minimum setup and API usage needed to use this package.
 :::
 
-The structure of APIs and modules follows the structure of the [Kakao SDK](https://developers.kakao.com/docs/latest/ko/ios/getting-started).
+API usage and module structure follow the [Kakao SDK](https://developers.kakao.com/docs/latest/ko/ios/getting-started).
 
-Names of functions or modules are generally determined by looking at the iOS documentation, and `Common` is replaced with `Core`.
+Function and module names generally follow the iOS documentation, with `Core` used in place of `Common`.
 
 ![kakao sdk](https://raw.githubusercontent.com/mym0404/image-archive/master/202404211418541.webp)
 
-For example, there is a `User` module in the image above, hence `@react-native-kakao/user` exists.
+For example, the `User` module in the image above corresponds to `@react-native-kakao/user`.
 
 :::info
-Always refer to the related Official Documentation to understand what permissions and setups each API requires to function properly and how errors may occur or the operation may proceed otherwise.
+Always check the relevant official documentation for each API's required permissions and settings, and its behavior and errors when those conditions are not met.
 
 -  [Android Official Documentation](https://developers.kakao.com/docs/latest/ko/android/getting-started)
 -  [iOS Official Documentation](https://developers.kakao.com/docs/latest/ko/ios/getting-started)

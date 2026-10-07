@@ -10,13 +10,13 @@ If you are using Expo, you can skip this document.
 
 ## Passing Additional Information at App Launch
 
-For native apps, you can pass additional information at app launch through the custom URL scheme. Set keys and values to be passed at the app launch using the `androidExecutionParams` and `iosExecutionParams` parameters.
-When using these parameters, clicking the button in a KakaoTalk shared message will trigger the scheme as shown below.
+For native apps, you can pass additional information at app launch through the custom URL scheme. Use the `androidExecutionParams` and `iosExecutionParams` parameters to set the keys and values passed at launch.
+With these parameters, tapping the app launch button in a KakaoTalk shared message calls the scheme shown below.
 
 ```
 kakao${YOUR_NATIVE_APP_KEY}://kakaolink?key1=value1&key2=value2&key3=value3
 ```
 
 :::note
-For more detailed information, refer to the [Official Documentation](https://developers.kakao.com/docs/latest/ko/message/android-link#custom-scheme).
+For details, refer to the [Official Documentation](https://developers.kakao.com/docs/latest/ko/message/android-link#custom-scheme).
 :::

@@ -9,9 +9,9 @@ sidebar_position: 3
 Expo를 사용한다면 이 문서에서 콘솔 설정 부분만 확인하면 됩니다.
 :::
 
-[Kakao SDK 문서](https://developers.kakao.com/docs/latest/ko/android/getting-started)에서 설정에 관한 자세한 정보를 확인할 수 있습니다.
+설정에 관한 자세한 내용은 [Kakao SDK 문서](https://developers.kakao.com/docs/latest/ko/android/getting-started)에서 확인할 수 있습니다.
 
-Android 설정 방법은 다음과 같습니다.
+아래 순서로 Android를 설정합니다.
 
 ## 카카오 콘솔에서 애플리케이션 생성 및 플랫폼 등록
 
@@ -27,15 +27,15 @@ Android 설정 방법은 다음과 같습니다.
 
 [키 해시 공식 문서](https://developers.kakao.com/docs/latest/ko/android/getting-started#before-you-begin-add-key-hash)
 
-키 해시(Key Hash)는 인증서(Certificate)의 지문 값(Certificate fingerprints)을 해시(hash)한 값으로,
+키 해시(Key Hash)는 인증서(Certificate)의 지문 값(Certificate fingerprints)을 해시한 값으로,
 악성 앱인지 판별하는 데 사용됩니다.
 카카오 API를 호출할 때 카카오 API 서버는 요청 헤더의
 키 해시값이 카카오 플랫폼에 등록한 값과 일치하는지 확인합니다.
 
 키 해시는 **디버그 키 해시(Debug key hash)** 와 **릴리스 키 해시(Release key hash)** 두 가지가 있습니다.
 
-- 디버그 키 해시: 프로젝트를 처음 생성하거나 디버그할 때, 안드로이드 스튜디오에서 개발 환경에 맞게 자동으로 생성되는 디버그 인증서에서 해시(hash)한 값
-- 릴리스 키 해시: 앱 스토어에 앱을 배포하기 위해 생성한 릴리스 인증서로부터 해시한 값
+- 디버그 키 해시: 프로젝트를 처음 생성하거나 디버그할 때 안드로이드 스튜디오가 개발 환경에 맞게 자동 생성한 디버그 인증서를 해시한 값
+- 릴리스 키 해시: 앱 스토어에 앱을 배포하기 위해 생성한 릴리스 인증서를 해시한 값
 
 :::info
 Google Play Console에서 발급하는 키 해시도 있습니다.
@@ -50,7 +50,7 @@ Google Play Console은 앱을 릴리스할 때마다 [App signing](https://play.
 
 키 해시는 `core` 패키지의 `getKeyHashAndroid()` 함수로 얻을 수 있습니다.
 
-디버그, 릴리스, 플레이 스토어 환경에서 각각 이 함수를 호출해 결과값을 콘솔이나 텍스트에 출력한 뒤 그대로 사용하시면 됩니다.
+디버그, 릴리스, 플레이 스토어 환경에서 각각 이 함수를 호출해 결과값을 콘솔이나 텍스트에 출력한 뒤 그대로 사용하면 됩니다.
 
 키 해시를 직접 생성하려면 [공식 문서](https://developers.kakao.com/docs/latest/ko/android/getting-started#before-you-begin-add-key-hash)를 참고하세요.
 

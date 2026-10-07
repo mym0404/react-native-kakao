@@ -6,7 +6,7 @@ sidebar_position: 3
 
 ## Getting Android Key Hash
 
-This is a utility function that easily retrieves the key hash in Android environments.
+This utility function retrieves the key hash in each Android environment.
 
 ```tsx title='index.js'
 import { getKeyHashAndroid } from '@react-native-kakao/core';
@@ -15,9 +15,9 @@ getKeyHashAndroid().then(console.log);
 ```
 
 :::info
-This function can simply utilize `console.log` as shown above in a debug environment where the console is visible,
+In a debug environment where the console is visible, you can check the result with `console.log` as shown above.
 
-In non-debug (release) environments, it’s possible to display the key using a component like `Text` to retrieve it accurately.
+In a release environment, you can display the key in a component such as `Text` to retrieve it accurately.
 
-Of course, you can extract the key hash manually without this utility by following the [Official Documentation](https://developers.kakao.com/docs/latest/ko/android/getting-started#before-you-begin-add-key-hash).
+You can also extract the key hash manually without this utility by following the [Official Documentation](https://developers.kakao.com/docs/latest/ko/android/getting-started#before-you-begin-add-key-hash).
 :::

@@ -20,7 +20,7 @@ Add the following to `app.json`:
 ],
 ```
 
-This will inject an `intent-filter` into `MainActivity` to execute `MainActivity` when a button with the app schema set by KakaoTalk is pressed.
+This adds an `intent-filter` to `MainActivity` so that tapping a KakaoTalk button configured with the app's scheme launches `MainActivity`.
 
 ```xml title='AndroidManifest.xml'
  <activity android:name=".MainActivity" ...>

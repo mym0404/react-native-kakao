@@ -4,17 +4,17 @@ sidebar_position: 106
 
 # 동의 내역
 
-사용자 동의 내역과 관련된 API입니다.
+사용자 동의 내역을 조회하거나 철회하는 API입니다.
 
-자세한 내용은 [공식 문서](https://developers.kakao.com/docs/latest/ko/kakaologin/ios#check-consent)를 참고해주세요.
+자세한 내용은 [공식 문서](https://developers.kakao.com/docs/latest/ko/kakaologin/ios#check-consent)를 참고하세요.
 
 ## 동의 내역 받기
 
 [공식 문서](https://developers.kakao.com/docs/latest/ko/kakaologin/ios#check-consent)
 
-`scopes(scopes?: string[])`를 이용해 사용자 동의 항목을 받아올 수 있습니다.
+`scopes(scopes?: string[])`로 사용자 동의 항목을 조회할 수 있습니다.
 
-응답 결과는 `Promise<KakaoScopeInfo[]>` 입니다.
+응답은 `Promise<KakaoScopeInfo[]>`입니다.
 
 ```tsx
 export type KakaoScopeInfo = {
@@ -34,11 +34,11 @@ export type KakaoScopeInfo = {
 scopes()
 ```
 
-## 동의 내역 철회시키기
+## 동의 내역 철회하기
 
 [공식 문서](https://developers.kakao.com/docs/latest/ko/kakaologin/ios#revoke-consent)
 
-`revokeScopes(scopes: string[])`를 이용해 사용자 동의 항목을 철회할 수 있습니다.
+`revokeScopes(scopes: string[])`로 사용자 동의 항목을 철회할 수 있습니다.
 
 >사용자가 동의한 항목에 대해 동의를 철회합니다.
 동의 내역 확인하기 API를 통해 조회한 동의항목 정보 중 동의 철회 가능 여부(revocable) 값이 true인

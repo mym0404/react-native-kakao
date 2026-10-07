@@ -6,13 +6,13 @@ sidebar_position: 2
 
 ## Threads Used by the API
 
-All APIs explicitly operate on the **Main Thread**.
+All APIs explicitly run on the **Main Thread**.
 
-In practice, functions from the Kakao Native SDK operate using a callback mechanism, and the callbacks themselves run on the Main Thread.
+Kakao Native SDK functions use callbacks, which also run on the Main Thread.
 
-While most logic is executed on the Main Thread to prevent any potential errors, the functions provided in this package are primarily utility functions ported from the Native SDK and do not perform heavy computations.
+Most logic runs on the Main Thread to prevent potential errors, and the package's functions are mainly utilities ported from the Native SDK that do not perform heavy computations.
 
-If there is a need for performance improvements in the future, the implementation can be revised accordingly.
+The implementation can change if future performance work requires it.
 
 :::tip
 In iOS Native Modules, `requireMainQueueSetup` can increase app startup time and is unnecessary, so it is not used.

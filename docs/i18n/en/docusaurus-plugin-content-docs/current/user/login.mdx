@@ -6,13 +6,13 @@ sidebar_position: 101
 
 ## Logging In
 
-You can perform tasks like user registration, login, receiving additional consent, and obtaining agreement for terms using Kakao Login.
+Use Kakao Login to register users, log in, request additional consent, and obtain agreement to service terms.
 
 ![image](https://raw.githubusercontent.com/mym0404/image-archive/master/202404271643817.webp)
 
 ## Usage
 
-Calling the `login()` function will trigger the login process immediately.
+Calling `login()` starts login immediately.
 
 ```tsx
 import { login } from '@react-native-kakao/user';
@@ -27,20 +27,20 @@ login()
 
 All parameters are optional.
 
--  `serviceTerms`: Additional feature to specify specific service terms for the Kakao login consent screen, based on the user's service registration scenario. Specify the service terms tags to be included in the consent screen by setting the `serviceTerms` parameter when making a Kakao login request. Include one or more service terms set as [required consent] to display the consent screen and obtain user consent.
+-  `serviceTerms`: Selects the service terms shown on the Kakao login consent screen to match the user's registration flow. Set the `serviceTerms` parameter to the list of service term tags to include when requesting Kakao login. You must include at least one term set as [required consent] to display the consent screen and obtain consent.
 
 :::info
 This feature is only available for services implementing Kakao Sync.
 :::
 
--  `prompts`: Allows control over the login process by passing flags.
+-  `prompts`: Pass flags to control the login process.
 
 Pass `Login`, `Create`, `Cert`, or `SelectAccount` as a `string[]`.
 
 For detailed descriptions, refer to the [Official Documentation](https://developers.kakao.com/docs/latest/ko/kakaologin/ios#request-code-re-authentication).
 
 :::info
-Sent when attempting a login with a Kakao account instead of KakaoTalk.
+These flags are sent when logging in with a Kakao account instead of KakaoTalk.
 :::
 
 -  `scopes`: Used when requesting additional consent from the user. Pass the items that require consent.
@@ -49,7 +49,7 @@ Refer to the [Official Documentation](https://developers.kakao.com/docs/latest/k
 
 Check the `xxxNeedsAgreement` properties in the `me()` function to get items that require additional consent.
 
-If `scopes` are provided, it always executes login with a Kakao account.
+When `scopes` are provided, login always uses a Kakao account.
 
 -  `useKakaoAccountLogin`: Attempt login with a Kakao account instead of KakaoTalk.
 
@@ -58,11 +58,11 @@ If `scopes` are provided, it always executes login with a Kakao account.
 Refer to the [Official Documentation](https://developers.kakao.com/docs/latest/ko/kakaologin/utilize#parameter-for-security) for details.
 
 :::info
-Only meaningful for apps with OpenID Connect enabled.
+This value is only meaningful for apps with OpenID Connect enabled.
 :::
 
 :::warning Warning
-Errors will be thrown under the following conditions:
+The API throws errors under the following conditions:
 -  If `useKakaoAccountLogin` does not exist or is `false`, `prompts` and `scopes` cannot be passed.
 
 For KakaoTalk login, `prompts` and `scopes` cannot be passed (Native SDK restriction).
@@ -74,7 +74,7 @@ When requesting additional consent, `serviceTerms` and `prompts` cannot be passe
 
 ### Response
 
-Returns token-related information via a `Promise`.
+The API returns token information in a `Promise`.
 
 The response includes the following:
 

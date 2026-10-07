@@ -9,29 +9,29 @@ sidebar_position: 3
 [Official Documentation](https://developers.kakao.com/docs/latest/ko/kakaotalk-social/android#picker-friends)
 
 :::info
-To use the API, the user must have agreed to Kakao login and consent items related to the profile information, nickname, and profile picture.
+To use the API, the user must have completed Kakao login and consented to profile information, nickname, and profile picture access.
 
-The picker and get friends list API can only be used in apps granted permission.
-Before getting permission, the feature is restricted to the app team members only. To enable the feature for all users in a live service, you need to apply for permission in `[My Applications] > [Request App Permissions]`.
+Only apps granted permission can use the picker and friends list APIs.
+Before permission is granted, only app team members can use the feature. To enable it for all users in a live service, you must apply for permission in `[My Applications] > [Request App Permissions]`.
 
 For information on requesting permissions, refer to the [Official Documentation](https://developers.kakao.com/docs/latest/ko/kakaotalk-social/common#policy-request-permission).
 :::
 
 ![image](https://raw.githubusercontent.com/mym0404/image-archive/master/202404271649815.webp)
 
-If the consent items are set to be used during usage, when trying to call the API that uses the function, permissions prompt like the image above will be displayed.
+If the consent items are configured for consent during use, calling the API displays a permission prompt like the one above.
 
 <img alt={"full screen"} src={'https://raw.githubusercontent.com/mym0404/image-archive/master/202404271650614.webp'} width={600}/>
 
-A picker that fills the entire screen with `mode='full'`.
+With `mode='full'`, the picker fills the entire screen.
 
 <img alt={"full screen"} src={'https://raw.githubusercontent.com/mym0404/image-archive/master/202404271651715.webp'} width={600}/>
 
-A popup-style picker with `mode='popup'`.
+With `mode='popup'`, the picker opens as a popup.
 
 ## Common Types
 
-The option object for configuring the friend picker and friend object are defined as follows:
+The friend picker options and friend object are defined as follows:
 
 ```tsx
 export interface KakaoTalkFriendSelectOptions {
@@ -74,7 +74,7 @@ You can use `selectSingleFriend()` to choose a single friend.
 
 It is defined as follows:
 
-The `mode` determines whether the screen covers the entire picker or opens as a popup.
+The `mode` determines whether the picker fills the screen or opens as a popup.
 
 ```tsx
 export async function selectSingleFriend(params: {
@@ -89,7 +89,7 @@ You can select multiple friends using `selectMultipleFriends()`.
 
 It is defined as follows:
 
-The `mode` determines whether the screen covers the entire picker or opens as a popup.
+The `mode` determines whether the picker fills the screen or opens as a popup.
 
 ```tsx
 export function selectMultipleFriends(params: {

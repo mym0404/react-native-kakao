@@ -1,6 +1,6 @@
 # Website
 
-This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
+This website uses [Docusaurus](https://docusaurus.io/), a static site generator.
 
 ### Installation
 
@@ -14,7 +14,7 @@ $ yarn
 $ yarn start
 ```
 
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
+This command starts a local development server and opens a browser window. Most changes appear live without restarting the server.
 
 ### Build
 
@@ -22,7 +22,7 @@ This command starts a local development server and opens up a browser window. Mo
 $ yarn build
 ```
 
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
+This command generates static content in the `build` directory, which you can serve with any static hosting service.
 
 ### Deployment
 
@@ -38,4 +38,4 @@ Not using SSH:
 $ GIT_USER=<Your GitHub username> yarn deploy
 ```
 
-If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
+If you use GitHub Pages for hosting, this command builds the website and pushes it to the `gh-pages` branch.

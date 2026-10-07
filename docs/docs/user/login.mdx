@@ -6,13 +6,13 @@ sidebar_position: 101
 
 ## 로그인하기
 
-카카오 로그인하기를 이용해 회원가입, 로그인, 추가 동의내역 받기, 약관 동의시키기 등을 수행할 수 있습니다.
+카카오 로그인으로 회원가입, 로그인, 추가 동의 받기, 약관 동의 받기 등을 할 수 있습니다.
 
 ![image](https://raw.githubusercontent.com/mym0404/image-archive/master/202404271643817.webp)
 
 ## Usage
 
-`login()` 함수를 호출해주면 바로 실행됩니다.
+`login()` 함수를 호출하면 바로 로그인을 시작합니다.
 
 ```tsx
 import { login } from '@react-native-kakao/user';
@@ -25,11 +25,11 @@ login()
 
 ### 인자
 
-모든 인자는 optional입니다.
+모든 인자는 선택 사항입니다.
 
-- `serviceTerms`: 서비스 약관 선택해 동의 받기는 카카오 로그인 동의 화면에 포함할 서비스 약관을
+- `serviceTerms`: 카카오 로그인 동의 화면에 포함할 서비스 약관을
 지정하는 추가 기능입니다. 사용자의 서비스 가입 시나리오에 따라 앱에 등록된 서비스
-약관 중 특정 서비스 약관을 지정해 동의받고자 할 때 사용합니다. 카카오 로그인 요청 시
+약관 중 특정 약관을 지정해 동의받을 때 사용합니다. 카카오 로그인 요청 시
 `serviceTerms` 파라미터로 동의 화면에 포함할 서비스 약관 태그 목록을 지정합니다.
 요청 시 [필수 동의]로 설정된 서비스 약관을 하나 이상 포함해야 동의 화면을 출력하고 사용자에게 동의받을 수 있습니다.
 
@@ -37,29 +37,29 @@ login()
 카카오싱크를 도입한 서비스만 사용할 수 있는 기능입니다.
 :::
 
-- `prompts`: 로그인 과정을 플래그를 전달해 제어할 수 있습니다.
+- `prompts`: 플래그를 전달해 로그인 과정을 제어할 수 있습니다.
 
 `Login`, `Create`, `Cert`, `SelectAccount`를 `string[]`으로 전달할 수 있습니다.
 
-각각이 의미하는 자세한 설명은 [공식 문서](https://developers.kakao.com/docs/latest/ko/kakaologin/ios#request-code-re-authentication)를 참고해주세요.
+각 값의 자세한 의미는 [공식 문서](https://developers.kakao.com/docs/latest/ko/kakaologin/ios#request-code-re-authentication)를 참고하세요.
 
 :::info
-카카오톡이 아닌 카카오 계정으로 로그인이 시도될 때 전달됩니다.
+카카오톡 대신 카카오 계정으로 로그인을 시도할 때 전달됩니다.
 :::
 
-- `scopes`: 사용자에게 추가 동의를 받는 경우에 해당됩니다. 동의를 받아야 하는 항목들을 전달합니다.
+- `scopes`: 사용자에게 추가 동의를 받을 때 사용합니다. 동의가 필요한 항목을 전달합니다.
 
-자세한 내용은 [공식 문서](https://developers.kakao.com/docs/latest/ko/kakaologin/android#request-code-additional-consent) 를 참고해주세요.
+자세한 내용은 [공식 문서](https://developers.kakao.com/docs/latest/ko/kakaologin/android#request-code-additional-consent) 를 참고하세요.
 
-`me()`의 함수의 `xxxNeedsAgreement` 속성들을 확인해 추가적으로 동의를 받아야 하는 항목을 얻을 수 있습니다.
+`me()` 함수의 `xxxNeedsAgreement` 속성을 확인해 추가 동의가 필요한 항목을 찾을 수 있습니다.
 
-`scopes`가 전달된다면 항상 카카오 계정으로 로그인하기가 실행됩니다.
+`scopes`를 전달하면 항상 카카오 계정으로 로그인을 실행합니다.
 
 - `useKakaoAccountLogin`: 항상 카카오톡이 아닌 카카오 계정으로 로그인을 시도합니다.
 
 - `nonce`: ID 토큰 재생 공격을 방지하기 위한 검증 값입니다. 전달한 값이 발급되는 ID 토큰의 `nonce` claim에 포함되어 반환됩니다.
 
-자세한 내용은 [공식 문서](https://developers.kakao.com/docs/latest/ko/kakaologin/utilize#parameter-for-security)를 참고해주세요.
+자세한 내용은 [공식 문서](https://developers.kakao.com/docs/latest/ko/kakaologin/utilize#parameter-for-security)를 참고하세요.
 
 :::info
 OpenID Connect를 활성화한 앱에서만 의미가 있습니다.
@@ -67,15 +67,15 @@ OpenID Connect를 활성화한 앱에서만 의미가 있습니다.
 
 
 :::warning 경고
-다음과 같은 조건으로 사용한다면 에러를 던집니다.
+다음 조건에서는 에러를 던집니다.
 
 - `useKakaoAccountLogin`이 존재하지 않거나 `false`라면 `prompts`와 `scopes`를 전달할 수 없습니다.
 
-카카오톡으로 로그인하는 기능엔 `prompts`와 `scopes`를 전달할 수 없게 되어있습니다(Native SDK에서).
+Native SDK의 카카오톡 로그인에는 `prompts`와 `scopes`를 전달할 수 없습니다.
 
 - `scopes`가 전달된다면 `serviceTerms`와 `prompts`를 전달할 수 없습니다.
 
-추가 동의를 받는 경우 `serviceTerms`와 `prompts`를 같이 전달할 수 없게 되어있습니다(Native SDK에서).
+Native SDK에서 추가 동의를 받을 때는 `serviceTerms`와 `prompts`를 함께 전달할 수 없습니다.
 
 
 :::
@@ -102,7 +102,7 @@ OpenID Connect를 활성화한 앱에서만 의미가 있습니다.
 
 ## 로그아웃하기
 
-`logout()`으로 로그아웃 할 수 있습니다.
+`logout()`으로 로그아웃할 수 있습니다.
 
 ## 계정 연동 해제하기
 
@@ -110,8 +110,8 @@ OpenID Connect를 활성화한 앱에서만 의미가 있습니다.
 
 ## 현재 로그인 상태인지 확인하기
 
-`isLogined()`로 확인할 수 있습니다. 반환값은 `Promise<boolean>` 입니다.
+`isLogined()`로 확인할 수 있습니다. 반환값은 `Promise<boolean>`입니다.
 
 ## 카카오톡이 사용 가능한지 확인하기
 
-`isKakaoTalkLoginAvailable()`로 확인할 수 있습니다. 반환값은 `Promise<boolean>` 입니다.
+`isKakaoTalkLoginAvailable()`로 확인할 수 있습니다. 반환값은 `Promise<boolean>`입니다.

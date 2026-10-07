@@ -8,15 +8,15 @@ sidebar_position: 107
 
 [Official Documentation](https://developers.kakao.com/docs/latest/ko/kakaologin/ios#terms)
 
-You can obtain the service terms agreement information using `serviceTerms()`.
+Use `serviceTerms()` to retrieve service terms consent information.
 
 :::warning
 This feature is only available for apps using Kakao Sync.
 :::
 
-The response will be of type `Promise<KakaoServiceTerms[]>`.
+The response type is `Promise<KakaoServiceTerms[]>`.
 
-The corresponding type is as follows:
+The type is defined as follows:
 
 ```tsx
 export type KakaoServiceTerms = {
