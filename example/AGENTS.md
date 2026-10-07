@@ -7,7 +7,7 @@ A package API change is not complete until example verification passes.
 
 ## Why this matters
 
-- Example uses workspace packages via `example/react-native.config.js`.
+- Expo Autolinking resolves the six Kakao workspace packages declared in `example/package.json`.
 - Prebuild-generated Android/iOS projects reflect real integration behavior.
 - The app uses the New Architecture required by Expo.
 

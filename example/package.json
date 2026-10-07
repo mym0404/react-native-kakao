@@ -2,7 +2,7 @@
   "name": "kakao-example",
   "version": "0.0.1",
   "private": true,
-  "main": "src/root.js",
+  "main": "expo-router/entry",
   "scripts": {
     "start": "expo start --dev-client",
     "android": "expo run:android",
@@ -35,7 +35,6 @@
     "expo-router": "~57.0.25",
     "expo-splash-screen": "~57.0.9",
     "expo-status-bar": "~57.0.1",
-    "query-string": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-native": "catalog:",
@@ -45,12 +44,6 @@
     "react-native-web": "~0.21.0"
   },
   "devDependencies": {
-    "@babel/core": "catalog:",
-    "@babel/preset-env": "^7.25.3",
-    "@babel/runtime": "^7.25.0",
-    "babel-plugin-module-resolver": "^5.0.0",
-    "babel-preset-expo": "~57.0.14",
-    "escape-string-regexp": "^4.0.0",
     "expo-build-properties": "~57.0.22",
     "typescript": "catalog:"
   },

@@ -104,7 +104,7 @@ jobs:
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: example/android/app/build/outputs/apk/release/app-release.apk
-          key: ${{ runner.os }}-e2e-android-release-${{ runner.arch }}-x86_64-jdk17-v2-${{ hashFiles('mise.toml', '.yarnrc.yml', 'yarn.lock', '.yarn/patches/**', 'package.json', 'tsconfig.json', 'packages/*/package.json', 'packages/*/tsconfig.json', 'packages/*/tsconfig.build.json', 'packages/*/src/**', 'packages/*/android/**', 'packages/core/expo-config-plugin/**', 'packages/core/app.plugin.js', 'example/package.json', 'example/app.json', 'example/src/**', 'example/assets/**', 'example/tsconfig.json', 'example/babel.config.js', 'example/metro.config.js', 'example/react-native.config.js', 'script/e2e/e2e-build.ts', 'script/e2e/e2e-log.ts') }}
+          key: ${{ runner.os }}-e2e-android-release-${{ runner.arch }}-x86_64-jdk17-v2-${{ hashFiles('mise.toml', '.yarnrc.yml', 'yarn.lock', '.yarn/patches/**', 'package.json', 'tsconfig.json', 'packages/*/package.json', 'packages/*/tsconfig.json', 'packages/*/tsconfig.build.json', 'packages/*/src/**', 'packages/*/android/**', 'packages/core/expo-config-plugin/**', 'packages/core/app.plugin.js', 'example/package.json', 'example/app.json', 'example/src/**', 'example/assets/**', 'example/tsconfig.json', 'script/e2e/e2e-build.ts', 'script/e2e/e2e-log.ts') }}
 
       - name: Install JDK
         uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
@@ -204,7 +204,7 @@ jobs:
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: build/e2e/ios-build/Build/Products/Release-iphonesimulator/KakaoExample.app
-          key: ${{ runner.os }}-e2e-ios-release-${{ runner.arch }}-xcode26.4-v2-${{ hashFiles('mise.toml', '.yarnrc.yml', 'yarn.lock', '.yarn/patches/**', 'package.json', 'tsconfig.json', 'packages/*/package.json', 'packages/*/tsconfig.json', 'packages/*/tsconfig.build.json', 'packages/*/*.podspec', 'packages/*/src/**', 'packages/*/ios/**', 'packages/core/expo-config-plugin/**', 'packages/core/app.plugin.js', 'example/package.json', 'example/app.json', 'example/src/**', 'example/assets/**', 'example/tsconfig.json', 'example/babel.config.js', 'example/metro.config.js', 'example/react-native.config.js', 'example/Gemfile', 'example/Gemfile.lock', 'script/e2e/e2e-build.ts', 'script/e2e/e2e-log.ts') }}
+          key: ${{ runner.os }}-e2e-ios-release-${{ runner.arch }}-xcode26.4-v2-${{ hashFiles('mise.toml', '.yarnrc.yml', 'yarn.lock', '.yarn/patches/**', 'package.json', 'tsconfig.json', 'packages/*/package.json', 'packages/*/tsconfig.json', 'packages/*/tsconfig.build.json', 'packages/*/*.podspec', 'packages/*/src/**', 'packages/*/ios/**', 'packages/core/expo-config-plugin/**', 'packages/core/app.plugin.js', 'example/package.json', 'example/app.json', 'example/src/**', 'example/assets/**', 'example/tsconfig.json', 'example/Gemfile', 'example/Gemfile.lock', 'script/e2e/e2e-build.ts', 'script/e2e/e2e-log.ts') }}
 
       - uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0
         with:
