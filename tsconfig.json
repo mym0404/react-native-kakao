@@ -12,7 +12,7 @@
     "jsx": "react-native",
     "lib": ["esnext", "DOM"],
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "noImplicitUseStrict": false,
@@ -25,6 +25,7 @@
     "noImplicitAny": false,
     "strict": true,
     "target": "esnext",
+    "types": ["node", "react"],
     "verbatimModuleSyntax": true
   },
   "exclude": ["packages/*/lib", "docs/"]
