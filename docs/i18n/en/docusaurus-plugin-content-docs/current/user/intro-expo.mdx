@@ -36,3 +36,9 @@ The plugin does not enable scenes or replace your SceneDelegate. A custom
 SceneDelegate must forward its URL callbacks to AppDelegate itself. See Expo's
 [scene lifecycle guide](https://github.com/expo/fyi/blob/main/ios-scene-lifecycle.md)
 for the required native configuration.
+
+Expo's scene forwarding also sends Kakao callbacks to JavaScript Linking,
+regardless of the AppDelegate callback's return value. If you use Expo Router,
+map the OAuth callback to a valid app route with `redirectSystemPath` in
+`+native-intent.tsx` to avoid an `Unmatched Route` screen. See Expo's
+[customizing links guide](https://docs.expo.dev/router/advanced/native-intent/).
