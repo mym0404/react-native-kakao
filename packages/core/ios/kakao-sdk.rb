@@ -20,21 +20,10 @@ module RNCKakaoSPM
       # React Native matches native target names, including CocoaPods' scoped variants.
       dependencies = @dependencies_by_pod
       @dependencies_by_pod = dependencies.reject { |name, _| name == CORE_NAME }
+      flattened_modulemaps = {}
       installer.pod_targets.each do |pod|
         if pod.pod_name == CORE_NAME
           @dependencies_by_pod[pod.label] = dependencies.fetch(CORE_NAME)
-        end
-        next unless pod.pod_name.start_with?('RNCKakao')
-
-        core = ([pod] + pod.dependent_targets).find { |dependency| dependency.pod_name == CORE_NAME }
-        next unless core
-
-        target = installer.pods_project.targets.find { |item| item.name == pod.label }
-        target.build_configurations.each do |config|
-          # SPM stages KakaoSDKFriendCore.framework in its consumer Core's build directory,
-          # even when Core itself is a static library. Other pods import it through KakaoSDKFriend.
-          paths = Array(config.build_settings['FRAMEWORK_SEARCH_PATHS'] || '$(inherited)')
-          config.build_settings['FRAMEWORK_SEARCH_PATHS'] = (paths + ["\"#{core.configuration_build_dir}\""]).uniq
         end
       end
       begin
@@ -43,8 +32,78 @@ module RNCKakaoSPM
         @dependencies_by_pod = dependencies
       end
 
+      installer.pod_targets.each do |pod|
+        next unless pod.pod_name.start_with?('RNCKakao')
+
+        core = ([pod] + pod.dependent_targets).find { |dependency| dependency.pod_name == CORE_NAME }
+        next unless core
+
+        target = installer.pods_project.targets.find { |item| item.name == pod.label }
+        core_target = installer.pods_project.targets.find { |item| item.name == core.label }
+        target.build_configurations.each do |config|
+          core_config = core_target&.build_configurations&.find { |item| item.name == config.name }
+          core_build_dir = core_config&.build_settings&.fetch('CONFIGURATION_BUILD_DIR', nil) || core.configuration_build_dir
+          # SPM stages KakaoSDKFriendCore.framework in its consumer Core's build directory,
+          # even when Core itself is a static library. Other pods import it through KakaoSDKFriend.
+          paths = Array(config.build_settings['FRAMEWORK_SEARCH_PATHS'] || '$(inherited)')
+          paths.delete("\"#{core.configuration_build_dir}\"") if core_build_dir != core.configuration_build_dir
+          config.build_settings['FRAMEWORK_SEARCH_PATHS'] = (paths + ["\"#{core_build_dir}\""]).uniq
+          if core_build_dir == '${PODS_CONFIGURATION_BUILD_DIR}'
+            module_name = core.product_module_name
+            old_path = "#{core.configuration_build_dir}/#{module_name}.modulemap"
+            new_path = "#{core_build_dir}/#{module_name}.modulemap"
+            flattened_modulemaps[old_path] = new_path
+            RNCKakaoSPM.reconcile_core_modulemap_paths(config, old_path, new_path)
+          end
+        end
+      end
+      RNCKakaoSPM.reconcile_aggregate_modulemap_paths(installer, flattened_modulemaps)
+
       RNCKakaoSPM.copy_resources(installer)
     end
+  end
+
+  def self.reconcile_core_modulemap_paths(config, old_path, new_path)
+    base_path = config.base_configuration_reference&.real_path
+    base_config = Xcodeproj::Config.new(base_path) if base_path&.file?
+    has_base_changes = replace_modulemap_path(base_config&.attributes, old_path, new_path)
+    replace_modulemap_path(config.build_settings, old_path, new_path)
+    base_config&.save_as(base_path) if has_base_changes
+  end
+
+  def self.reconcile_aggregate_modulemap_paths(installer, modulemaps)
+    return if modulemaps.empty?
+
+    installer.aggregate_targets.each do |aggregate|
+      aggregate.xcconfigs.each do |config_name, config_file|
+        has_changes = false
+        modulemaps.each do |old_path, new_path|
+          has_changes = replace_modulemap_path(config_file.attributes, old_path, new_path) || has_changes
+        end
+        config_file.save_as(aggregate.xcconfig_path(config_name)) if has_changes
+      end
+    end
+  end
+
+  def self.replace_modulemap_path(settings, old_path, new_path)
+    return false unless settings
+
+    has_changes = false
+    %w[OTHER_CFLAGS OTHER_SWIFT_FLAGS].each do |key|
+      value = settings[key]
+      next unless value
+
+      updated_value = if value.is_a?(Array)
+                        value.map { |item| item.gsub(old_path, new_path) }
+                      else
+                        value.gsub(old_path, new_path)
+                      end
+      next if updated_value == value
+
+      settings[key] = updated_value
+      has_changes = true
+    end
+    has_changes
   end
 
   def self.copy_resources(installer)
