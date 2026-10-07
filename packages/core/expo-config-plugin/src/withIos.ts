@@ -98,7 +98,7 @@ const withKakaoUserSdkAppDelegate: ConfigPlugin = (config) => {
     const kakaoOpenUrlHandler = `if(RNCKakaoUserUtil.isKakaoTalkLoginUrl(url)) { return ${kakaoOpenUrlCall} }`;
     // Match the full signature because AppDelegate has multiple three-parameter application callbacks.
     const openUrlFunctionPattern =
-      /\bfunc\s+application\s*\(\s*_\s+\w+\s*:\s*UIApplication\s*,\s*open\s+url\s*:\s*URL\s*,\s*options\s*:\s*\[UIApplication\.OpenURLOptionsKey\s*:\s*Any\]\s*(?:=\s*\[:\])?\s*\)\s*->\s*Bool\s*\{/m;
+      /\bfunc\s+application\s*\(\s*_\s+\w+\s*:\s*UIApplication\s*,\s*open\s+url\s*:\s*URL\s*,\s*options(?:\s+\w+)?\s*:\s*\[UIApplication\.OpenURLOptionsKey\s*:\s*Any\]\s*(?:=\s*\[:\])?\s*\)\s*->\s*Bool\s*\{/m;
 
     if (!contents.includes(importAnchor)) {
       contents = `${importAnchor}\n${contents}`;
