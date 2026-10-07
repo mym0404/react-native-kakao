@@ -60,17 +60,7 @@ import RNCKakaoCore
           RNCKakaoUtil.reject(reject, RNCKakaoError.responseNotFound(name: "token"))
         }
       }
-
-      if !scopes.isEmpty {
-        UserApi.shared.loginWithKakaoAccount(scopes: scopes, nonce: nonce, completion: callback)
-      } else if UserApi.isKakaoTalkLoginAvailable(), !useKakaoAccountLogin {
-        UserApi.shared
-          .loginWithKakaoTalk(
-            serviceTerms: emptyArrayToNil(serviceTerms),
-            nonce: nonce,
-            completion: callback
-          )
-      } else {
+      let accountLogin = {
         var _prompts: [Prompt] = []
         for p in prompts {
           if p == "Login" {
@@ -86,13 +76,39 @@ import RNCKakaoCore
             _prompts.append(.UnifyDaum)
           }
         }
-        UserApi.shared
-          .loginWithKakaoAccount(
-            prompts: emptyArrayToNil(_prompts),
-            serviceTerms: emptyArrayToNil(serviceTerms),
-            nonce: nonce,
-            completion: callback
-          )
+        UserApi.shared.loginWithKakaoAccount(
+          prompts: self.emptyArrayToNil(_prompts),
+          serviceTerms: self.emptyArrayToNil(serviceTerms),
+          nonce: nonce,
+          completion: callback
+        )
+      }
+
+      if !scopes.isEmpty {
+        UserApi.shared.loginWithKakaoAccount(scopes: scopes, nonce: nonce, completion: callback)
+      } else if UserApi.isKakaoTalkLoginAvailable(), !useKakaoAccountLogin {
+        let talkCallback = { (token: OAuthToken?, error: Error?) in
+          if let sdkError = error as? SdkError {
+            switch sdkError {
+            case .ClientFailed(.Cancelled, _),
+                 .AuthFailed(.AccessDenied, _):
+              callback(token, error)
+            default:
+              accountLogin()
+            }
+          } else if error != nil || token == nil {
+            accountLogin()
+          } else {
+            callback(token, error)
+          }
+        }
+        UserApi.shared.loginWithKakaoTalk(
+          serviceTerms: emptyArrayToNil(serviceTerms),
+          nonce: nonce,
+          completion: talkCallback
+        )
+      } else {
+        accountLogin()
       }
     }
   }
