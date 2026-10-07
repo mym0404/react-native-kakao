@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2.4.9
+
+### Patch Changes
+
+- @react-native-kakao/core@2.4.9
+
 ## 2.4.8
 
 ### Patch Changes

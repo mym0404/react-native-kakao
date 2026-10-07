@@ -1,5 +1,11 @@
 # Change Log
 
+## 2.4.9
+
+### Patch Changes
+
+- @react-native-kakao/core@2.4.9
+
 ## 2.4.8
 
 ### Patch Changes

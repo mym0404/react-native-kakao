@@ -1,5 +1,12 @@
 # Change Log
 
+## 2.4.9
+
+### Patch Changes
+
+- b9f4a65: Backport Kakao Account fallback after KakaoTalk login failure on v2.
+- @react-native-kakao/core@2.4.9
+
 ## 2.4.8
 
 ### Patch Changes
