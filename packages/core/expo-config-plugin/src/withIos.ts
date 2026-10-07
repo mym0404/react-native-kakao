@@ -94,11 +94,21 @@ const withKakaoUserSdkAppDelegate: ConfigPlugin = (config) => {
   const modifySwiftContents = (contents: string): string => {
     const importAnchor = 'import Expo';
     const importMod = 'import RNCKakaoUser';
-    const kakaoOpenUrlCall = 'RNCKakaoUserUtil.handleOpen(url)';
-    const kakaoOpenUrlHandler = `if(RNCKakaoUserUtil.isKakaoTalkLoginUrl(url)) { return ${kakaoOpenUrlCall} }`;
     // Match the full signature because AppDelegate has multiple three-parameter application callbacks.
     const openUrlFunctionPattern =
-      /\bfunc\s+application\s*\(\s*_\s+\w+\s*:\s*UIApplication\s*,\s*open\s+url\s*:\s*URL\s*,\s*options(?:\s+\w+)?\s*:\s*\[UIApplication\.OpenURLOptionsKey\s*:\s*Any\]\s*(?:=\s*\[:\])?\s*\)\s*->\s*Bool\s*\{/m;
+      /\bfunc\s+application\s*\(\s*_\s+[^\s:]+\s*:\s*UIApplication\s*,\s*open\s+([^\s:]+)\s*:\s*URL\s*,\s*options(?:\s+[^\s:]+)?\s*:\s*\[UIApplication\.OpenURLOptionsKey\s*:\s*Any\]\s*(?:=\s*\[:\])?\s*\)\s*->\s*Bool\s*\{/m;
+    const openUrlFunction = contents.match(openUrlFunctionPattern);
+    const localUrlParameter = openUrlFunction?.[1];
+    let urlParameter = localUrlParameter ?? 'url';
+    if (urlParameter === '_') {
+      urlParameter = 'kakaoUrl';
+      while (contents.includes(urlParameter)) {
+        urlParameter += '_';
+      }
+    }
+
+    const kakaoOpenUrlCall = `RNCKakaoUserUtil.handleOpen(${urlParameter})`;
+    const kakaoOpenUrlHandler = `if(RNCKakaoUserUtil.isKakaoTalkLoginUrl(${urlParameter})) { return ${kakaoOpenUrlCall} }`;
 
     if (!contents.includes(importAnchor)) {
       contents = `${importAnchor}\n${contents}`;
@@ -109,10 +119,11 @@ const withKakaoUserSdkAppDelegate: ConfigPlugin = (config) => {
     }
 
     if (!contents.includes(kakaoOpenUrlCall)) {
-      if (openUrlFunctionPattern.test(contents)) {
+      if (openUrlFunction) {
         contents = contents.replace(
           openUrlFunctionPattern,
-          (declaration) => `${declaration}\n    ${kakaoOpenUrlHandler}`,
+          (declaration) =>
+            `${declaration.replace(/\bopen\s+_\s*:/, `open ${urlParameter}:`)}\n    ${kakaoOpenUrlHandler}`,
         );
       } else {
         contents = insertContentsInsideSwiftClassBlock(

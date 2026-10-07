@@ -23,22 +23,11 @@ Add the following to `app.json`.
 ],
 ```
 
-With `ios.handleKakaoOpenUrl` enabled, the plugin preserves existing Swift and
-Objective-C/Objective-C++ AppDelegate callbacks. When a Swift template has no URL
-callback, the plugin adds one to handle the return from KakaoTalk login.
-The plugin forwards other URLs to Expo and React Native's Linking handler.
+`ios.handleKakaoOpenUrl` handles KakaoTalk login return URLs in AppDelegate and Expo's SceneDelegate.
+A custom SceneDelegate must forward URL callbacks to AppDelegate.
 
-Expo SDK 57.0.23 and newer can opt into the scene lifecycle with
-`expo-build-properties`' `ios.enableSceneSupport`; SDK 58 beta uses it by default.
-Expo's `ExpoAppSceneDelegate` forwards scene URL callbacks to AppDelegate, so
-both lifecycles use the same Kakao plugin integration.
-The plugin does not enable scenes or replace your SceneDelegate. A custom
-SceneDelegate must forward its URL callbacks to AppDelegate itself. See Expo's
-[scene lifecycle guide](https://github.com/expo/fyi/blob/main/ios-scene-lifecycle.md)
-for the required native configuration.
+On Expo SDK 57 (57.0.23 or later), enable `expo-build-properties`' `ios.enableSceneSupport` to use scenes.
+SDK 58 and newer support scenes by default. [Scene setup guide](https://github.com/expo/fyi/blob/main/ios-scene-lifecycle.md)
 
-Expo's scene forwarding also sends Kakao callbacks to JavaScript Linking,
-regardless of the AppDelegate callback's return value. If you use Expo Router,
-map the OAuth callback to a valid app route with `redirectSystemPath` in
-`+native-intent.tsx` to avoid an `Unmatched Route` screen. See Expo's
-[customizing links guide](https://docs.expo.dev/router/advanced/native-intent/).
+With Expo Router, map Kakao login return URLs to an app route using `redirectSystemPath` in
+[`+native-intent.tsx`](https://docs.expo.dev/router/advanced/native-intent/). Otherwise, an `Unmatched Route` screen may appear.
