@@ -22,3 +22,17 @@ Add the following to `app.json`.
   }
 ],
 ```
+
+With `ios.handleKakaoOpenUrl` enabled, the plugin preserves existing Swift and
+Objective-C/Objective-C++ AppDelegate callbacks. When a Swift template omits the
+URL callback, the plugin adds it so KakaoTalk login can still return to the app.
+Other URLs continue through Expo and React Native's Linking handler.
+
+Expo SDK 57.0.23 and newer can opt into the scene lifecycle with
+`expo-build-properties`' `ios.enableSceneSupport`; SDK 58 beta uses it by default.
+Expo's `ExpoAppSceneDelegate` forwards scene URL callbacks to AppDelegate, so
+both lifecycles use the same Kakao plugin integration.
+The plugin does not enable scenes or replace your SceneDelegate. A custom
+SceneDelegate must forward its URL callbacks to AppDelegate itself. See Expo's
+[scene lifecycle guide](https://github.com/expo/fyi/blob/main/ios-scene-lifecycle.md)
+for the required native configuration.
