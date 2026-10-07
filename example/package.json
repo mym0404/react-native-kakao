@@ -28,7 +28,7 @@
     "@react-native-kakao/share": "workspace:*",
     "@react-native-kakao/social": "workspace:*",
     "@react-native-kakao/user": "workspace:*",
-    "@react-native-styled-system/core": "~1.2.1",
+    "@react-native-styled-system/core": "~2.2.1",
     "expo": "catalog:",
     "expo-constants": "~57.0.21",
     "expo-linking": "~57.0.12",

@@ -6546,19 +6546,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-styled-system/core@npm:~1.2.1":
-  version: 1.2.1
-  resolution: "@react-native-styled-system/core@npm:1.2.1"
+"@react-native-styled-system/core@npm:~2.2.1":
+  version: 2.2.1
+  resolution: "@react-native-styled-system/core@npm:2.2.1"
   dependencies:
     "@mj-studio/js-util": "npm:1.0.34"
+    "@react-native-styled-system/util": "npm:^2.2.1"
     invariant: "npm:^2.2.4"
     object-hash: "npm:^3.0.0"
   peerDependencies:
     react: "*"
     react-native: "*"
   bin:
-    generate-theme-type: bin/theme-gen.js
-  checksum: 10/d1414ec3392d5520df35740fd4d2640188e636595a710be56f051145706c828374b8af9159aba545f7b129966c4fcee9bbe406e2bc8f523dfc840cf727efbad2
+    generate-theme-type: ./bin/theme-gen.js
+  checksum: 10/65ccc52a15b8a87e6179f7fa371b80e6e2c41cc28c5f359cdefa152f3e9309792d313870f3f7a0f16095282bf70bd620ec151cb5a37864f49a5d07f07530988c
+  languageName: node
+  linkType: hard
+
+"@react-native-styled-system/util@npm:^2.2.1":
+  version: 2.2.1
+  resolution: "@react-native-styled-system/util@npm:2.2.1"
+  checksum: 10/d3f956da3a4892991b806b8f21378ac35af494095b862ee41ad1045d6cd47ef257ac7e4149d1a0b5b43d9ddf8d4dc2ab3c53c96621738692b143373e6452bf21
   languageName: node
   linkType: hard
 
@@ -15351,7 +15359,7 @@ __metadata:
     "@react-native-kakao/share": "workspace:*"
     "@react-native-kakao/social": "workspace:*"
     "@react-native-kakao/user": "workspace:*"
-    "@react-native-styled-system/core": "npm:~1.2.1"
+    "@react-native-styled-system/core": "npm:~2.2.1"
     babel-plugin-module-resolver: "npm:^5.0.0"
     babel-preset-expo: "npm:~57.0.14"
     escape-string-regexp: "npm:^4.0.0"
