@@ -24,3 +24,26 @@ sidebar_position: 4
   }
 ],
 ```
+
+`ios.handleKakaoOpenUrl`을 활성화하면 플러그인은 기존 Swift와
+Objective-C/Objective-C++ AppDelegate 콜백을 유지합니다.
+Swift 템플릿에 URL 콜백이 없으면 카카오톡 로그인 후 돌아오는 URL을 처리할 콜백을 추가합니다.
+플러그인은 다른 URL을 Expo와 React Native의 Linking 핸들러로 전달합니다.
+
+Expo SDK 57.0.23 이상에서는 `expo-build-properties`의 `ios.enableSceneSupport`로
+Scene 생명주기를 활성화할 수 있으며 SDK 58 베타는 이를 기본으로 사용합니다.
+Expo의 `ExpoAppSceneDelegate`가 Scene URL 콜백을 AppDelegate로 전달하므로
+AppDelegate 생명주기와 Scene 생명주기에서 같은 카카오 플러그인 설정을 사용합니다.
+플러그인은 Scene을 활성화하거나 SceneDelegate를 교체하지 않습니다.
+직접 구현한 SceneDelegate에서는 URL 콜백을 AppDelegate로 전달해야 합니다.
+필요한 네이티브 설정은 Expo의
+[Scene 생명주기 가이드](https://github.com/expo/fyi/blob/main/ios-scene-lifecycle.md)에서
+확인할 수 있습니다.
+
+Expo는 Scene URL 콜백을 전달할 때 AppDelegate 콜백의 반환값과 관계없이 카카오 콜백을
+JavaScript Linking에도 전달합니다.
+Expo Router를 사용한다면 `+native-intent.tsx`의 `redirectSystemPath`에서 OAuth 콜백을
+앱에 존재하는 경로로 연결해 `Unmatched Route` 화면이 나오지 않도록 설정합니다.
+자세한 설정 방법은 Expo의
+[링크 커스터마이징 가이드](https://docs.expo.dev/router/advanced/native-intent/)에서
+확인할 수 있습니다.
