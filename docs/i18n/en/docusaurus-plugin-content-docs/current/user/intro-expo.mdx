@@ -29,5 +29,5 @@ A custom SceneDelegate must forward URL callbacks to AppDelegate.
 On Expo SDK 57 (57.0.23 or later), enable `expo-build-properties`' `ios.enableSceneSupport` to use scenes.
 SDK 58 and newer support scenes by default. [Scene setup guide](https://github.com/expo/fyi/blob/main/ios-scene-lifecycle.md)
 
-With Expo Router, map Kakao login return URLs to an app route using `redirectSystemPath` in
-[`+native-intent.tsx`](https://docs.expo.dev/router/advanced/native-intent/). Otherwise, an `Unmatched Route` screen may appear.
+If Expo Router shows `Unmatched Route` when returning from Kakao login, map the return URL to an app route
+using `redirectSystemPath` in [`+native-intent.tsx`](https://docs.expo.dev/router/advanced/native-intent/).
