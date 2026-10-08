@@ -16,6 +16,7 @@ Use this file as the global source of truth for adding or changing native APIs.
 - `packages/`: published modules and the core Expo config plugin.
 - `example/`: New Architecture integration app and native build flows.
 - `docs/`: documentation site.
+- `adr/`: immutable Architecture Decision Records.
 - `script/`: repository automation and E2E entrypoints.
 - `.github/workflows/`: CI and release automation.
 - `.changeset/`: package release intent and prerelease state.
@@ -119,6 +120,16 @@ Read in this order:
 
 - .agents/knowledge/domain.md
   - Owns the domain glossary.
+- [adr/README.md](adr/README.md)
+  - Owns ADR rules, the template, and the append-only index.
+- `adr/NNNN-short-decision-title.md`
+  - Owns the historical context, rationale, alternatives, and consequences of that decision. ADRs do not replace current implementation or contributor rules.
+
+## Architecture Decision Records
+
+- Create an ADR only on an explicit user request or affirmative response to an ADR suggestion. Implementation work or ADR setup alone does not authorize a record; never backfill automatically.
+- When work makes or changes a durable architectural decision, such as an API contract, platform support, bridge boundary, dependency strategy, or build/release architecture, ask once whether to record it. Continue authorized work while awaiting the answer; silence is not consent. Do not ask again if the user already requested or declined it for that decision.
+- Follow the template and immutable history rules in [adr/README.md](adr/README.md).
 
 ## When to add a new local AGENTS.md
 
