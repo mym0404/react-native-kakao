@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2.4.10
+
+### Patch Changes
+
+- 0d6e89a: Update the Kakao iOS SDK to 2.22.1 to synchronize the friend picker's access token after re-login while retaining CocoaPods support.
+
 ## 2.4.9
 
 No changes in this release.
