@@ -1,5 +1,12 @@
 # Change Log
 
+## 2.4.10
+
+### Patch Changes
+
+- Updated dependencies [0d6e89a]
+  - @react-native-kakao/core@2.4.10
+
 ## 2.4.9
 
 ### Patch Changes
