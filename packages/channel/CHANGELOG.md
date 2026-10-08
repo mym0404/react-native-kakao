@@ -1,5 +1,12 @@
 # Change Log
 
+## 3.0.0-next.2
+
+### Patch Changes
+
+- Updated dependencies [b0ef3d1]
+  - @react-native-kakao/core@3.0.0-next.2
+
 ## 3.0.0-next.1
 
 ### Patch Changes

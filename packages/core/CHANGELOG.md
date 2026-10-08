@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 3.0.0-next.2
+
+### Patch Changes
+
+- b0ef3d1: Support Expo scene callbacks and updated React Native SPM build paths.
+
 ## 3.0.0-next.1
 
 ### Patch Changes
