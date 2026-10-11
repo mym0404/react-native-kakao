@@ -1,10 +1,17 @@
 import { filterNonNullishKeys, snakeCaseObject } from '@mj-studio/js-util';
 import { kRunWebAPI } from '@react-native-kakao/core';
 
-import type { KakaoShareAPI } from './index';
+import type { KakaoImageUploadResult, KakaoShareAPI } from './index';
 
 declare const Kakao: {
   Share: {
+    uploadImage: (args: { file: Blob[] }) => Promise<{
+      infos: {
+        original: Omit<KakaoImageUploadResult['infos']['original'], 'contentType'> & {
+          content_type: string;
+        };
+      };
+    }>;
     sendDefault: (args: any) => Promise<any>;
     sendCustom: (args: any) => Promise<any>;
   };
@@ -69,6 +76,54 @@ function createSendDefaultFriends({
 }
 
 const KakaoShare: KakaoShareAPI = {
+  uploadImage: ({ imageUri, secureResource = true }) =>
+    kRunWebAPI(async () => {
+      const response = await fetch(imageUri);
+      if (!response.ok) {
+        throw new Error(`Failed to read image: HTTP ${response.status}`);
+      }
+
+      const reader = response.body?.getReader();
+      if (!reader) {
+        throw new Error('Image response has no body');
+      }
+
+      const chunks: BlobPart[] = [];
+      let length = 0;
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) {
+            break;
+          }
+
+          length += value.byteLength;
+          if (length > 5 * 1024 * 1024) {
+            await reader.cancel();
+            throw new Error('Image must be no larger than 5 MB');
+          }
+
+          chunks.push(value);
+        }
+      } finally {
+        reader.releaseLock();
+      }
+
+      const image = new Blob(chunks, { type: response.headers.get('content-type') ?? '' });
+
+      const { infos } = await Kakao.Share.uploadImage({ file: [image] });
+      const { content_type: contentType, ...original } = infos.original;
+
+      return {
+        infos: {
+          original: {
+            ...original,
+            url: original.url.replace(/^https?:/, secureResource ? 'https:' : 'http:'),
+            contentType,
+          },
+        },
+      };
+    }),
   shareCustomTemplate: ({ templateArgs, templateId, serverCallbackArgs }) =>
     kRunWebAPI(() =>
       Kakao.Share.sendCustom({
@@ -130,6 +185,7 @@ const KakaoShare: KakaoShareAPI = {
     createSendDefaultFriends({ template, receiverUuids, objectType: 'calendar' }),
 };
 export const {
+  uploadImage,
   sendCalendarTemplateToFriends,
   sendCalendarTemplateToMe,
   sendCommerceTemplateToFriends,

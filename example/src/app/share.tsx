@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { Platform, TextInput } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import {
   type KakaoCalendarTemplate,
@@ -30,12 +32,18 @@ import {
   shareListTemplate,
   shareLocationTemplate,
   shareTextTemplate,
+  uploadImage,
 } from '@react-native-kakao/share';
 import { selectMultipleFriends } from '@react-native-kakao/social';
+import { Asset } from 'expo-asset';
 
 import { Btn } from '../component/Btn';
+import { E2EApiAction } from '../component/E2EApiAction';
 import { StyledScrollView } from '../component/StyledScrollView';
 import { Txt } from '../component/Txt';
+
+const uploadImageUri =
+  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAEUlEQVR4nGP4f4bhPwgzwBgAZhILKbl4g2kAAAAASUVORK5CYII=';
 
 const link: KakaoTemplateLink = {
   webUrl: 'https://mjstudio.net',
@@ -147,11 +155,54 @@ const calendar: KakaoCalendarTemplate = {
 };
 
 export default function Page() {
+  const [imageUri, setImageUri] = useState(uploadImageUri);
+
   return (
     <StyledScrollView
       flex={1}
       contentContainerSx={{ pt: 12, pb: 48, alignItems: 'center', px: 4, gap: 4 }}
     >
+      <TextInput
+        accessibilityLabel={'Image URI'}
+        testID={'share-upload-image-uri'}
+        value={imageUri}
+        onChangeText={setImageUri}
+        style={{ width: '100%', borderWidth: 1, padding: 8 }}
+      />
+      <E2EApiAction
+        id={'share-upload-image'}
+        title={'Upload Image'}
+        action={() => uploadImage({ imageUri })}
+      />
+      <E2EApiAction
+        id={'share-upload-image-http'}
+        title={'Upload Image (HTTP)'}
+        action={() => uploadImage({ imageUri, secureResource: false })}
+      />
+      <E2EApiAction
+        id={'share-upload-image-invalid'}
+        title={'Upload Invalid Image'}
+        action={() => uploadImage({ imageUri: 'file:///missing-kakao-image.png' })}
+      />
+      {Platform.OS !== 'web' ? (
+        <E2EApiAction
+          id={'share-upload-image-file'}
+          title={'Upload Local File'}
+          action={async () => {
+            const image = Asset.fromURI(
+              'https://developers.kakao.com/assets/img/about/logos/kakaolink/kakaolink_btn_medium.png',
+            );
+            await image.downloadAsync();
+            if (!image.localUri) {
+              throw new Error('Image download did not create a local file');
+            }
+
+            setImageUri(image.localUri);
+
+            return uploadImage({ imageUri: image.localUri });
+          }}
+        />
+      ) : null}
       <Txt>{'Custom'}</Txt>
       <Btn
         title={'Share Custom Template'}
