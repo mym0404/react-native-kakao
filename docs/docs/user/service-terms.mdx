@@ -2,15 +2,15 @@
 sidebar_position: 107
 ---
 
-# Service Terms
+# 서비스 약관
 
-`serviceTerms()` retrieves the service terms the user has agreed to. On Android, iOS, and web, pass `result: 'app_service_terms'` to include enabled terms the user has not agreed to, or pass `tags` to retrieve specific registered terms.
+`serviceTerms()`로 사용자가 동의한 서비스 약관을 조회할 수 있습니다. Android, iOS, 웹에서 `result: 'app_service_terms'`를 전달하면 사용자가 동의하지 않은 약관을 포함해 사용 설정된 모든 약관을 조회합니다. `tags`를 전달하면 등록된 특정 약관만 조회합니다.
 
-[Official documentation](https://developers.kakao.com/docs/en/kakaologin/rest-api#service-terms)
+[공식 문서](https://developers.kakao.com/docs/en/kakaologin/rest-api#service-terms)
 
-This API requires Kakao Sync and a logged-in user. It reads consent information; it does not request consent or revoke it.
+카카오싱크를 사용하는 앱에서 로그인한 사용자에 대해 호출할 수 있습니다. 약관 동의 여부를 조회하며, 동의를 요청하거나 철회하지 않습니다.
 
-## Usage
+## 사용법
 
 ```tsx
 import { serviceTerms } from '@react-native-kakao/user';
@@ -23,16 +23,16 @@ const selectedTerms = await serviceTerms({
 });
 ```
 
-Replace the sample tag with a tag registered for your app.
+예제의 태그를 앱에 등록된 약관 태그로 바꿔 사용합니다.
 
-| Option | Type | Behavior |
+| 옵션 | 타입 | 동작 |
 | --- | --- | --- |
-| `result` | `'agreed_service_terms' \| 'app_service_terms'` | Defaults to agreed terms. `app_service_terms` includes all enabled terms. |
-| `tags` | `string[]` | Filters by registered service terms tags. Web sends the comma-separated value required by the JavaScript SDK. |
+| `result` | `'agreed_service_terms' \| 'app_service_terms'` | 기본값은 동의한 약관입니다. `app_service_terms`는 사용 설정된 모든 약관을 포함합니다. |
+| `tags` | `string[]` | 등록된 약관 태그로 조회 범위를 제한합니다. 웹에서는 JavaScript SDK가 요구하는 쉼표로 구분된 값으로 전달합니다. |
 
-## Response
+## 응답
 
-Returns `Promise<KakaoServiceTerms[]>`. An absent terms list in a successful response becomes an empty array. Authentication errors and unregistered tags reject the promise with Kakao's error.
+`Promise<KakaoServiceTerms[]>`를 반환합니다. 요청이 성공했지만 응답에 약관 목록이 없으면 빈 배열을 반환합니다. 인증 오류가 발생하거나 등록되지 않은 태그를 전달하면 카카오 오류로 `Promise`를 거부합니다.
 
 ```tsx
 export type KakaoServiceTerms = {
@@ -44,11 +44,11 @@ export type KakaoServiceTerms = {
 };
 ```
 
-`agreedAt` is a Unix timestamp in seconds when present. Terms retrieved with `app_service_terms` use the same response type, including `agreed` for each term.
+`agreedAt`이 있으면 초 단위 Unix 타임스탬프입니다. `app_service_terms`로 조회한 약관도 같은 타입으로 반환하며, 각 약관의 `agreed`로 동의 여부를 확인할 수 있습니다.
 
-## Revoke consent
+## 약관 동의 철회
 
-`revokeServiceTerms(tags)` revokes consent for registered terms with `revocable: true` on Android, iOS, and web. This changes the user's consent state. Check your app's service policy before revoking a required term.
+`revokeServiceTerms(tags)`로 Android, iOS, 웹에서 앱에 등록된 약관 중 `revocable: true`인 약관의 동의를 철회할 수 있습니다. 호출하면 사용자의 동의 상태가 바뀝니다. 필수 약관의 동의를 철회하기 전에 앱의 서비스 정책을 확인해야 합니다.
 
 ```tsx
 import { revokeServiceTerms, serviceTerms } from '@react-native-kakao/user';
@@ -60,6 +60,6 @@ const currentTerms = await serviceTerms({
 });
 ```
 
-Returns `Promise<KakaoRevokedServiceTerms[]>`, where each item has `tag: string` and `agreed: boolean`. An absent revoked terms list becomes an empty array. Authentication errors and invalid tags reject the promise with Kakao's error.
+`Promise<KakaoRevokedServiceTerms[]>`를 반환하며 각 항목은 `tag: string`과 `agreed: boolean`을 갖습니다. 응답에 철회한 약관 목록이 없으면 빈 배열을 반환합니다. 인증 오류가 발생하거나 유효하지 않은 태그를 전달하면 카카오 오류로 `Promise`를 거부합니다.
 
-[Official documentation](https://developers.kakao.com/docs/en/kakaologin/rest-api#revoke-service-terms)
+[공식 문서](https://developers.kakao.com/docs/en/kakaologin/rest-api#revoke-service-terms)
