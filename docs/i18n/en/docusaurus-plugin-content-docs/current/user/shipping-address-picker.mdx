@@ -1,0 +1,27 @@
+---
+sidebar_position: 109
+---
+
+# Shipping Address Picker
+
+`selectShippingAddress()` opens Kakao's shipping address picker and returns the selected address ID as `Promise<number>` on Android, iOS, and web.
+
+[Official documentation](https://developers.kakao.com/docs/en/kakaologin/utilize#shipping-address-picker)
+
+The user must be logged in. The app must have permission to use the `shipping_address` consent item, and the user must consent to it.
+
+Call the function directly from a button press so the browser can open the picker popup.
+
+```tsx
+import { selectShippingAddress } from '@react-native-kakao/user';
+
+const onPress = async () => {
+  const addressId = await selectShippingAddress();
+
+  return addressId;
+};
+```
+
+This method returns an ID, without retrieving the address details. Kakao's v2 REST shipping address API can retrieve a specific address by `address_id`. The pinned Kakao SDKs do not expose that v2 API.
+
+SDK errors reject the promise. Cancelling the native picker also rejects it. In JavaScript SDK 2.7.1, manually closing the popup can leave its promise pending; the wrapper preserves that SDK behavior.

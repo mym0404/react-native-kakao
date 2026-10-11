@@ -164,6 +164,10 @@ export function shippingAddresses(): Promise<KakaoShippingAddressResult> {
   return Native.shippingAddresses();
 }
 
+export function selectShippingAddress(): Promise<number> {
+  return Native.selectShippingAddress();
+}
+
 export function me(): Promise<KakaoUser> {
   return Native.me();
 }
@@ -201,6 +205,7 @@ const KakaoUser = {
   revokeScopes,
   serviceTerms,
   shippingAddresses,
+  selectShippingAddress,
   me,
   getAccessToken,
   setAccessTokenWeb,

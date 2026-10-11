@@ -307,6 +307,26 @@ class RNCKakaoUserModule internal constructor(
     }
 
   @ReactMethod
+  override fun selectShippingAddress(promise: Promise) =
+    onMain {
+      val context =
+        reactApplicationContext.currentActivity ?: run {
+          promise.rejectWith(ActivityNotFoundException())
+          return@onMain
+        }
+
+      UserApiClient.instance.selectShippingAddress(context) { addressId, error ->
+        if (error != null) {
+          promise.rejectWith(error)
+        } else if (addressId == null) {
+          promise.rejectWith(RNCKakaoResponseNotFoundException("addressId"))
+        } else {
+          promise.resolve(addressId.toDouble())
+        }
+      }
+    }
+
+  @ReactMethod
   override fun me(promise: Promise) =
     onMain {
       UserApiClient.instance.me { user, error ->
