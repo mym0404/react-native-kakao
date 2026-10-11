@@ -29,7 +29,7 @@
   "homepage": "https://rnkakao.mjstudio.net",
   "scripts": {
     "prepare": "husky",
-    "prepack": "bob build && zx ../../script/remove-web-declaration-files.mjs .",
+    "prepack": "bob build && node ../../script/remove-web-declaration-files.ts .",
     "clean": "del-cli android/ lib"
   },
   "keywords": [
@@ -62,8 +62,7 @@
     "react": "catalog:",
     "react-native": "catalog:",
     "react-native-builder-bob": "catalog:",
-    "typescript": "catalog:",
-    "zx": "catalog:"
+    "typescript": "catalog:"
   },
   "peerDependencies": {
     "@react-native-kakao/core": "workspace:*",

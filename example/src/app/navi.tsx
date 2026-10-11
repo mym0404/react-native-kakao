@@ -1,6 +1,7 @@
 import { navigateTo, shareTo } from '@react-native-kakao/navi';
 
 import { Btn } from '../component/Btn';
+import { E2EApiAction } from '../component/E2EApiAction';
 import { StyledScrollView } from '../component/StyledScrollView';
 
 export default function Page() {
@@ -24,9 +25,10 @@ export default function Page() {
           }).then(console.log);
         }}
       />
-      <Btn
+      <E2EApiAction
+        id={'navi-share'}
         title={'Share to Gangnam Station'}
-        onPress={() => {
+        action={() =>
           shareTo({
             option: {
               coordType: 'WGS84',
@@ -44,8 +46,9 @@ export default function Page() {
               },
             ],
             openWebInstallUrlIfNaviAppNotAvailable: false,
-          }).then(console.log);
-        }}
+          })
+        }
+        onSuccess={console.log}
       />
     </StyledScrollView>
   );

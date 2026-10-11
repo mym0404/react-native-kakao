@@ -26,6 +26,7 @@
     "strict": true,
     "target": "esnext",
     "types": ["node", "react"],
+    "rewriteRelativeImportExtensions": true,
     "verbatimModuleSyntax": true
   },
   "exclude": ["packages/*/lib", "docs/"]

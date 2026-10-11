@@ -1,6 +1,12 @@
 name: Setup
 description: Setup development tools and install dependencies
 
+inputs:
+  tools:
+    description: mise tools to install; empty installs all repository tools
+    required: false
+    default: ''
+
 runs:
   using: composite
   steps:
@@ -9,6 +15,7 @@ runs:
       with:
         version: 2026.7.7
         install: true
+        install_args: ${{ inputs.tools }}
         cache: true
 
     - name: Cache dependencies

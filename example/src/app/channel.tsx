@@ -11,6 +11,7 @@ import {
 } from '@react-native-kakao/channel';
 
 import { Btn } from '../component/Btn';
+import { E2EApiAction } from '../component/E2EApiAction';
 import { StyledScrollView } from '../component/StyledScrollView';
 
 const SHDW_CHANNEL = '_hJhxbj';
@@ -37,13 +38,11 @@ export default function Page() {
             .catch((e) => showMessage({ type: 'warning', message: e.message }));
         }}
       />
-      <Btn
+      <E2EApiAction
+        id={'channel-add-url'}
         title={'get add channel url'}
-        onPress={() => {
-          getAddChannelUrl(SHDW_CHANNEL)
-            .then(console.log)
-            .catch((e) => showMessage({ type: 'warning', message: e.message }));
-        }}
+        action={() => getAddChannelUrl(SHDW_CHANNEL)}
+        onSuccess={console.log}
       />
       <Btn
         title={'open add channel url'}
@@ -61,13 +60,11 @@ export default function Page() {
             .catch((e) => showMessage({ type: 'warning', message: e.message }));
         }}
       />
-      <Btn
+      <E2EApiAction
+        id={'channel-chat-url'}
         title={'get chat channel url'}
-        onPress={() => {
-          getChatChannelUrl(SHDW_CHANNEL)
-            .then(console.log)
-            .catch((e) => showMessage({ type: 'warning', message: e.message }));
-        }}
+        action={() => getChatChannelUrl(SHDW_CHANNEL)}
+        onSuccess={console.log}
       />
       <Btn
         title={'open chat channel url'}

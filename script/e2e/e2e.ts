@@ -1,18 +1,16 @@
-#!/usr/bin/env bun
-import { copyFile, mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
-import { dirname, join, resolve } from 'node:path';
+#!/usr/bin/env node
+import { createAgentDeviceClient } from 'agent-device';
+import type { Report } from 'e2e';
 import { setTimeout as sleep } from 'node:timers/promises';
-import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
-import { $ } from 'zx';
+import { $, fs, path } from 'zx';
 
-import { buildE2EApp, iosBuild } from './e2e-build';
-import { logCommand } from './e2e-log';
+import { buildE2EApp, iosBuild } from './e2e-build.ts';
+import { logCommand } from './e2e-log.ts';
+import { recordVideo } from './e2e-video.ts';
 
-const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
-const screens = ['home', 'user', 'share', 'navi', 'social', 'channel'];
+const root = path.resolve(import.meta.dirname, '../..');
 const timeoutMs = 180000;
-const testTimeoutMs = 600000;
 const adbTimeoutMs = 10000;
 const main = async () => {
   const { positionals, values } = parseArgs({
@@ -30,7 +28,7 @@ const main = async () => {
   const usage = `Usage:
   yarn e2e build android [--abi arm64-v8a|x86_64]
   yarn e2e build ios
-  yarn e2e test android|ios --device ID [--app PATH] [--output PATH] [--video]`;
+  yarn e2e test [android|ios|both] [--device ID] [--app PATH] [--output PATH] [--video]`;
 
   if (values.help) {
     console.log(usage);
@@ -40,62 +38,160 @@ const main = async () => {
 
   const [operation, platform] = positionals;
   if (
-    positionals.length !== 2 ||
-    !['build', 'test'].includes(operation ?? '') ||
-    (platform !== 'android' && platform !== 'ios')
+    operation === 'build' &&
+    positionals.length === 2 &&
+    (platform === 'android' || platform === 'ios')
   ) {
-    throw new Error(usage);
-  }
-
-  const platformDir = resolve(root, 'build/e2e', platform);
-  if (operation === 'build') {
-    await mkdir(platformDir, { recursive: true });
+    const platformDir = path.resolve(root, 'build/e2e', platform);
+    await fs.ensureDir(platformDir);
     await buildE2EApp({ platform, abi: values.abi, platformDir });
 
     return;
   }
 
-  $.cwd = root;
-
-  const device = values.device;
-  if (!device?.trim() || device.startsWith('-') || /[\r\n]/.test(device)) {
-    throw new Error('Pass --device with an Android serial or iOS Simulator UDID.');
+  if (
+    operation !== 'test' ||
+    positionals.length > 2 ||
+    (platform !== undefined && !['android', 'ios', 'both'].includes(platform))
+  ) {
+    throw new Error(usage);
   }
 
-  const app = resolve(
+  const platforms =
+    platform === 'android' || platform === 'ios' ? [platform] : (['ios', 'android'] as const);
+
+  if (platforms.length === 2 && (values.device !== undefined || values.app !== undefined)) {
+    throw new Error('Select android or ios when using --device or --app.');
+  }
+
+  const controller = new AbortController();
+  const interrupt = () => controller.abort(new Error('E2E interrupted'));
+  process.once('SIGINT', interrupt);
+  process.once('SIGTERM', interrupt);
+
+  try {
+    const results = await Promise.allSettled(
+      platforms.map((platform) =>
+        runTest({
+          platform,
+          device: values.device,
+          app: values.app,
+          video: values.video,
+          signal: controller.signal,
+          output:
+            values.output && platforms.length === 2
+              ? path.resolve(root, values.output, platform)
+              : values.output,
+        }),
+      ),
+    );
+
+    const errors = results.flatMap((result) =>
+      result.status === 'rejected'
+        ? [result.reason instanceof Error ? result.reason.message : String(result.reason)]
+        : [],
+    );
+
+    if (errors.length) {
+      throw new Error(errors.join('\n'));
+    }
+  } finally {
+    process.removeListener('SIGINT', interrupt);
+    process.removeListener('SIGTERM', interrupt);
+  }
+};
+
+const runTest = async ({
+  platform,
+  device,
+  app: appPath,
+  output: outputPath,
+  video,
+  signal,
+}: {
+  platform: 'android' | 'ios';
+  device?: string;
+  app?: string;
+  output?: string;
+  video?: boolean;
+  signal: AbortSignal;
+}) => {
+  const platformDir = path.resolve(root, 'build/e2e', platform);
+  $.cwd = root;
+
+  if (device !== undefined && (!device.trim() || device.startsWith('-') || /[\r\n]/.test(device))) {
+    throw new Error('Invalid --device: use an Android serial or iOS Simulator UDID.');
+  }
+
+  const app = path.resolve(
     root,
-    values.app ??
+    appPath ??
       (platform === 'android'
         ? 'example/android/app/build/outputs/apk/release/app-release.apk'
         : `${iosBuild}/Build/Products/Release-iphonesimulator/KakaoExample.app`),
   );
 
-  await stat(app).catch(() => {
+  await fs.stat(app).catch(() => {
     throw new Error(`App not found: ${app}. Run yarn e2e build ${platform} first.`);
   });
 
-  const output = resolve(
+  if (device === undefined) {
+    const client = createAgentDeviceClient();
+    const selected = (await client.devices.list({ platform, target: 'mobile', signal }))[0];
+    if (!selected) {
+      throw new Error(
+        `No ${platform} device found. Start a simulator or emulator, or pass --device.`,
+      );
+    }
+
+    device = selected.id;
+    if (!selected.booted && (selected.kind === 'simulator' || selected.kind === 'emulator')) {
+      device = (
+        await client.devices.boot({
+          platform,
+          signal,
+          timeoutMs,
+          ...(platform === 'ios' ? { udid: device } : { device: selected.name }),
+        })
+      ).id;
+    }
+
+    console.log(`${platform}: selected ${selected.name} (${device})`);
+  }
+
+  const output = path.resolve(
     root,
-    values.output ?? `${platformDir}/${new Date().toISOString().replaceAll(':', '-')}`,
+    outputPath ?? `${platformDir}/${new Date().toISOString().replaceAll(':', '-')}`,
   );
-  await mkdir(output, { recursive: true });
-  // Exclusive creation prevents a repeated run from passing with old screenshots.
-  await writeFile(resolve(output, 'run.json'), JSON.stringify({ platform, device, app }), {
-    flag: 'wx',
-  });
+  await fs.ensureDir(output);
+  // Exclusive creation prevents a repeated run from passing with old evidence.
+  await fs.writeJson(
+    path.resolve(output, 'run.json'),
+    { platform, device, app },
+    {
+      flag: 'wx',
+    },
+  );
 
-  const screenshots = screens.map((screen, index) => ({
-    screen,
-    file: `${String(index).padStart(2, '0')}-${screen}.png`,
-  }));
-  const flow = resolve(root, `script/e2e/menus.${platform}.yaml`);
-  const artifacts = resolve(output, 'maestro');
+  const artifacts = path.resolve(output, 'sdk');
+  const outputFromRoot = path.relative(root, output);
+  const isExternalOutput = outputFromRoot.startsWith('..') || path.isAbsolute(outputFromRoot);
+  let sdkOutput = artifacts;
 
-  let error = '';
+  let tests: { name: string; status: string; durationSeconds: number }[] = [];
+  let stopRecording: (() => Promise<string>) | undefined;
+  let videoFile: string | undefined;
+
+  const errors: string[] = [];
   let durationSeconds = 0;
-  let installSeconds = 0;
   let prepareSeconds = 0;
   try {
+    const node = (await $`mise which node`).stdout.trim();
+    if (isExternalOutput) {
+      await fs.ensureDir(path.resolve(root, 'build/e2e'));
+      sdkOutput = await fs.mkdtemp(path.resolve(root, 'build/e2e/sdk-output-'));
+    }
+
     if (platform === 'android') {
       console.log('Waiting for Android services and an unlocked user...');
 
@@ -105,10 +201,13 @@ const main = async () => {
       let preparationLog = '';
       // A cold emulator can restart system_server after sys.boot_completed becomes 1.
       while (readySamples < requiredSamples && performance.now() - prepareStarted < timeoutMs) {
-        const result =
-          await $`adb -s ${device} shell ${'pm path android && am get-started-user-state $(am get-current-user)'}`
-            .timeout(adbTimeoutMs)
-            .nothrow();
+        signal.throwIfAborted();
+
+        const result = await $({
+          signal,
+        })`adb -s ${device} shell ${'pm path android && am get-started-user-state $(am get-current-user)'}`
+          .timeout(adbTimeoutMs)
+          .nothrow();
         preparationLog += `${result.stdout}${result.stderr}`;
         readySamples =
           result.exitCode === 0 &&
@@ -118,12 +217,12 @@ const main = async () => {
             : 0;
 
         if (readySamples < requiredSamples) {
-          await sleep(2000);
+          await sleep(2000, undefined, { signal });
         }
       }
 
       prepareSeconds = (performance.now() - prepareStarted) / 1000;
-      await writeFile(resolve(output, 'prepare.log'), preparationLog);
+      await fs.writeFile(path.resolve(output, 'prepare.log'), preparationLog);
       if (readySamples < requiredSamples) {
         throw new Error(
           `Android services and user did not become ready within ${timeoutMs / 1000} seconds.`,
@@ -131,112 +230,150 @@ const main = async () => {
       }
     }
 
-    console.log(`Installing ${platform} app on ${device}...`);
-
-    const installStarted = performance.now();
-    await logCommand(
-      platform === 'android'
-        ? $`adb -s ${device} install -r ${app}`
-        : $`xcrun simctl install ${device} ${app}`,
-      resolve(output, 'install.log'),
-    );
-    installSeconds = (performance.now() - installStarted) / 1000;
-
-    if (platform === 'android') {
-      await logCommand(
-        $`adb -s ${device} shell ${'settings put global window_animation_scale 0 && settings put global transition_animation_scale 0 && settings put global animator_duration_scale 0'}`,
-        resolve(output, 'animations.log'),
-      );
-    }
-
-    if (platform === 'ios') {
-      await logCommand(
-        $`xcrun simctl spawn ${device} defaults write com.apple.Accessibility ReduceMotionEnabled -bool YES`,
-        resolve(output, 'reduce-motion.log'),
-      );
-    }
-
-    console.log(`Verifying ${platform} menus...`);
+    console.log(`Verifying ${platform} menus and signed-out APIs...`);
 
     const testStarted = performance.now();
     try {
+      if (video) {
+        stopRecording = await recordVideo({ platform, device, output });
+      }
+
+      const sdk = path.resolve(root, 'node_modules/e2e/dist/cli/bin.js');
       await logCommand(
-        $`maestro --device ${device} test ${flow} --format JUNIT --output ${resolve(output, 'junit.xml')} --test-output-dir ${artifacts} --debug-output ${artifacts} -e ${`RECORD_VIDEO=${values.video}`}`.timeout(
-          testTimeoutMs,
+        $({
+          signal,
+          detached: true,
+          env: {
+            ...process.env,
+            KAKAO_E2E_PLATFORM: platform,
+            KAKAO_E2E_DEVICE: device,
+            KAKAO_E2E_APP: app,
+            KAKAO_E2E_OUTPUT: sdkOutput,
+            KAKAO_E2E_SESSION: `kakao-${platform}-${process.pid}`,
+          },
+        })`${node} ${sdk} run --config ${path.resolve(root, 'e2e.config.ts')}`.timeout(
+          600000,
+          'SIGKILL',
         ),
-        resolve(output, 'test.log'),
+        path.resolve(output, 'test.log'),
       );
     } finally {
       durationSeconds = (performance.now() - testStarted) / 1000;
-
-      const files = await readdir(artifacts, { recursive: true }).catch(() => []);
-      for (const { file } of screenshots) {
-        const screenshot = files.find((path) => path.endsWith(`/takeScreenshot/${file}`));
-        if (screenshot) {
-          await copyFile(join(artifacts, screenshot), resolve(output, file));
-        }
-      }
-    }
-
-    for (const { file } of screenshots) {
-      const png = await readFile(resolve(output, file));
-      if (png.length < 24 || png.subarray(0, 8).toString('hex') !== '89504e470d0a1a0a') {
-        throw new Error(`Invalid screenshot: ${file}`);
-      }
     }
   } catch (cause) {
-    error = cause instanceof Error ? cause.message : String(cause);
+    errors.push(cause instanceof Error ? cause.message : String(cause));
 
     if (platform === 'android') {
       await logCommand(
         $`adb -s ${device} logcat -d`.timeout(adbTimeoutMs),
-        resolve(output, 'logcat.log'),
+        path.resolve(output, 'logcat.log'),
       ).catch(() => undefined);
     }
+  } finally {
+    if (stopRecording) {
+      try {
+        videoFile = await stopRecording();
+      } catch (cause) {
+        errors.push('Failed to retain whole-run video: ' + String(cause));
+      }
+    }
 
-    const failureScreenshot = resolve(output, 'failure.png');
-    await (
-      platform === 'android'
-        ? $`adb -s ${device} exec-out screencap -p > ${failureScreenshot}`
-        : $`xcrun simctl io ${device} screenshot ${failureScreenshot}`
-    )
-      .timeout(15000)
-      .nothrow()
-      .catch(() => undefined);
-  }
-
-  const captured: typeof screenshots = [];
-  for (const screenshot of screenshots) {
-    const info = await stat(resolve(output, screenshot.file)).catch(() => undefined);
-    if (info?.isFile() && info.size > 0) {
-      captured.push(screenshot);
+    if (sdkOutput !== artifacts) {
+      try {
+        await fs.copy(sdkOutput, artifacts);
+        await fs.remove(sdkOutput);
+      } catch (cause) {
+        errors.push(`Failed to retain SDK evidence: ${String(cause)}`);
+      }
     }
   }
 
-  const status = error ? 'failed' : 'passed';
+  try {
+    const report: Report = await fs.readJson(path.resolve(artifacts, 'report.json'));
+    if (!Array.isArray(report?.run?.results)) {
+      throw new Error('Invalid SDK report');
+    }
+
+    const reportedTests = report.run.results.map((result) => {
+      if (
+        !Array.isArray(result.titlePath) ||
+        !result.titlePath.every((title) => typeof title === 'string') ||
+        typeof result.status !== 'string' ||
+        !Array.isArray(result.attempts) ||
+        result.attempts.some(
+          (attempt) => !Number.isFinite(attempt.durationMs) || attempt.durationMs < 0,
+        )
+      ) {
+        throw new Error('Invalid SDK test result');
+      }
+
+      return {
+        name: result.titlePath.join(' '),
+        status: result.status,
+        durationSeconds:
+          result.attempts.reduce((sum, attempt) => sum + attempt.durationMs, 0) / 1000,
+      };
+    });
+    tests = reportedTests;
+
+    await fs.copyFile(path.resolve(artifacts, 'junit.xml'), path.resolve(output, 'junit.xml'));
+
+    const { run } = report;
+    if (
+      run.status !== 'passed' ||
+      run.exitCode !== 0 ||
+      run.usage.modelTokens !== 0 ||
+      run.errors.length !== 0 ||
+      run.summary.discovered === 0 ||
+      run.summary.selected !== run.summary.discovered ||
+      run.summary.executed !== run.summary.discovered ||
+      run.summary.passed !== run.summary.discovered ||
+      run.summary.skipped !== 0 ||
+      run.results.length !== run.summary.discovered ||
+      run.results.some(
+        (result) =>
+          result.platform !== platform ||
+          !result.selected ||
+          result.status !== 'passed' ||
+          result.attempts.length !== 1 ||
+          result.attempts[0]?.status !== 'passed' ||
+          result.attempts[0]?.cleanup !== 'complete' ||
+          result.attempts[0]?.secondaryErrors.length !== 0,
+      )
+    ) {
+      throw new Error('E2E run did not pass every discovered test without model calls.');
+    }
+  } catch (cause) {
+    errors.push(cause instanceof Error ? cause.message : String(cause));
+  }
+
+  if (signal.aborted) {
+    errors.push(signal.reason instanceof Error ? signal.reason.message : String(signal.reason));
+  }
+
+  const error = errors.join('\n').trim();
+  const status = errors.length ? 'failed' : 'passed';
   const summary = {
     platform,
     status,
     durationSeconds,
-    installSeconds,
     prepareSeconds,
-    screenshots: captured.length,
-    expectedScreenshots: screens.length,
-    video: values.video,
+    video: videoFile,
+    tests,
     error,
   };
-  await writeFile(resolve(output, 'summary.json'), `${JSON.stringify(summary, null, 2)}\n`);
-  await writeFile(
-    resolve(output, 'index.html'),
+  await fs.writeJson(path.resolve(output, 'summary.json'), summary, { spaces: 2 });
+  await fs.writeFile(
+    path.resolve(output, 'index.html'),
     `<!doctype html><html lang="en"><meta charset="utf-8"><title>Example E2E · ${platform}</title>
-<style>body{font:16px system-ui;margin:32px;background:#111;color:#eee}main{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px}img{width:100%}a{color:#9cf}figure{margin:0}</style>
-<h1>${platform} · ${status}</h1><p>${durationSeconds.toFixed(2)}s · ${captured.length}/${screens.length} screens</p>
-<p><a href="test.log">Test log</a> · <a href="junit.xml">JUnit</a></p>
-<main>${captured.map(({ screen, file }) => `<figure><figcaption>${screen}</figcaption><a href="${file}"><img src="${file}" alt="${screen}"></a></figure>`).join('')}</main></html>`,
+<style>body{font:16px system-ui;margin:32px;background:#111;color:#eee}video{width:100%;max-width:480px}a{color:#9cf}</style>
+<h1>${platform} · ${status}</h1><p>${durationSeconds.toFixed(2)}s</p>
+<p><a href="test.log">Test log</a> · <a href="junit.xml">JUnit</a> · <a href="sdk/summary.md">Scenario report</a></p>
+${videoFile ? `<video src="${videoFile}" controls></video>` : ''}</html>`,
   );
   console.log(`${platform}: ${status}, ${durationSeconds.toFixed(2)}s. Results: ${output}`);
-  if (error) {
-    throw new Error(error);
+  if (errors.length) {
+    throw new Error(error || 'E2E failed');
   }
 };
 
