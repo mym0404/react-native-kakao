@@ -1,5 +1,22 @@
 # Change Log
 
+## 3.0.0
+
+### Major Changes
+
+- 8e19172: Upgrade Kakao Android SDK to 2.25.0 and iOS SDK to 2.29.0. Install the iOS SDK through Swift Package Manager while preserving CocoaPods installation and SDK version override names. Remove retired SDK options and response fields, and update blocked-account error codes.
+- f077598: Require React Native 0.76 or later with the New Architecture. Expo integrations require SDK 52 or later.
+
+### Patch Changes
+
+- 2a95c50: Return channel timestamps using the documented updatedAt key.
+- Updated dependencies [8e19172]
+- Updated dependencies [11da5f6]
+- Updated dependencies [b0ef3d1]
+- Updated dependencies [8e19172]
+- Updated dependencies [f077598]
+  - @react-native-kakao/core@3.0.0
+
 ## 3.0.0-next.3
 
 ### Patch Changes
