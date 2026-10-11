@@ -9,6 +9,7 @@ import {
   type KakaoTemplateLink,
   type KakaoTemplateSocial,
   type KakaoTextTemplate,
+  scrapImage,
   sendCalendarTemplateToFriends,
   sendCalendarTemplateToMe,
   sendCommerceTemplateToFriends,
@@ -47,6 +48,9 @@ const scrapFriendPickerParams = {
   mode: 'full' as const,
   options: { showMyProfile: true },
 };
+
+const scrapImageUrl =
+  'https://developers.kakao.com/assets/img/about/logos/kakaolink/kakaolink_btn_medium.png';
 
 const link: KakaoTemplateLink = {
   webUrl: 'https://mjstudio.net',
@@ -221,6 +225,16 @@ export default function Page() {
 
           return { successfulCount: successfulUuids.length };
         }}
+      />
+      <E2EApiAction
+        id={'share-scrap-image'}
+        title={'Scrap Image'}
+        action={() => scrapImage({ imageUrl: scrapImageUrl })}
+      />
+      <E2EApiAction
+        id={'share-scrap-image-http'}
+        title={'Scrap Image (HTTP)'}
+        action={() => scrapImage({ imageUrl: scrapImageUrl, secureResource: false })}
       />
       <Txt>{'Custom'}</Txt>
       <Btn

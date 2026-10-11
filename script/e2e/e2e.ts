@@ -241,7 +241,7 @@ const runTest = async ({
             KAKAO_E2E_SESSION: `kakao-${platform}-${process.pid}`,
           },
         })`${node} ${sdk} run --config ${path.resolve(root, 'e2e.config.ts')}`.timeout(
-          600000,
+          1500000,
           'SIGKILL',
         ),
         path.resolve(output, 'test.log'),
