@@ -39,7 +39,7 @@ import { E2EApiAction } from '../component/E2EApiAction';
 import { StyledScrollView } from '../component/StyledScrollView';
 import { Txt } from '../component/Txt';
 
-const webUrl = 'https://mjstudio.net';
+const webUrl = 'https://rnkakao.mjstudio.net';
 
 const link: KakaoTemplateLink = {
   webUrl,
