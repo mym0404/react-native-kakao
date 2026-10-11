@@ -28,6 +28,42 @@ class RNCKakaoShareModule internal constructor(
   context: ReactApplicationContext,
 ) : NativeKakaoShareSpec(context) {
   @ReactMethod
+  override fun scrapImage(
+    imageUrl: String,
+    secureResource: Boolean,
+    promise: Promise,
+  ) = onMain {
+    ShareClient.instance.scrapImage(imageUrl, secureResource) { result, error ->
+      if (error != null) {
+        promise.rejectWith(error)
+      } else if (result != null) {
+        val original = result.infos.original
+        promise.resolve(
+          argMap().apply {
+            putMap(
+              "infos",
+              argMap().apply {
+                putMap(
+                  "original",
+                  argMap().apply {
+                    putString("url", original.url)
+                    putString("contentType", original.contentType)
+                    putDouble("length", original.length.toDouble())
+                    putDouble("width", original.width.toDouble())
+                    putDouble("height", original.height.toDouble())
+                  },
+                )
+              },
+            )
+          },
+        )
+      } else {
+        promise.rejectWith(RNCKakaoResponseNotFoundException("imageUploadResult"))
+      }
+    }
+  }
+
+  @ReactMethod
   override fun shareOrSendMeOrSendFriendOrWhatever(
     sendType: String,
     templateType: String,
