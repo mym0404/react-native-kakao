@@ -181,6 +181,7 @@ const KakaoUser: KakaoUserAPI = {
       const kakaoAccount = ret.kakaoAccount ?? {};
       const properties = ret.properties ?? {};
       const profile = kakaoAccount.profile ?? {};
+      const legalGender = kakaoAccount.legalGender;
 
       return {
         ...ret,
@@ -199,7 +200,7 @@ const KakaoUser: KakaoUserAPI = {
         legalNameNeedsAgreement: kakaoAccount.legalNameNeedsAgreement ?? null,
         legalBirthDate: kakaoAccount.legalBirthDate ?? null,
         legalBirthDateNeedsAgreement: kakaoAccount.legalBirthDateNeedsAgreement ?? null,
-        legalGender: kakaoAccount.legalGender ?? null,
+        legalGender: legalGender === 'female' || legalGender === 'male' ? legalGender : null,
         legalGenderNeedsAgreement: kakaoAccount.legalGenderNeedsAgreement ?? null,
         phoneNumber: profile.phoneNumber,
         isEmailValid: ret.isEmailValid,
