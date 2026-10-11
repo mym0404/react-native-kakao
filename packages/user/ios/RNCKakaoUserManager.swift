@@ -289,6 +289,7 @@ import RNCKakaoCore
         } else if let user {
           resolve([
             "id": user.id as Any,
+            "uuid": user.uuid as Any,
             "properties": user.properties ?? [:],
             "connectedAt": user.connectedAt?.timeIntervalSince1970 as Any,
             "synchedAt": user.synchedAt?.timeIntervalSince1970 as Any,
@@ -298,10 +299,12 @@ import RNCKakaoCore
             "profileImageUrl": user.kakaoAccount?.profile?.profileImageUrl?.absoluteString as Any,
             "thumbnailImageUrl": user.kakaoAccount?.profile?.thumbnailImageUrl?
               .absoluteString as Any,
+            "isDefaultImage": user.kakaoAccount?.profile?.isDefaultImage as Any,
             "phoneNumber": user.kakaoAccount?.phoneNumber as Any,
             "ageRange": user.kakaoAccount?.ageRange?.rawValue as Any,
             "birthday": user.kakaoAccount?.birthday as Any,
             "birthdayType": user.kakaoAccount?.birthdayType as Any,
+            "isLeapMonth": user.kakaoAccount?.isLeapMonth as Any,
             "birthyear": user.kakaoAccount?.birthyear as Any,
             "gender": user.kakaoAccount?.gender?.rawValue as Any,
             "isEmailValid": user.kakaoAccount?.isEmailValid as Any,

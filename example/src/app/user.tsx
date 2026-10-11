@@ -98,6 +98,18 @@ export default function Page() {
             );
         }}
       />
+      <E2EApiAction
+        id={'profile-metadata-login'}
+        title={'Login For Profile Metadata'}
+        action={async () => {
+          await login({
+            useKakaoAccountLogin: true,
+            web: { redirectUri: 'http://localhost', throughTalk: false },
+          });
+
+          return { loggedIn: true };
+        }}
+      />
       <Btn
         minW={buttonMinWidth}
         title={'Unlink'}
@@ -203,6 +215,19 @@ export default function Page() {
         onSuccess={(value) => {
           setMeResult(value);
           showMessage({ type: 'success', message: 'Success' });
+        }}
+      />
+      <E2EApiAction
+        id={'user-profile-metadata'}
+        title={'Get Profile Metadata'}
+        action={async () => {
+          const { isDefaultImage, isLeapMonth, uuid } = await me();
+
+          return {
+            isDefaultImage,
+            isLeapMonth,
+            hasUuid: typeof uuid === 'string' && uuid.length > 0,
+          };
         }}
       />
       <E2EApiAction
