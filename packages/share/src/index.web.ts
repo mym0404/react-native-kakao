@@ -5,6 +5,12 @@ import type { KakaoShareAPI } from './index';
 
 declare const Kakao: {
   Share: {
+    sendScrap: (args: {
+      requestUrl: string;
+      templateId?: number;
+      templateArgs: Record<string, string>;
+      serverCallbackArgs: Record<string, string>;
+    }) => void;
     sendDefault: (args: any) => Promise<any>;
     sendCustom: (args: any) => Promise<any>;
   };
@@ -69,6 +75,12 @@ function createSendDefaultFriends({
 }
 
 const KakaoShare: KakaoShareAPI = {
+  shareScrapTemplate: ({ requestUrl, templateId, templateArgs = {}, serverCallbackArgs = {} }) =>
+    kRunWebAPI(() =>
+      Kakao.Share.sendScrap(
+        filterNonNullishKeys({ requestUrl, templateId, templateArgs, serverCallbackArgs }),
+      ),
+    ),
   shareCustomTemplate: ({ templateArgs, templateId, serverCallbackArgs }) =>
     kRunWebAPI(() =>
       Kakao.Share.sendCustom({
@@ -130,6 +142,7 @@ const KakaoShare: KakaoShareAPI = {
     createSendDefaultFriends({ template, receiverUuids, objectType: 'calendar' }),
 };
 export const {
+  shareScrapTemplate,
   sendCalendarTemplateToFriends,
   sendCalendarTemplateToMe,
   sendCommerceTemplateToFriends,

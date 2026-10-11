@@ -13,6 +13,20 @@
 
 RCT_EXPORT_MODULE()
 
+RCT_EXPORT_METHOD(
+    shareScrapTemplate : (NSString*)requestUrl useWebBrowserIfKakaoTalkNotAvailable : (BOOL)
+        useWebBrowserIfKakaoTalkNotAvailable templateId : (NSNumber*)templateId templateArgs : (
+            NSDictionary*)templateArgs serverCallbackArgs : (NSDictionary*)serverCallbackArgs
+            resolve : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
+  [[self manager] shareScrapTemplate:requestUrl
+      useWebBrowserIfKakaoTalkNotAvailable:useWebBrowserIfKakaoTalkNotAvailable
+                                templateId:templateId
+                              templateArgs:templateArgs
+                        serverCallbackArgs:serverCallbackArgs
+                                   resolve:resolve
+                                    reject:reject];
+}
+
 // RNC_KAKAO_SHARE_EXPORT_DEFAULT_TEMPLATE(shareFeedTemplate, feed)
 // RNC_KAKAO_SHARE_EXPORT_DEFAULT_TEMPLATE(shareListTemplate, list)
 // RNC_KAKAO_SHARE_EXPORT_DEFAULT_TEMPLATE(shareLocationTemplate, location)

@@ -217,6 +217,14 @@ export interface KakaoCalendarTemplate {
 }
 
 export interface Spec extends TurboModule {
+  shareScrapTemplate(
+    requestUrl: string,
+    useWebBrowserIfKakaoTalkNotAvailable: boolean,
+    templateId?: Double,
+    templateArgs?: Readonly<{ [key: string]: string }>,
+    serverCallbackArgs?: Readonly<{ [key: string]: string }>,
+  ): Promise<void>;
+
   shareOrSendMeOrSendFriendOrWhatever(
     /* share, send-me, send-friend */
     sendType: string,
