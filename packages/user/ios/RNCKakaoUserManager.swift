@@ -238,11 +238,14 @@ import RNCKakaoCore
   }
 
   @objc public func shippingAddresses(
-    _ resolve: @escaping RCTPromiseResolveBlock,
+    _ addressId: NSNumber?,
+    fromUpdatedAt: NSNumber?,
+    pageSize: NSNumber?,
+    resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
     onMain {
-      UserApi.shared.shippingAddresses { s, error in
+      let completion: (UserShippingAddresses?, Error?) -> Void = { s, error in
         if let error {
           RNCKakaoUtil.reject(reject, error)
         } else if let s {
@@ -269,6 +272,15 @@ import RNCKakaoCore
         } else {
           RNCKakaoUtil.reject(reject, RNCKakaoError.responseNotFound(name: "shippingAddresses"))
         }
+      }
+      if let addressId {
+        UserApi.shared.shippingAddresses(addressId: addressId.int64Value, completion: completion)
+      } else {
+        UserApi.shared.shippingAddresses(
+          fromUpdatedAt: fromUpdatedAt.map { Date(timeIntervalSince1970: $0.doubleValue) },
+          pageSize: pageSize?.intValue,
+          completion: completion
+        )
       }
     }
   }

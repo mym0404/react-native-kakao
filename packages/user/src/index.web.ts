@@ -141,15 +141,37 @@ const KakaoUser: KakaoUserAPI = {
           })),
         ) as KakaoServiceTerms[],
     ),
-  shippingAddresses: () =>
-    kRunWebAPI(
-      async () =>
-        camelCaseObject(
-          await Kakao.API.request({
-            url: '/v1/user/shipping_address',
-          }),
-        ) as KakaoShippingAddressResult,
-    ),
+  shippingAddresses: ({ addressId, fromUpdatedAt, pageSize } = {}) =>
+    kRunWebAPI(async () => {
+      const response = camelCaseObject(
+        await Kakao.API.request({
+          url: '/v1/user/shipping_address',
+          data: filterNonNullishKeys(
+            addressId != null
+              ? { address_id: addressId }
+              : { from_updated_at: fromUpdatedAt, page_size: pageSize },
+          ),
+        }),
+      ) as {
+        userId?: number;
+        shippingAddressesNeedsAgreement?: boolean;
+        shippingAddresses?: (Omit<
+          KakaoShippingAddressResult['shippingAddresses'][number],
+          'updatedAt'
+        > & {
+          updatedAt?: string | number;
+        })[];
+      };
+
+      return {
+        userId: response.userId,
+        needsAgreement: response.shippingAddressesNeedsAgreement,
+        shippingAddresses: (response.shippingAddresses ?? []).map((address) => ({
+          ...address,
+          updatedAt: isoToUnix(address.updatedAt),
+        })),
+      };
+    }),
   me: () =>
     kRunWebAPI(async () => {
       const ret: any = camelCaseObject(await Kakao.API.request({ url: '/v2/user/me' }));
