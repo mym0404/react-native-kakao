@@ -150,22 +150,39 @@ const KakaoUser: KakaoUserAPI = {
           }),
         ) as KakaoShippingAddressResult,
     ),
-  me: () =>
+  me: ({ propertyKeys } = {}) =>
     kRunWebAPI(async () => {
-      const ret: any = camelCaseObject(await Kakao.API.request({ url: '/v2/user/me' }));
+      const response: { properties?: Record<string, string> } = await Kakao.API.request({
+        url: '/v2/user/me',
+        data: filterNonNullishKeys({ property_keys: propertyKeys }),
+      });
+
+      const ret = camelCaseObject(response) as {
+        id: number;
+        properties?: Record<string, string>;
+        connectedAt?: string;
+        synchedAt?: string;
+        isEmailValid?: boolean;
+        isEmailVerified?: boolean;
+        kakaoAccount?: Partial<KakaoUser> & {
+          profile?: { nickname?: string; phoneNumber?: string };
+        };
+      };
       const kakaoAccount = ret.kakaoAccount ?? {};
       const properties = ret.properties ?? {};
+      const profile = kakaoAccount.profile ?? {};
 
       return {
         ...ret,
         ...properties,
         ...kakaoAccount,
+        properties: response.properties ?? {},
         email: kakaoAccount.email,
         name: null,
-        nickname: kakaoAccount.profile.nickname,
+        nickname: profile.nickname,
         profileImageUrl: properties.profileImage,
         thumbnailImageUrl: properties.thumbnailImage,
-        phoneNumber: kakaoAccount.profile.phoneNumber,
+        phoneNumber: profile.phoneNumber,
         isEmailValid: ret.isEmailValid,
         isEmailVerified: ret.isEmailVerified,
         connectedAt: isoToUnix(ret.connectedAt),
