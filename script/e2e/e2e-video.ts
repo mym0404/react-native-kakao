@@ -12,8 +12,9 @@ export const recordVideo = async ({
   device: string;
   output: string;
 }) => {
+  const commandTimeoutMs = 10000;
   const ready = Promise.withResolvers<void>();
-  const chunks: { file: string; remoteFile?: string; log: string }[] = [];
+  const chunks: { file: string; remoteFile?: string; log: string; durationSeconds: number }[] = [];
   let command: ProcessPromise | undefined;
   let androidPid: string | undefined;
   let isStopping = false;
@@ -27,8 +28,10 @@ export const recordVideo = async ({
   try {
     await Promise.race([
       ready.promise,
-      sleep(10000, undefined, { signal: startup.signal }).then(() => {
-        throw new Error('Whole-run recorder did not start within 10 seconds');
+      sleep(commandTimeoutMs, undefined, { signal: startup.signal }).then(() => {
+        throw new Error(
+          `Whole-run recorder did not start within ${commandTimeoutMs / 1000} seconds`,
+        );
       }),
     ]);
   } catch (cause) {
@@ -44,6 +47,7 @@ export const recordVideo = async ({
     do {
       const index = chunks.length;
       const file = path.resolve(output, `recording-${index}.mp4`);
+      const started = performance.now();
       let remoteFile: string | undefined;
       if (platform === 'ios') {
         command = $`xcrun simctl io ${device} recordVideo --codec=h264 ${file}`
@@ -76,11 +80,12 @@ export const recordVideo = async ({
         });
       }
 
-      const chunk = { file, remoteFile, log: '' };
+      const chunk = { file, remoteFile, log: '', durationSeconds: 0 };
       chunks.push(chunk);
 
       const result = await command;
       chunk.log = result.stdout + result.stderr;
+      chunk.durationSeconds = (performance.now() - started) / 1000;
 
       if (!isStopping && (platform === 'ios' || result.exitCode !== 0)) {
         throw new Error(`Whole-run recorder stopped early: ${result.exitCode}`);
@@ -97,7 +102,10 @@ export const recordVideo = async ({
         if (command && child && child.exitCode === null && child.signalCode === null) {
           command.timeout(15000, 'SIGKILL');
           if (platform === 'android' && androidPid) {
-            await $`adb -s ${device} shell kill -2 ${androidPid}`.quiet().timeout(10000).nothrow();
+            await $`adb -s ${device} shell kill -2 ${androidPid}`
+              .quiet()
+              .timeout(commandTimeoutMs)
+              .nothrow();
           } else {
             await command.kill('SIGINT');
           }
@@ -119,7 +127,10 @@ export const recordVideo = async ({
         ),
         ...chunks.map(({ remoteFile }) =>
           remoteFile
-            ? $`adb -s ${device} shell rm -f ${remoteFile}`.quiet().timeout(10000).nothrow()
+            ? $`adb -s ${device} shell rm -f ${remoteFile}`
+                .quiet()
+                .timeout(commandTimeoutMs)
+                .nothrow()
             : undefined,
         ),
       ]);
@@ -128,12 +139,18 @@ export const recordVideo = async ({
     const playlist = path.resolve(output, 'recording.txt');
     await fs.writeFile(
       playlist,
-      chunks.map(({ file }) => `file '${file.replaceAll("'", "'\\''")}'`).join('\n'),
+      chunks
+        .map(
+          ({ file, durationSeconds }) =>
+            `file '${file.replaceAll("'", "'\\''")}'\nduration ${durationSeconds}`,
+        )
+        .join('\n'),
     );
 
     const video = path.resolve(output, 'video.mp4');
+    const duration = chunks.reduce((seconds, chunk) => seconds + chunk.durationSeconds, 0);
     await logCommand(
-      $`ffmpeg -y -f concat -safe 0 -i ${playlist} -vf ${'scale=720:-2'} -r 15 -c:v libx264 -crf 28 -pix_fmt yuv420p -an -movflags +faststart ${video}`.timeout(
+      $`ffmpeg -y -f concat -safe 0 -i ${playlist} -vf ${`scale=720:-2,tpad=stop_mode=clone:stop_duration=${duration}`} -t ${duration} -r 15 -c:v libx264 -crf 28 -pix_fmt yuv420p -an -movflags +faststart ${video}`.timeout(
         180000,
         'SIGKILL',
       ),
@@ -143,6 +160,18 @@ export const recordVideo = async ({
     const bytes = await fs.readFile(video);
     if (bytes.length < 24 || bytes.subarray(4, 8).toString() !== 'ftyp') {
       throw new Error('Invalid whole-run video');
+    }
+
+    const videoSeconds = Number(
+      (
+        await $`ffprobe -v error -show_entries format=duration -of ${'default=noprint_wrappers=1:nokey=1'} ${video}`
+          .quiet()
+          .timeout(commandTimeoutMs)
+      ).stdout.trim(),
+    );
+
+    if (!Number.isFinite(videoSeconds) || Math.abs(videoSeconds - duration) > 0.2) {
+      throw new Error(`Whole-run video duration ${videoSeconds}s does not match ${duration}s`);
     }
 
     await fs.remove(playlist);
