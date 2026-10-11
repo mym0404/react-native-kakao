@@ -271,6 +271,31 @@ class RNCKakaoUserModule internal constructor(
   }
 
   @ReactMethod
+  override fun revokeServiceTerms(
+    tags: ReadableArray,
+    promise: Promise,
+  ) = onMain {
+    UserApiClient.instance.revokeServiceTerms(tags.filterIsInstance<String>()) { response, error ->
+      if (error != null) {
+        promise.rejectWith(error)
+      } else if (response == null) {
+        promise.rejectWith(RNCKakaoResponseNotFoundException("revokeServiceTerms"))
+      } else {
+        promise.resolve(
+          argArr().pushMapList(
+            response.revokedServiceTerms?.map { term ->
+              argMap().apply {
+                putString("tag", term.tag)
+                putBoolean("agreed", term.agreed)
+              }
+            } ?: listOf(),
+          ),
+        )
+      }
+    }
+  }
+
+  @ReactMethod
   override fun shippingAddresses(promise: Promise) =
     onMain {
       UserApiClient.instance.shippingAddresses { addrs, error ->
