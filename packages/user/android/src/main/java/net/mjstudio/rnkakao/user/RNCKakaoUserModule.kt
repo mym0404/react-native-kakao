@@ -318,6 +318,8 @@ class RNCKakaoUserModule internal constructor(
           promise.resolve(
             argMap().apply {
               putD("id", user.id?.toDouble())
+              putL("connectedAt", user.connectedAt?.unix)
+              putL("synchedAt", user.synchedAt?.unix)
               putString("name", user.kakaoAccount?.name)
 
               putString("email", user.kakaoAccount?.email)
