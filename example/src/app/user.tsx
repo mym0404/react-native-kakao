@@ -9,6 +9,7 @@ import {
   login,
   logout,
   me,
+  revokeServiceTerms,
   scopes,
   serviceTerms,
   shippingAddresses,
@@ -24,6 +25,7 @@ import { px } from '../util/px';
 
 const buttonMinWidth = px(240);
 const allServiceTermsResult = 'app_service_terms';
+const testServiceTermTag = 'rnc_example_optional_service_term';
 
 export default function Page() {
   const [isKakaoTalkEnable, setKakaoTalkEnable] = useState(false);
@@ -204,6 +206,18 @@ export default function Page() {
         minW={buttonMinWidth}
         title={'Get Unregistered Service Term'}
         action={() => serviceTerms({ tags: ['rnc_example_missing_service_term'] })}
+      />
+      <E2EApiAction
+        id={'revoke-service-term'}
+        minW={buttonMinWidth}
+        title={'Revoke Test Service Term'}
+        action={() => revokeServiceTerms([testServiceTermTag])}
+      />
+      <E2EApiAction
+        id={'revoked-service-term'}
+        minW={buttonMinWidth}
+        title={'Get Test Service Term'}
+        action={() => serviceTerms({ result: allServiceTermsResult, tags: [testServiceTermTag] })}
       />
       <E2EApiAction
         id={'user-profile'}
