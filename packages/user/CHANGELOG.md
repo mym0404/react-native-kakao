@@ -1,5 +1,11 @@
 # Change Log
 
+## 3.1.0-next.0
+
+### Patch Changes
+
+- @react-native-kakao/core@3.1.0-next.0
+
 ## 3.0.0
 
 ### Major Changes
