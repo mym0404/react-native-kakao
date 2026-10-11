@@ -42,7 +42,8 @@ import { StyledScrollView } from '../component/StyledScrollView';
 import { Txt } from '../component/Txt';
 
 const scrapRequestUrl = 'https://rnkakao.mjstudio.net';
-const scrapTemplateId = 107429;
+const kakaoLinkTemplateId = 107429;
+const kakaoTalkMessageTemplateId = 107430;
 const scrapTemplateArgs = { price: '20000' };
 const scrapFriendPickerParams = {
   mode: 'full' as const,
@@ -183,7 +184,7 @@ export default function Page() {
         action={async () => {
           await sendScrapTemplateToMe({
             requestUrl: scrapRequestUrl,
-            templateId: scrapTemplateId,
+            templateId: kakaoLinkTemplateId,
             templateArgs: scrapTemplateArgs,
           });
 
@@ -218,7 +219,7 @@ export default function Page() {
 
           const successfulUuids = await sendScrapTemplateToFriends({
             requestUrl: scrapRequestUrl,
-            templateId: scrapTemplateId,
+            templateId: kakaoTalkMessageTemplateId,
             templateArgs: scrapTemplateArgs,
             receiverUuids: users.map(({ uuid }) => uuid),
           });
@@ -241,7 +242,7 @@ export default function Page() {
         title={'Share Custom Template'}
         onPress={() => {
           shareCustomTemplate({
-            templateId: 107429,
+            templateId: kakaoLinkTemplateId,
             templateArgs: {
               price: '20000',
             },
@@ -253,7 +254,7 @@ export default function Page() {
         title={'Send Custom Template To Me'}
         onPress={() => {
           sendCustomTemplateToMe({
-            templateId: 107430,
+            templateId: kakaoTalkMessageTemplateId,
             templateArgs: {
               price: '20000',
             },
@@ -267,7 +268,7 @@ export default function Page() {
         onPress={async () => {
           const { users } = await selectMultipleFriends({ mode: 'popup' });
           const ret = await sendCustomTemplateToFriends({
-            templateId: 107430,
+            templateId: kakaoTalkMessageTemplateId,
             templateArgs: {
               price: '20000',
             },
