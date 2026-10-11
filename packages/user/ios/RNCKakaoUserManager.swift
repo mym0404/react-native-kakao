@@ -284,6 +284,8 @@ import RNCKakaoCore
         } else if let user {
           resolve([
             "id": user.id as Any,
+            "connectedAt": user.connectedAt?.timeIntervalSince1970 as Any,
+            "synchedAt": user.synchedAt?.timeIntervalSince1970 as Any,
             "name": user.kakaoAccount?.name as Any,
             "email": user.kakaoAccount?.email as Any,
             "nickname": user.kakaoAccount?.profile?.nickname as Any,
