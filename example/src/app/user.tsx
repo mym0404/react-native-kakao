@@ -24,6 +24,15 @@ import { px } from '../util/px';
 
 const buttonMinWidth = px(240);
 
+async function getProfileImageProtocols(secureResource: boolean) {
+  const user = await me({ propertyKeys: ['kakao_account.profile'], secureResource });
+  const urls = [user.profileImageUrl, user.thumbnailImageUrl].filter(
+    (url): url is string => typeof url === 'string',
+  );
+
+  return { imageCount: urls.length, protocols: urls.map((url) => url.split('://')[0]) };
+}
+
 export default function Page() {
   const [isKakaoTalkEnable, setKakaoTalkEnable] = useState(false);
   const [result, setResult] = useState<object>();
@@ -175,6 +184,16 @@ export default function Page() {
               });
             });
         }}
+      />
+      <E2EApiAction
+        id={'user-https-profile-images'}
+        title={'Get HTTPS Profile Images'}
+        action={() => getProfileImageProtocols(true)}
+      />
+      <E2EApiAction
+        id={'user-http-profile-images'}
+        title={'Get HTTP Profile Images'}
+        action={() => getProfileImageProtocols(false)}
       />
       <E2EApiAction
         id={'user-profile'}

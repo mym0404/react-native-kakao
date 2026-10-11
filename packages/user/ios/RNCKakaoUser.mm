@@ -63,9 +63,9 @@ RCT_EXPORT_METHOD(shippingAddresses : (RCTPromiseResolveBlock)
   [[self manager] shippingAddresses:resolve reject:reject];
 }
 
-RCT_EXPORT_METHOD(me : (NSArray*)propertyKeys resolve : (RCTPromiseResolveBlock)
-                      resolve reject : (RCTPromiseRejectBlock)reject) {
-  [[self manager] me:propertyKeys resolve:resolve reject:reject];
+RCT_EXPORT_METHOD(me : (NSArray*)propertyKeys secureResource : (NSNumber*)secureResource resolve : (
+    RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
+  [[self manager] me:propertyKeys secureResource:secureResource resolve:resolve reject:reject];
 }
 
 RCT_EXPORT_METHOD(getAccessToken : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)

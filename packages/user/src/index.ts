@@ -165,8 +165,11 @@ export function shippingAddresses(): Promise<KakaoShippingAddressResult> {
   return Native.shippingAddresses();
 }
 
-export function me({ propertyKeys }: { propertyKeys?: string[] } = {}): Promise<KakaoUser> {
-  return Native.me(propertyKeys);
+export function me({
+  propertyKeys,
+  secureResource = true,
+}: { propertyKeys?: string[]; secureResource?: boolean } = {}): Promise<KakaoUser> {
+  return Native.me(propertyKeys, secureResource);
 }
 
 export function getAccessToken(): Promise<KakaoAccessTokenInfo> {

@@ -4,9 +4,7 @@ sidebar_position: 103
 
 # 프로필 불러오기
 
-## 프로필 불러오기
-
-`me()`로 프로필을 불러올 수 있습니다.
+`me()`는 Android·iOS·웹에서 사용자 프로필을 조회합니다. 이미지 URL은 기본으로 HTTPS를 사용하며, `secureResource: false`를 전달하면 HTTP URL을 요청합니다.
 
 응답은 다음과 같습니다.
 
@@ -55,4 +53,17 @@ export type KakaoUser = {
 
 ```tsx
 me()
+```
+
+## 조회 옵션
+
+| 옵션 | 타입 | 동작 |
+| --- | --- | --- |
+| `propertyKeys` | `string[]` | 조회할 정보 키 목록입니다. 생략하면 사용자가 동의한 범위의 정보를 조회합니다. |
+| `secureResource` | `boolean` | 이미지 URL의 HTTPS 사용 여부입니다. 기본값은 `true`이며, `false`이면 HTTP URL을 요청합니다. |
+
+이미지 URL이 HTTP여야 하는 경우에만 `secureResource: false`를 전달합니다. 이 옵션은 반환할 이미지 URL의 형식만 바꾸며, API 요청은 HTTPS를 사용합니다.
+
+```tsx
+const user = await me({ secureResource: false });
 ```
