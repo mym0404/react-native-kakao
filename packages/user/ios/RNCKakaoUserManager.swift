@@ -13,7 +13,7 @@ import RNCKakaoCore
     return AuthApi.isKakaoTalkLoginUrl(url)
   }
 
-  @objc public static func handleOpenUrl(_ url: URL) -> Bool {
+  @MainActor @objc public static func handleOpenUrl(_ url: URL) -> Bool {
     guard let _ = try? KakaoSDK.shared.appKey() else { return false }
     return AuthController.handleOpenUrl(url: url)
   }
@@ -60,17 +60,7 @@ import RNCKakaoCore
           RNCKakaoUtil.reject(reject, RNCKakaoError.responseNotFound(name: "token"))
         }
       }
-
-      if !scopes.isEmpty {
-        UserApi.shared.loginWithKakaoAccount(scopes: scopes, nonce: nonce, completion: callback)
-      } else if UserApi.isKakaoTalkLoginAvailable(), !useKakaoAccountLogin {
-        UserApi.shared
-          .loginWithKakaoTalk(
-            serviceTerms: emptyArrayToNil(serviceTerms),
-            nonce: nonce,
-            completion: callback
-          )
-      } else {
+      let accountLogin = {
         var _prompts: [Prompt] = []
         for p in prompts {
           if p == "Login" {
@@ -82,17 +72,43 @@ import RNCKakaoCore
           if p == "Create" {
             _prompts.append(.Create)
           }
-          if p == "UnifyDaum" {
-            _prompts.append(.UnifyDaum)
+          if p == "SelectAccount" {
+            _prompts.append(.SelectAccount)
           }
         }
-        UserApi.shared
-          .loginWithKakaoAccount(
-            prompts: emptyArrayToNil(_prompts),
-            serviceTerms: emptyArrayToNil(serviceTerms),
-            nonce: nonce,
-            completion: callback
-          )
+        UserApi.shared.loginWithKakaoAccount(
+          prompts: self.emptyArrayToNil(_prompts),
+          serviceTerms: self.emptyArrayToNil(serviceTerms),
+          nonce: nonce,
+          completion: callback
+        )
+      }
+
+      if !scopes.isEmpty {
+        UserApi.shared.loginWithKakaoAccount(scopes: scopes, nonce: nonce, completion: callback)
+      } else if UserApi.isKakaoTalkLoginAvailable(), !useKakaoAccountLogin {
+        let talkCallback = { (token: OAuthToken?, error: Error?) in
+          if let sdkError = error as? SdkError {
+            switch sdkError {
+            case .ClientFailed(.Cancelled, _),
+                 .AuthFailed(.AccessDenied, _):
+              callback(token, error)
+            default:
+              accountLogin()
+            }
+          } else if error != nil || token == nil {
+            accountLogin()
+          } else {
+            callback(token, error)
+          }
+        }
+        UserApi.shared.loginWithKakaoTalk(
+          serviceTerms: emptyArrayToNil(serviceTerms),
+          nonce: nonce,
+          completion: talkCallback
+        )
+      } else {
+        accountLogin()
       }
     }
   }
@@ -268,6 +284,8 @@ import RNCKakaoCore
         } else if let user {
           resolve([
             "id": user.id as Any,
+            "connectedAt": user.connectedAt?.timeIntervalSince1970 as Any,
+            "synchedAt": user.synchedAt?.timeIntervalSince1970 as Any,
             "name": user.kakaoAccount?.name as Any,
             "email": user.kakaoAccount?.email as Any,
             "nickname": user.kakaoAccount?.profile?.nickname as Any,
@@ -291,7 +309,6 @@ import RNCKakaoCore
             "isKoreanNeedsAgreement": user.kakaoAccount?.isKoreanNeedsAgreement as Any,
             "phoneNumberNeedsAgreement": user.kakaoAccount?.phoneNumberNeedsAgreement as Any,
             "profileNeedsAgreement": user.kakaoAccount?.profileNeedsAgreement as Any,
-            "ciNeedsAgreement": user.kakaoAccount?.ciNeedsAgreement as Any,
             "nameNeedsAgreement": user.kakaoAccount?.nameNeedsAgreement as Any,
             "profileImageNeedsAgreement": user.kakaoAccount?.profileImageNeedsAgreement as Any,
             "profileNicknameNeedsAgreement": user.kakaoAccount?

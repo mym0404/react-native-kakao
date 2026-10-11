@@ -4,7 +4,7 @@ sidebar_position: 102
 
 # Kakao Login (Web)
 
-Logging in on the web requires additional steps due to the page redirection method using a redirect URI.
+Web login requires extra steps because it redirects the user to another page using a redirect URI.
 
 :::tip
 All APIs except for login can be used similarly to those in [Kakao Login](/docs/user/login).
@@ -12,7 +12,7 @@ All APIs except for login can be used similarly to those in [Kakao Login](/docs/
 
 ## Logging In
 
-You can perform tasks like user registration, login, receiving additional consent, and obtaining agreement for terms using Kakao Login.
+Use Kakao Login to register users, log in, request additional consent, and obtain agreement to service terms.
 
 ## Adding Redirect URI in Kakao Console
 
@@ -21,7 +21,7 @@ Add a Redirect URI in the Kakao Login section of the Kakao Console.
 ![feat](https://raw.githubusercontent.com/mym0404/image-archive/master/202405030144548.webp)
 
 :::warning
-The example shown is for using port 80 in a development environment. You should specify the required Redirect URI for both the development and release environments.
+The example uses port 80 in a development environment. You should register the required Redirect URI for both development and release environments.
 :::
 
 ```tsx
@@ -47,11 +47,11 @@ useEffect(() => {
 
 Calling the `login()` function redirects the user to the Kakao login page.
 
-For the web platform, the `web` object must be passed.
+On the web platform, you must pass the `web` object.
 
 Other options outside the `web` object are ignored.
 
-For example, the `prompt` value is set both inside and outside the `web` object, but only the `prompt` inside the `web` object is used on the web platform.
+For example, `prompt` is available both inside and outside the `web` object, but the web platform uses only the `prompt` inside the `web` object.
 
 ```tsx
 import { login } from '@react-native-kakao/user';
@@ -67,18 +67,18 @@ login({
 ```
 
 :::danger Dangerous
-The `redirectUri` used in the console registration, when calling `login`, and for `issueAccessTokenWithCodeWeb` must match for proper functionality.
+The `redirectUri` registered in the console must match the values used when calling `login` and `issueAccessTokenWithCodeWeb` for login to work.
 :::
 
 Refer to the [Official Documentation](https://developers.kakao.com/docs/latest/ko/kakaologin/js#login) for detailed information on the parameters.
 
 ## Step 2: Issue Access Token with Authorization Code
 
-Use the `issueAccessTokenWithCodeWeb()` function to obtain the actual Access Token using the authorization code.
+Use `issueAccessTokenWithCodeWeb()` to exchange the authorization code for an Access Token.
 
 Once you have the Access Token, pass it to the `setAccessTokenWeb()` function.
 
-The example below demonstrates completing the login in an Expo router environment using the `code` from the search parameter.
+The example below completes login in Expo Router using `code` from the search parameter.
 
 ```tsx
 const { code } = useGlobalSearchParams<{ code?: string }>();
@@ -100,14 +100,14 @@ useEffect(() => {
 ```
 
 :::tip TIP
-The example provided is for illustration purposes. The key is to retrieve the `code` from the search parameter and then sequentially call `issueAccessTokenWithCodeWeb` and `setAccessTokenWeb`.
+This code is an example. You must retrieve `code` from the search parameter, then call `issueAccessTokenWithCodeWeb` and `setAccessTokenWeb` in that order.
 :::
 
 Refer to the [Official Documentation](https://developers.kakao.com/docs/latest/ko/kakaologin/rest-api#request-token-request-body) for detailed information on the parameters.
 
 ### Response
 
-Returns token-related information via a `Promise`.
+The API returns token information in a `Promise`.
 
 The response includes the following:
 

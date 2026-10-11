@@ -5,13 +5,13 @@ sidebar_position: 5
 # Web Settings
 ## Web Settings
 
-React Native Kakao not only supports Native but also maintains an equivalent level of developer experience on the Web platform.
+React Native Kakao provides the same level of developer experience on Native and Web platforms.
 
-Refer to the [Kakao SDK Documentation](https://developers.kakao.com/docs/latest/ko/javascript/getting-started) for more detailed information on the settings.
+Refer to the [Kakao SDK Documentation](https://developers.kakao.com/docs/latest/ko/javascript/getting-started) for setup details.
 
 ## Install Kakao JavaScript SDK
 
-Install the latest version of the Kakao SDK by inserting it into the `head` of `index.html` from the [Download](https://developers.kakao.com/docs/latest/ko/javascript/download) page.
+Install the latest Kakao SDK from the [Download](https://developers.kakao.com/docs/latest/ko/javascript/download) page by adding it to the `head` of `index.html`.
 
 ```html
 <!DOCTYPE html>
@@ -46,19 +46,19 @@ Go to the platform tab and add your site domain.
 
 ## About Web API
 
-The way Web APIs are implemented internally may differ from Android and iOS platforms.
+The internal implementation of Web APIs may differ from Android and iOS.
 
-The APIs are consistent across platforms in response and the names are identical, but there are APIs that are only available on the Web or that have unique arguments for the Web.
+API responses are consistent across platforms and names are identical, but some APIs or arguments are specific to Web.
 
-For example, an argument like `redirectUri` during login.
+For example, `redirectUri` is a Web-specific login argument.
 
-APIs that are exclusively used or needed on the Web have `Web` appended to their function names.
+APIs used or required only on Web have function names ending in `Web`.
 
-For instance, `Core.setAccessTokenWeb()`.
+For example, `Core.setAccessTokenWeb()` is a Web-specific API.
 
-Furthermore, arguments specific to the Web are all managed separately in the function's argument under a `web` field.
+All Web-specific arguments are passed in the function's `web` field.
 
-Let’s look at the `core` package SDK initialization function.
+The `core` package's SDK initialization function is shown below.
 
 ```tsx
 export async function initializeKakaoSDK(
@@ -68,10 +68,10 @@ export async function initializeKakaoSDK(
 )
 ```
 
-This function receives a `web` object as an argument to obtain the necessary parameters.
+This function receives the required Web-specific parameters in a `web` object.
 
 :::warning
-If the Web is not supported, there is no need to worry about the `web` argument, and APIs ending with `Web` should also not be called.
+If your app does not support Web, you do not need to set the `web` argument and should not call APIs ending in `Web`.
 
-Moreover, if there is no `web` argument, the API will operate on the Web using the default arguments.
+If no `web` argument is provided, the API uses default arguments on Web.
 :::

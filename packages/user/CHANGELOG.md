@@ -1,5 +1,42 @@
 # Change Log
 
+## 3.0.0-next.3
+
+### Patch Changes
+
+- 6ff02a9: Return Android token application IDs using the documented appId key.
+- 69598dd: Return user connection and synchronization timestamps on Android and iOS.
+- @react-native-kakao/core@3.0.0-next.3
+
+## 3.0.0-next.2
+
+### Patch Changes
+
+- Updated dependencies [b0ef3d1]
+  - @react-native-kakao/core@3.0.0-next.2
+
+## 3.0.0-next.1
+
+### Patch Changes
+
+- 7fe35a2: Fall back to Kakao Account login when KakaoTalk login fails without user cancellation.
+- Updated dependencies [11da5f6]
+  - @react-native-kakao/core@3.0.0-next.1
+
+## 3.0.0-next.0
+
+### Major Changes
+
+- 8e19172: Upgrade Kakao Android SDK to 2.25.0 and iOS SDK to 2.29.0. Install the iOS SDK through Swift Package Manager while preserving CocoaPods installation and SDK version override names. Remove retired SDK options and response fields, and update blocked-account error codes.
+- f077598: Require React Native 0.76 or later with the New Architecture. Expo integrations require SDK 52 or later.
+
+### Patch Changes
+
+- Updated dependencies [8e19172]
+- Updated dependencies [8e19172]
+- Updated dependencies [f077598]
+  - @react-native-kakao/core@3.0.0-next.0
+
 ## 2.4.8
 
 ### Patch Changes

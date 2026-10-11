@@ -1,7 +1,7 @@
 {
   "name": "@react-native-kakao/core",
   "description": "React Native Kakao Core SDK",
-  "version": "2.4.8",
+  "version": "3.0.0-next.3",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
   "types": "lib/typescript/src/index.d.ts",
@@ -32,7 +32,7 @@
   "scripts": {
     "prepare": "husky",
     "build:expo-config-plugin": "tsc --project ./expo-config-plugin",
-    "prepack": "yarn build:expo-config-plugin && bob build && zx ../../script/remove-web-declaration-files.mjs .",
+    "prepack": "yarn build:expo-config-plugin && bob build && node ../../script/remove-web-declaration-files.ts .",
     "clean": "del-cli android/ lib"
   },
   "keywords": [
@@ -68,8 +68,7 @@
     "react": "catalog:",
     "react-native": "catalog:",
     "react-native-builder-bob": "catalog:",
-    "typescript": "catalog:",
-    "zx": "catalog:"
+    "typescript": "catalog:"
   },
   "peerDependencies": {
     "expo": ">=52.0.0",
@@ -109,24 +108,24 @@
   },
   "sdkVersions": {
     "ios": {
-      "core": "2.22.0",
-      "share": "2.22.0",
-      "user": "2.22.0",
-      "navi": "2.22.0",
-      "friend": "2.22.0",
-      "talk": "2.22.0"
+      "core": "2.29.0",
+      "share": "2.29.0",
+      "user": "2.29.0",
+      "navi": "2.29.0",
+      "friend": "2.29.0",
+      "talk": "2.29.0"
     },
     "android": {
-      "minSdk": 21,
+      "minSdk": 23,
       "targetSdk": 33,
       "compileSdk": 33,
       "ndk": "21.4.7075529",
-      "core": "2.20.1",
-      "share": "2.20.1",
-      "user": "2.20.1",
-      "navi": "2.20.1",
-      "friend": "2.20.1",
-      "talk": "2.20.1"
+      "core": "2.25.0",
+      "share": "2.25.0",
+      "user": "2.25.0",
+      "navi": "2.25.0",
+      "friend": "2.25.0",
+      "talk": "2.25.0"
     }
   },
   "dependencies": {

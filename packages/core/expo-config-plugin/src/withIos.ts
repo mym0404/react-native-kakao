@@ -1,4 +1,4 @@
-import { insertContentsInsideSwiftFunctionBlock } from '@expo/config-plugins/build/ios/codeMod';
+import { insertContentsInsideSwiftClassBlock } from '@expo/config-plugins/build/ios/codeMod';
 import { type ConfigPlugin, withAppDelegate, withInfoPlist } from 'expo/config-plugins';
 
 import type { KakaoIosConfig } from './type';
@@ -94,6 +94,21 @@ const withKakaoUserSdkAppDelegate: ConfigPlugin = (config) => {
   const modifySwiftContents = (contents: string): string => {
     const importAnchor = 'import Expo';
     const importMod = 'import RNCKakaoUser';
+    // Match the full signature because AppDelegate has multiple three-parameter application callbacks.
+    const openUrlFunctionPattern =
+      /\bfunc\s+application\s*\(\s*_\s+[^\s:]+\s*:\s*UIApplication\s*,\s*open\s+([^\s:]+)\s*:\s*URL\s*,\s*options(?:\s+[^\s:]+)?\s*:\s*\[UIApplication\.OpenURLOptionsKey\s*:\s*Any\]\s*(?:=\s*\[:\])?\s*\)\s*->\s*Bool\s*\{/m;
+    const openUrlFunction = contents.match(openUrlFunctionPattern);
+    const localUrlParameter = openUrlFunction?.[1];
+    let urlParameter = localUrlParameter ?? 'url';
+    if (urlParameter === '_') {
+      urlParameter = 'kakaoUrl';
+      while (contents.includes(urlParameter)) {
+        urlParameter += '_';
+      }
+    }
+
+    const kakaoOpenUrlCall = `RNCKakaoUserUtil.handleOpen(${urlParameter})`;
+    const kakaoOpenUrlHandler = `if(RNCKakaoUserUtil.isKakaoTalkLoginUrl(${urlParameter})) { return ${kakaoOpenUrlCall} }`;
 
     if (!contents.includes(importAnchor)) {
       contents = `${importAnchor}\n${contents}`;
@@ -103,13 +118,30 @@ const withKakaoUserSdkAppDelegate: ConfigPlugin = (config) => {
       contents = contents.replace(importAnchor, importAnchor + '\n' + importMod);
     }
 
-    if (!contents.includes('RNCKakaoUserUtil.handleOpen(url)')) {
-      contents = insertContentsInsideSwiftFunctionBlock(
-        contents,
-        'application(_:open:options:)',
-        'if(RNCKakaoUserUtil.isKakaoTalkLoginUrl(url)) { return RNCKakaoUserUtil.handleOpen(url) }',
-        { position: 'head' },
-      );
+    if (!contents.includes(kakaoOpenUrlCall)) {
+      if (openUrlFunction) {
+        contents = contents.replace(
+          openUrlFunctionPattern,
+          (declaration) =>
+            `${declaration.replace(/\bopen\s+_\s*:/, `open ${urlParameter}:`)}\n    ${kakaoOpenUrlHandler}`,
+        );
+      } else {
+        contents = insertContentsInsideSwiftClassBlock(
+          contents,
+          'class AppDelegate',
+          `
+  public override func application(
+    _ app: UIApplication,
+    open url: URL,
+    options: [UIApplication.OpenURLOptionsKey: Any] = [:]
+  ) -> Bool {
+    ${kakaoOpenUrlHandler}
+    return super.application(app, open: url, options: options) || RCTLinkingManager.application(app, open: url, options: options)
+  }
+`,
+          { position: 'tail' },
+        );
+      }
     }
 
     return contents;

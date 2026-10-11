@@ -165,7 +165,7 @@ class RNCKakaoChannelModule internal constructor(
                 putS("uuid", it.uuid)
                 putS("encodedId", it.encodedId)
                 putS("relation", it.relation.name.lowercase())
-                putL("updateAt", it.updatedAt?.unix)
+                putL("updatedAt", it.updatedAt?.unix)
               }
             },
           ),

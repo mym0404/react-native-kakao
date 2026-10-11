@@ -10,9 +10,9 @@ import TabItem from '@theme/TabItem';
 
 ## Core Package Installation
 
-The configuration is a monorepo, and all packages depend on the `@react-native-kakao/core` package.
+This project is a monorepo, and all packages depend on `@react-native-kakao/core`.
 
-You can install it as follows:
+Install it with one of the commands below:
 
 <Tabs>
   <TabItem value="npm" label="NPM" default>
@@ -32,4 +32,4 @@ You can install it as follows:
   </TabItem>
 </Tabs>
 
-Other packages have a peer dependency on the `core` package, which means that `@react-native-kakao/core` must always be installed together.
+Other packages declare `core` as a peer dependency, so you must always install `@react-native-kakao/core` alongside them.

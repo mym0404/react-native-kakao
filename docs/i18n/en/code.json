@@ -1,9 +1,9 @@
 {
   "모든 카카오 SDK": {
-    "message": "All Kakao SDK"
+    "message": "All Kakao SDKs"
   },
-  "로그인, 공유, 지도 등 따로 관리되고 있는 SDK들로부터의 버전 충돌을 완벽히 해결합니다. 또한, 누락된 API나 미구현 기능들을 포함합니다.": {
-    "message": "Login, Share, Maps, and other separately managed SDKs completely resolve version conflicts.\nAdditionally, it includes missing APIs and unimplemented features."
+  "따로 관리하는 로그인, 공유, 지도 SDK 등의 버전 충돌을 해결합니다. 누락된 API와 미구현 기능도 포함합니다.": {
+    "message": "The library resolves version conflicts between separately managed Login, Share, Maps, and other SDKs.\nIt also includes missing APIs and unimplemented features."
   },
   "지원 플랫폼": {
     "message": "Supported platforms"
@@ -14,8 +14,8 @@
   "일관된 개발자 경험과 동작": {
     "message": "Consistent developer experience and behavior"
   },
-  "플랫폼별 기능이 차이가 나지 않도록 코드 퀄리티를 유지합니다. 또한, 어떤 SDK를 사용하든 비슷한 형태의 API를 제공함으로써 개발자가 일관되고 편안한 개발 경험을 가질 수 있도록 합니다.": {
-    "message": "Maintains code quality to ensure feature consistency across platforms.\nAdditionally, by providing similar forms of APIs regardless of the SDK used, it enables developers to have a consistent and comfortable development experience."
+  "플랫폼별 기능에 차이가 나지 않도록 코드 품질을 유지합니다. 어떤 SDK를 사용하든 비슷한 형태의 API를 제공해 일관되고 편안하게 개발할 수 있도록 합니다.": {
+    "message": "The library maintains code quality to prevent feature differences across platforms.\nSimilar API shapes across SDKs help developers work consistently and comfortably."
   },
   "theme.ErrorPageContent.title": {
     "message": "This page crashed.",

@@ -9,7 +9,7 @@ sidebar_position: 6
 
 ## Usage
 
-`shareTo()` 함수를 이용해 카카오내비 앱을 실행시켜 경로를 공유할 수 있습니다.
+`shareTo()` 함수로 카카오내비 앱을 실행해 경로를 공유할 수 있습니다.
 
 이 함수는 다음과 같이 정의됩니다.
 
@@ -24,27 +24,27 @@ export function shareTo(params: {
 
 - `destination`: 목적지 정보입니다. 필수값입니다.
 - `option`: 옵션입니다.
-- `viaList`: 경유지 리스트입니다.
-- `openWebInstallUrlIfNaviAppNotAvailable`: 카카오내비 앱을 실행할 수 없다면 자동으로 설치 화면으로 보낼지 여부입니다.
+- `viaList`: 경유지 목록입니다.
+- `openWebInstallUrlIfNaviAppNotAvailable`: 카카오내비 앱을 실행할 수 없을 때 자동으로 설치 화면으로 이동할지 여부입니다.
 기본값은 `true`입니다.
 
-옵션에 대한 자세한 설명은 [공식 문서](https://developers.kakao.com/docs/latest/ko/kakaonavi/android#set-parameter)를 참고해주세요.
+옵션에 대한 자세한 설명은 [공식 문서](https://developers.kakao.com/docs/latest/ko/kakaonavi/android#set-parameter)를 참고하세요.
 
 :::info
-Navi는 특별히 설치 과정을 유도하는 옵션이 있기 때문에 앱 실행에 실패해도 `Package-KakaoAppNotAvailable` 에러 코드가
-`Promise`로 reject되지 않습니다.
+Navi에는 설치를 안내하는 옵션이 있으므로 앱 실행에 실패해도
+`Promise`가 `Package-KakaoAppNotAvailable` 에러 코드로 reject되지 않습니다.
 
-대신, resolve되는 결과로 앱이 문제없이 실행이 되었는 지 판단할 수 있습니다.
+대신 resolve된 결과로 앱 실행에 성공했는지 확인할 수 있습니다.
 :::
 
 :::warning
 Web 플랫폼에서는 길 안내가 제공되지 않습니다.
 
-만약 모바일 웹이라면 카카오 내비 실행/설치 안내 스크린으로 브라우저로 이동됩니다.
+모바일 웹에서는 브라우저가 카카오 내비 실행/설치 안내 화면으로 이동합니다.
 
-만약 데스크탑 웹이라면 아무일도 일어나지 않습니다.
+데스크톱 웹에서는 아무 동작도 하지 않습니다.
 
-카카오의 JavaScript SDK에서의 웹에서의 길 안내 종료 공지입니다.
+카카오 JavaScript SDK의 웹 길 안내 지원 종료 공지입니다.
 
 [데브톡 공지사항](https://devtalk.kakao.com/t/notice-end-of-support-for-kakao-navi-web-version/120188)
 :::

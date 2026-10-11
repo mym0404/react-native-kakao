@@ -10,7 +10,7 @@ sidebar_position: 5
 
 ## Usage
 
-You can start route guidance to the destination by launching the Kakao Navigation app using the `navigateTo()` function.
+Use `navigateTo()` to launch the Kakao Navigation app and start route guidance to the destination.
 
 It is defined as follows:
 
@@ -23,7 +23,7 @@ export function navigateTo(params: {
 }): Promise<boolean>
 ```
 
--  `destination`: The destination information, which is a required parameter.
+-  `destination`: Required destination information.
 -  `option`: Options for navigation.
 -  `viaList`: List of via points.
 -  `openWebInstallUrlIfNaviAppNotAvailable`: Whether to automatically redirect to the installation screen if Kakao Navigation app is not available.
@@ -32,19 +32,19 @@ The default value is `true`.
 For detailed explanations of the options, refer to the [Official Documentation](https://developers.kakao.com/docs/latest/ko/kakaonavi/android#set-parameter).
 
 :::info
-Since Navi has a specific option that guides the installation process, if the app execution fails, the `Package-KakaoAppNotAvailable` error code will not be rejected as a `Promise`.
+Because Navi has an option to guide app installation, the `Promise` does not reject with `Package-KakaoAppNotAvailable` when the app fails to launch.
 
-Instead, you can determine if the app was executed without issues based on the resolved result.
+Check the resolved result to see whether the app launched successfully.
 :::
 
 :::warning
 Route guidance is not available on the web platform.
 
-If on a mobile web, the browser will be redirected to the Kakao Navi execution/installation guide screen if the Kakao Navigation app is not available.
+On mobile web, if the Kakao Navigation app is unavailable, the browser redirects to the Kakao Navi launch/installation guide.
 
-For desktop web, nothing will happen.
+On desktop web, nothing happens.
 
-This is an announcement of the end of support for route guidance on the Kakao Navi web version from Kakao's JavaScript SDK.
+The announcement below describes the end of web route guidance support for Kakao Navi in Kakao's JavaScript SDK.
 
 [Dev Talk Announcement](https://devtalk.kakao.com/t/notice-end-of-support-for-kakao-navi-web-version/120188)
 :::

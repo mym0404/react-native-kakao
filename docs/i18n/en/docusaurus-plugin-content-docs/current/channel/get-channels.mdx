@@ -14,7 +14,7 @@ You can check the KakaoTalk channel relationship using the `channels` function.
 export function channels(params: { channelPublicIds?: string[] } = {}): Promise<KakaoChannel[]>
 ```
 
-- `channelPublicIds`: IDs of the channels to check the relationship. If not provided, it checks all channels.
+- `channelPublicIds`: IDs of the channels whose relationships you want to check. If omitted, the API checks all channels.
 
 The types used are as follows:
 

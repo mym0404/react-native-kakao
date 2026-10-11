@@ -16,15 +16,15 @@ Make sure to pass **string keys and string values as objects** in `templateArgs`
 
 This issue may occur due to problems with the message type arguments.
 
-Ensure that the arguments provided, as per the TypeScript definitions, are correct and avoid passing empty arrays.
+Check that the arguments match the TypeScript definitions and that you have not passed empty arrays.
 
-Also, template IDs or calendar template IDs must be pre-configured in the Kakao console.
+Template IDs or calendar template IDs must be configured in the Kakao console in advance.
 
 ## Link Execution Priority
 
 `android` and `ios execution params` have the highest priority, followed by `mobileWebUrl` and `webUrl` if present.
 
-## Does the KakaoTalk Message API Support?
+## Is the KakaoTalk Message API Supported?
 
 Currently, only the KakaoTalk Share API is supported.
 
@@ -34,6 +34,6 @@ Ensure that all images are at least 200px x 200px and under 2MB in size.
 
 ## Clicking the Button Does Not Redirect to My Website
 
-Register your web platform in the Kakao console and pre-register the URL of your website.
+Register the web platform and your website URL in the Kakao console in advance.
 
 ![](https://raw.githubusercontent.com/mym0404/image-archive/master/202404230155140.webp)

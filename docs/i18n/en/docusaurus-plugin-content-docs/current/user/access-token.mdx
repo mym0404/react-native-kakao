@@ -6,7 +6,7 @@ sidebar_position: 104
 
 ## Obtaining Token
 
-You can retrieve it using `getAccessToken()`.
+Use `getAccessToken()` to retrieve the token.
 
 It is defined as follows.
 
@@ -32,11 +32,11 @@ getAccessToken()
 
 ## Setting Access Token (Web)
 
-You can store the value received as `code` in the search parameter of the Redirect URL upon successful web login using the `setAccessTokenWeb()` function for Kakao SDK access.
+After a successful web login, use `setAccessTokenWeb()` to store the `code` value from the redirect URL's search parameter for Kakao SDK access.
 
 ### Example
 
-Call `setAccessTokenWeb` on the page configured as the login Redirect URl as shown below.
+Call `setAccessTokenWeb` on the page configured as the login redirect URL, as shown below.
 
 ```tsx
 const { code } = useGlobalSearchParams<{ code?: string }>();

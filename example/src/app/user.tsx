@@ -16,10 +16,13 @@ import {
 } from '@react-native-kakao/user';
 
 import { Btn } from '../component/Btn';
+import { E2EApiAction } from '../component/E2EApiAction';
 import { PrettyResult } from '../component/PrettyResult';
 import { StyledScrollView } from '../component/StyledScrollView';
 import { Txt } from '../component/Txt';
 import { px } from '../util/px';
+
+const buttonMinWidth = px(240);
 
 export default function Page() {
   const [isKakaoTalkEnable, setKakaoTalkEnable] = useState(false);
@@ -34,13 +37,16 @@ export default function Page() {
   });
 
   return (
-    <StyledScrollView
-      flex={1}
-      contentContainerSx={{ pt: 12, pb: 48, alignItems: 'center', px: 4, gap: 4 }}
-    >
+    <StyledScrollView flex={1} contentContainerSx={{ pb: 48, alignItems: 'center', px: 4, gap: 4 }}>
       <Txt>{`Kakao Talk Available: ${isKakaoTalkEnable}`}</Txt>
+      <E2EApiAction
+        id={'talk-available'}
+        title={'Check Kakao Talk Availability'}
+        action={isKakaoTalkLoginAvailable}
+        onSuccess={setKakaoTalkEnable}
+      />
       <Btn
-        minW={px(240)}
+        minW={buttonMinWidth}
         title={'Login'}
         onPress={() => {
           login({
@@ -65,7 +71,7 @@ export default function Page() {
         }}
       />
       <Btn
-        minW={px(240)}
+        minW={buttonMinWidth}
         title={'Log Out'}
         onPress={() => {
           logout()
@@ -84,7 +90,7 @@ export default function Page() {
         }}
       />
       <Btn
-        minW={px(240)}
+        minW={buttonMinWidth}
         title={'Unlink'}
         onPress={() => {
           unlink()
@@ -102,27 +108,15 @@ export default function Page() {
             );
         }}
       />
-      <Btn
-        minW={px(240)}
+      <E2EApiAction
+        id={'login-state'}
+        minW={buttonMinWidth}
         title={'Check Logined'}
-        onPress={() => {
-          isLogined()
-            .then((ret) => {
-              showMessage({
-                type: 'success',
-                message: `Logined: ${ret}`,
-              });
-            })
-            .catch((e) =>
-              showMessage({
-                type: 'warning',
-                message: `Failed - ${e.message}`,
-              }),
-            );
-        }}
+        action={isLogined}
+        onSuccess={(value) => showMessage({ type: 'success', message: `Logined: ${value}` })}
       />
       <Btn
-        minW={px(240)}
+        minW={buttonMinWidth}
         title={'Scopes'}
         onPress={() => {
           scopes()
@@ -142,7 +136,7 @@ export default function Page() {
         }}
       />
       <Btn
-        minW={px(240)}
+        minW={buttonMinWidth}
         title={'Service Terms'}
         onPress={() => {
           serviceTerms()
@@ -162,7 +156,7 @@ export default function Page() {
         }}
       />
       <Btn
-        minW={px(240)}
+        minW={buttonMinWidth}
         title={'Shipping Addresses'}
         onPress={() => {
           shippingAddresses()
@@ -182,28 +176,18 @@ export default function Page() {
             });
         }}
       />
-      <Btn
-        minW={px(240)}
+      <E2EApiAction
+        id={'user-profile'}
+        minW={buttonMinWidth}
         title={'Get Profile'}
-        onPress={() => {
-          me()
-            .then((ret) => {
-              showMessage({
-                type: 'success',
-                message: 'Success',
-              });
-              setMeResult(ret);
-            })
-            .catch((e) => {
-              showMessage({
-                type: 'warning',
-                message: e.message,
-              });
-            });
+        action={me}
+        onSuccess={(value) => {
+          setMeResult(value);
+          showMessage({ type: 'success', message: 'Success' });
         }}
       />
       <Btn
-        minW={px(240)}
+        minW={buttonMinWidth}
         title={'Get Access Token'}
         onPress={() => {
           getAccessToken()

@@ -55,7 +55,7 @@ It contains the following packages:
 
 Install and activate [mise](https://mise.jdx.dev/getting-started.html), then run the following
 commands in the project root. The committed `mise.toml` pins Node.js, Yarn, ClangFormat,
-SwiftFormat, and Ktlint to the versions used by CI.
+SwiftFormat, Ktlint, GitHub CLI, and FFmpeg to the versions used by CI.
 
 ```sh
 mise install
@@ -168,7 +168,10 @@ Our pre-commit hooks verify that your commit message matches this format when co
 We use [TypeScript](https://www.typescriptlang.org/) for type
 checking, [ESLint](https://eslint.org/) with [Prettier](https://prettier.io/) for linting and
 formatting the code, and the built-in [Node.js test runner](https://nodejs.org/api/test.html) for testing.
-Run `yarn test` from the repository root to execute `script/**/*.test.js`. Tests import `test` from
+Repository scripts live under `script/` as `.ts` files, run directly with mise-managed Node.js,
+and use explicit ZX imports for process and filesystem operations. Tests that directly exercise
+CocoaPods internals remain in Ruby.
+Run `yarn test` from the repository root to execute `script/**/*.test.ts`. Tests import `test` from
 `node:test` and assertions from `node:assert/strict`.
 
 In iOS project, we
@@ -191,8 +194,9 @@ documentation as well.
 
 ### Release branches and automation
 
-`v2` and `v3` are stable maintenance branches. `main` publishes prereleases to npm's `next` tag.
-Normal development targets `main`.
+`v2` and `v3` are stable maintenance branches. `main` publishes prereleases to npm's `next` tag
+while in pre mode and stable releases to `latest` after exiting pre mode. Normal development
+targets `main`.
 
 For branch comparisons, use `yarn changeset status --since main`, `--since v2`, or `--since v3`
 to match the pull request's target branch.
@@ -202,8 +206,8 @@ or updates a version pull request when changesets are pending. The version pull 
 merged automatically; merging it triggers the automated npm publication for that branch and tag.
 
 After npm publication succeeds, the workflow creates one Git tag and GitHub Release for the shared
-version, without a `v` prefix. Releases from `main` are marked as prereleases. Package-specific
-Git tags and GitHub Releases are disabled.
+version, without a `v` prefix. Versions with a `-next` suffix are marked as prereleases.
+Package-specific Git tags and GitHub Releases are disabled.
 
 If npm publication succeeds but GitHub Release creation fails, manually run the Release workflow
 on the same release branch. Already published npm versions are skipped, and the missing GitHub

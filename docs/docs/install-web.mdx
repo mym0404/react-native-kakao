@@ -5,9 +5,9 @@ sidebar_position: 5
 # Web 설정
 ## Web 설정
 
-React Native Kakao는 Native뿐만 아니라 Web플랫폼 지원도 동일한 수준의 개발자 경험을 유지할 수 있게 지원합니다.
+React Native Kakao는 Native와 Web 플랫폼에서 같은 수준의 개발자 경험을 제공합니다.
 
-[Kakao SDK 문서](https://developers.kakao.com/docs/latest/ko/javascript/getting-started)를 참고하여 설정에 관한 더 자세한 정보를 확인할 수 있습니다.
+설정에 관한 자세한 내용은 [Kakao SDK 문서](https://developers.kakao.com/docs/latest/ko/javascript/getting-started)에서 확인할 수 있습니다.
 
 ## 카카오 JavaScript SDK 설치
 
@@ -31,7 +31,7 @@ React Native Kakao는 Native뿐만 아니라 Web플랫폼 지원도 동일한 �
 ```
 
 :::tip
-Expo환경에서 `index.html`을 커스터마이징 하는 방법은 `npx expo customize`커맨드를 이용할 수 있습니다.
+Expo에서는 `npx expo customize` 명령으로 `index.html`을 수정할 수 있습니다.
 
 [Expo 문서](https://docs.expo.dev/more/expo-cli/#customizing)
 :::
@@ -41,24 +41,24 @@ Expo환경에서 `index.html`을 커스터마이징 하는 방법은 `npx expo c
 
 ![feat1](https://raw.githubusercontent.com/mym0404/image-archive/master/202405030132281.webp)
 
-플랫폼 탭에 들어가 자신의 사이트 도메인을 추가해줍니다.
+플랫폼 탭에서 사이트 도메인을 추가합니다.
 
 
 ## Web API에 대하여
 
-Web의 API는 내부적으로 구현되는 방식이 Android, iOS플랫폼들과 차이가 있을 수밖에 없습니다.
+Web API의 내부 구현은 Android, iOS 플랫폼과 다를 수밖에 없습니다.
 
-API는 플랫폼별로 응답이 모두 일관되고 이름도 모두 동일하지만 Web에서만 사용할 수 있는 API들이 있거나 Web만의 인자들이 존재합니다.
+API 응답은 플랫폼 간에 일관되고 이름도 모두 동일하지만 Web 전용 API와 인자도 있습니다.
 
-예를 들어, 로그인 시에 `redirectUri`같은 인자가 그렇습니다.
+예를 들어 로그인 시 사용하는 `redirectUri`가 Web 전용 인자입니다.
 
-Web에서만 사용할 수 있거나 필요한 API들은 함수 이름 뒤에 `Web`이 붙습니다.
+Web에서만 사용하거나 필요한 API는 함수 이름 뒤에 `Web`이 붙습니다.
 
-예를 들어, `Core.setAccessTokenWeb()`과 같은 식입니다.
+예를 들어 `Core.setAccessTokenWeb()`이 있습니다.
 
-그리고 Web에서 사용되는 인자들은 모두 함수의 인자에서 따로 `web`이라는 필드로 관리합니다.
+Web 전용 인자는 모두 함수 인자의 `web` 필드에 전달합니다.
 
-`core`패키지의 SDK초기화 함수를 보겠습니다.
+`core` 패키지의 SDK 초기화 함수는 다음과 같습니다.
 
 ```tsx
 export async function initializeKakaoSDK(
@@ -68,12 +68,12 @@ export async function initializeKakaoSDK(
 )
 ```
 
-인자로 `web` 객체를 전달받아 필요한 인자들을 받는 모습입니다.
+이 함수는 필요한 Web 전용 인자를 `web` 객체로 받습니다.
 
 :::warning
-Web을 지원하지 않는다면 `web`인자에 대해 신경 쓸 필요가 없고, `Web`으로 끝나는 API들도 호출하지 말아야 합니다.
+Web을 지원하지 않는다면 `web` 인자를 지정할 필요가 없으며 `Web`으로 끝나는 API도 호출하지 말아야 합니다.
 
-또한, `web`인자가 없으면 API는 Web에서도 기본 인자들을 사용하여 동작됩니다.
+`web` 인자가 없으면 API는 Web에서도 기본 인자로 동작합니다.
 :::
 
 

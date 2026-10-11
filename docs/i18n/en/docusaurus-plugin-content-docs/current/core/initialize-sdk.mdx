@@ -6,7 +6,7 @@ sidebar_position: 2
 
 ## Initialize the SDK
 
-Call the `initializeKakaoSDK` function in `index.js` or `App.tsx`, or similar, before any Kakao SDK is used after the app starts.
+When the app starts, call `initializeKakaoSDK` in a file such as `index.js` or `App.tsx` before using any Kakao SDK.
 
 ```tsx title='index.js'
 import { initializeKakaoSDK } from '@react-native-kakao/core';
@@ -15,12 +15,12 @@ initializeKakaoSDK('{{ native app key }}');
 ```
 
 :::info
-This function must always be called first, before any Kakao API is invoked.
+You must call this function before calling any Kakao API.
 :::
 
 ## Web Platform
 
-If supporting the Web, you must also pass the javascript key and rest api key with the `web` option.
+If your app supports Web, you must also pass the JavaScript key and REST API key in the `web` option.
 
 ```ts
 import { initializeKakaoSDK } from '@react-native-kakao/core';

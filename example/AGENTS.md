@@ -7,9 +7,9 @@ A package API change is not complete until example verification passes.
 
 ## Why this matters
 
-- Example uses workspace packages via `example/react-native.config.js`.
+- Expo Autolinking resolves the six Kakao workspace packages declared in `example/package.json`.
 - Prebuild-generated Android/iOS projects reflect real integration behavior.
-- The app keeps the New Architecture enabled in `app.json`.
+- The app uses the New Architecture required by Expo.
 
 ## Required checks after native API changes
 
@@ -39,3 +39,13 @@ When `packages/core/expo-config-plugin/*` or app plugin behavior changes:
 - Updated API method is callable from JS in example.
 - iOS and Android both return expected payload shape.
 - Web fallback behavior remains compatible when applicable.
+
+## E2E runner
+
+- `yarn e2e test [ios|android|both] [--device <device-id>]` runs deterministic TypeScript tests with `e2e`, `@e2e-dev/mobile`, and `agent-device`; no model credentials are needed.
+- Omitting the platform runs iOS and Android in parallel. Omitting `--device` selects the first mobile device returned by agent-device for each platform and boots it if needed. Use `--device` or `--app` with a single platform; `--output` for both platforms creates separate `ios/` and `android/` result directories.
+- Use a dedicated signed-out simulator or emulator without KakaoTalk or Kakao Navi. Tests do not clear user data or the simulator keychain.
+- The suite covers six menu screens, KakaoTalk availability, signed-out state, user/social token errors, channel URL generation, and navigation when Kakao Navi is absent. Login, message delivery, and external app actions are excluded.
+- `--app` selects the Release binary and `--output` selects a new result directory. Recordings and explicit screenshots are disabled.
+- The SDK manages agent-device startup and test session cleanup. Passing requires every discovered test to pass. Each output directory is single-use.
+- Evidence includes `summary.json`, `index.html`, `junit.xml`, and SDK reports under `sdk/`. CI updates platform results in a dedicated block in the PR body and preserves the rest of the description.

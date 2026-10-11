@@ -1,32 +1,27 @@
-const assert = require('node:assert/strict');
-const { execFileSync } = require('node:child_process');
-const fs = require('node:fs');
-const os = require('node:os');
-const path = require('node:path');
-const { test } = require('node:test');
-const { detectBuildChanges } = require('./ci-changes');
+#!/usr/bin/env node
+import assert from 'node:assert/strict';
+import { test } from 'node:test';
+import { $, fs, os, path } from 'zx';
+
+import { detectBuildChanges } from './ci-changes.ts';
 
 test('reuse only successful native checks for the same PR base and commit history', async () => {
   const cwd = process.cwd();
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'ci-changes-'));
-  const git = (args, input) =>
-    execFileSync('git', args, {
-      cwd: directory,
-      encoding: 'utf8',
-      input,
-      stdio: ['pipe', 'pipe', 'pipe'],
-    }).trim();
+  const git = async (args: string[], input?: string) =>
+    (await $({ cwd: directory, input, quiet: true })`git ${args}`).stdout.trim();
 
-  const commit = (parents, files = {}) => {
-    git(parents.length ? ['read-tree', parents[0]] : ['read-tree', '--empty']);
+  const commit = async (parents: string[], files: Record<string, string> = {}) => {
+    const parent = parents[0];
+    await git(parent ? ['read-tree', parent] : ['read-tree', '--empty']);
     for (const [file, content] of Object.entries(files)) {
-      const blob = git(['hash-object', '-w', '--stdin'], content);
-      git(['update-index', '--add', '--cacheinfo', '100644', blob, file]);
+      const blob = await git(['hash-object', '-w', '--stdin'], content);
+      await git(['update-index', '--add', '--cacheinfo', '100644', blob, file]);
     }
 
-    return git([
+    return await git([
       'commit-tree',
-      git(['write-tree']),
+      await git(['write-tree']),
       ...parents.flatMap((sha) => ['-p', sha]),
       '-m',
       'test',
@@ -34,33 +29,33 @@ test('reuse only successful native checks for the same PR base and commit histor
   };
 
   try {
-    git(['init', '--quiet']);
-    git(['config', 'user.name', 'CI test']);
-    git(['config', 'user.email', 'ci@example.invalid']);
+    await git(['init', '--quiet']);
+    await git(['config', 'user.name', 'CI test']);
+    await git(['config', 'user.email', 'ci@example.invalid']);
 
-    const base = commit([], { 'package.json': '{}' });
-    const previous = commit([base], { 'packages/core/android/Module.kt': 'original' });
-    const docs = commit([previous], { 'docs/guide.md': 'documentation' });
-    const android = commit([previous], { 'packages/core/android/Module.kt': 'changed' });
-    const ios = commit([previous], { 'packages/core/ios/Module.swift': 'changed' });
-    const shared = commit([previous], { 'packages/core/src/index.ts': 'changed' });
-    const unrelated = commit([], { 'README.md': 'unrelated history' });
-    const laterDocs = commit([docs], { 'README.md': 'more documentation' });
+    const base = await commit([], { 'package.json': '{}' });
+    const previous = await commit([base], { 'packages/core/android/Module.kt': 'original' });
+    const docs = await commit([previous], { 'docs/guide.md': 'documentation' });
+    const android = await commit([previous], { 'packages/core/android/Module.kt': 'changed' });
+    const ios = await commit([previous], { 'packages/core/ios/Module.swift': 'changed' });
+    const shared = await commit([previous], { 'packages/core/src/index.ts': 'changed' });
+    const unrelated = await commit([], { 'README.md': 'unrelated history' });
+    const laterDocs = await commit([docs], { 'README.md': 'more documentation' });
     const same = { android: 'false', ios: 'false' };
     const both = { android: 'true', ios: 'true' };
     const androidOnly = { android: 'true', ios: 'false' };
     const iosOnly = { android: 'false', ios: 'true' };
     const marker = `main@${base}`;
-    const run = (id, head = previous, extra = {}) => ({
+    const run = (id: number, head = previous, extra = {}) => ({
       id,
       run_number: id,
       head_sha: head,
-      head_repository: { id: 1 },
+      head_repository: { id: 1, name: 'repo', owner: { login: 'owner' } },
       pull_requests: [{ number: 103 }],
       ...extra,
     });
 
-    const jobs = (states = {}, recordedBase = marker) => [
+    const jobs = (states: Record<string, string> = {}, recordedBase = marker) => [
       {
         name: 'changes',
         conclusion: 'success',
@@ -78,38 +73,64 @@ test('reuse only successful native checks for the same PR base and commit histor
     });
 
     const oldMatrixJobs = [
-      jobs()[0],
+      ...jobs().slice(0, 1),
       ...['build-android (old)', 'build-android (new)', 'build-ios (new)'].map((name) => ({
         name,
         conclusion: 'success',
       })),
     ];
 
-    const cases = [
-      { name: 'docs after success', expected: same },
+    const cases: {
+      name: string;
+      expected: { android: string; ios: string };
+      head?: string;
+      pages?: ReturnType<typeof run>[][];
+      jobs?: Record<number, ReturnType<typeof jobs>>;
+      apiError?: boolean;
+      jobsError?: boolean;
+      push?: boolean;
+    }[] = [
+      {
+        name: 'first changeset-only run',
+        head: await commit([base], { '.changeset/fix.md': 'patch' }),
+        pages: [[]],
+        expected: same,
+      },
       { name: 'Android change', head: android, expected: androidOnly },
       { name: 'iOS change', head: ios, expected: iosOnly },
       { name: 'shared change', head: shared, expected: both },
-      { name: 'first run', pages: [[]], expected: both },
-      { name: 'changed target base', jobs: { 1: jobs({}, `main@${unrelated}`) }, expected: both },
-      { name: 'retargeted PR', jobs: { 1: jobs({}, `v2@${base}`) }, expected: both },
-      { name: 'force push', pages: [[run(1, unrelated)]], expected: both },
+      {
+        name: 'first iOS-only run with changeset',
+        head: await commit([base], {
+          'packages/core/ios/Module.swift': 'changed',
+          '.changeset/ios-fix.md': 'patch',
+        }),
+        pages: [[]],
+        expected: iosOnly,
+      },
+      {
+        name: 'changed target base',
+        jobs: { 1: jobs({}, `main@${unrelated}`) },
+        expected: androidOnly,
+      },
+      { name: 'retargeted PR', jobs: { 1: jobs({}, `v2@${base}`) }, expected: androidOnly },
+      { name: 'force push', pages: [[run(1, unrelated)]], expected: androidOnly },
       {
         name: 'wrong PR',
         pages: [[run(1, previous, { pull_requests: [{ number: 104 }] })]],
-        expected: both,
+        expected: androidOnly,
       },
       {
         name: 'wrong fork',
         pages: [[run(1, previous, { head_repository: { id: 2 } })]],
-        expected: both,
+        expected: androidOnly,
       },
-      { name: 'current rerun', pages: [[run(10)]], expected: both },
-      { name: 'newer run', pages: [[run(11)]], expected: both },
-      { name: 'missing base record', jobs: { 1: jobs().slice(1) }, expected: both },
-      { name: 'invalid SHA', pages: [[run(1, '--output=unsafe')]], expected: both },
-      { name: 'history API failure', apiError: true, expected: both },
-      { name: 'jobs API failure', jobsError: true, expected: both },
+      { name: 'current rerun', pages: [[run(10)]], expected: androidOnly },
+      { name: 'newer run', pages: [[run(11)]], expected: androidOnly },
+      { name: 'missing base record', jobs: { 1: jobs().slice(1) }, expected: androidOnly },
+      { name: 'invalid SHA', pages: [[run(1, '--output=unsafe')]], expected: androidOnly },
+      { name: 'history API failure', apiError: true, expected: androidOnly },
+      { name: 'jobs API failure', jobsError: true, expected: androidOnly },
       {
         name: 'Android failure',
         jobs: { 1: jobs({ 'build-android': 'failure' }) },
@@ -117,6 +138,7 @@ test('reuse only successful native checks for the same PR base and commit histor
       },
       {
         name: 'iOS cancellation',
+        head: ios,
         jobs: { 1: jobs({ 'build-ios': 'cancelled' }) },
         expected: iosOnly,
       },
@@ -125,12 +147,16 @@ test('reuse only successful native checks for the same PR base and commit histor
         jobs: { 1: jobs().filter(({ name }) => name !== 'build-android') },
         expected: androidOnly,
       },
-      { name: 'old matrix history is not reusable', jobs: { 1: oldMatrixJobs }, expected: both },
+      {
+        name: 'old matrix history is not reusable',
+        jobs: { 1: oldMatrixJobs },
+        expected: androidOnly,
+      },
       {
         name: 'skipped builds are not success',
         pages: [[run(2, docs)]],
         jobs: { 2: skipped },
-        expected: both,
+        expected: androidOnly,
       },
       {
         name: 'pagination past skipped builds',
@@ -170,39 +196,28 @@ test('reuse only successful native checks for the same PR base and commit histor
     process.chdir(directory);
     for (const scenario of cases) {
       const head = scenario.head ?? docs;
-      const checkout = scenario.push ? head : commit([base, head]);
-      git(['update-ref', 'HEAD', checkout]);
+      const checkout = scenario.push ? head : await commit([base, head]);
+      await git(['update-ref', 'HEAD', checkout]);
 
-      const outputs = {};
-      const listWorkflowRuns = Symbol('runs');
-      const listJobsForWorkflowRun = Symbol('jobs');
-      const paginate = Object.assign(
-        async (method, { run_id }) => {
-          assert.equal(method, listJobsForWorkflowRun);
+      const outputs: Record<string, string> = {};
+
+      await detectBuildChanges({
+        listRuns: async function* () {
+          if (scenario.apiError) {
+            throw new Error('API unavailable');
+          }
+
+          for (const page of scenario.pages ?? [[run(1)]]) {
+            yield page;
+          }
+        },
+        listJobs: async (runId) => {
           if (scenario.jobsError) {
             throw new Error('API unavailable');
           }
 
-          return scenario.jobs?.[run_id] ?? jobs();
+          return scenario.jobs?.[runId] ?? jobs();
         },
-        {
-          iterator: async function* (method, options) {
-            assert.equal(method, listWorkflowRuns);
-            assert.equal(options.event, scenario.push ? 'push' : 'pull_request');
-            assert.equal(options.branch, scenario.push ? 'main' : 'feature');
-            if (scenario.apiError) {
-              throw new Error('API unavailable');
-            }
-
-            for (const page of scenario.pages ?? [[run(1)]]) {
-              yield { data: page };
-            }
-          },
-        },
-      );
-
-      await detectBuildChanges({
-        github: { rest: { actions: { listWorkflowRuns, listJobsForWorkflowRun } }, paginate },
         context: {
           eventName: scenario.push ? 'push' : 'pull_request',
           runNumber: 10,
@@ -210,7 +225,7 @@ test('reuse only successful native checks for the same PR base and commit histor
           ref: scenario.push ? 'refs/heads/main' : 'refs/pull/103/merge',
           repo: { owner: 'owner', repo: 'repo' },
           payload: {
-            repository: { id: 1 },
+            repository: { id: 1, name: 'repo', owner: { login: 'owner' } },
             ...(!scenario.push && {
               pull_request: {
                 number: 103,

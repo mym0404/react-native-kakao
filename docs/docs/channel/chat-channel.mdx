@@ -10,7 +10,7 @@ sidebar_position: 103
 
 [공식 문서](https://developers.kakao.com/docs/latest/ko/kakaotalk-channel/ios#add-chat)
 
-`chatChannel`함수로 카카오톡 채널 채팅을 할 수 있습니다.
+`chatChannel` 함수로 카카오톡 채널과 채팅할 수 있습니다.
 
 ```tsx
 export function chatChannel(channelPublicId: string): Promise<void>
@@ -21,7 +21,7 @@ export function chatChannel(channelPublicId: string): Promise<void>
 
 ## 카카오톡 채널 채팅 URL 얻어오기
 
-`getChatChannelUrl`함수로 카카오톡 채널 채팅을 할 수 있는 URL을 얻어올 수 있습니다.
+`getChatChannelUrl` 함수로 카카오톡 채널과 채팅하는 URL을 얻을 수 있습니다.
 
 ```tsx
 export function getChatChannelUrl(channelPublicId: string): Promise<string>
@@ -32,7 +32,7 @@ export function getChatChannelUrl(channelPublicId: string): Promise<string>
 
 ## 카카오톡 채널 채팅 URL 브라우저에서 열기
 
-`openChatChannelUrl`함수로 카카오톡 채널 채팅을 할 수 있는 URL을 브라우저에서 열 수 있습니다.
+`openChatChannelUrl` 함수로 카카오톡 채널과 채팅하는 URL을 브라우저에서 열 수 있습니다.
 
 ```tsx
 export function openChatChannelUrl(channelPublicId: string): Promise<string>

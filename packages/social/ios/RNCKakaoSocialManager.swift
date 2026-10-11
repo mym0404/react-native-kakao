@@ -46,15 +46,19 @@ import RNCKakaoCore
       default: .auto
       }
       let params = OpenPickerFriendRequestParams(
-        title: options["title"] as? String,
-        viewAppearance: .init(rawValue: options["viewAppearance"] as? String ?? "auto"),
+        viewAppearance: .init(rawValue: options["viewAppearance"] as? String ?? "auto") ?? .auto,
         orientation: orientation,
-        enableSearch: options["enableSearch"] as? Bool,
-        showMyProfile: options["showMyProfile"] as? Bool,
-        showFavorite: options["showFavorite"] as? Bool,
-        showPickedFriend: options["showPickedFriend"] as? Bool,
-        maxPickableCount: options["maxPickableCount"] as? Int,
-        minPickableCount: options["minPickableCount"] as? Int
+        enableSearch: options["enableSearch"] as? Bool ?? true,
+        showMyProfile: options["showMyProfile"] as? Bool ?? true,
+        showFavorite: options["showFavorite"] as? Bool ?? true,
+        showPickedFriend: options["showPickedFriend"] as? Bool ?? true,
+        selectParams: multiple
+          ? .friend(
+            selectionMode: .multiple,
+            minPickableCount: options["minPickableCount"] as? Int ?? 1,
+            maxPickableCount: options["maxPickableCount"] as? Int ?? 30
+          )
+          : .friend(selectionMode: .single)
       )
       let callback = { (users: SelectedUsers?, error: Error?) in
         if let error {
@@ -76,31 +80,11 @@ import RNCKakaoCore
           RNCKakaoUtil.reject(reject, RNCKakaoError.responseNotFound(name: "users"))
         }
       }
-      if !multiple {
-        if mode == "popup" {
-          PickerApi.shared.selectFriendPopup(
-            params: params,
-            completion: callback
-          )
-        } else {
-          PickerApi.shared.selectFriend(
-            params: params,
-            completion: callback
-          )
-        }
-      } else {
-        if mode == "popup" {
-          PickerApi.shared.selectFriendsPopup(
-            params: params,
-            completion: callback
-          )
-        } else {
-          PickerApi.shared.selectFriends(
-            params: params,
-            completion: callback
-          )
-        }
-      }
+      PickerApi.shared.selectFriend(
+        params: params,
+        viewType: mode == "popup" ? .popup : .full,
+        completion: callback
+      )
     }
   }
 
@@ -155,8 +139,6 @@ import RNCKakaoCore
   }
 }
 
-// /// 친구 피커의 이름
-// final public let title: String?
 // /// 친구 피커 모드
 // final public let viewAppearance: KakaoSDKFriendCore.ViewAppearance?
 // /// 친구 피커의 방향

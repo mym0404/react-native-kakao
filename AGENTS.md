@@ -1,7 +1,25 @@
 # Native Modules Contributor Playbook
 
-This repository is a monorepo of React Native native modules.
+## Project Purpose
+
+This monorepo provides React Native modules for Kakao services on Android, iOS, and web.
 Use this file as the global source of truth for adding or changing native APIs.
+
+## Tech Stack
+
+- TypeScript defines the public API and web implementation; Kotlin implements Android modules, and ObjC++ bridges to Swift managers on iOS.
+- React Native New Architecture and Codegen provide the native module contracts. Expo powers the example app and its config plugin integration.
+- mise pins repository tools, Yarn manages the workspaces, Changesets versions published packages, and GitHub Actions runs CI and releases.
+
+## Project Tree
+
+- `packages/`: published modules and the core Expo config plugin.
+- `example/`: New Architecture integration app and native build flows.
+- `docs/`: documentation site.
+- `adr/`: immutable Architecture Decision Records.
+- `script/`: repository automation and E2E entrypoints.
+- `.github/workflows/`: CI and release automation.
+- `.changeset/`: package release intent and prerelease state.
 
 ## Communication
 
@@ -11,13 +29,13 @@ Assistant responses have no language restriction. Use English for commit message
 
 Read in this order:
 
-1. `/AGENTS.md` (global gates and non-negotiables)
-2. `/packages/AGENTS.md` (common package-level execution flow)
+1. `AGENTS.md` (global gates and non-negotiables)
+2. `packages/AGENTS.md` (common package-level execution flow)
 3. Package-specific guides when needed:
-   - `/packages/core/AGENTS.md`
-   - `/packages/share/AGENTS.md`
-   - `/packages/user/AGENTS.md`
-4. `/example/AGENTS.md` (integration verification gates)
+   - `packages/core/AGENTS.md`
+   - `packages/share/AGENTS.md`
+   - `packages/user/AGENTS.md`
+4. `example/AGENTS.md` (integration verification gates)
 
 ## Development toolchain
 
@@ -89,13 +107,30 @@ Read in this order:
   - `yarn codegen:ios`
   - `yarn codegen`
 
-## Verification gates
+## Verification
 
-- Type/format/lint gates (hook + CI aligned):
-  - `yarn lint`
-  - `yarn typecheck`
-- Native integration gates use the build and E2E paths in `.github/workflows/ci.yml`.
-- Example app must compile and load every module with the New Architecture.
+- `yarn lint` runs Lefthook's `check`: JS/TS, Kotlin, Swift, and ObjC++ lint plus TypeScript checking. It does not build or launch the native example app.
+- `yarn typecheck` runs TypeScript checking only; it overlaps with the TypeScript check in `yarn lint`.
+- Write repository scripts as `.ts` files under `script/`, run them with mise-managed Node.js, and use explicit ZX imports for process and filesystem operations. Do not rely on ZX globals or Bun. Tests that directly exercise CocoaPods internals remain in Ruby.
+- For script changes, `yarn test` runs Node tests under `script/**/*.test.ts`; it does not cover native runtime behavior.
+- Native API changes also require the build and E2E paths in `example/AGENTS.md` and `.github/workflows/ci.yml`. The example app must compile and load every module with the New Architecture.
+
+## Knowledge System
+
+`AGENTS.md` owns repository facts by default and is the only router to knowledge documents. Each fact has one owner; each routed document owns only the facts assigned to it here.
+
+- .agents/knowledge/domain.md
+  - Owns the domain glossary.
+- [adr/README.md](adr/README.md)
+  - Owns ADR rules, the template, and the append-only index.
+- `adr/NNNN-short-decision-title.md`
+  - Owns the historical context, rationale, alternatives, and consequences of that decision. ADRs do not replace current implementation or contributor rules.
+
+## Architecture Decision Records
+
+- Create an ADR only on an explicit user request or affirmative response to an ADR suggestion. Implementation work or ADR setup alone does not authorize a record; never backfill automatically.
+- When work makes or changes a durable architectural decision, such as an API contract, platform support, bridge boundary, dependency strategy, or build/release architecture, ask once whether to record it. Continue authorized work while awaiting the answer; silence is not consent. Do not ask again if the user already requested or declined it for that decision.
+- Follow the template and immutable history rules in [adr/README.md](adr/README.md).
 
 ## When to add a new local AGENTS.md
 

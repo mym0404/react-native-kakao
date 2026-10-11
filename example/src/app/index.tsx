@@ -1,7 +1,5 @@
-import { useRef } from 'react';
-import { Animated, Easing } from 'react-native';
+import { Image } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
-import { useMount } from '@mj-studio/react-util';
 import { login, logout } from '@react-native-kakao/user';
 import { Link } from 'expo-router';
 
@@ -10,38 +8,17 @@ import { Btn } from '../component/Btn';
 import { StyledScrollView } from '../component/StyledScrollView';
 import { Txt } from '../component/Txt';
 import { px } from '../util/px';
-import timing = Animated.timing;
-import loop = Animated.loop;
 
 export default function Page() {
-  const anim = useRef(new Animated.Value(0)).current;
-  useMount(() => {
-    loop(
-      timing(anim, { toValue: 1, useNativeDriver: true, duration: 10000, easing: Easing.linear }),
-    ).start();
-  });
-
   return (
     <StyledScrollView
       testID={'home-scroll'}
       flex={1}
       contentContainerSx={{ pt: 12, pb: 48, alignItems: 'center', px: 4 }}
     >
-      <Animated.Image
+      <Image
         source={require('../../assets/icon.png')}
-        style={[
-          { width: 200, height: 200, resizeMode: 'contain' },
-          {
-            transform: [
-              {
-                rotate: anim.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: ['0deg', '360deg'],
-                }),
-              },
-            ],
-          },
-        ]}
+        style={{ width: 200, height: 200, resizeMode: 'contain' }}
       />
       <Txt weight={'900'} mt={10} t={'h1'}>
         {'React Native Kakao'}

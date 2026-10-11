@@ -10,13 +10,13 @@ If you are using Expo, you can skip this section.
 
 ## Setting Up URL Handling for KakaoTalk Login
 
-Refer to the [Official Documentation](https://developers.kakao.com/docs/latest/ko/kakaologin/ios#before-you-begin-setting-for-kakaotalk) for the essential configuration to implement KakaoTalk login functionality.
+Refer to the [Official Documentation](https://developers.kakao.com/docs/latest/ko/kakaologin/ios#before-you-begin-setting-for-kakaotalk) for the required KakaoTalk login setup.
 
-Follow the [instructions](https://developers.kakao.com/docs/latest/ko/ios/getting-started#project-plist) to add KakaoTalk to the app's Allowlist to launch KakaoTalk from the app and set up a [custom URL scheme](https://developers.kakao.com/docs/latest/ko/documentation-guideline/glossary#%E3%85%8B) to return to the service app.
+Follow the [instructions](https://developers.kakao.com/docs/latest/ko/ios/getting-started#project-plist) to add KakaoTalk to the app's Allowlist so the app can launch KakaoTalk, and set up a [custom URL scheme](https://developers.kakao.com/docs/latest/ko/documentation-guideline/glossary#%E3%85%8B) to return to the service app.
 
-KakaoTalk login involves the process of transitioning from the service app to KakaoTalk and back after the user presses the [Agree and Continue] button or cancels the login.
+During KakaoTalk login, the service app opens KakaoTalk and the user returns after pressing [Agree and Continue] or cancelling the login.
 
-To ensure the proper completion of the Kakao login process when returning from KakaoTalk to the service app, add the following steps to the `AppDelegate.mm` file.
+To complete Kakao login when the user returns from KakaoTalk to the service app, add the following code to `AppDelegate.mm`.
 
 ```objc
 #import "AppDelegate.h"
