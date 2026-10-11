@@ -7,7 +7,6 @@ import { $, fs, path } from 'zx';
 
 import { buildE2EApp, iosBuild } from './e2e-build.ts';
 import { logCommand } from './e2e-log.ts';
-import { recordVideo } from './e2e-video.ts';
 
 const root = path.resolve(import.meta.dirname, '../..');
 const timeoutMs = 180000;
@@ -20,7 +19,6 @@ const main = async () => {
       app: { type: 'string' },
       output: { type: 'string' },
       abi: { type: 'string' },
-      video: { type: 'boolean', default: false },
       help: { type: 'boolean', default: false },
     },
   });
@@ -28,7 +26,7 @@ const main = async () => {
   const usage = `Usage:
   yarn e2e build android [--abi arm64-v8a|x86_64]
   yarn e2e build ios
-  yarn e2e test [android|ios|both] [--device ID] [--app PATH] [--output PATH] [--video]`;
+  yarn e2e test [android|ios|both] [--device ID] [--app PATH] [--output PATH]`;
 
   if (values.help) {
     console.log(usage);
@@ -76,7 +74,6 @@ const main = async () => {
           platform,
           device: values.device,
           app: values.app,
-          video: values.video,
           signal: controller.signal,
           output:
             values.output && platforms.length === 2
@@ -106,14 +103,12 @@ const runTest = async ({
   device,
   app: appPath,
   output: outputPath,
-  video,
   signal,
 }: {
   platform: 'android' | 'ios';
   device?: string;
   app?: string;
   output?: string;
-  video?: boolean;
   signal: AbortSignal;
 }) => {
   const platformDir = path.resolve(root, 'build/e2e', platform);
@@ -179,8 +174,6 @@ const runTest = async ({
   let sdkOutput = artifacts;
 
   let tests: { name: string; status: string; durationSeconds: number }[] = [];
-  let stopRecording: (() => Promise<string>) | undefined;
-  let videoFile: string | undefined;
 
   const errors: string[] = [];
   let durationSeconds = 0;
@@ -234,10 +227,6 @@ const runTest = async ({
 
     const testStarted = performance.now();
     try {
-      if (video) {
-        stopRecording = await recordVideo({ platform, device, output });
-      }
-
       const sdk = path.resolve(root, 'node_modules/e2e/dist/cli/bin.js');
       await logCommand(
         $({
@@ -270,14 +259,6 @@ const runTest = async ({
       ).catch(() => undefined);
     }
   } finally {
-    if (stopRecording) {
-      try {
-        videoFile = await stopRecording();
-      } catch (cause) {
-        errors.push('Failed to retain whole-run video: ' + String(cause));
-      }
-    }
-
     if (sdkOutput !== artifacts) {
       try {
         await fs.copy(sdkOutput, artifacts);
@@ -358,7 +339,6 @@ const runTest = async ({
     status,
     durationSeconds,
     prepareSeconds,
-    video: videoFile,
     tests,
     error,
   };
@@ -366,10 +346,9 @@ const runTest = async ({
   await fs.writeFile(
     path.resolve(output, 'index.html'),
     `<!doctype html><html lang="en"><meta charset="utf-8"><title>Example E2E · ${platform}</title>
-<style>body{font:16px system-ui;margin:32px;background:#111;color:#eee}video{width:100%;max-width:480px}a{color:#9cf}</style>
+<style>body{font:16px system-ui;margin:32px;background:#111;color:#eee}a{color:#9cf}</style>
 <h1>${platform} · ${status}</h1><p>${durationSeconds.toFixed(2)}s</p>
-<p><a href="test.log">Test log</a> · <a href="junit.xml">JUnit</a> · <a href="sdk/summary.md">Scenario report</a></p>
-${videoFile ? `<video src="${videoFile}" controls></video>` : ''}</html>`,
+<p><a href="test.log">Test log</a> · <a href="junit.xml">JUnit</a> · <a href="sdk/summary.md">Scenario report</a></p></html>`,
   );
   console.log(`${platform}: ${status}, ${durationSeconds.toFixed(2)}s. Results: ${output}`);
   if (errors.length) {

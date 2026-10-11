@@ -46,6 +46,6 @@ When `packages/core/expo-config-plugin/*` or app plugin behavior changes:
 - Omitting the platform runs iOS and Android in parallel. Omitting `--device` selects the first mobile device returned by agent-device for each platform and boots it if needed. Use `--device` or `--app` with a single platform; `--output` for both platforms creates separate `ios/` and `android/` result directories.
 - Use a dedicated signed-out simulator or emulator without KakaoTalk or Kakao Navi. Tests do not clear user data or the simulator keychain.
 - The suite covers six menu screens, KakaoTalk availability, signed-out state, user/social token errors, channel URL generation, and navigation when Kakao Navi is absent. Login, message delivery, and external app actions are excluded.
-- `--app` selects the Release binary, `--output` selects a new result directory, and `--video` records the entire platform test run as one `video.mp4`; per-test recordings and explicit screenshots are disabled.
-- The SDK manages agent-device startup and test session cleanup. Passing requires every discovered test to pass and, when requested, the whole-run video to exist. Each output directory is single-use.
-- Evidence includes `summary.json`, `index.html`, `junit.xml`, the whole-run video, and SDK reports under `sdk/`. CI posts the results and whole-run videos in a dedicated PR comment and replaces its previous result comment after a successful upload.
+- `--app` selects the Release binary and `--output` selects a new result directory. Recordings and explicit screenshots are disabled.
+- The SDK manages agent-device startup and test session cleanup. Passing requires every discovered test to pass. Each output directory is single-use.
+- Evidence includes `summary.json`, `index.html`, `junit.xml`, and SDK reports under `sdk/`. CI updates platform results in a dedicated block in the PR body and preserves the rest of the description.

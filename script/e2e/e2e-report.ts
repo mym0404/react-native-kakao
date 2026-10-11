@@ -1,13 +1,12 @@
 #!/usr/bin/env node
 import * as actionsCore from '@actions/core';
 import { context as workflowContext, getOctokit } from '@actions/github';
-import { $, fs, os, path } from 'zx';
+import { fs } from 'zx';
 
 type Summary = {
   platform: string;
   status: 'passed' | 'failed';
   durationSeconds: number;
-  video?: string;
   tests: { status: string }[];
 };
 
@@ -25,14 +24,12 @@ const isSummary = (value: unknown): value is Summary => {
     typeof value.durationSeconds === 'number' &&
     Number.isFinite(value.durationSeconds) &&
     value.durationSeconds >= 0 &&
-    (!('video' in value) || typeof value.video === 'string') &&
     'tests' in value &&
     Array.isArray(value.tests) &&
     value.tests.every((test) => typeof test?.status === 'string')
   );
 };
 const platforms = ['android', 'ios'];
-const videoFile = 'video.mp4';
 
 export const reportE2EResults = async ({
   github,
@@ -55,7 +52,6 @@ export const reportE2EResults = async ({
 
   const runUrl = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
   const rows: string[] = [];
-  const videos: { platform: string; file: string }[] = [];
   for (const platform of platforms) {
     let result: Summary | undefined;
     try {
@@ -73,25 +69,9 @@ export const reportE2EResults = async ({
 
     if (
       result?.status === 'passed' &&
-      (result.tests.length === 0 ||
-        result.tests.some((test) => test.status !== 'passed') ||
-        result.video !== videoFile)
+      (result.tests.length === 0 || result.tests.some((test) => test.status !== 'passed'))
     ) {
       throw new Error(`Incomplete ${platform} E2E evidence`);
-    }
-
-    if (result?.video !== undefined) {
-      if (result.video !== videoFile) {
-        throw new Error(`Invalid ${platform} video path: ${result.video}`);
-      }
-
-      const file = path.resolve(`e2e-results/e2e-${platform}`, videoFile);
-      const bytes = await fs.readFile(file);
-      if (bytes.length < 24 || bytes.subarray(4, 8).toString() !== 'ftyp') {
-        throw new Error(`Invalid ${platform} whole-run video`);
-      }
-
-      videos.push({ platform, file });
     }
 
     const status = result ? (result.status === 'passed' ? '✅ Passed' : '❌ Failed') : '⚠️ Not run';
@@ -108,16 +88,11 @@ export const reportE2EResults = async ({
     '| --- | --- | ---: |',
     ...rows,
     '',
-    'Time includes SDK startup and app installation; excludes device preparation, builds, and video export.',
+    'Time includes SDK startup and app installation; excludes device preparation and builds.',
   ];
   await core.summary.addRaw(summary.join('\n')).write();
 
-  const body = [
-    marker,
-    ...summary,
-    ...videos.flatMap(({ platform, file }) => ['', `**${platform}**`, '', `![](${file})`]),
-    endMarker,
-  ].join('\n');
+  const body = [marker, ...summary, endMarker].join('\n');
 
   const description = pr.body ?? '';
   let updatedBody = `${description}\n\n${body}`;
@@ -131,25 +106,13 @@ export const reportE2EResults = async ({
     updatedBody = description.slice(0, start) + body + description.slice(end + endMarker.length);
   }
 
-  const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'kakao-e2e-report-'));
-  try {
-    const bodyFile = path.join(directory, 'body.md');
-    await fs.writeFile(bodyFile, updatedBody);
-
-    const attachments = videos.flatMap(({ file }) => ['--attach', file]);
-    // The issue command edits PR bodies without querying organization reviewers.
-    await $({
-      stdio: 'inherit',
-    })`gh issue edit ${issue_number} --repo ${`${owner}/${repo}`} --body-file ${bodyFile} ${attachments}`;
-  } finally {
-    await fs.remove(directory);
-  }
+  await github.rest.pulls.update({ owner, repo, pull_number: issue_number, body: updatedBody });
 };
 
 const main = async () => {
   const token = process.env.GITHUB_TOKEN;
-  if (!token || !process.env.GH_TOKEN || !process.env.PR_HEAD_SHA) {
-    throw new Error('GITHUB_TOKEN, GH_TOKEN, and PR_HEAD_SHA are required to report E2E results.');
+  if (!token || !process.env.PR_HEAD_SHA) {
+    throw new Error('GITHUB_TOKEN and PR_HEAD_SHA are required to report E2E results.');
   }
 
   await reportE2EResults({
