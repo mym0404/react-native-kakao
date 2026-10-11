@@ -85,7 +85,12 @@ export interface KakaoUser {
   nameNeedsAgreement?: boolean | null;
   profileImageNeedsAgreement?: boolean | null;
   profileNicknameNeedsAgreement?: boolean | null;
+  legalName?: string | null;
+  legalNameNeedsAgreement?: boolean | null;
+  legalBirthDate?: string | null;
   legalBirthDateNeedsAgreement?: boolean | null;
+  legalGender?: 'female' | 'male' | null;
+  legalGenderNeedsAgreement?: boolean | null;
   connectedAt?: number | null;
   synchedAt?: number | null;
 }

@@ -46,7 +46,12 @@ export type KakaoUser = {
   nameNeedsAgreement?: boolean | null;
   profileImageNeedsAgreement?: boolean | null;
   profileNicknameNeedsAgreement?: boolean | null;
+  legalName?: string | null;
+  legalNameNeedsAgreement?: boolean | null;
+  legalBirthDate?: string | null;
   legalBirthDateNeedsAgreement?: boolean | null;
+  legalGender?: 'female' | 'male' | null;
+  legalGenderNeedsAgreement?: boolean | null;
   connectedAt?: number | null;
   synchedAt?: number | null;
 };
@@ -69,6 +74,18 @@ These fields use the same names on Android, iOS, and web. Values that Kakao does
 | `uuid` | The user's own ID in KakaoTalk friend information, distinct from the service user ID in `id`. | The app has KakaoTalk friends or messaging permission. |
 
 For example, `user.isDefaultImage === false` identifies an image registered by the user. `null` does not establish whether the image is a default. See the [user information response](https://developers.kakao.com/docs/en/kakaologin/rest-api#req-user-info-response) for availability conditions.
+
+## Legal identity information
+
+Partner apps with prior approval from Kakao can retrieve identity-verified names, birth dates, and genders with `me()`. App permission and user consent are required. Values that Kakao does not provide are `null`. This information must not replace identity verification.
+
+| Field | Meaning | Format |
+| --- | --- | --- |
+| `legalName` | Identity-verified legal name | String |
+| `legalBirthDate` | Identity-verified legal birth date | `yyyyMMdd` |
+| `legalGender` | Identity-verified legal gender | `female` or `male` |
+
+Each corresponding `NeedsAgreement` flag indicates whether the information can be provided after user consent. `true` requires additional consent; `false` does not guarantee that the value is available. See [partner user information](https://developers.kakao.com/docs/ko/kakaologin/confidential-user-info) for the requirements.
 
 ## Query options
 
