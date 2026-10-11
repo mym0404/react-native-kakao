@@ -152,7 +152,7 @@ import SafariServices
                 "uuid": c.uuid,
                 "encodedId": c.encodedId,
                 "relation": c.relation.rawValue.lowercased(),
-                "updateAt": c.updatedAt?.timeIntervalSince1970 as Any
+                "updatedAt": c.updatedAt?.timeIntervalSince1970 as Any
               ]
             })
           } else {
