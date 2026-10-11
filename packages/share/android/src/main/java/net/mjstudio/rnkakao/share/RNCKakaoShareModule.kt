@@ -86,6 +86,33 @@ class RNCKakaoShareModule internal constructor(
         serverCallbackArgs,
         promise,
       )
+    } else if (templateType == "scrap") {
+      val requestUrl = templateJson.toHashMap()["requestUrl"] as? String
+      if (requestUrl == null) {
+        promise.rejectWith(RNCKakaoUnknownException("requestUrl is required for scrap messages"))
+        return@onMain
+      }
+      val customTemplateId = templateId.takeUnless { it == -1.0 }
+      when (sendType) {
+        "send-me" -> {
+          runSendToMe(templateType, customTemplateId, templateArgs = templateArgs, promise = promise, requestUrl = requestUrl)
+        }
+
+        "send-friend" -> {
+          runSendToFriends(
+            templateType,
+            receiverUuids.filterIsInstance<String>(),
+            customTemplateId,
+            templateArgs = templateArgs,
+            promise = promise,
+            requestUrl = requestUrl,
+          )
+        }
+
+        else -> {
+          promise.rejectWith(RNCKakaoUnknownException("Unknown sendType for scrap messages: $sendType"))
+        }
+      }
     } else {
       shareOrSendDefaultTemplate(
         sendType,
@@ -174,6 +201,7 @@ class RNCKakaoShareModule internal constructor(
     defaultTemplate: ReadableMap? = null,
     templateArgs: ReadableMap? = null,
     promise: Promise,
+    requestUrl: String? = null,
   ) {
     val callback = { e: Throwable? ->
       if (e != null) {
@@ -182,7 +210,9 @@ class RNCKakaoShareModule internal constructor(
         promise.resolve(42)
       }
     }
-    if (templateId != null) {
+    if (requestUrl != null) {
+      TalkApiClient.instance.sendScrapMemo(requestUrl, templateId?.toLong(), templateArgs?.toStringMap(), callback)
+    } else if (templateId != null) {
       TalkApiClient.instance.sendCustomMemo(templateId.toLong(), templateArgs?.toStringMap(), callback)
     } else if (defaultTemplate != null) {
       runCatching {
@@ -203,6 +233,7 @@ class RNCKakaoShareModule internal constructor(
     defaultTemplate: ReadableMap? = null,
     templateArgs: ReadableMap? = null,
     promise: Promise,
+    requestUrl: String? = null,
   ) {
     val callback = { messageSendResult: MessageSendResult?, e: Throwable? ->
       if (e != null) {
@@ -213,7 +244,9 @@ class RNCKakaoShareModule internal constructor(
         promise.resolve(argArr().pushStringList(messageSendResult.successfulReceiverUuids ?: listOf()))
       }
     }
-    if (templateId != null) {
+    if (requestUrl != null) {
+      TalkApiClient.instance.sendScrapMessage(receiverUuids, requestUrl, templateId?.toLong(), templateArgs?.toStringMap(), callback)
+    } else if (templateId != null) {
       TalkApiClient.instance.sendCustomMessage(receiverUuids, templateId.toLong(), templateArgs?.toStringMap(), callback)
     } else if (defaultTemplate != null) {
       runCatching {

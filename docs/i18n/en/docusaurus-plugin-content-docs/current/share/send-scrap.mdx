@@ -1,0 +1,54 @@
+---
+sidebar_position: 102
+---
+
+# Send URL Scrap Messages
+
+`sendScrapTemplateToMe` and `sendScrapTemplateToFriends` send KakaoTalk messages using information scraped from a public web page. Both functions work on Android, iOS, and web.
+
+The page's domain must be registered under **Product Link > Web domain** in Kakao Developers. Kakao Login and the `talk_message` consent scope are required. Sending to friends also requires KakaoTalk friends/message permissions for the app and eligible recipients.
+
+Unlike URL scrap sharing, these functions send messages directly without opening a share destination picker.
+
+## Send to My Chatroom
+
+```tsx
+import { sendScrapTemplateToMe } from '@react-native-kakao/share';
+
+await sendScrapTemplateToMe({
+  requestUrl: 'https://your-registered-domain.example/article',
+});
+```
+
+The function returns `Promise<void>` and rejects when Kakao reports an error.
+
+## Send to Friends
+
+```tsx
+import { sendScrapTemplateToFriends } from '@react-native-kakao/share';
+
+const successfulReceiverUuids = await sendScrapTemplateToFriends({
+  requestUrl: 'https://your-registered-domain.example/article',
+  receiverUuids: selectedFriends.map(({ uuid }) => uuid),
+});
+```
+
+Obtain recipient UUIDs from [the friend picker](/docs/social/select-talk-friends) or [the friends API](/docs/social/get-friends). Kakao allows up to five recipients per request.
+
+The function returns `Promise<string[]>` containing successful recipient UUIDs. As with other friend message functions, unsuccessful recipients are omitted; compare the returned list with `receiverUuids` when checking partial delivery.
+
+## Custom Template
+
+Both functions accept an optional `templateId` and string-valued `templateArgs`. Without `templateId`, Kakao uses the default scrap template.
+
+```tsx
+await sendScrapTemplateToMe({
+  requestUrl: 'https://your-registered-domain.example/article',
+  templateId: 12345,
+  templateArgs: { price: '20000' },
+});
+```
+
+The custom template must belong to the same Kakao app. For friend messages, its usage purpose must be **KakaoTalk Message**.
+
+See the official [Android](https://developers.kakao.com/docs/latest/en/kakaotalk-message/android), [iOS](https://developers.kakao.com/docs/latest/en/kakaotalk-message/ios), and [JavaScript](https://developers.kakao.com/docs/latest/en/kakaotalk-message/js) documentation.
