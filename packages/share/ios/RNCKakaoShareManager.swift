@@ -255,7 +255,16 @@ import SafariServices
       if let error {
         RNCKakaoUtil.reject(reject, error)
       } else if let messageSendResult {
-        resolve(messageSendResult.successfulReceiverUuids ?? [])
+        resolve([
+          "successfulReceiverUuids": messageSendResult.successfulReceiverUuids ?? [],
+          "failureInfos": messageSendResult.failureInfos?.map { failure in
+            [
+              "code": failure.code,
+              "msg": failure.msg,
+              "receiverUuids": failure.receiverUuids
+            ]
+          } ?? []
+        ])
       } else {
         RNCKakaoUtil.reject(reject, RNCKakaoError.unknown("messageSendResult"))
       }
