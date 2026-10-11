@@ -7,7 +7,7 @@ sidebar_position: 6
 
 [공식 문서](https://developers.kakao.com/docs/latest/ko/kakaonavi/android)
 
-## Usage
+## 사용법 {#usage}
 
 `shareTo()` 함수로 카카오내비 앱을 실행해 경로를 공유할 수 있습니다.
 
@@ -38,13 +38,13 @@ Navi에는 설치를 안내하는 옵션이 있으므로 앱 실행에 실패해
 :::
 
 :::warning
-Web 플랫폼에서는 길 안내가 제공되지 않습니다.
+웹 플랫폼에서는 길 안내가 제공되지 않습니다.
 
 모바일 웹에서는 브라우저가 카카오 내비 실행/설치 안내 화면으로 이동합니다.
 
-On desktop web, the function returns `false` without requesting app launch.
+데스크톱 웹에서는 앱 실행을 요청하지 않고 `false`를 반환합니다.
 
-On mobile web, `true` indicates a launch request, not confirmation that Kakao Navi is installed or running. The Kakao JS SDK controls its launch/installation fallback; `openWebInstallUrlIfNaviAppNotAvailable` applies only to native platforms.
+모바일 웹에서 `true`는 앱 실행을 요청했다는 뜻이며, 카카오내비의 설치 여부나 실행 성공 여부를 확인한 결과는 아닙니다. 실행과 설치 안내는 카카오 JavaScript SDK가 처리하며, `openWebInstallUrlIfNaviAppNotAvailable`은 네이티브 플랫폼에만 적용됩니다.
 
 카카오 JavaScript SDK의 웹 길 안내 지원 종료 공지입니다.
 
