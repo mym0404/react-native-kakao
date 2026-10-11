@@ -56,34 +56,35 @@ export interface KakaoShippingAddress {
 }
 export interface KakaoUser {
   id: number;
-  email: string;
+  properties: Record<string, string>;
+  email?: string | null;
   name?: string | null;
-  nickname: string;
-  profileImageUrl: string;
-  thumbnailImageUrl: string;
+  nickname?: string | null;
+  profileImageUrl?: string | null;
+  thumbnailImageUrl?: string | null;
   phoneNumber?: string | null;
   ageRange?: string | null;
   birthday?: string | null;
   birthdayType?: string | null;
   birthyear?: string | null;
   gender?: string | null;
-  isEmailValid: boolean;
-  isEmailVerified: boolean;
-  isKorean?: boolean;
-  ageRangeNeedsAgreement?: boolean;
-  birthdayNeedsAgreement?: boolean;
-  birthyearNeedsAgreement?: boolean;
-  emailNeedsAgreement?: boolean;
-  genderNeedsAgreement?: boolean;
-  isKoreanNeedsAgreement?: boolean;
-  phoneNumberNeedsAgreement?: boolean;
-  profileNeedsAgreement?: boolean;
-  nameNeedsAgreement?: boolean;
-  profileImageNeedsAgreement?: boolean;
-  profileNicknameNeedsAgreement?: boolean;
-  legalBirthDateNeedsAgreement?: boolean;
-  connectedAt?: number;
-  synchedAt?: number;
+  isEmailValid?: boolean | null;
+  isEmailVerified?: boolean | null;
+  isKorean?: boolean | null;
+  ageRangeNeedsAgreement?: boolean | null;
+  birthdayNeedsAgreement?: boolean | null;
+  birthyearNeedsAgreement?: boolean | null;
+  emailNeedsAgreement?: boolean | null;
+  genderNeedsAgreement?: boolean | null;
+  isKoreanNeedsAgreement?: boolean | null;
+  phoneNumberNeedsAgreement?: boolean | null;
+  profileNeedsAgreement?: boolean | null;
+  nameNeedsAgreement?: boolean | null;
+  profileImageNeedsAgreement?: boolean | null;
+  profileNicknameNeedsAgreement?: boolean | null;
+  legalBirthDateNeedsAgreement?: boolean | null;
+  connectedAt?: number | null;
+  synchedAt?: number | null;
 }
 export interface KakaoAccessTokenInfo {
   id?: number;
@@ -164,8 +165,8 @@ export function shippingAddresses(): Promise<KakaoShippingAddressResult> {
   return Native.shippingAddresses();
 }
 
-export function me(): Promise<KakaoUser> {
-  return Native.me();
+export function me({ propertyKeys }: { propertyKeys?: string[] } = {}): Promise<KakaoUser> {
+  return Native.me(propertyKeys);
 }
 
 export function getAccessToken(): Promise<KakaoAccessTokenInfo> {
