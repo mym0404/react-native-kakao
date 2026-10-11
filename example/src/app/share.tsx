@@ -37,9 +37,11 @@ import { Btn } from '../component/Btn';
 import { StyledScrollView } from '../component/StyledScrollView';
 import { Txt } from '../component/Txt';
 
+const webUrl = 'https://rnkakao.mjstudio.net';
+
 const link: KakaoTemplateLink = {
-  webUrl: 'https://mjstudio.net',
-  mobileWebUrl: 'https://mjstudio.net',
+  webUrl,
+  mobileWebUrl: webUrl,
   iosExecutionParams: {},
   androidExecutionParams: {},
 };
