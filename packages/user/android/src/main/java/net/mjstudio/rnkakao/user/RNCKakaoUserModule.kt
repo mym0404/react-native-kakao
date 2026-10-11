@@ -402,7 +402,7 @@ class RNCKakaoUserModule internal constructor(
             argMap().apply {
               putL("id", accessTokenInfo.id)
               putL("expiresIn", accessTokenInfo.expiresIn)
-              putI("appID", accessTokenInfo.appId)
+              putI("appId", accessTokenInfo.appId)
             },
           )
         }
