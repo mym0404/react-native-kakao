@@ -4,6 +4,7 @@ import type {
   KakaoCalendarTemplate,
   KakaoCommerceTemplate,
   KakaoFeedTemplate,
+  KakaoImageUploadResult,
   KakaoListTemplate,
   KakaoLocationTemplate,
   KakaoTemplateButton,
@@ -32,6 +33,7 @@ export type {
   KakaoFeedTemplate,
   KakaoCommerceTemplate,
   KakaoCalendarTemplate,
+  KakaoImageUploadResult,
 };
 
 function shareOrSendMeOrSendFriendOrWhatever(
@@ -453,7 +455,18 @@ export function sendCalendarTemplateToFriends({
   );
 }
 
+export function scrapImage({
+  imageUrl,
+  secureResource = true,
+}: {
+  imageUrl: string;
+  secureResource?: boolean;
+}) {
+  return Native.scrapImage(imageUrl, secureResource);
+}
+
 const KakaoShare = {
+  scrapImage,
   shareCustomTemplate,
   sendCustomTemplateToMe,
   sendCustomTemplateToFriends,

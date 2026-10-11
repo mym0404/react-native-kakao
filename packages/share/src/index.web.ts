@@ -1,10 +1,17 @@
 import { filterNonNullishKeys, snakeCaseObject } from '@mj-studio/js-util';
 import { kRunWebAPI } from '@react-native-kakao/core';
 
-import type { KakaoShareAPI } from './index';
+import type { KakaoImageUploadResult, KakaoShareAPI } from './index';
 
 declare const Kakao: {
   Share: {
+    scrapImage: (args: { imageUrl: string }) => Promise<{
+      infos: {
+        original: Omit<KakaoImageUploadResult['infos']['original'], 'contentType'> & {
+          content_type: string;
+        };
+      };
+    }>;
     sendDefault: (args: any) => Promise<any>;
     sendCustom: (args: any) => Promise<any>;
   };
@@ -69,6 +76,21 @@ function createSendDefaultFriends({
 }
 
 const KakaoShare: KakaoShareAPI = {
+  scrapImage: ({ imageUrl, secureResource = true }) =>
+    kRunWebAPI(async () => {
+      const { infos } = await Kakao.Share.scrapImage({ imageUrl });
+      const { content_type: contentType, ...original } = infos.original;
+
+      return {
+        infos: {
+          original: {
+            ...original,
+            url: original.url.replace(/^https?:/, secureResource ? 'https:' : 'http:'),
+            contentType,
+          },
+        },
+      };
+    }),
   shareCustomTemplate: ({ templateArgs, templateId, serverCallbackArgs }) =>
     kRunWebAPI(() =>
       Kakao.Share.sendCustom({
@@ -130,6 +152,7 @@ const KakaoShare: KakaoShareAPI = {
     createSendDefaultFriends({ template, receiverUuids, objectType: 'calendar' }),
 };
 export const {
+  scrapImage,
   sendCalendarTemplateToFriends,
   sendCalendarTemplateToMe,
   sendCommerceTemplateToFriends,

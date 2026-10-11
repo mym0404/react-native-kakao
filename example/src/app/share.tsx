@@ -9,6 +9,7 @@ import {
   type KakaoTemplateLink,
   type KakaoTemplateSocial,
   type KakaoTextTemplate,
+  scrapImage,
   sendCalendarTemplateToFriends,
   sendCalendarTemplateToMe,
   sendCommerceTemplateToFriends,
@@ -34,8 +35,12 @@ import {
 import { selectMultipleFriends } from '@react-native-kakao/social';
 
 import { Btn } from '../component/Btn';
+import { E2EApiAction } from '../component/E2EApiAction';
 import { StyledScrollView } from '../component/StyledScrollView';
 import { Txt } from '../component/Txt';
+
+const scrapImageUrl =
+  'https://developers.kakao.com/assets/img/about/logos/kakaolink/kakaolink_btn_medium.png';
 
 const link: KakaoTemplateLink = {
   webUrl: 'https://mjstudio.net',
@@ -152,6 +157,16 @@ export default function Page() {
       flex={1}
       contentContainerSx={{ pt: 12, pb: 48, alignItems: 'center', px: 4, gap: 4 }}
     >
+      <E2EApiAction
+        id={'share-scrap-image'}
+        title={'Scrap Image'}
+        action={() => scrapImage({ imageUrl: scrapImageUrl })}
+      />
+      <E2EApiAction
+        id={'share-scrap-image-http'}
+        title={'Scrap Image (HTTP)'}
+        action={() => scrapImage({ imageUrl: scrapImageUrl, secureResource: false })}
+      />
       <Txt>{'Custom'}</Txt>
       <Btn
         title={'Share Custom Template'}
