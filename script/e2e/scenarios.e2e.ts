@@ -97,7 +97,9 @@ describe('@react-native-kakao/navi', () => {
   test('navi unavailable', async ({ screen }) => {
     await openMenu(screen, 'Navi');
     await (await findVisible(screen, 'navi-share-button')).tap();
-    await expect(await findVisible(screen, 'navi-share-result')).toHaveText(falseResult);
+    await expect(screen.getByTestId('navi-share-result', { visible: true })).toHaveText(
+      falseResult,
+    );
     await expect(screen.getByTestId(screenTitle)).toHaveText('Navi');
   });
 });

@@ -64,6 +64,7 @@ function shareOrSendMeOrSendFriendOrWhatever(
 const SendTypes = { share: 'share', sendMe: 'send-me', sendFriend: 'send-friend' };
 const TemplateTypes = {
   custom: 'custom',
+  scrap: 'scrap',
   feed: 'feed',
   list: 'list',
   location: 'location',
@@ -71,6 +72,48 @@ const TemplateTypes = {
   text: 'text',
   calendar: 'calendar',
 };
+const DefaultScrapTemplateId = -1;
+
+export type KakaoScrapMessageParams = {
+  requestUrl: string;
+  templateId?: number;
+  templateArgs?: Record<string, string>;
+};
+
+export async function sendScrapTemplateToMe({
+  requestUrl,
+  templateId = DefaultScrapTemplateId,
+  templateArgs = {},
+}: KakaoScrapMessageParams) {
+  await Native.shareOrSendMeOrSendFriendOrWhatever(
+    SendTypes.sendMe,
+    TemplateTypes.scrap,
+    templateId,
+    { requestUrl },
+    [],
+    false,
+    templateArgs,
+    {},
+  );
+}
+
+export function sendScrapTemplateToFriends({
+  requestUrl,
+  templateId = DefaultScrapTemplateId,
+  templateArgs = {},
+  receiverUuids,
+}: KakaoScrapMessageParams & { receiverUuids: string[] }): Promise<string[]> {
+  return Native.shareOrSendMeOrSendFriendOrWhatever(
+    SendTypes.sendFriend,
+    TemplateTypes.scrap,
+    templateId,
+    { requestUrl },
+    receiverUuids,
+    false,
+    templateArgs,
+    {},
+  );
+}
 
 export function shareCustomTemplate({
   templateId,
@@ -454,6 +497,8 @@ export function sendCalendarTemplateToFriends({
 }
 
 const KakaoShare = {
+  sendScrapTemplateToMe,
+  sendScrapTemplateToFriends,
   shareCustomTemplate,
   sendCustomTemplateToMe,
   sendCustomTemplateToFriends,

@@ -69,6 +69,33 @@ function createSendDefaultFriends({
 }
 
 const KakaoShare: KakaoShareAPI = {
+  sendScrapTemplateToMe: async ({ requestUrl, templateId, templateArgs }) => {
+    await kRunWebAPI(() =>
+      Kakao.API.request({
+        url: '/v2/api/talk/memo/scrap/send',
+        data: filterNonNullishKeys({
+          request_url: requestUrl,
+          template_id: templateId,
+          template_args: templateArgs,
+        }),
+      }),
+    );
+  },
+  sendScrapTemplateToFriends: async ({ requestUrl, templateId, templateArgs, receiverUuids }) => {
+    const response: { successful_receiver_uuids?: string[] } = await kRunWebAPI(() =>
+      Kakao.API.request({
+        url: '/v1/api/talk/friends/message/scrap/send',
+        data: filterNonNullishKeys({
+          request_url: requestUrl,
+          template_id: templateId,
+          template_args: templateArgs,
+          receiver_uuids: receiverUuids,
+        }),
+      }),
+    );
+
+    return response.successful_receiver_uuids ?? [];
+  },
   shareCustomTemplate: ({ templateArgs, templateId, serverCallbackArgs }) =>
     kRunWebAPI(() =>
       Kakao.Share.sendCustom({
@@ -130,6 +157,8 @@ const KakaoShare: KakaoShareAPI = {
     createSendDefaultFriends({ template, receiverUuids, objectType: 'calendar' }),
 };
 export const {
+  sendScrapTemplateToMe,
+  sendScrapTemplateToFriends,
   sendCalendarTemplateToFriends,
   sendCalendarTemplateToMe,
   sendCommerceTemplateToFriends,

@@ -220,11 +220,11 @@ export interface Spec extends TurboModule {
   shareOrSendMeOrSendFriendOrWhatever(
     /* share, send-me, send-friend */
     sendType: string,
-    /* custom, feed, list, location, commerce, text, calendar */
+    /* custom, scrap, feed, list, location, commerce, text, calendar */
     templateType: string,
-    /* only for custom */
+    /* only for custom or scrap (-1 uses the default scrap template) */
     templateId: Double,
-    /* only for default templates */
+    /* default template fields or { requestUrl } for scrap */
     templateJson: UnsafeObject,
     /* only for pass friend uuid directly */
     receiverUuids: ReadonlyArray<string>,
