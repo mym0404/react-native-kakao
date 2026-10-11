@@ -84,6 +84,7 @@ import SafariServices
         templateType: templateType,
         templateId: templateId,
         receiverUuids: receiverUuids,
+        templateArgs: templateArgs,
         resolve: resolve,
         reject: reject
       )
