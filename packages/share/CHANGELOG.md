@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 3.0.0-next.3
+
+### Patch Changes
+
+- b656984: Allow omitted titles and image URLs in message template content.
+- baa3ecd: Forward custom template arguments when sending messages to friends on iOS.
+- @react-native-kakao/core@3.0.0-next.3
+
 ## 3.0.0-next.2
 
 ### Patch Changes

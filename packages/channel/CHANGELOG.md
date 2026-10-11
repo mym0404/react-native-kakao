@@ -1,5 +1,12 @@
 # Change Log
 
+## 3.0.0-next.3
+
+### Patch Changes
+
+- 2a95c50: Return channel timestamps using the documented updatedAt key.
+- @react-native-kakao/core@3.0.0-next.3
+
 ## 3.0.0-next.2
 
 ### Patch Changes

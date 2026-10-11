@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 3.0.0-next.3
+
+No changes in this release.
+
 ## 3.0.0-next.2
 
 ### Patch Changes
