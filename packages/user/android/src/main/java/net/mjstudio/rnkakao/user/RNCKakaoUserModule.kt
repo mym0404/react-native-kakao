@@ -309,9 +309,10 @@ class RNCKakaoUserModule internal constructor(
   @ReactMethod
   override fun me(
     propertyKeys: ReadableArray?,
+    secureResource: Boolean?,
     promise: Promise,
   ) = onMain {
-    UserApiClient.instance.me(propertyKeys?.filterIsInstance<String>()) { user, error ->
+    UserApiClient.instance.me(propertyKeys?.filterIsInstance<String>(), secureResource ?: true) { user, error ->
       if (error != null) {
         promise.rejectWith(error)
       } else if (user == null) {

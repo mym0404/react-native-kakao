@@ -26,7 +26,7 @@ export interface Spec extends TurboModule {
   revokeScopes(scopes: string[]): Promise<void>;
   serviceTerms(): Promise<KakaoServiceTerms[]>;
   shippingAddresses(): Promise<KakaoShippingAddressResult>;
-  me(propertyKeys?: string[]): Promise<KakaoUser>;
+  me(propertyKeys?: string[], secureResource?: boolean): Promise<KakaoUser>;
   getAccessToken(): Promise<KakaoAccessTokenInfo>;
 }
 
