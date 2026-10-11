@@ -82,7 +82,7 @@ class RNCKakaoNaviModule internal constructor(
 private fun ReadableMap.toLocation() =
   Location(
     name = getString("name") ?: "",
-    rpFlag = getString("rpFlag"),
+    rpFlag = getString("rpflag"),
     x = getDoubleElseNull("x")!!.toString(),
     y = getDoubleElseNull("y")!!.toString(),
   )
