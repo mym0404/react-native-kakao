@@ -89,6 +89,25 @@ export default function Page() {
             );
         }}
       />
+      <E2EApiAction
+        id={'login-hint'}
+        title={'Login With ID Hint'}
+        minW={buttonMinWidth}
+        action={async () => {
+          await login({
+            useKakaoAccountLogin: true,
+            prompts: ['Login'],
+            loginHint: 'rn_kakao_verification',
+            web: {
+              redirectUri: 'http://localhost',
+              prompt: ['login'],
+              throughTalk: false,
+            },
+          });
+
+          return { loggedIn: true };
+        }}
+      />
       <Btn
         minW={buttonMinWidth}
         title={'Unlink'}

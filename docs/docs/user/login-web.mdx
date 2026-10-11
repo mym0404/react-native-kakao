@@ -43,13 +43,13 @@ useEffect(() => {
 }, [code]);
 ```
 
-## Step 1. 간편 로그인 후 이동한 페이지의 검색 매개변수에서 인가 코드 받기
+## 1단계: 이동한 페이지에서 인가 코드 받기
 
 `login()` 함수를 호출하면 카카오 로그인 페이지로 이동합니다.
 
 웹 플랫폼에서는 `web` 객체를 전달해야 합니다.
 
-`web` 객체 밖의 옵션은 무시됩니다.
+`loginHint`는 카카오계정 로그인 화면의 ID 입력란에 미리 채울 값입니다. `loginHint`와 `web.loginHint`를 함께 전달하면 공통 옵션인 `loginHint`를 우선합니다. `nonce`도 공통 옵션을 우선하며, 나머지 웹 로그인 옵션은 `web` 객체 안에 전달합니다.
 
 예를 들어 `prompt`는 `web` 객체 안팎에 모두 있지만 Web 플랫폼에서는 항상 `web` 안의 `prompt`만 사용합니다.
 
@@ -66,14 +66,14 @@ login({
 })
 ```
 
-:::danger Dangerous
+:::danger 주의
 콘솔에 등록한 `redirectUri`와 `login`, `issueAccessTokenWithCodeWeb` 호출에 사용하는 값은 모두
 같아야 로그인이 동작합니다.
 :::
 
 인자들에 대한 자세한 정보는 [공식 문서](https://developers.kakao.com/docs/latest/ko/kakaologin/js#login)를 참고하세요.
 
-## Step 2. 인가 코드로 Access Token 발급받기
+## 2단계: 인가 코드로 액세스 토큰 발급받기
 
 `issueAccessTokenWithCodeWeb()` 함수를 호출해 인가 코드로 Access Token을 발급받을 수 있습니다.
 
@@ -100,7 +100,7 @@ useEffect(() => {
 }, [code]);
 ```
 
-:::tip TIP
+:::tip 참고
 위 코드는 예시입니다. 검색 매개변수에서 `code`를 얻은 뒤 `issueAccessTokenWithCodeWeb`, `setAccessTokenWeb`
 을 순서대로 호출해야 합니다.
 :::

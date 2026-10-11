@@ -87,7 +87,7 @@ const KakaoUser: KakaoUserAPI = {
 
       return Kakao.Auth.authorize(
         filterNonNullishKeys({
-          loginHint,
+          loginHint: params?.loginHint ?? loginHint,
           nonce: params?.nonce ?? nonce,
           prompt: prompt?.join(','),
           redirectUri,
