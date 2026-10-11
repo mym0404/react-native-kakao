@@ -2,9 +2,9 @@
 sidebar_position: 6
 ---
 
-# Share a Scraped Web Page
+# 웹 페이지 스크랩 공유
 
-`shareScrapTemplate()` shares the title, description, and image scraped from a web page on Android, iOS, and web. Register the page's domain in your Kakao Developers app's **Product Link** settings first.
+`shareScrapTemplate()`로 웹 페이지에서 가져온 제목, 설명, 이미지를 Android, iOS, 웹에서 공유할 수 있습니다. 먼저 카카오디벨로퍼스 앱의 제품 링크 설정에 페이지의 도메인을 등록해야 합니다.
 
 ```tsx
 import { shareScrapTemplate } from '@react-native-kakao/share';
@@ -12,16 +12,16 @@ import { shareScrapTemplate } from '@react-native-kakao/share';
 await shareScrapTemplate({ requestUrl: 'https://developers.kakao.com' });
 ```
 
-| Option | Type | Default | Description |
+| 옵션 | 타입 | 기본값 | 설명 |
 | --- | --- | --- | --- |
-| `requestUrl` | `string` | Required | Web page to scrape. |
-| `templateId` | `number` | Omitted | Optional custom message template. |
-| `templateArgs` | `Record<string, string>` | `{}` | Custom template argument values. Keys remain unchanged. |
-| `serverCallbackArgs` | `Record<string, string>` | `{}` | Arguments for the configured share server callback. |
-| `useWebBrowserIfKakaoTalkNotAvailable` | `boolean` | `true` | Android/iOS use browser sharing when KakaoTalk is unavailable. Web uses the JavaScript SDK's share flow. |
+| `requestUrl` | `string` | 필수 | 정보를 가져올 웹 페이지입니다. |
+| `templateId` | `number` | 생략 | 사용자 정의 메시지 템플릿을 지정할 수 있습니다. |
+| `templateArgs` | `Record<string, string>` | `{}` | 사용자 정의 템플릿 인자입니다. 키를 그대로 전달합니다. |
+| `serverCallbackArgs` | `Record<string, string>` | `{}` | 설정한 공유 서버 콜백에 전달할 인자입니다. |
+| `useWebBrowserIfKakaoTalkNotAvailable` | `boolean` | `true` | Android·iOS에서 카카오톡을 사용할 수 없으면 브라우저로 공유합니다. 웹에서는 JavaScript SDK의 공유 흐름을 사용합니다. |
 
-The function returns `Promise<void>`. It resolves after the native share screen opens or the web SDK starts its share flow. Resolution does not confirm message delivery or that the user selected a recipient. Native platforms reject with `Package-KakaoAppNotAvailable` when KakaoTalk is unavailable and browser fallback is disabled.
+`Promise<void>`를 반환합니다. 네이티브 공유 화면을 열거나 웹 SDK가 공유 흐름을 시작하면 완료합니다. 완료됐다는 것만으로 사용자가 수신자를 선택했거나 메시지가 전달됐는지는 알 수 없습니다. 네이티브에서 카카오톡을 사용할 수 없고 브라우저 공유도 비활성화했다면 `Package-KakaoAppNotAvailable` 오류로 거부합니다.
 
-Call it from a user gesture, such as a button press, so browsers can open the share window. The Kakao JavaScript SDK manages its popup and mobile app handoff.
+브라우저에서 공유 창을 열 수 있도록 버튼 누르기 등 사용자 동작에서 호출합니다. 팝업과 모바일 앱으로의 이동은 카카오 JavaScript SDK가 처리합니다.
 
-See the official [Android](https://developers.kakao.com/docs/en/kakaotalk-share/android-link), [iOS](https://developers.kakao.com/docs/en/kakaotalk-share/ios-link), and [JavaScript](https://developers.kakao.com/docs/en/kakaotalk-share/js-link) guides.
+공식 [Android](https://developers.kakao.com/docs/en/kakaotalk-share/android-link), [iOS](https://developers.kakao.com/docs/en/kakaotalk-share/ios-link), [JavaScript](https://developers.kakao.com/docs/en/kakaotalk-share/js-link) 문서를 참고하세요.
