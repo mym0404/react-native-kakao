@@ -162,12 +162,63 @@ const calendar: KakaoCalendarTemplate = {
   ],
 };
 
+async function sendDetailedMessage(templateType: 'text' | 'custom' | 'scrap') {
+  const selected = await selectMultipleFriends(scrapFriendPickerParams);
+  const params = {
+    receiverUuids: selected.users.map(({ uuid }) => uuid),
+    includeFailureInfo: true as const,
+  };
+
+  if (params.receiverUuids.length === 0) {
+    return { selectedCount: 0 };
+  }
+
+  const result =
+    templateType === 'text'
+      ? await sendTextTemplateToFriends({
+          ...params,
+          template: {
+            text: 'RNCExample message result verification',
+            link: { webUrl: scrapRequestUrl, mobileWebUrl: scrapRequestUrl },
+          },
+        })
+      : templateType === 'custom'
+        ? await sendCustomTemplateToFriends({ ...params, templateId: kakaoTalkMessageTemplateId })
+        : await sendScrapTemplateToFriends({ ...params, requestUrl: scrapRequestUrl });
+
+  return {
+    selectedCount: params.receiverUuids.length,
+    successfulCount: result.successfulReceiverUuids.length,
+    failureCount: result.failureInfos.reduce(
+      (count, failure) => count + failure.receiverUuids.length,
+      0,
+    ),
+    failureCodes: result.failureInfos.map((failure) => failure.code),
+  };
+}
+
 export default function Page() {
   return (
     <StyledScrollView
       flex={1}
       contentContainerSx={{ pt: 12, pb: 48, alignItems: 'center', px: 4, gap: 4 }}
     >
+      <Txt>{'Message Results'}</Txt>
+      <E2EApiAction
+        id={'send-text-with-result'}
+        title={'Send Text With Detailed Result'}
+        action={() => sendDetailedMessage('text')}
+      />
+      <E2EApiAction
+        id={'send-custom-with-result'}
+        title={'Send Custom With Detailed Result'}
+        action={() => sendDetailedMessage('custom')}
+      />
+      <E2EApiAction
+        id={'send-scrap-with-result'}
+        title={'Send Scrap With Detailed Result'}
+        action={() => sendDetailedMessage('scrap')}
+      />
       <Txt>{'Scrap Messages'}</Txt>
       <E2EApiAction
         id={'send-scrap-me'}

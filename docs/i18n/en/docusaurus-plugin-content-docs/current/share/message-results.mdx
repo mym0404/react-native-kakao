@@ -1,0 +1,54 @@
+---
+sidebar_position: 108
+---
+
+# Friend message results
+
+All `send*TemplateToFriends` functions accept `includeFailureInfo: true` to return successful recipients and recipient failure details on Android, iOS, and web. Omit the option or pass `false` to return the successful recipient UUID array.
+
+The option applies to custom, feed, list, location, commerce, text, calendar, and URL scrap messages. Each function's permissions and recipient requirements still apply.
+
+## Retrieve detailed results
+
+Add the option to the existing message request.
+
+```tsx
+import { sendTextTemplateToFriends } from '@react-native-kakao/share';
+
+const result = await sendTextTemplateToFriends({
+  receiverUuids,
+  template: {
+    text: 'Read the new article.',
+    link: { webUrl: 'https://your-registered-domain.example/article' },
+  },
+  includeFailureInfo: true,
+});
+
+console.log(result.successfulReceiverUuids);
+console.log(result.failureInfos);
+```
+
+`successfulReceiverUuids` lists recipients accepted by the message API. `failureInfos` groups failed recipients by error. It is empty when no recipients failed, and can help you handle failed recipients separately.
+
+```tsx
+export type KakaoMessageSendResult = {
+  successfulReceiverUuids: string[];
+  failureInfos: {
+    code: number;
+    msg: string;
+    receiverUuids: string[];
+  }[];
+};
+```
+
+| Field | Meaning |
+| --- | --- |
+| `code` | Error code returned by Kakao. |
+| `msg` | Error description returned by Kakao. |
+| `receiverUuids` | UUIDs of recipients that failed with this error. |
+
+## Partial failures
+
+An accepted request can still fail for some recipients. In that case, the Promise resolves and `failureInfos` identifies failed recipients. A rejected request rejects the Promise regardless of the option. Messages are not retried automatically.
+
+A request with one recipient can return a request error when that recipient fails. See the [official message documentation](https://developers.kakao.com/docs/en/kakaotalk-message/rest-api) for conditions and error codes.
