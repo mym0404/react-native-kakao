@@ -2,15 +2,15 @@
 sidebar_position: 109
 ---
 
-# Shipping Address Picker
+# 배송지 선택
 
-`selectShippingAddress()` opens Kakao's shipping address picker and returns the selected address ID as `Promise<number>` on Android, iOS, and web.
+`selectShippingAddress()`로 카카오 배송지 선택 화면을 열고 선택한 배송지 ID를 받을 수 있습니다. Android, iOS, 웹에서 `Promise<number>`를 반환합니다.
 
-[Official documentation](https://developers.kakao.com/docs/en/kakaologin/utilize#shipping-address-picker)
+[공식 문서](https://developers.kakao.com/docs/en/kakaologin/utilize#shipping-address-picker)
 
-The user must be logged in. The app must have permission to use the `shipping_address` consent item, and the user must consent to it.
+사용자가 로그인한 상태여야 합니다. 앱이 `shipping_address` 동의항목을 사용할 수 있어야 하며 사용자도 해당 항목에 동의해야 합니다.
 
-For Expo on Android, enable the picker callback in the core config plugin and run prebuild again:
+Expo의 Android 앱에서는 core 설정 플러그인에서 배송지 선택 콜백을 활성화하고 prebuild를 다시 실행합니다.
 
 ```json
 [
@@ -25,9 +25,9 @@ For Expo on Android, enable the picker callback in the core config plugin and ru
 ]
 ```
 
-For bare Android apps, register `com.kakao.sdk.auth.AppsHandlerActivity` with `android:exported="true"` and a browsable VIEW intent filter for `kakao{NATIVE_APP_KEY}://address`. See [the Android setup](https://developers.kakao.com/docs/en/kakaologin/android#before-you-begin-custom-url-scheme).
+Expo를 사용하지 않는 Android 앱에서는 `com.kakao.sdk.auth.AppsHandlerActivity`를 `android:exported="true"`로 등록하고, `kakao{NATIVE_APP_KEY}://address`를 처리할 수 있도록 BROWSABLE 카테고리가 있는 VIEW 인텐트 필터를 추가합니다. [Android 설정 문서](https://developers.kakao.com/docs/en/kakaologin/android#before-you-begin-custom-url-scheme)를 참고하세요.
 
-Call the function directly from a button press so the browser can open the picker popup.
+브라우저에서 배송지 선택 팝업을 열 수 있도록 버튼을 누르는 동작에서 함수를 직접 호출합니다.
 
 ```tsx
 import { selectShippingAddress } from '@react-native-kakao/user';
@@ -39,6 +39,6 @@ const onPress = async () => {
 };
 ```
 
-This method returns an ID, without retrieving the address details. Kakao's v2 REST shipping address API can retrieve a specific address by `address_id`. The pinned Kakao SDKs do not expose that v2 API.
+이 함수는 배송지 ID만 반환하며 주소의 상세 정보는 조회하지 않습니다. 카카오의 v2 REST 배송지 조회 API는 `address_id`로 특정 배송지를 조회할 수 있습니다. 이 저장소에서 사용하는 카카오 SDK 버전은 해당 v2 API를 제공하지 않습니다.
 
-SDK errors reject the promise. Cancelling the native picker also rejects it. In JavaScript SDK 2.7.1, manually closing the popup can leave its promise pending; the wrapper preserves that SDK behavior.
+SDK 오류가 발생하거나 네이티브 선택 화면을 취소하면 `Promise`를 거부합니다. JavaScript SDK 2.7.1에서는 팝업을 직접 닫아도 `Promise`가 완료되지 않을 수 있으며, 이 모듈도 같은 SDK 동작을 따릅니다.
