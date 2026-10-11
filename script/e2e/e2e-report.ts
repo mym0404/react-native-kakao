@@ -52,6 +52,7 @@ export const reportE2EResults = async ({
   const { owner, repo } = context.repo;
   const issue_number = context.issue.number;
   const marker = '<!-- example-sdk-e2e -->';
+  const endMarker = '<!-- /example-sdk-e2e -->';
   const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number: issue_number });
 
   if (pr.head.sha !== process.env.PR_HEAD_SHA) {
@@ -137,31 +138,29 @@ export const reportE2EResults = async ({
     '',
     '### Full test runs',
     ...videos.flatMap(({ platform, file }) => ['', `**${platform}**`, '', `![](${file})`]),
+    endMarker,
   ].join('\n');
 
-  const comments = await github.paginate(github.rest.issues.listComments, {
-    owner,
-    repo,
-    issue_number,
-  });
+  let description = pr.body ?? '';
+  const start = description.indexOf(marker);
+  if (start !== -1) {
+    const end = description.indexOf(endMarker, start);
+    if (end === -1) {
+      throw new Error('Incomplete E2E report block in PR body');
+    }
 
-  const previous = comments.find(
-    ({ body, user }) => user?.login === 'github-actions[bot]' && body?.startsWith(marker),
-  );
+    description = description.slice(0, start) + description.slice(end + endMarker.length);
+  }
 
   const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'kakao-e2e-report-'));
   try {
     const bodyFile = path.join(directory, 'body.md');
-    await fs.writeFile(bodyFile, body);
+    await fs.writeFile(bodyFile, `${description.trimEnd()}\n\n${body}`);
 
     const attachments = videos.flatMap(({ file }) => ['--attach', file]);
     await $({
       stdio: 'inherit',
-    })`gh pr comment ${pr.html_url} --body-file ${bodyFile} ${attachments}`;
-
-    if (previous) {
-      await github.rest.issues.deleteComment({ owner, repo, comment_id: previous.id });
-    }
+    })`gh pr edit ${pr.html_url} --body-file ${bodyFile} ${attachments}`;
   } finally {
     await fs.remove(directory);
   }
@@ -169,8 +168,8 @@ export const reportE2EResults = async ({
 
 const main = async () => {
   const token = process.env.GITHUB_TOKEN;
-  if (!token || !process.env.PR_HEAD_SHA) {
-    throw new Error('GITHUB_TOKEN and PR_HEAD_SHA are required to report E2E results.');
+  if (!token || !process.env.GH_TOKEN || !process.env.PR_HEAD_SHA) {
+    throw new Error('GITHUB_TOKEN, GH_TOKEN, and PR_HEAD_SHA are required to report E2E results.');
   }
 
   await reportE2EResults({
