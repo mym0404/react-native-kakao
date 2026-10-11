@@ -160,8 +160,16 @@ export function serviceTerms(): Promise<KakaoServiceTerms[]> {
   return Native.serviceTerms();
 }
 
-export function shippingAddresses(): Promise<KakaoShippingAddressResult> {
-  return Native.shippingAddresses();
+export function shippingAddresses({
+  addressId,
+  fromUpdatedAt,
+  pageSize,
+}: {
+  addressId?: number;
+  fromUpdatedAt?: number;
+  pageSize?: number;
+} = {}): Promise<KakaoShippingAddressResult> {
+  return Native.shippingAddresses(addressId, fromUpdatedAt, pageSize);
 }
 
 export function me(): Promise<KakaoUser> {
