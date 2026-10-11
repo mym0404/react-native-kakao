@@ -372,7 +372,7 @@ jobs:
           pattern: e2e-*
           path: e2e-results
 
-      - name: Update PR body with whole-run videos
+      - name: Comment E2E results with whole-run videos
         if: always()
         env:
           GITHUB_TOKEN: ${{ github.token }}

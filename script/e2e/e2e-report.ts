@@ -51,8 +51,7 @@ export const reportE2EResults = async ({
 }) => {
   const { owner, repo } = context.repo;
   const issue_number = context.issue.number;
-  const startMarker = '<!-- example-sdk-e2e:start -->';
-  const endMarker = '<!-- example-sdk-e2e:end -->';
+  const marker = '<!-- example-sdk-e2e -->';
   const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number: issue_number });
 
   if (pr.head.sha !== process.env.PR_HEAD_SHA) {
@@ -126,8 +125,8 @@ export const reportE2EResults = async ({
   ];
   await core.summary.addRaw(summary.join('\n')).write();
 
-  const section = [
-    startMarker,
+  const body = [
+    marker,
     ...summary,
     '',
     '### Scenarios',
@@ -138,16 +137,17 @@ export const reportE2EResults = async ({
     '',
     '### Full test runs',
     ...videos.flatMap(({ platform, file }) => ['', `**${platform}**`, '', `![](${file})`]),
-    '',
-    endMarker,
   ].join('\n');
-  const original = pr.body ?? '';
-  const start = original.indexOf(startMarker);
-  const end = original.indexOf(endMarker, start);
-  const body =
-    start >= 0 && end >= start
-      ? original.slice(0, start) + section + original.slice(end + endMarker.length)
-      : `${original.trimEnd()}\n\n${section}`;
+
+  const comments = await github.paginate(github.rest.issues.listComments, {
+    owner,
+    repo,
+    issue_number,
+  });
+
+  const previous = comments.find(
+    ({ body, user }) => user?.login === 'github-actions[bot]' && body?.startsWith(marker),
+  );
 
   const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'kakao-e2e-report-'));
   try {
@@ -155,7 +155,13 @@ export const reportE2EResults = async ({
     await fs.writeFile(bodyFile, body);
 
     const attachments = videos.flatMap(({ file }) => ['--attach', file]);
-    await $({ stdio: 'inherit' })`gh pr edit ${pr.html_url} --body-file ${bodyFile} ${attachments}`;
+    await $({
+      stdio: 'inherit',
+    })`gh pr comment ${pr.html_url} --body-file ${bodyFile} ${attachments}`;
+
+    if (previous) {
+      await github.rest.issues.deleteComment({ owner, repo, comment_id: previous.id });
+    }
   } finally {
     await fs.remove(directory);
   }

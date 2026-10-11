@@ -48,4 +48,4 @@ When `packages/core/expo-config-plugin/*` or app plugin behavior changes:
 - The suite covers six menu screens, KakaoTalk availability, signed-out state, user/social token errors, channel URL generation, and navigation when Kakao Navi is absent. Login, message delivery, and external app actions are excluded.
 - `--app` selects the Release binary, `--output` selects a new result directory, and `--video` records the entire platform test run as one `video.mp4`; per-test recordings and explicit screenshots are disabled.
 - The SDK manages agent-device startup and test session cleanup. Passing requires every discovered test to pass and, when requested, the whole-run video to exist. Each output directory is single-use.
-- Evidence includes `summary.json`, `index.html`, `junit.xml`, the whole-run video, and SDK reports under `sdk/`. CI attaches whole-run videos to a marked section of the PR body.
+- Evidence includes `summary.json`, `index.html`, `junit.xml`, the whole-run video, and SDK reports under `sdk/`. CI posts the results and whole-run videos in a dedicated PR comment and replaces its previous result comment after a successful upload.
