@@ -8,7 +8,7 @@ type Summary = {
   status: 'passed' | 'failed';
   durationSeconds: number;
   video?: string;
-  tests: { name: string; status: string; durationSeconds: number }[];
+  tests: { status: string }[];
 };
 
 const isSummary = (value: unknown): value is Summary => {
@@ -28,13 +28,7 @@ const isSummary = (value: unknown): value is Summary => {
     (!('video' in value) || typeof value.video === 'string') &&
     'tests' in value &&
     Array.isArray(value.tests) &&
-    value.tests.every(
-      (test) =>
-        typeof test?.name === 'string' &&
-        typeof test.status === 'string' &&
-        Number.isFinite(test.durationSeconds) &&
-        test.durationSeconds >= 0,
-    )
+    value.tests.every((test) => typeof test?.status === 'string')
   );
 };
 const platforms = ['android', 'ios'];
@@ -61,7 +55,6 @@ export const reportE2EResults = async ({
 
   const runUrl = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
   const rows: string[] = [];
-  const testRows: string[] = [];
   const videos: { platform: string; file: string }[] = [];
   for (const platform of platforms) {
     let result: Summary | undefined;
@@ -101,12 +94,6 @@ export const reportE2EResults = async ({
       videos.push({ platform, file });
     }
 
-    for (const test of result?.tests ?? []) {
-      testRows.push(
-        `| ${platform} | ${test.name} | ${test.status} | ${test.durationSeconds.toFixed(2)}s |`,
-      );
-    }
-
     const status = result ? (result.status === 'passed' ? '✅ Passed' : '❌ Failed') : '⚠️ Not run';
     const seconds = result ? `${result.durationSeconds.toFixed(2)}s` : '—';
     rows.push(`| ${platform} | ${status} | ${seconds} |`);
@@ -121,7 +108,6 @@ export const reportE2EResults = async ({
     '| --- | --- | ---: |',
     ...rows,
     '',
-    'Verifies menu navigation, titles, signed-out API results, token errors, channel URLs, and unavailable navigation. Excludes login and external app actions.',
     'Time includes SDK startup and app installation; excludes device preparation, builds, and video export.',
   ];
   await core.summary.addRaw(summary.join('\n')).write();
@@ -129,14 +115,6 @@ export const reportE2EResults = async ({
   const body = [
     marker,
     ...summary,
-    '',
-    '### Scenarios',
-    '',
-    '| Platform | Scenario | Result | Time |',
-    '| --- | --- | --- | ---: |',
-    ...testRows,
-    '',
-    '### Full test runs',
     ...videos.flatMap(({ platform, file }) => ['', `**${platform}**`, '', `![](${file})`]),
     endMarker,
   ].join('\n');
