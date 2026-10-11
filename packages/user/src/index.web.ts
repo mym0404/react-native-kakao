@@ -98,6 +98,13 @@ const KakaoUser: KakaoUserAPI = {
         }),
       );
     }),
+  signup: ({ properties } = {}) =>
+    kRunWebAPI(async () => {
+      await Kakao.API.request({
+        url: '/v1/user/signup',
+        data: filterNonNullishKeys({ properties }),
+      });
+    }),
   logout: () => kRunWebAPI(() => Kakao.Auth.logout()),
   isLogined: async (): Promise<boolean> => {
     try {
@@ -155,17 +162,19 @@ const KakaoUser: KakaoUserAPI = {
       const ret: any = camelCaseObject(await Kakao.API.request({ url: '/v2/user/me' }));
       const kakaoAccount = ret.kakaoAccount ?? {};
       const properties = ret.properties ?? {};
+      const profile = kakaoAccount.profile ?? {};
 
       return {
         ...ret,
+        hasSignedUp: ret.hasSignedUp ?? null,
         ...properties,
         ...kakaoAccount,
         email: kakaoAccount.email,
         name: null,
-        nickname: kakaoAccount.profile.nickname,
+        nickname: profile.nickname,
         profileImageUrl: properties.profileImage,
         thumbnailImageUrl: properties.thumbnailImage,
-        phoneNumber: kakaoAccount.profile.phoneNumber,
+        phoneNumber: profile.phoneNumber,
         isEmailValid: ret.isEmailValid,
         isEmailVerified: ret.isEmailVerified,
         connectedAt: isoToUnix(ret.connectedAt),
@@ -178,6 +187,7 @@ export const {
   isKakaoTalkLoginAvailable,
   isLogined,
   login,
+  signup,
   logout,
   me,
   revokeScopes,

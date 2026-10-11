@@ -30,6 +30,11 @@ RCT_EXPORT_METHOD(login : (NSArray*)serviceTerms prompts : (NSArray*)
                     reject:reject];
 }
 
+RCT_EXPORT_METHOD(signup : (NSDictionary*)properties resolve : (RCTPromiseResolveBlock)
+                      resolve reject : (RCTPromiseRejectBlock)reject) {
+  [[self manager] signup:properties resolve:resolve reject:reject];
+}
+
 RCT_EXPORT_METHOD(logout : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
   [[self manager] logout:resolve reject:reject];
 }

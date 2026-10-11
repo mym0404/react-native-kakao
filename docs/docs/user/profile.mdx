@@ -19,6 +19,7 @@ Promise<KakaoUser>
 ```tsx
 export type KakaoUser = {
   id: number;
+  hasSignedUp?: boolean | null;
   email: string;
   name: string;
   nickname: string;
@@ -53,3 +54,9 @@ export type KakaoUser = {
 ```tsx
 me()
 ```
+
+## 수동 연결 상태
+
+`hasSignedUp`은 수동 연결 앱에서 사용자의 연결 완료 여부를 나타냅니다. `false`는 연결 대기, `true`는 연결 완료이며, 카카오가 값을 제공하지 않으면 `null`입니다. 자동 연결 앱에서 값이 없다고 해서 로그아웃 상태인 것은 아닙니다.
+
+연결 대기 사용자는 [수동 연결](./signup.mdx)로 앱에 연결할 수 있습니다.

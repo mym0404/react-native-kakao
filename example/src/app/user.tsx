@@ -12,6 +12,7 @@ import {
   scopes,
   serviceTerms,
   shippingAddresses,
+  signup,
   unlink,
 } from '@react-native-kakao/user';
 
@@ -175,6 +176,20 @@ export default function Page() {
               });
             });
         }}
+      />
+      <E2EApiAction
+        id={'user-signup'}
+        title={'Manual Signup'}
+        action={async () => {
+          await signup();
+
+          return { connected: true };
+        }}
+      />
+      <E2EApiAction
+        id={'user-connection-state'}
+        title={'Get Connection State'}
+        action={async () => ({ hasSignedUp: (await me()).hasSignedUp ?? null })}
       />
       <E2EApiAction
         id={'user-profile'}

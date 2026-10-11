@@ -56,6 +56,7 @@ export interface KakaoShippingAddress {
 }
 export interface KakaoUser {
   id: number;
+  hasSignedUp?: boolean | null;
   email: string;
   name?: string | null;
   nickname: string;
@@ -132,6 +133,10 @@ export function login({
   );
 }
 
+export async function signup({ properties }: { properties?: Record<string, string> } = {}) {
+  await Native.signup(properties);
+}
+
 export function logout() {
   return Native.logout();
 }
@@ -193,6 +198,7 @@ export async function issueAccessTokenWithCodeWeb(params: {
 
 const KakaoUser = {
   login,
+  signup,
   logout,
   unlink,
   isLogined,
