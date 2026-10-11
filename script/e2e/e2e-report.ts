@@ -159,9 +159,10 @@ export const reportE2EResults = async ({
     await fs.writeFile(bodyFile, updatedBody);
 
     const attachments = videos.flatMap(({ file }) => ['--attach', file]);
+    // The issue command edits PR bodies without querying organization reviewers.
     await $({
       stdio: 'inherit',
-    })`gh pr edit ${pr.html_url} --body-file ${bodyFile} ${attachments}`;
+    })`gh issue edit ${issue_number} --repo ${`${owner}/${repo}`} --body-file ${bodyFile} ${attachments}`;
   } finally {
     await fs.remove(directory);
   }

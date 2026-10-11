@@ -13,6 +13,7 @@ export const recordVideo = async ({
   output: string;
 }) => {
   const commandTimeoutMs = 10000;
+  const startupTimeoutMs = platform === 'ios' ? 180000 : commandTimeoutMs;
   const ready = Promise.withResolvers<void>();
   const chunks: { file: string; remoteFile?: string; log: string; durationSeconds: number }[] = [];
   let command: ProcessPromise | undefined;
@@ -28,9 +29,9 @@ export const recordVideo = async ({
   try {
     await Promise.race([
       ready.promise,
-      sleep(commandTimeoutMs, undefined, { signal: startup.signal }).then(() => {
+      sleep(startupTimeoutMs, undefined, { signal: startup.signal }).then(() => {
         throw new Error(
-          `Whole-run recorder did not start within ${commandTimeoutMs / 1000} seconds`,
+          `Whole-run recorder did not start within ${startupTimeoutMs / 1000} seconds`,
         );
       }),
     ]);
@@ -53,7 +54,7 @@ export const recordVideo = async ({
         command = $`xcrun simctl io ${device} recordVideo --codec=h264 ${file}`
           .quiet()
           .nothrow()
-          .timeout(720000, 'SIGINT');
+          .timeout(780000, 'SIGINT');
 
         command.stderr.on('data', (data: Buffer) => {
           if (data.toString().includes('Recording started')) {
