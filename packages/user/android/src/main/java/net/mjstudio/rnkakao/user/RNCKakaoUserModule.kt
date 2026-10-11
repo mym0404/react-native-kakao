@@ -40,6 +40,7 @@ class RNCKakaoUserModule internal constructor(
     useKakaoAccountLogin: Boolean,
     scopes: ReadableArray?,
     nonce: String?,
+    loginHint: String?,
     promise: Promise,
   ) = onMain {
     val context =
@@ -102,6 +103,7 @@ class RNCKakaoUserModule internal constructor(
       UserApiClient.instance.loginWithKakaoAccount(
         context,
         prompts = requestedPrompts,
+        loginHint = loginHint,
         nonce = nonce,
         serviceTerms = requestedServiceTerms,
         callback = callback,

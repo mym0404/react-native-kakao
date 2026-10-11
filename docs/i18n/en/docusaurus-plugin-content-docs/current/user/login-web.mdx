@@ -49,7 +49,7 @@ Calling the `login()` function redirects the user to the Kakao login page.
 
 On the web platform, you must pass the `web` object.
 
-Other options outside the `web` object are ignored.
+`loginHint` prefills the ID field on the Kakao Account login screen. When both `loginHint` and `web.loginHint` are provided, the shared `loginHint` takes precedence. The shared `nonce` also takes precedence; pass other web login options inside `web`.
 
 For example, `prompt` is available both inside and outside the `web` object, but the web platform uses only the `prompt` inside the `web` object.
 

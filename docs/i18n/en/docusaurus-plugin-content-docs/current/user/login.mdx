@@ -53,6 +53,20 @@ When `scopes` are provided, login always uses a Kakao account.
 
 -  `useKakaoAccountLogin`: Attempt login with a Kakao account instead of KakaoTalk.
 
+- `loginHint`: An email address, phone number, or Kakao Mail ID to prefill the ID field on the Kakao Account login screen. Supported on Android, iOS, and web. The ID screen may be skipped when logging in through KakaoTalk or when the browser already has an account session.
+
+Request Kakao Account login as follows to display the ID screen. The hint only fills the field; it does not check whether the account exists.
+
+```tsx
+login({
+  useKakaoAccountLogin: true,
+  prompts: ['Login'],
+  loginHint: 'user@example.com',
+});
+```
+
+On web, also pass `web.redirectUri` as described in [Web login](/docs/user/login-web). When both `loginHint` and `web.loginHint` are provided, `loginHint` takes precedence.
+
 -  `nonce`: A value used to prevent ID token replay attacks. The value you pass is returned in the `nonce` claim of the issued ID token.
 
 Refer to the [Official Documentation](https://developers.kakao.com/docs/latest/ko/kakaologin/utilize#parameter-for-security) for details.
@@ -70,6 +84,8 @@ For KakaoTalk login, `prompts` and `scopes` cannot be passed (Native SDK restric
 -  If `scopes` are passed, `serviceTerms` and `prompts` cannot be passed.
 
 When requesting additional consent, `serviceTerms` and `prompts` cannot be passed together (Native SDK restriction).
+
+- On Android and iOS, `loginHint` cannot be combined with `scopes` or `serviceTerms`. The iOS SDK does not expose this combination, so native platforms throw before invoking the SDK. Web login hints do not apply this restriction.
 :::
 
 ### Response
