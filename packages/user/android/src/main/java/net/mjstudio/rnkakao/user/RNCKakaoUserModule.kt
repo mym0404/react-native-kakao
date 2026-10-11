@@ -322,6 +322,7 @@ class RNCKakaoUserModule internal constructor(
           argMap().apply {
             putD("id", user.id?.toDouble())
             putString("uuid", user.uuid)
+            putString("groupUserToken", user.groupUserToken)
             putMap(
               "properties",
               argMap().apply {

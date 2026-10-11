@@ -164,6 +164,7 @@ const KakaoUser: KakaoUserAPI = {
         id: number;
         properties?: Record<string, string>;
         forPartner?: { uuid?: string };
+        groupUserToken?: string;
         connectedAt?: string;
         synchedAt?: string;
         isEmailValid?: boolean;
@@ -188,6 +189,7 @@ const KakaoUser: KakaoUserAPI = {
         ...kakaoAccount,
         properties: response.properties ?? {},
         uuid: ret.forPartner?.uuid ?? null,
+        groupUserToken: ret.groupUserToken ?? null,
         email: kakaoAccount.email,
         name: null,
         nickname: profile.nickname,

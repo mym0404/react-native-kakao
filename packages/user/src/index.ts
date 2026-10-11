@@ -57,6 +57,7 @@ export interface KakaoShippingAddress {
 export interface KakaoUser {
   id: number;
   uuid?: string | null;
+  groupUserToken?: string | null;
   properties: Record<string, string>;
   email?: string | null;
   name?: string | null;
