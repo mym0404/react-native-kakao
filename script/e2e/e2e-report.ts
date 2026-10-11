@@ -141,7 +141,8 @@ export const reportE2EResults = async ({
     endMarker,
   ].join('\n');
 
-  let description = pr.body ?? '';
+  const description = pr.body ?? '';
+  let updatedBody = `${description}\n\n${body}`;
   const start = description.indexOf(marker);
   if (start !== -1) {
     const end = description.indexOf(endMarker, start);
@@ -149,13 +150,13 @@ export const reportE2EResults = async ({
       throw new Error('Incomplete E2E report block in PR body');
     }
 
-    description = description.slice(0, start) + description.slice(end + endMarker.length);
+    updatedBody = description.slice(0, start) + body + description.slice(end + endMarker.length);
   }
 
   const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'kakao-e2e-report-'));
   try {
     const bodyFile = path.join(directory, 'body.md');
-    await fs.writeFile(bodyFile, `${description.trimEnd()}\n\n${body}`);
+    await fs.writeFile(bodyFile, updatedBody);
 
     const attachments = videos.flatMap(({ file }) => ['--attach', file]);
     await $({
