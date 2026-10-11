@@ -46,7 +46,12 @@ export type KakaoUser = {
   nameNeedsAgreement?: boolean | null;
   profileImageNeedsAgreement?: boolean | null;
   profileNicknameNeedsAgreement?: boolean | null;
+  legalName?: string | null;
+  legalNameNeedsAgreement?: boolean | null;
+  legalBirthDate?: string | null;
   legalBirthDateNeedsAgreement?: boolean | null;
+  legalGender?: 'female' | 'male' | null;
+  legalGenderNeedsAgreement?: boolean | null;
   connectedAt?: number | null;
   synchedAt?: number | null;
 };
@@ -69,6 +74,18 @@ me()
 | `uuid` | 카카오톡 친구 정보에서 사용하는 본인의 고유 ID입니다. 회원번호인 `id`와 다른 값입니다. | 앱에 카카오톡 친구 목록 또는 메시지 권한이 있는 경우 |
 
 예를 들어 `user.isDefaultImage === false`이면 사용자가 등록한 사진으로 판단할 수 있습니다. `null`만으로 기본 사진 여부를 판단할 수는 없습니다. 자세한 제공 조건은 [사용자 정보 조회 응답](https://developers.kakao.com/docs/ko/kakaologin/rest-api#req-user-info-response)을 참고하세요.
+
+## 본인인증 정보
+
+카카오와 사용 협의를 마친 제휴 앱은 `me()`로 본인인증을 거친 이름·생년월일·성별을 조회할 수 있습니다. 앱의 사용 권한과 사용자 동의가 필요하며, 카카오가 제공하지 않은 값은 `null`입니다. 이 정보만으로 본인인증을 대체해서는 안 됩니다.
+
+| 필드 | 의미 | 형식 |
+| --- | --- | --- |
+| `legalName` | 본인인증을 거친 실명 | 문자열 |
+| `legalBirthDate` | 본인인증을 거친 법정 생년월일 | `yyyyMMdd` |
+| `legalGender` | 본인인증을 거친 법정 성별 | `female` 또는 `male` |
+
+각 필드의 `NeedsAgreement` 값은 사용자 동의를 받아 해당 정보를 제공할 수 있는지 나타냅니다. `true`이면 추가 동의가 필요하고, `false`여도 실제 정보가 반환된다는 뜻은 아닙니다. 자세한 조건은 [제휴사 전용 사용자 정보 조회](https://developers.kakao.com/docs/ko/kakaologin/confidential-user-info)를 참고하세요.
 
 ## 조회 옵션
 

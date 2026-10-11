@@ -322,7 +322,12 @@ import RNCKakaoCore
             "profileImageNeedsAgreement": user.kakaoAccount?.profileImageNeedsAgreement as Any,
             "profileNicknameNeedsAgreement": user.kakaoAccount?
               .profileNicknameNeedsAgreement as Any,
-            "legalBirthDateNeedsAgreement": user.kakaoAccount?.legalBirthDateNeedsAgreement as Any
+            "legalName": user.kakaoAccount?.legalName as Any,
+            "legalNameNeedsAgreement": user.kakaoAccount?.legalNameNeedsAgreement as Any,
+            "legalBirthDate": user.kakaoAccount?.legalBirthDate as Any,
+            "legalBirthDateNeedsAgreement": user.kakaoAccount?.legalBirthDateNeedsAgreement as Any,
+            "legalGender": user.kakaoAccount?.legalGender?.rawValue as Any,
+            "legalGenderNeedsAgreement": user.kakaoAccount?.legalGenderNeedsAgreement as Any
           ])
         } else {
           RNCKakaoUtil.reject(reject, RNCKakaoError.responseNotFound(name: "user"))
