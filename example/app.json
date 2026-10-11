@@ -56,6 +56,7 @@
           "android": {
             "authCodeHandlerActivity": true,
             "followChannelHandlerActivity": true,
+            "shippingAddressHandlerActivity": true,
             "forwardKakaoLinkIntentFilterToMainActivity": true
           },
           "ios": {

@@ -13,6 +13,7 @@ const withAndroid: ConfigPlugin<{
       authCodeHandlerActivity,
       forwardKakaoLinkIntentFilterToMainActivity,
       followChannelHandlerActivity,
+      shippingAddressHandlerActivity,
     },
     nativeAppKey,
   },
@@ -105,6 +106,32 @@ const withAndroid: ConfigPlugin<{
                     'android:scheme': `kakao${nativeAppKey}`,
                   },
                 },
+              ],
+            },
+          ],
+        },
+        activityName: name,
+      });
+    }
+
+    if (shippingAddressHandlerActivity) {
+      const name = 'com.kakao.sdk.auth.AppsHandlerActivity';
+
+      injectActivity({
+        activity: {
+          '$': {
+            'android:name': name,
+            'android:exported': 'true',
+          },
+          'intent-filter': [
+            {
+              action: [{ $: { 'android:name': 'android.intent.action.VIEW' } }],
+              category: [
+                { $: { 'android:name': 'android.intent.category.DEFAULT' } },
+                { $: { 'android:name': 'android.intent.category.BROWSABLE' } },
+              ],
+              data: [
+                { $: { 'android:host': 'address', 'android:scheme': `kakao${nativeAppKey}` } },
               ],
             },
           ],
