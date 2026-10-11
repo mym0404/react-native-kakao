@@ -5,7 +5,6 @@ import * as querystring from 'querystring';
 import {
   type KakaoLoginToken,
   type KakaoScopeInfo,
-  type KakaoServiceTerms,
   type KakaoShippingAddressResult,
   type KakaoUser,
   type KakaoUserAPI,
@@ -127,20 +126,31 @@ const KakaoUser: KakaoUserAPI = {
         },
       }),
     ),
-  serviceTerms: () =>
-    kRunWebAPI(
-      async () =>
-        camelCaseObject(
-          (
-            await Kakao.API.request({
-              url: '/v2/user/service_terms',
-            })
-          ).service_terms.map((v) => ({
-            ...v,
-            agreed_at: v.agreed_at ? isoToUnix(v.agreed_at) : null,
-          })),
-        ) as KakaoServiceTerms[],
-    ),
+  serviceTerms: ({ result, tags } = {}) =>
+    kRunWebAPI(async () => {
+      const response: {
+        service_terms?:
+          | {
+              tag: string;
+              agreed_at?: string | null;
+              agreed: boolean;
+              required: boolean;
+              revocable: boolean;
+            }[]
+          | null;
+      } = await Kakao.API.request({
+        url: '/v2/user/service_terms',
+        data: filterNonNullishKeys({ result, tags: tags?.join(',') }),
+      });
+
+      return (response.service_terms ?? []).map((term) => ({
+        tag: term.tag,
+        agreedAt: term.agreed_at ? isoToUnix(term.agreed_at) : undefined,
+        agreed: term.agreed,
+        required: term.required,
+        revocable: term.revocable,
+      }));
+    }),
   shippingAddresses: () =>
     kRunWebAPI(
       async () =>

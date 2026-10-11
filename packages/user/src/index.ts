@@ -156,8 +156,14 @@ export function revokeScopes(scopes: string[]): Promise<void> {
   return Native.revokeScopes(scopes);
 }
 
-export function serviceTerms(): Promise<KakaoServiceTerms[]> {
-  return Native.serviceTerms();
+export function serviceTerms({
+  result,
+  tags,
+}: {
+  result?: 'agreed_service_terms' | 'app_service_terms';
+  tags?: string[];
+} = {}): Promise<KakaoServiceTerms[]> {
+  return Native.serviceTerms(result, tags);
 }
 
 export function shippingAddresses(): Promise<KakaoShippingAddressResult> {
