@@ -48,6 +48,22 @@ const detectBuildChanges = async ({ github, context, core }) => {
       }
 
       base = `${pr.base.ref}@${git(['rev-parse', 'HEAD^1'])}`;
+
+      const files = execFileSync(
+        'git',
+        ['diff', '--name-only', '--no-renames', '-z', 'HEAD^1...HEAD^2', '--'],
+        { encoding: 'utf8' },
+      )
+        .split('\0')
+        .filter(Boolean);
+
+      for (const platform of platforms) {
+        if (!files.some((file) => affectsPlatform(file, platform))) {
+          changed[platform] = false;
+          resolved.add(platform);
+          core.info(`${platform}: skipped because the PR has no changes affecting this platform.`);
+        }
+      }
     }
 
     core.setOutput('base', base);
@@ -63,6 +79,10 @@ const detectBuildChanges = async ({ github, context, core }) => {
         per_page: 100,
       },
     )) {
+      if (resolved.size === platforms.length) {
+        break;
+      }
+
       for (const run of runs) {
         if (
           run.run_number >= context.runNumber ||

@@ -86,30 +86,47 @@ test('reuse only successful native checks for the same PR base and commit histor
     ];
 
     const cases = [
-      { name: 'docs after success', expected: same },
+      {
+        name: 'first changeset-only run',
+        head: commit([base], { '.changeset/fix.md': 'patch' }),
+        pages: [[]],
+        expected: same,
+      },
       { name: 'Android change', head: android, expected: androidOnly },
       { name: 'iOS change', head: ios, expected: iosOnly },
       { name: 'shared change', head: shared, expected: both },
-      { name: 'first run', pages: [[]], expected: both },
-      { name: 'changed target base', jobs: { 1: jobs({}, `main@${unrelated}`) }, expected: both },
-      { name: 'retargeted PR', jobs: { 1: jobs({}, `v2@${base}`) }, expected: both },
-      { name: 'force push', pages: [[run(1, unrelated)]], expected: both },
+      {
+        name: 'first iOS-only run with changeset',
+        head: commit([base], {
+          'packages/core/ios/Module.swift': 'changed',
+          '.changeset/ios-fix.md': 'patch',
+        }),
+        pages: [[]],
+        expected: iosOnly,
+      },
+      {
+        name: 'changed target base',
+        jobs: { 1: jobs({}, `main@${unrelated}`) },
+        expected: androidOnly,
+      },
+      { name: 'retargeted PR', jobs: { 1: jobs({}, `v2@${base}`) }, expected: androidOnly },
+      { name: 'force push', pages: [[run(1, unrelated)]], expected: androidOnly },
       {
         name: 'wrong PR',
         pages: [[run(1, previous, { pull_requests: [{ number: 104 }] })]],
-        expected: both,
+        expected: androidOnly,
       },
       {
         name: 'wrong fork',
         pages: [[run(1, previous, { head_repository: { id: 2 } })]],
-        expected: both,
+        expected: androidOnly,
       },
-      { name: 'current rerun', pages: [[run(10)]], expected: both },
-      { name: 'newer run', pages: [[run(11)]], expected: both },
-      { name: 'missing base record', jobs: { 1: jobs().slice(1) }, expected: both },
-      { name: 'invalid SHA', pages: [[run(1, '--output=unsafe')]], expected: both },
-      { name: 'history API failure', apiError: true, expected: both },
-      { name: 'jobs API failure', jobsError: true, expected: both },
+      { name: 'current rerun', pages: [[run(10)]], expected: androidOnly },
+      { name: 'newer run', pages: [[run(11)]], expected: androidOnly },
+      { name: 'missing base record', jobs: { 1: jobs().slice(1) }, expected: androidOnly },
+      { name: 'invalid SHA', pages: [[run(1, '--output=unsafe')]], expected: androidOnly },
+      { name: 'history API failure', apiError: true, expected: androidOnly },
+      { name: 'jobs API failure', jobsError: true, expected: androidOnly },
       {
         name: 'Android failure',
         jobs: { 1: jobs({ 'build-android': 'failure' }) },
@@ -117,6 +134,7 @@ test('reuse only successful native checks for the same PR base and commit histor
       },
       {
         name: 'iOS cancellation',
+        head: ios,
         jobs: { 1: jobs({ 'build-ios': 'cancelled' }) },
         expected: iosOnly,
       },
@@ -125,12 +143,16 @@ test('reuse only successful native checks for the same PR base and commit histor
         jobs: { 1: jobs().filter(({ name }) => name !== 'build-android') },
         expected: androidOnly,
       },
-      { name: 'old matrix history is not reusable', jobs: { 1: oldMatrixJobs }, expected: both },
+      {
+        name: 'old matrix history is not reusable',
+        jobs: { 1: oldMatrixJobs },
+        expected: androidOnly,
+      },
       {
         name: 'skipped builds are not success',
         pages: [[run(2, docs)]],
         jobs: { 2: skipped },
-        expected: both,
+        expected: androidOnly,
       },
       {
         name: 'pagination past skipped builds',
