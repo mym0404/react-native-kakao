@@ -27,8 +27,8 @@ export interface KakaoTemplateLink {
  * @param imageHeight 콘텐츠의 이미지 높이 (단위: 픽셀)
  */
 export interface KakaoTemplateContent {
-  title: string;
-  imageUrl: string;
+  title?: string;
+  imageUrl?: string;
   link: KakaoTemplateLink;
   description?: string;
   imageWidth?: number;
