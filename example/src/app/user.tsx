@@ -231,6 +231,18 @@ export default function Page() {
         }}
       />
       <E2EApiAction
+        id={'user-group-token'}
+        title={'Get Group User Token Availability'}
+        action={async () => {
+          const { groupUserToken } = await me();
+
+          return {
+            hasGroupUserToken: typeof groupUserToken === 'string' && groupUserToken.length > 0,
+            isGroupUserTokenNull: groupUserToken === null,
+          };
+        }}
+      />
+      <E2EApiAction
         id={'user-properties'}
         minW={buttonMinWidth}
         title={'Get User Properties'}
