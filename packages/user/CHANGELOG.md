@@ -1,5 +1,13 @@
 # Change Log
 
+## 3.0.0-next.3
+
+### Patch Changes
+
+- 6ff02a9: Return Android token application IDs using the documented appId key.
+- 69598dd: Return user connection and synchronization timestamps on Android and iOS.
+- @react-native-kakao/core@3.0.0-next.3
+
 ## 3.0.0-next.2
 
 ### Patch Changes
