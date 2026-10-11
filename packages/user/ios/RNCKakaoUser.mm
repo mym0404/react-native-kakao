@@ -17,16 +17,18 @@ RCT_EXPORT_METHOD(isKakaoTalkLoginAvailable : (RCTPromiseResolveBlock)
                       resolve reject : (RCTPromiseRejectBlock)reject) {
   [[self manager] isKakaoTalkLoginAvailable:resolve reject:reject];
 }
-RCT_EXPORT_METHOD(login : (NSArray*)serviceTerms prompts : (
-    NSArray*)prompts useKakaoAccountLogin : (BOOL)useKakaoAccountLogin scopes : (NSArray*)
-                      scopes nonce : (NSString*)nonce loginHint : (NSString*)loginHint resolve : (
-                          RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(
+    login : (NSArray*)serviceTerms prompts : (NSArray*)prompts useKakaoAccountLogin : (BOOL)
+        useKakaoAccountLogin scopes : (NSArray*)scopes nonce : (NSString*)
+            nonce loginHint : (NSString*)loginHint channelPublicIds : (NSArray*)channelPublicIds
+                resolve : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
   [[self manager] login:serviceTerms
                    prompts:prompts
       useKakaoAccountLogin:useKakaoAccountLogin
                     scopes:scopes
                      nonce:nonce
                  loginHint:loginHint
+          channelPublicIds:channelPublicIds
                    resolve:resolve
                     reject:reject];
 }

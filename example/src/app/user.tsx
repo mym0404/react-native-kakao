@@ -90,6 +90,20 @@ export default function Page() {
         }}
       />
       <E2EApiAction
+        id={'login-channels'}
+        title={'Login With Channel Selection'}
+        minW={buttonMinWidth}
+        action={async () => {
+          await login({
+            useKakaoAccountLogin: true,
+            channelPublicIds: ['_hJhxbj'],
+            web: { redirectUri: 'http://localhost', throughTalk: false },
+          });
+
+          return { loggedIn: true };
+        }}
+      />
+      <E2EApiAction
         id={'login-hint'}
         title={'Login With ID Hint'}
         minW={buttonMinWidth}
