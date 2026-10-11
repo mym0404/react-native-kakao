@@ -41,6 +41,7 @@ class RNCKakaoUserModule internal constructor(
     scopes: ReadableArray?,
     nonce: String?,
     loginHint: String?,
+    channelPublicIds: ReadableArray?,
     promise: Promise,
   ) = onMain {
     val context =
@@ -87,6 +88,7 @@ class RNCKakaoUserModule internal constructor(
       }
     }
     val requestedServiceTerms = serviceTerms?.filterIsInstance<String>()?.ifEmpty { null }
+    val requestedChannelPublicIds = channelPublicIds?.filterIsInstance<String>()?.ifEmpty { null }
     val requestedPrompts =
       prompts
         ?.filterIsInstance<String>()
@@ -106,6 +108,7 @@ class RNCKakaoUserModule internal constructor(
         loginHint = loginHint,
         nonce = nonce,
         serviceTerms = requestedServiceTerms,
+        channelPublicIds = requestedChannelPublicIds,
         callback = callback,
       )
     }
@@ -137,6 +140,7 @@ class RNCKakaoUserModule internal constructor(
         context,
         nonce = nonce,
         serviceTerms = requestedServiceTerms,
+        channelPublicIds = requestedChannelPublicIds,
         callback = talkCallback,
       )
     } else {

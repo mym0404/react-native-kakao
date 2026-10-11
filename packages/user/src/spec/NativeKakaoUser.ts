@@ -19,6 +19,7 @@ export interface Spec extends TurboModule {
     scopes?: string[],
     nonce?: string,
     loginHint?: string,
+    channelPublicIds?: string[],
   ): Promise<KakaoLoginToken>;
   logout(): Promise<void>;
   unlink(): Promise<void>;
