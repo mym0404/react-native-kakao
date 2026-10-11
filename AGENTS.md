@@ -23,7 +23,13 @@ Use this file as the global source of truth for adding or changing native APIs.
 
 ## Communication
 
-Assistant responses have no language restriction. Use English for commit messages, PR titles and descriptions, issue discussions, review comments, documentation, and automated reports.
+Assistant responses follow the user's requested language. Use English for commit messages, PR titles and descriptions, issue discussions, review comments, and automated reports.
+
+- Write the default documentation under `docs/docs/` in Korean. The site's default locale is `ko`.
+- Write the English documentation under `docs/i18n/en/docusaurus-plugin-content-docs/current/` in English. Keep both locales consistent in API behavior, prerequisites, and examples.
+- Use Korean as the default for documentation site UI strings, and provide English translations through the site's `en` locale.
+- Apply the locale's language to document titles, headings, prose, tables, and sidebar labels. Preserve API identifiers, code examples, commands, and link targets.
+- Use English for other contributor documentation unless the user specifies a language.
 
 ## Guide hierarchy
 

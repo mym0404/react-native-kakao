@@ -4,12 +4,12 @@
     "description": "The title in the navbar"
   },
   "logo.alt": {
-    "message": "My Site Logo",
+    "message": "React Native Kakao",
     "description": "The alt text of navbar logo"
   },
-  "item.label.Documentation": {
+  "item.label.문서": {
     "message": "Documentation",
-    "description": "Navbar item with label Documentation"
+    "description": "Navbar item with label 문서"
   },
   "item.label.GitHub": {
     "message": "GitHub",

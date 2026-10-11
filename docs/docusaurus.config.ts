@@ -3,7 +3,8 @@ import type { Config } from '@docusaurus/types';
 import { themes as prismThemes } from 'prism-react-renderer';
 
 const title = 'React Native Kakao';
-const description = 'Native Kakao SDKs in one project';
+const description = '네이티브 카카오 SDK 통합 프로젝트';
+const documentationLabel = '문서';
 const repoOrg = 'mym0404';
 const repoName = 'react-native-kakao';
 const repoUrl = 'https://github.com/mym0404/react-native-kakao';
@@ -71,7 +72,7 @@ const config: Config = {
       title: title,
       hideOnScroll: false,
       logo: {
-        alt: 'My Site Logo',
+        alt: title,
         src: 'img/logo.svg',
       },
       items: [
@@ -79,7 +80,7 @@ const config: Config = {
           type: 'docSidebar',
           sidebarId: 'tutorialSidebar',
           position: 'left',
-          label: 'Documentation',
+          label: documentationLabel,
         },
         {
           type: 'localeDropdown',
@@ -95,16 +96,16 @@ const config: Config = {
     footer: {
       links: [
         {
-          title: 'Documentation',
+          title: documentationLabel,
           items: [
             {
-              label: 'Documentation',
+              label: documentationLabel,
               to: '/docs/intro',
             },
           ],
         },
         {
-          title: 'More',
+          title: '더 보기',
           items: [
             {
               label: 'GitHub',
@@ -113,7 +114,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} MJ Studio.`,
+      copyright: `© ${new Date().getFullYear()} MJ Studio.`,
     },
     prism: {
       theme: prismThemes.nightOwl,
