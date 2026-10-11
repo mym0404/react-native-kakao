@@ -163,6 +163,7 @@ const KakaoUser: KakaoUserAPI = {
       const ret = camelCaseObject(response) as {
         id: number;
         properties?: Record<string, string>;
+        forPartner?: { uuid?: string };
         connectedAt?: string;
         synchedAt?: string;
         isEmailValid?: boolean;
@@ -173,6 +174,7 @@ const KakaoUser: KakaoUserAPI = {
             phoneNumber?: string;
             profileImageUrl?: string;
             thumbnailImageUrl?: string;
+            isDefaultImage?: boolean;
           };
         };
       };
@@ -185,11 +187,14 @@ const KakaoUser: KakaoUserAPI = {
         ...properties,
         ...kakaoAccount,
         properties: response.properties ?? {},
+        uuid: ret.forPartner?.uuid ?? null,
         email: kakaoAccount.email,
         name: null,
         nickname: profile.nickname,
         profileImageUrl: profile.profileImageUrl ?? properties.profileImage,
         thumbnailImageUrl: profile.thumbnailImageUrl ?? properties.thumbnailImage,
+        isDefaultImage: profile.isDefaultImage ?? null,
+        isLeapMonth: kakaoAccount.isLeapMonth ?? null,
         phoneNumber: profile.phoneNumber,
         isEmailValid: ret.isEmailValid,
         isEmailVerified: ret.isEmailVerified,
