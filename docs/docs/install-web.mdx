@@ -44,6 +44,19 @@ Expo에서는 `npx expo customize` 명령으로 `index.html`을 수정할 수 �
 플랫폼 탭에서 사이트 도메인을 추가합니다.
 
 
+## Web platform limits
+
+Supported API responses use the same field names and value types as native APIs, including Unix timestamps in seconds and successful receiver UUID arrays. Browser and Kakao SDK limits still apply:
+
+| API | Web behavior |
+| --- | --- |
+| `login` | Redirects to `web.redirectUri`; exchange the code with `issueAccessTokenWithCodeWeb`, then call `setAccessTokenWeb`. |
+| `isKakaoTalkLoginAvailable` / `getKeyHashAndroid` | Return `false` / `undefined`; these native capabilities cannot be detected on web. |
+| Friend picker | Opens a popup. `mode`, `viewAppearance`, and `orientation` are native-only options. |
+| Channel URL APIs | Return or open the channel's add/chat URL. Call openers from a user interaction; blocked popups reject with `Package-Assertion`. |
+| `navigateTo` / `shareTo` | Return `false` on desktop. On mobile web, `true` means the SDK launch request was made; browser APIs cannot confirm app installation or launch success. |
+| Navi options | The JS SDK controls installation fallback; `openWebInstallUrlIfNaviAppNotAvailable` is native-only. `shareTo` forwards the destination and coordinate type, without via points or route-planning options. |
+
 ## Web API에 대하여
 
 Web API의 내부 구현은 Android, iOS 플랫폼과 다를 수밖에 없습니다.
@@ -54,7 +67,7 @@ API 응답은 플랫폼 간에 일관되고 이름도 모두 동일하지만 Web
 
 Web에서만 사용하거나 필요한 API는 함수 이름 뒤에 `Web`이 붙습니다.
 
-예를 들어 `Core.setAccessTokenWeb()`이 있습니다.
+예를 들어 `User.setAccessTokenWeb()`이 있습니다.
 
 Web 전용 인자는 모두 함수 인자의 `web` 필드에 전달합니다.
 
@@ -73,7 +86,7 @@ export async function initializeKakaoSDK(
 :::warning
 Web을 지원하지 않는다면 `web` 인자를 지정할 필요가 없으며 `Web`으로 끝나는 API도 호출하지 말아야 합니다.
 
-`web` 인자가 없으면 API는 Web에서도 기본 인자로 동작합니다.
+On web, SDK initialization requires `web.javascriptKey` and `web.restApiKey`, and login requires `web.redirectUri`. Other supported APIs use their documented defaults.
 :::
 
 

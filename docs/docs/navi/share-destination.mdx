@@ -42,7 +42,9 @@ Web 플랫폼에서는 길 안내가 제공되지 않습니다.
 
 모바일 웹에서는 브라우저가 카카오 내비 실행/설치 안내 화면으로 이동합니다.
 
-데스크톱 웹에서는 아무 동작도 하지 않습니다.
+On desktop web, the function returns `false` without requesting app launch.
+
+On mobile web, `true` indicates a launch request, not confirmation that Kakao Navi is installed or running. The Kakao JS SDK controls its launch/installation fallback; `openWebInstallUrlIfNaviAppNotAvailable` applies only to native platforms.
 
 카카오 JavaScript SDK의 웹 길 안내 지원 종료 공지입니다.
 

@@ -49,9 +49,9 @@ useEffect(() => {
 
 웹 플랫폼에서는 `web` 객체를 전달해야 합니다.
 
-`web` 객체 밖의 옵션은 무시됩니다.
+Common `scopes`, `serviceTerms`, `prompts`, and `nonce` options are forwarded on web. `SelectAccount` maps to `select_account`; `useKakaoAccountLogin: true` disables login through KakaoTalk unless `web.throughTalk` overrides it.
 
-예를 들어 `prompt`는 `web` 객체 안팎에 모두 있지만 Web 플랫폼에서는 항상 `web` 안의 `prompt`만 사용합니다.
+`web.scope`, `web.serviceTerms`, and `web.prompt` take precedence over their common equivalents. The common `nonce` takes precedence over `web.nonce`.
 
 ```tsx
 import { login } from '@react-native-kakao/user';
