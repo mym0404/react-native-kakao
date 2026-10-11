@@ -55,7 +55,7 @@ It contains the following packages:
 
 Install and activate [mise](https://mise.jdx.dev/getting-started.html), then run the following
 commands in the project root. The committed `mise.toml` pins Node.js, Yarn, ClangFormat,
-SwiftFormat, and Ktlint to the versions used by CI.
+SwiftFormat, Ktlint, GitHub CLI, and FFmpeg to the versions used by CI.
 
 ```sh
 mise install
@@ -168,7 +168,10 @@ Our pre-commit hooks verify that your commit message matches this format when co
 We use [TypeScript](https://www.typescriptlang.org/) for type
 checking, [ESLint](https://eslint.org/) with [Prettier](https://prettier.io/) for linting and
 formatting the code, and the built-in [Node.js test runner](https://nodejs.org/api/test.html) for testing.
-Run `yarn test` from the repository root to execute `script/**/*.test.js`. Tests import `test` from
+Repository scripts live under `script/` as `.ts` files, run directly with mise-managed Node.js,
+and use explicit ZX imports for process and filesystem operations. Tests that directly exercise
+CocoaPods internals remain in Ruby.
+Run `yarn test` from the repository root to execute `script/**/*.test.ts`. Tests import `test` from
 `node:test` and assertions from `node:assert/strict`.
 
 In iOS project, we

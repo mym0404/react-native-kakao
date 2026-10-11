@@ -28,13 +28,16 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup
+        uses: ./.github/actions/setup
+        with:
+          tools: node yarn
+
       - name: Detect build changes
         id: filter
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
-        with:
-          script: |
-            const { detectBuildChanges } = require('./script/ci-changes.js');
-            await detectBuildChanges({ github, context, core });
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node script/ci-changes.ts
 
       - name: 'Checked base: ${{ steps.filter.outputs.base }}'
         run: ':'
@@ -167,7 +170,7 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      - name: Verify example menus on Android
+      - name: Verify example menus and signed-out APIs on Android
         uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
         with:
           api-level: '37.1'
@@ -215,12 +218,6 @@ jobs:
           if ! xcrun simctl list runtimes | grep -Fq "iOS ${simulator_version}"; then
             xcodebuild -downloadPlatform iOS -buildVersion "${simulator_version}"
           fi
-
-      - name: Install JDK
-        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
-        with:
-          distribution: 'zulu'
-          java-version: '17'
 
       - name: Setup
         uses: ./.github/actions/setup
@@ -301,9 +298,10 @@ jobs:
           xcrun simctl boot "$device_id"
           xcrun simctl bootstatus "$device_id" -b
 
-      - name: Verify example menus on iOS
+      - name: Verify example menus and signed-out APIs on iOS
         env:
-          MAESTRO_DRIVER_STARTUP_TIMEOUT: 180000
+          AGENT_DEVICE_STATE_DIR: ${{ runner.temp }}/kakao-e2e-agent
+          AGENT_DEVICE_XCUITEST_ARCHS: arm64
         run: yarn e2e test ios --device "$E2E_IOS_DEVICE" --output build/e2e/ios
 
       - name: Upload iOS E2E evidence
@@ -316,9 +314,24 @@ jobs:
           overwrite: true
           if-no-files-found: warn
 
-      - name: Stop E2E Simulator
+      - name: Upload iOS automation diagnostics
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: e2e-ios-diagnostics
+          path: |
+            ${{ runner.temp }}/kakao-e2e-agent/daemon.log
+            ${{ runner.temp }}/kakao-e2e-agent/sessions/**/*.log
+            ${{ runner.temp }}/kakao-e2e-agent/sessions/**/requests/*.ndjson
+          retention-days: 14
+          overwrite: true
+          if-no-files-found: warn
+
+      - name: Delete E2E Simulator
         if: always() && env.E2E_IOS_DEVICE != ''
-        run: xcrun simctl shutdown "$E2E_IOS_DEVICE"
+        run: |
+          xcrun simctl shutdown "$E2E_IOS_DEVICE" || true
+          xcrun simctl delete "$E2E_IOS_DEVICE"
 
   ci-result:
     needs: [changes, lint, build-android, build-ios]
@@ -356,7 +369,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       actions: read
-      contents: write
+      contents: read
       pull-requests: write
     steps:
       - name: Checkout
@@ -364,35 +377,20 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Setup
+        uses: ./.github/actions/setup
+        with:
+          tools: node yarn
+
       - name: Download E2E evidence
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           pattern: e2e-*
           path: e2e-results
 
-      - name: Prepare E2E screenshots
+      - name: Update PR body with E2E results
         if: always()
-        run: |
-          for platform in android ios; do
-            mkdir -p "e2e-images/e2e-$platform"
-            cp e2e-results/e2e-$platform/*.png "e2e-images/e2e-$platform/" 2>/dev/null || true
-          done
-
-      - name: Publish E2E screenshots
-        if: always()
-        uses: JamesIves/github-pages-deploy-action@fa24774553152dd7873cd16ebd8d959b010c5445 # v4.9.0
-        with:
-          branch: gh-pages
-          folder: e2e-images
-          target-folder: e2e/pr-${{ github.event.pull_request.number }}
-          clean: true
-          commit-message: 'ci: publish E2E screenshots for PR #${{ github.event.pull_request.number }}'
-
-      - name: Comment E2E results
-        if: always()
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
+          GITHUB_TOKEN: ${{ github.token }}
           PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-        with:
-          script: |
-            await require('./script/e2e/e2e-report.js')({ github, context, core });
+        run: node script/e2e/e2e-report.ts

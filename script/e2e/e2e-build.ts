@@ -1,12 +1,10 @@
-import { dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { $ } from 'zx';
+import { $, path } from 'zx';
 
-import { logCommand } from './e2e-log';
+import { logCommand } from './e2e-log.ts';
 
-const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
+const root = path.resolve(import.meta.dirname, '../..');
 
-export const iosBuild = resolve(root, 'build/e2e/ios-build');
+export const iosBuild = path.resolve(root, 'build/e2e/ios-build');
 
 export const buildE2EApp = async ({
   platform,
@@ -25,11 +23,11 @@ export const buildE2EApp = async ({
     throw new Error('--abi must be arm64-v8a or x86_64');
   }
 
-  const buildLog = resolve(platformDir, 'build.log');
+  const buildLog = path.resolve(platformDir, 'build.log');
   if (platform === 'android') {
     await logCommand(
       $({
-        cwd: resolve(root, 'example/android'),
+        cwd: path.resolve(root, 'example/android'),
       })`./gradlew :app:assembleRelease --build-cache --no-daemon --console=plain -PreactNativeArchitectures=${buildAbi}`,
       buildLog,
     );
@@ -38,7 +36,7 @@ export const buildE2EApp = async ({
     $.env = {
       ...process.env,
       NODE_ENV: 'production',
-      CCACHE_CONFIGPATH: resolve(root, 'node_modules/react-native/scripts/xcode/ccache.conf'),
+      CCACHE_CONFIGPATH: path.resolve(root, 'node_modules/react-native/scripts/xcode/ccache.conf'),
     };
 
     // Xcode 26 uses compiler launchers, so bypass the ccache wrappers configured by Pods.

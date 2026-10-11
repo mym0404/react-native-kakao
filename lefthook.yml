@@ -6,13 +6,13 @@ pre-commit:
       run: yarn eslint --cache --max-warnings=0 {staged_files}
     lint:objc:
       glob: '*.{h,mm,m,hpp,cpp,c}'
-      run: bash ./script/clang-lint.sh {staged_files}
+      run: node ./script/clang-lint.ts {staged_files}
     lint:swift:
       glob: '*.swift'
-      run: bash ./script/swift-lint.sh {staged_files}
+      run: node ./script/swift-lint.ts {staged_files}
     lint:kotlin:
       glob: '*.kt'
-      run: bash ./script/ktlint-lint.sh {staged_files}
+      run: node ./script/ktlint-lint.ts {staged_files}
     typecheck:
       glob: '*.{ts,tsx}'
       run: yarn tsc --noEmit
@@ -22,13 +22,13 @@ format:
   commands:
     format:objc:
       glob: '*.{h,mm,m,hpp,cpp,c}'
-      run: bash ./script/clang-format.sh {all_files}
+      run: node ./script/clang-format.ts {all_files}
     format:swift:
       glob: '*.swift'
-      run: bash ./script/swift-format.sh {all_files}
+      run: node ./script/swift-format.ts {all_files}
     format:kotlin:
       glob: '*.kt'
-      run: bash ./script/ktlint-format.sh {all_files}
+      run: node ./script/ktlint-format.ts {all_files}
 
 check:
   parallel: true
@@ -38,13 +38,13 @@ check:
       run: yarn eslint --cache --max-warnings=0 {all_files}
     lint:objc:
       glob: '*.{h,mm,m,hpp,cpp,c}'
-      run: bash ./script/clang-lint.sh {all_files}
+      run: node ./script/clang-lint.ts {all_files}
     lint:swift:
       glob: '*.swift'
-      run: bash ./script/swift-lint.sh {all_files}
+      run: node ./script/swift-lint.ts {all_files}
     lint:kotlin:
       glob: '*.kt'
-      run: bash ./script/ktlint-lint.sh {all_files}
+      run: node ./script/ktlint-lint.ts {all_files}
     typecheck:
       glob: '*.{ts,tsx}'
       run: yarn tsc --noEmit

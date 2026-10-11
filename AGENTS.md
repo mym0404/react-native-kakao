@@ -111,7 +111,8 @@ Read in this order:
 
 - `yarn lint` runs Lefthook's `check`: JS/TS, Kotlin, Swift, and ObjC++ lint plus TypeScript checking. It does not build or launch the native example app.
 - `yarn typecheck` runs TypeScript checking only; it overlaps with the TypeScript check in `yarn lint`.
-- For script changes, `yarn test` runs Node tests under `script/**/*.test.js`; it does not cover native runtime behavior.
+- Write repository scripts as `.ts` files under `script/`, run them with mise-managed Node.js, and use explicit ZX imports for process and filesystem operations. Do not rely on ZX globals or Bun. Tests that directly exercise CocoaPods internals remain in Ruby.
+- For script changes, `yarn test` runs Node tests under `script/**/*.test.ts`; it does not cover native runtime behavior.
 - Native API changes also require the build and E2E paths in `example/AGENTS.md` and `.github/workflows/ci.yml`. The example app must compile and load every module with the New Architecture.
 
 ## Knowledge System

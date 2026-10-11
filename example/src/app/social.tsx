@@ -10,6 +10,7 @@ import {
 } from '@react-native-kakao/social';
 
 import { Btn } from '../component/Btn';
+import { E2EApiAction } from '../component/E2EApiAction';
 import { PrettyResult } from '../component/PrettyResult';
 import { StyledScrollView } from '../component/StyledScrollView';
 
@@ -22,13 +23,11 @@ export default function Page() {
       w={'100%'}
       contentContainerSx={{ pt: 12, pb: 48, alignItems: 'center', px: 4, gap: 4 }}
     >
-      <Btn
+      <E2EApiAction
+        id={'talk-profile'}
         title={'Get Profile'}
-        onPress={() =>
-          getTalkProfile()
-            .then(setProfile)
-            .catch((e) => showMessage({ type: 'warning', message: e.message }))
-        }
+        action={getTalkProfile}
+        onSuccess={setProfile}
       />
       <PrettyResult label={'Profile'} result={profile} />
       <Btn

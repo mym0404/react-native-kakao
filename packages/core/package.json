@@ -32,7 +32,7 @@
   "scripts": {
     "prepare": "husky",
     "build:expo-config-plugin": "tsc --project ./expo-config-plugin",
-    "prepack": "yarn build:expo-config-plugin && bob build && zx ../../script/remove-web-declaration-files.mjs .",
+    "prepack": "yarn build:expo-config-plugin && bob build && node ../../script/remove-web-declaration-files.ts .",
     "clean": "del-cli android/ lib"
   },
   "keywords": [
@@ -68,8 +68,7 @@
     "react": "catalog:",
     "react-native": "catalog:",
     "react-native-builder-bob": "catalog:",
-    "typescript": "catalog:",
-    "zx": "catalog:"
+    "typescript": "catalog:"
   },
   "peerDependencies": {
     "expo": ">=52.0.0",
