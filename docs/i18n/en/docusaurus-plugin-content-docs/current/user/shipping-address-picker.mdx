@@ -10,6 +10,23 @@ sidebar_position: 109
 
 The user must be logged in. The app must have permission to use the `shipping_address` consent item, and the user must consent to it.
 
+For Expo on Android, enable the picker callback in the core config plugin and run prebuild again:
+
+```json
+[
+  "@react-native-kakao/core",
+  {
+    "nativeAppKey": "{{native app key}}",
+    "android": {
+      "authCodeHandlerActivity": true,
+      "shippingAddressHandlerActivity": true
+    }
+  }
+]
+```
+
+For bare Android apps, register `com.kakao.sdk.auth.AppsHandlerActivity` with `android:exported="true"` and a browsable VIEW intent filter for `kakao{NATIVE_APP_KEY}://address`. See [the Android setup](https://developers.kakao.com/docs/en/kakaologin/android#before-you-begin-custom-url-scheme).
+
 Call the function directly from a button press so the browser can open the picker popup.
 
 ```tsx
