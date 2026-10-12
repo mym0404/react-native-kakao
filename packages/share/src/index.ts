@@ -465,8 +465,19 @@ export function uploadImage({
   return Native.uploadImage(imageUri, secureResource);
 }
 
+export function scrapImage({
+  imageUrl,
+  secureResource = true,
+}: {
+  imageUrl: string;
+  secureResource?: boolean;
+}) {
+  return Native.scrapImage(imageUrl, secureResource);
+}
+
 const KakaoShare = {
   uploadImage,
+  scrapImage,
   shareCustomTemplate,
   sendCustomTemplateToMe,
   sendCustomTemplateToFriends,

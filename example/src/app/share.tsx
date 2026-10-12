@@ -11,6 +11,7 @@ import {
   type KakaoTemplateLink,
   type KakaoTemplateSocial,
   type KakaoTextTemplate,
+  scrapImage,
   sendCalendarTemplateToFriends,
   sendCalendarTemplateToMe,
   sendCommerceTemplateToFriends,
@@ -44,6 +45,9 @@ import { Txt } from '../component/Txt';
 
 const uploadImageUri =
   'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAEUlEQVR4nGP4f4bhPwgzwBgAZhILKbl4g2kAAAAASUVORK5CYII=';
+
+const scrapImageUrl =
+  'https://developers.kakao.com/assets/img/about/logos/kakaolink/kakaolink_btn_medium.png';
 
 const link: KakaoTemplateLink = {
   webUrl: 'https://mjstudio.net',
@@ -189,9 +193,7 @@ export default function Page() {
           id={'share-upload-image-file'}
           title={'Upload Local File'}
           action={async () => {
-            const image = Asset.fromURI(
-              'https://developers.kakao.com/assets/img/about/logos/kakaolink/kakaolink_btn_medium.png',
-            );
+            const image = Asset.fromURI(scrapImageUrl);
             await image.downloadAsync();
             if (!image.localUri) {
               throw new Error('Image download did not create a local file');
@@ -203,6 +205,16 @@ export default function Page() {
           }}
         />
       ) : null}
+      <E2EApiAction
+        id={'share-scrap-image'}
+        title={'Scrap Image'}
+        action={() => scrapImage({ imageUrl: scrapImageUrl })}
+      />
+      <E2EApiAction
+        id={'share-scrap-image-http'}
+        title={'Scrap Image (HTTP)'}
+        action={() => scrapImage({ imageUrl: scrapImageUrl, secureResource: false })}
+      />
       <Txt>{'Custom'}</Txt>
       <Btn
         title={'Share Custom Template'}

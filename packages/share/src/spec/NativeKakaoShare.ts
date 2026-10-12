@@ -230,6 +230,7 @@ export type KakaoImageUploadResult = {
 
 export interface Spec extends TurboModule {
   uploadImage(imageUri: string, secureResource: boolean): Promise<KakaoImageUploadResult>;
+  scrapImage(imageUrl: string, secureResource: boolean): Promise<KakaoImageUploadResult>;
   shareOrSendMeOrSendFriendOrWhatever(
     /* share, send-me, send-friend */
     sendType: string,
