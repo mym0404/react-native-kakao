@@ -49,6 +49,7 @@ import RNCKakaoCore
         viewAppearance: .init(rawValue: options["viewAppearance"] as? String ?? "auto") ?? .auto,
         orientation: orientation,
         enableSearch: options["enableSearch"] as? Bool ?? true,
+        enableIndex: options["enableIndex"] as? Bool ?? true,
         showMyProfile: options["showMyProfile"] as? Bool ?? true,
         showFavorite: options["showFavorite"] as? Bool ?? true,
         showPickedFriend: options["showPickedFriend"] as? Bool ?? true,

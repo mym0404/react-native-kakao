@@ -61,6 +61,8 @@ export interface KakaoTalkFriendSelectOptions {
   orientation?: 'auto' | 'landscape' | 'portrait';
   /** 친구 검색 기능 사용 여부 */
   enableSearch?: boolean;
+  /** Enable the friend list index on Android and iOS. Defaults to true; ignored on web. */
+  enableIndex?: boolean;
   /** 내 프로필 표시 여부 */
   showMyProfile?: boolean;
   /** 즐겨찾기 친구 표시 여부 */
