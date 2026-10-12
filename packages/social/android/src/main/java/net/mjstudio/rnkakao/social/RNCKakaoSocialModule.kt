@@ -126,6 +126,7 @@ class RNCKakaoSocialModule internal constructor(
         else -> PickerOrientation.AUTO
       },
     enableSearch = options?.getBooleanElseNull("enableSearch") ?: true,
+    enableIndex = options?.getBooleanElseNull("enableIndex") ?: true,
     showMyProfile = options?.getBooleanElseNull("showMyProfile") ?: true,
     showFavorite = options?.getBooleanElseNull("showFavorite") ?: true,
     showPickedFriend = options?.getBooleanElseNull("showPickedFriend") ?: true,

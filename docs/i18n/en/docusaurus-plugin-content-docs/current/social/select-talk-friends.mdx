@@ -29,6 +29,21 @@ With `mode='full'`, the picker fills the entire screen.
 
 With `mode='popup'`, the picker opens as a popup.
 
+### Friend list index
+
+On Android and iOS, `enableIndex` controls the friend list index. It defaults to `true`. Set it to `false` to disable the index.
+
+The web JavaScript SDK does not support this option. On web, `enableIndex` is ignored and the SDK's default friend picker opens.
+
+```tsx
+import { selectMultipleFriends } from '@react-native-kakao/social';
+
+const result = await selectMultipleFriends({
+  mode: 'full',
+  options: { enableIndex: false },
+});
+```
+
 ## Common Types
 
 The friend picker options and friend object are defined as follows:
@@ -41,6 +56,7 @@ export interface KakaoTalkFriendSelectOptions {
   orientation?: 'auto' | 'landscape' | 'portrait';
   /** Enable friend search feature */
   enableSearch?: boolean;
+  enableIndex?: boolean;
   /** Show my profile */
   showMyProfile?: boolean;
   /** Show favorite friends */
