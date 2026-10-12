@@ -6,9 +6,72 @@ import KakaoSDKTemplate
 import React
 import RNCKakaoCore
 import SafariServices
+import UIKit
 
 @objc public class RNCKakaoShareManager: NSObject {
   @objc public static let shared = RNCKakaoShareManager()
+
+  @objc public func uploadImage(
+    _ imageUri: String,
+    secureResource: Bool,
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    DispatchQueue.global(qos: .userInitiated).async {
+      do {
+        let data: Data
+        if imageUri.hasPrefix("data:image/") {
+          let parts = imageUri.split(separator: ",", maxSplits: 1, omittingEmptySubsequences: false)
+          guard parts.count == 2, parts[0].hasSuffix(";base64"),
+                let decoded = Data(base64Encoded: String(parts[1]))
+          else {
+            throw RNCKakaoError.unknown("Expected a base64 image data URI")
+          }
+          data = decoded
+        } else {
+          let url = imageUri.hasPrefix("/") ? URL(fileURLWithPath: imageUri) : URL(string: imageUri)
+          guard let url, url.isFileURL else {
+            throw RNCKakaoError.unknown("Expected a local file or base64 image data URI")
+          }
+          data = try Data(contentsOf: url, options: .mappedIfSafe)
+        }
+        guard data.count <= 5 * 1024 * 1024 else {
+          throw RNCKakaoError.unknown("Image must be no larger than 5 MB")
+        }
+        guard let image = UIImage(data: data) else {
+          throw RNCKakaoError.unknown("Image file cannot be decoded")
+        }
+        onMain {
+          ShareApi.shared
+            .imageUpload(image: image, secureResource: secureResource) { result, error in
+              if let error {
+                RNCKakaoUtil.reject(reject, error)
+              } else if let result {
+                let original = result.infos.original
+                resolve([
+                  "infos": [
+                    "original": [
+                      "url": original.url.absoluteString,
+                      "contentType": original.contentType,
+                      "length": original.length,
+                      "width": original.width,
+                      "height": original.height
+                    ]
+                  ]
+                ])
+              } else {
+                RNCKakaoUtil.reject(
+                  reject,
+                  RNCKakaoError.responseNotFound(name: "imageUploadResult")
+                )
+              }
+            }
+        }
+      } catch {
+        RNCKakaoUtil.reject(reject, error)
+      }
+    }
+  }
 
   @objc public func scrapImage(
     _ imageUrl: String,

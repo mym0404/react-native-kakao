@@ -5,6 +5,13 @@ import type { KakaoImageUploadResult, KakaoShareAPI } from './index';
 
 declare const Kakao: {
   Share: {
+    uploadImage: (args: { file: Blob[] }) => Promise<{
+      infos: {
+        original: Omit<KakaoImageUploadResult['infos']['original'], 'contentType'> & {
+          content_type: string;
+        };
+      };
+    }>;
     scrapImage: (args: { imageUrl: string }) => Promise<{
       infos: {
         original: Omit<KakaoImageUploadResult['infos']['original'], 'contentType'> & {
@@ -76,6 +83,54 @@ function createSendDefaultFriends({
 }
 
 const KakaoShare: KakaoShareAPI = {
+  uploadImage: ({ imageUri, secureResource = true }) =>
+    kRunWebAPI(async () => {
+      const response = await fetch(imageUri);
+      if (!response.ok) {
+        throw new Error(`Failed to read image: HTTP ${response.status}`);
+      }
+
+      const reader = response.body?.getReader();
+      if (!reader) {
+        throw new Error('Image response has no body');
+      }
+
+      const chunks: BlobPart[] = [];
+      let length = 0;
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) {
+            break;
+          }
+
+          length += value.byteLength;
+          if (length > 5 * 1024 * 1024) {
+            await reader.cancel();
+            throw new Error('Image must be no larger than 5 MB');
+          }
+
+          chunks.push(value);
+        }
+      } finally {
+        reader.releaseLock();
+      }
+
+      const image = new Blob(chunks, { type: response.headers.get('content-type') ?? '' });
+
+      const { infos } = await Kakao.Share.uploadImage({ file: [image] });
+      const { content_type: contentType, ...original } = infos.original;
+
+      return {
+        infos: {
+          original: {
+            ...original,
+            url: original.url.replace(/^https?:/, secureResource ? 'https:' : 'http:'),
+            contentType,
+          },
+        },
+      };
+    }),
   scrapImage: ({ imageUrl, secureResource = true }) =>
     kRunWebAPI(async () => {
       const { infos } = await Kakao.Share.scrapImage({ imageUrl });
@@ -152,6 +207,7 @@ const KakaoShare: KakaoShareAPI = {
     createSendDefaultFriends({ template, receiverUuids, objectType: 'calendar' }),
 };
 export const {
+  uploadImage,
   scrapImage,
   sendCalendarTemplateToFriends,
   sendCalendarTemplateToMe,
