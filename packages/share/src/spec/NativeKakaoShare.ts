@@ -229,6 +229,14 @@ export type KakaoImageUploadResult = {
 };
 
 export interface Spec extends TurboModule {
+  shareScrapTemplate(
+    requestUrl: string,
+    useWebBrowserIfKakaoTalkNotAvailable: boolean,
+    templateId?: Double,
+    templateArgs?: Readonly<{ [key: string]: string }>,
+    serverCallbackArgs?: Readonly<{ [key: string]: string }>,
+  ): Promise<void>;
+
   scrapImage(imageUrl: string, secureResource: boolean): Promise<KakaoImageUploadResult>;
   shareOrSendMeOrSendFriendOrWhatever(
     /* share, send-me, send-friend */

@@ -5,6 +5,12 @@ import type { KakaoImageUploadResult, KakaoShareAPI } from './index';
 
 declare const Kakao: {
   Share: {
+    sendScrap: (args: {
+      requestUrl: string;
+      templateId?: number;
+      templateArgs: Record<string, string>;
+      serverCallbackArgs: Record<string, string>;
+    }) => void;
     scrapImage: (args: { imageUrl: string }) => Promise<{
       infos: {
         original: Omit<KakaoImageUploadResult['infos']['original'], 'contentType'> & {
@@ -76,6 +82,12 @@ function createSendDefaultFriends({
 }
 
 const KakaoShare: KakaoShareAPI = {
+  shareScrapTemplate: ({ requestUrl, templateId, templateArgs = {}, serverCallbackArgs = {} }) =>
+    kRunWebAPI(() =>
+      Kakao.Share.sendScrap(
+        filterNonNullishKeys({ requestUrl, templateId, templateArgs, serverCallbackArgs }),
+      ),
+    ),
   scrapImage: ({ imageUrl, secureResource = true }) =>
     kRunWebAPI(async () => {
       const { infos } = await Kakao.Share.scrapImage({ imageUrl });
@@ -152,6 +164,7 @@ const KakaoShare: KakaoShareAPI = {
     createSendDefaultFriends({ template, receiverUuids, objectType: 'calendar' }),
 };
 export const {
+  shareScrapTemplate,
   scrapImage,
   sendCalendarTemplateToFriends,
   sendCalendarTemplateToMe,

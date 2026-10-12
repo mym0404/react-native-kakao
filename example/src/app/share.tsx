@@ -30,6 +30,7 @@ import {
   shareFeedTemplate,
   shareListTemplate,
   shareLocationTemplate,
+  shareScrapTemplate,
   shareTextTemplate,
 } from '@react-native-kakao/share';
 import { selectMultipleFriends } from '@react-native-kakao/social';
@@ -39,12 +40,14 @@ import { E2EApiAction } from '../component/E2EApiAction';
 import { StyledScrollView } from '../component/StyledScrollView';
 import { Txt } from '../component/Txt';
 
+const webUrl = 'https://rnkakao.mjstudio.net';
+
 const scrapImageUrl =
   'https://developers.kakao.com/assets/img/about/logos/kakaolink/kakaolink_btn_medium.png';
 
 const link: KakaoTemplateLink = {
-  webUrl: 'https://mjstudio.net',
-  mobileWebUrl: 'https://mjstudio.net',
+  webUrl,
+  mobileWebUrl: webUrl,
   iosExecutionParams: {},
   androidExecutionParams: {},
 };
@@ -157,6 +160,42 @@ export default function Page() {
       flex={1}
       contentContainerSx={{ pt: 12, pb: 48, alignItems: 'center', px: 4, gap: 4 }}
     >
+      <Txt>{'Scrap'}</Txt>
+      <E2EApiAction
+        id={'share-scrap'}
+        title={'Share Scrap Template'}
+        action={async () => {
+          await shareScrapTemplate({ requestUrl: webUrl });
+
+          return { started: true };
+        }}
+      />
+      <E2EApiAction
+        id={'share-scrap-custom'}
+        title={'Share Scrap With Template Arguments'}
+        action={async () => {
+          await shareScrapTemplate({
+            requestUrl: webUrl,
+            templateId: 107429,
+            templateArgs: { price: '20000' },
+            serverCallbackArgs: { verification: 'scrap' },
+          });
+
+          return { started: true };
+        }}
+      />
+      <E2EApiAction
+        id={'share-scrap-no-browser'}
+        title={'Share Scrap Without Browser'}
+        action={async () => {
+          await shareScrapTemplate({
+            requestUrl: webUrl,
+            useWebBrowserIfKakaoTalkNotAvailable: false,
+          });
+
+          return { started: true };
+        }}
+      />
       <E2EApiAction
         id={'share-scrap-image'}
         title={'Scrap Image'}

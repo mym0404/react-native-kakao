@@ -28,6 +28,26 @@ class RNCKakaoShareModule internal constructor(
   context: ReactApplicationContext,
 ) : NativeKakaoShareSpec(context) {
   @ReactMethod
+  override fun shareScrapTemplate(
+    requestUrl: String,
+    useWebBrowserIfKakaoTalkNotAvailable: Boolean,
+    templateId: Double?,
+    templateArgs: ReadableMap?,
+    serverCallbackArgs: ReadableMap?,
+    promise: Promise,
+  ) = onMain {
+    runShare(
+      templateType = "scrap",
+      templateId = templateId,
+      useWebBrowserIfKakaoTalkNotAvailable = useWebBrowserIfKakaoTalkNotAvailable,
+      templateArgs = templateArgs,
+      serverCallbackArgs = serverCallbackArgs,
+      requestUrl = requestUrl,
+      promise = promise,
+    )
+  }
+
+  @ReactMethod
   override fun scrapImage(
     imageUrl: String,
     secureResource: Boolean,
@@ -236,6 +256,7 @@ class RNCKakaoShareModule internal constructor(
     templateArgs: ReadableMap? = null,
     serverCallbackArgs: ReadableMap? = null,
     promise: Promise,
+    requestUrl: String? = null,
   ) {
     val context = currentActivity
     if (context == null) {
@@ -243,19 +264,31 @@ class RNCKakaoShareModule internal constructor(
       return
     }
 
+    val result = if (requestUrl != null) null else 42
     val callback = { sharingResult: SharingResult?, error: Throwable? ->
       if (error != null) {
         promise.rejectWith(error)
       } else if (sharingResult != null) {
         context.startActivity(sharingResult.intent)
-        promise.resolve(42)
+        promise.resolve(result)
+      } else if (requestUrl != null) {
+        promise.rejectWith(RNCKakaoResponseNotFoundException("sharingResult"))
       } else {
-        promise.resolve(42)
+        promise.resolve(result)
       }
     }
 
     if (ShareClient.instance.isKakaoTalkSharingAvailable(context)) {
-      if (templateId != null) {
+      if (requestUrl != null) {
+        ShareClient.instance.shareScrap(
+          context,
+          requestUrl,
+          templateId = templateId?.toLong(),
+          templateArgs = templateArgs?.toStringMap(),
+          serverCallbackArgs = serverCallbackArgs?.toStringMap(),
+          callback = callback,
+        )
+      } else if (templateId != null) {
         ShareClient.instance.shareCustom(
           context,
           templateId.toLong(),
@@ -278,7 +311,14 @@ class RNCKakaoShareModule internal constructor(
     } else if (useWebBrowserIfKakaoTalkNotAvailable) {
       runCatching {
         val sharerUrl =
-          if (templateId != null) {
+          if (requestUrl != null) {
+            WebSharerClient.instance.makeScrapUrl(
+              requestUrl,
+              templateId = templateId?.toLong(),
+              templateArgs = templateArgs?.toStringMap(),
+              serverCallbackArgs = serverCallbackArgs?.toStringMap(),
+            )
+          } else if (templateId != null) {
             WebSharerClient.instance.makeCustomUrl(
               templateId.toLong(),
               templateArgs = templateArgs?.toStringMap(),
@@ -297,13 +337,13 @@ class RNCKakaoShareModule internal constructor(
           }
         try {
           KakaoCustomTabsClient.openWithDefault(context, sharerUrl)
-          promise.resolve(42)
+          promise.resolve(result)
           return
         } catch (_: UnsupportedOperationException) {
         }
         try {
           KakaoCustomTabsClient.open(context, sharerUrl)
-          promise.resolve(42)
+          promise.resolve(result)
           return
         } catch (_: ActivityNotFoundException) {
         }

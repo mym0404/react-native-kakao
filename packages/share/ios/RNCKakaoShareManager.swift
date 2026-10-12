@@ -10,6 +10,29 @@ import SafariServices
 @objc public class RNCKakaoShareManager: NSObject {
   @objc public static let shared = RNCKakaoShareManager()
 
+  @objc public func shareScrapTemplate(
+    _ requestUrl: String,
+    useWebBrowserIfKakaoTalkNotAvailable: Bool,
+    templateId: NSNumber?,
+    templateArgs: [String: String]?,
+    serverCallbackArgs: [String: String]?,
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    onMain {
+      self.runShare(
+        templateType: "scrap",
+        templateId: templateId?.int64Value,
+        useWebBrowserIfKakaoTalkNotAvailable: useWebBrowserIfKakaoTalkNotAvailable,
+        templateArgs: templateArgs,
+        serverCallbackArgs: serverCallbackArgs,
+        requestUrl: requestUrl,
+        resolve: resolve,
+        reject: reject
+      )
+    }
+  }
+
   @objc public func scrapImage(
     _ imageUrl: String,
     secureResource: Bool,
@@ -251,16 +274,18 @@ import SafariServices
     useWebBrowserIfKakaoTalkNotAvailable: Bool,
     templateArgs: [String: String]? = nil,
     serverCallbackArgs: [String: String]?,
+    requestUrl: String? = nil,
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
+    let result: Any? = requestUrl == nil ? 42 : nil
     let shareCompletion = { (sharingResult: SharingResult?, error: Error?) in
       if let error {
         RNCKakaoUtil.reject(reject, error)
       } else if let sharingResult {
         UIApplication.shared.open(sharingResult.url, options: [:]) { success in
           if success {
-            resolve(42)
+            resolve(result)
           } else {
             RNCKakaoUtil.reject(
               reject,
@@ -274,7 +299,15 @@ import SafariServices
     }
 
     if ShareApi.isKakaoTalkSharingAvailable() {
-      if let templateId {
+      if let requestUrl {
+        ShareApi.shared.shareScrap(
+          requestUrl: requestUrl,
+          templateId: templateId,
+          templateArgs: templateArgs,
+          serverCallbackArgs: serverCallbackArgs,
+          completion: shareCompletion
+        )
+      } else if let templateId {
         ShareApi.shared.shareCustom(
           templateId: templateId,
           templateArgs: templateArgs,
@@ -299,25 +332,24 @@ import SafariServices
         )
       }
     } else if useWebBrowserIfKakaoTalkNotAvailable {
-      if let templateId {
+      if let requestUrl {
+        if let url = ShareApi.shared.makeScrapUrl(
+          requestUrl: requestUrl,
+          templateId: templateId,
+          templateArgs: templateArgs,
+          serverCallbackArgs: serverCallbackArgs
+        ) {
+          presentShareUrl(url)
+        } else {
+          RNCKakaoUtil.reject(reject, RNCKakaoError.unknown("makeScrapUrl failed"))
+        }
+      } else if let templateId {
         if let url = ShareApi.shared.makeCustomUrl(
           templateId: templateId,
           templateArgs: templateArgs,
           serverCallbackArgs: serverCallbackArgs
         ) {
-          let safariViewController = SFSafariViewController(url: url)
-          safariViewController.modalTransitionStyle = .crossDissolve
-          safariViewController.modalPresentationStyle = .overCurrentContext
-          RNCKakaoUtil.presentViewController(safariViewController) { success in
-            if success {
-              resolve(42)
-            } else {
-              RNCKakaoUtil.reject(
-                reject,
-                RNCKakaoError.unknown("SFSafariViewController open failed")
-              )
-            }
-          }
+          presentShareUrl(url)
         } else {
           RNCKakaoUtil.reject(reject, RNCKakaoError.unknown("makeCustomUrl failed"))
         }
@@ -329,19 +361,7 @@ import SafariServices
             templatable: templatable,
             serverCallbackArgs: serverCallbackArgs
           ) {
-            let safariViewController = SFSafariViewController(url: url)
-            safariViewController.modalTransitionStyle = .crossDissolve
-            safariViewController.modalPresentationStyle = .overCurrentContext
-            RNCKakaoUtil.presentViewController(safariViewController) { success in
-              if success {
-                resolve(42)
-              } else {
-                RNCKakaoUtil.reject(
-                  reject,
-                  RNCKakaoError.unknown("SFSafariViewController open failed")
-                )
-              }
-            }
+            presentShareUrl(url)
           } else {
             RNCKakaoUtil.reject(reject, RNCKakaoError.unknown("makeDefaultUrl failed"))
           }
@@ -356,6 +376,22 @@ import SafariServices
       }
     } else {
       RNCKakaoUtil.reject(reject, RNCKakaoError.kakaoAppNotAvailable(app: .talk))
+    }
+
+    func presentShareUrl(_ url: URL) {
+      let safariViewController = SFSafariViewController(url: url)
+      safariViewController.modalTransitionStyle = .crossDissolve
+      safariViewController.modalPresentationStyle = .overCurrentContext
+      RNCKakaoUtil.presentViewController(safariViewController) { success in
+        if success {
+          resolve(result)
+        } else {
+          RNCKakaoUtil.reject(
+            reject,
+            RNCKakaoError.unknown("SFSafariViewController open failed")
+          )
+        }
+      }
     }
   }
 

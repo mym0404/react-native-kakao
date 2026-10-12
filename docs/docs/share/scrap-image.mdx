@@ -1,10 +1,10 @@
 ---
-sidebar_label: Scrap image
+sidebar_label: 이미지 URL 스크랩
 ---
 
-# Scrap image
+# 이미지 URL 스크랩
 
-Use `scrapImage()` to copy a publicly accessible image URL to Kakao's image server. Android, iOS, and web return the same image metadata. Initialize the Kakao SDK before calling this API; user login is not required.
+`scrapImage()`는 공개 이미지 URL의 이미지를 카카오 이미지 서버에 저장합니다. Android, iOS, 웹에서 같은 형태의 이미지 정보를 반환합니다. 호출 전에 카카오 SDK를 초기화해야 하며, 사용자 로그인은 필요하지 않습니다.
 
 ```tsx
 import { scrapImage } from '@react-native-kakao/share';
@@ -20,9 +20,9 @@ const content = {
 };
 ```
 
-`secureResource` defaults to `true` and returns an HTTPS image URL. Set it to `false` to request an HTTP URL. On web, the JavaScript SDK does not expose this setting, so the returned Kakao CDN URL is normalized to the requested scheme.
+`secureResource`의 기본값은 `true`이며 HTTPS 이미지 URL을 반환합니다. HTTP URL이 필요하면 `false`로 설정합니다. 웹 JavaScript SDK에는 이 설정이 없으므로, 반환된 카카오 CDN URL의 프로토콜을 요청한 값으로 변경합니다.
 
-The result has this shape:
+반환된 `infos.original`에서 이미지 URL, 형식, 파일 크기, 너비와 높이를 확인할 수 있습니다.
 
 ```ts
 type KakaoImageUploadResult = {
@@ -38,6 +38,6 @@ type KakaoImageUploadResult = {
 };
 ```
 
-Images must be accessible to Kakao's server and no larger than 5 MB. Uploaded images are stored for 100 days. This call prepares an image; it does not send a message.
+카카오 서버에서 접근할 수 있는 5 MB 이하의 이미지여야 합니다. 저장한 이미지는 100일 동안 보관됩니다. 이 API는 공유에 사용할 이미지를 준비하며, 메시지를 발송하지 않습니다.
 
-See the [official image scraping guide](https://developers.kakao.com/docs/en/kakaotalk-share/android-link#scrap-image).
+[공식 이미지 스크랩 가이드](https://developers.kakao.com/docs/en/kakaotalk-share/android-link#scrap-image)에서 지원 조건을 확인할 수 있습니다.
