@@ -1,13 +1,11 @@
 import { camelCaseObject, filterNonNullishKeys, is } from '@mj-studio/js-util';
-import { kFetch, kFetchFormUrlEncoded, kGlobalStorage, kRunWebAPI } from '@react-native-kakao/core';
-import * as querystring from 'querystring';
+import { kFetchFormUrlEncoded, kGlobalStorage, kRunWebAPI } from '@react-native-kakao/core';
 
 import {
   type KakaoLoginToken,
   type KakaoScopeInfo,
-  type KakaoServiceTerms,
   type KakaoShippingAddressResult,
-  type KakaoUser,
+  type KakaoUser as KakaoUserProfile,
   type KakaoUserAPI,
 } from './index';
 
@@ -31,17 +29,8 @@ function isoToUnix(value?: string | number) {
 const KakaoUser: KakaoUserAPI = {
   getAccessToken: () =>
     kRunWebAPI(async () => {
-      const { id, expires_in, app_id } = (
-        await kFetch<{
-          id: number;
-          expires_in: number;
-          app_id: number;
-        }>('https://kapi.kakao.com/v1/user/access_token_info', {
-          headers: {
-            ...kGlobalStorage.headers,
-          },
-        })
-      ).body;
+      const { id, expires_in, app_id }: { id: number; expires_in: number; app_id: number } =
+        await Kakao.API.request({ url: '/v1/user/access_token_info' });
 
       return {
         id,
@@ -64,7 +53,7 @@ const KakaoUser: KakaoUserAPI = {
         body: filterNonNullishKeys({
           grant_type: 'authorization_code',
           client_id: kGlobalStorage.restApiKey,
-          redirect_uri: encodeURIComponent(redirectUri),
+          redirect_uri: redirectUri,
           code,
           client_secret: clientSecret,
         }),
@@ -73,12 +62,8 @@ const KakaoUser: KakaoUserAPI = {
       return camelCaseObject(res) as any;
     }),
   setAccessTokenWeb: (token: string) => {
+    Kakao.Auth.setAccessToken(token);
     kGlobalStorage.accessToken = token;
-
-    return new Promise((r) => {
-      Kakao.Auth.setAccessToken(token);
-      r(42);
-    });
   },
   login: (params): Promise<KakaoLoginToken> =>
     kRunWebAPI(() => {
@@ -89,16 +74,28 @@ const KakaoUser: KakaoUserAPI = {
         filterNonNullishKeys({
           loginHint,
           nonce: params?.nonce ?? nonce,
-          prompt: prompt?.join(','),
+          prompt: (
+            prompt ??
+            params?.prompts?.map((value) =>
+              value === 'SelectAccount' ? 'select_account' : value.toLowerCase(),
+            )
+          )?.join(','),
           redirectUri,
-          scope: scope?.join(','),
-          serviceTerms: serviceTerms?.join(','),
+          scope: (scope ?? params?.scopes)?.join(','),
+          serviceTerms: (serviceTerms ?? params?.serviceTerms)?.join(','),
           state,
-          throughTalk,
+          throughTalk: throughTalk ?? (params?.useKakaoAccountLogin ? false : undefined),
         }),
       );
     }),
-  logout: () => kRunWebAPI(() => Kakao.Auth.logout()),
+  logout: () =>
+    kRunWebAPI(async () => {
+      try {
+        await Kakao.Auth.logout();
+      } finally {
+        kGlobalStorage.clearAccessToken();
+      }
+    }),
   isLogined: async (): Promise<boolean> => {
     try {
       const { appId } = await KakaoUser.getAccessToken();
@@ -109,68 +106,122 @@ const KakaoUser: KakaoUserAPI = {
     }
   },
   isKakaoTalkLoginAvailable: async () => false,
-  unlink: () => kRunWebAPI(() => Kakao.API.request({ url: '/v1/user/unlink' })),
+  unlink: () =>
+    kRunWebAPI(async () => {
+      await Kakao.API.request({ url: '/v1/user/unlink' });
+      Kakao.Auth.setAccessToken(null);
+      kGlobalStorage.clearAccessToken();
+    }),
   scopes: (scopes?: string[]) =>
     kRunWebAPI(async () => {
       const response = await Kakao.API.request({
-        url: `/v2/user/scopes${scopes ? '?' + querystring.stringify({ scopes }) : ''}`,
+        url: '/v2/user/scopes',
+        data: scopes?.length ? { scopes } : undefined,
       });
 
       return camelCaseObject(response.scopes) as KakaoScopeInfo[];
     }),
   revokeScopes: (scopes: string[]) =>
-    kRunWebAPI(() =>
-      Kakao.API.request({
+    kRunWebAPI(async () => {
+      await Kakao.API.request({
         url: '/v2/user/revoke/scopes',
         data: {
           scopes,
         },
-      }),
-    ),
+      });
+    }),
   serviceTerms: () =>
-    kRunWebAPI(
-      async () =>
-        camelCaseObject(
-          (
-            await Kakao.API.request({
-              url: '/v2/user/service_terms',
-            })
-          ).service_terms.map((v) => ({
-            ...v,
-            agreed_at: v.agreed_at ? isoToUnix(v.agreed_at) : null,
-          })),
-        ) as KakaoServiceTerms[],
-    ),
-  shippingAddresses: () =>
-    kRunWebAPI(
-      async () =>
-        camelCaseObject(
-          await Kakao.API.request({
-            url: '/v1/user/shipping_address',
-          }),
-        ) as KakaoShippingAddressResult,
-    ),
-  me: () =>
     kRunWebAPI(async () => {
-      const ret: any = camelCaseObject(await Kakao.API.request({ url: '/v2/user/me' }));
-      const kakaoAccount = ret.kakaoAccount ?? {};
-      const properties = ret.properties ?? {};
+      const response: {
+        service_terms?: {
+          tag: string;
+          agreed_at?: string;
+          agreed: boolean;
+          required: boolean;
+          revocable: boolean;
+        }[];
+      } = await Kakao.API.request({ url: '/v2/user/service_terms' });
+
+      return (response.service_terms ?? []).map((term) => ({
+        tag: term.tag,
+        agreedAt: isoToUnix(term.agreed_at),
+        agreed: term.agreed,
+        required: term.required,
+        revocable: term.revocable,
+      }));
+    }),
+  shippingAddresses: () =>
+    kRunWebAPI(async () => {
+      const response = camelCaseObject(
+        await Kakao.API.request({ url: '/v1/user/shipping_address' }),
+      ) as {
+        userId?: number;
+        shippingAddressesNeedsAgreement?: boolean;
+        shippingAddresses?: (Omit<
+          KakaoShippingAddressResult['shippingAddresses'][number],
+          'updatedAt'
+        > & {
+          updatedAt?: string | number;
+        })[];
+      };
 
       return {
-        ...ret,
-        ...properties,
-        ...kakaoAccount,
+        userId: response.userId,
+        needsAgreement: response.shippingAddressesNeedsAgreement,
+        shippingAddresses: (response.shippingAddresses ?? []).map((address) => ({
+          ...address,
+          updatedAt: isoToUnix(address.updatedAt),
+        })),
+      } as KakaoShippingAddressResult;
+    }),
+  me: () =>
+    kRunWebAPI(async () => {
+      const ret = camelCaseObject(await Kakao.API.request({ url: '/v2/user/me' })) as {
+        id: number;
+        connectedAt?: string;
+        synchedAt?: string;
+        kakaoAccount?: Partial<KakaoUserProfile> & {
+          profile?: Partial<
+            Pick<KakaoUserProfile, 'nickname' | 'profileImageUrl' | 'thumbnailImageUrl'>
+          >;
+        };
+        properties?: { nickname?: string; profileImage?: string; thumbnailImage?: string };
+      };
+      const kakaoAccount = ret.kakaoAccount ?? {};
+      const properties = ret.properties ?? {};
+      const profile = kakaoAccount.profile ?? {};
+
+      return {
+        id: ret.id,
         email: kakaoAccount.email,
-        name: null,
-        nickname: kakaoAccount.profile.nickname,
-        profileImageUrl: properties.profileImage,
-        thumbnailImageUrl: properties.thumbnailImage,
-        phoneNumber: kakaoAccount.profile.phoneNumber,
-        isEmailValid: ret.isEmailValid,
-        isEmailVerified: ret.isEmailVerified,
+        name: kakaoAccount.name,
+        nickname: profile.nickname ?? properties.nickname,
+        profileImageUrl: profile.profileImageUrl ?? properties.profileImage,
+        thumbnailImageUrl: profile.thumbnailImageUrl ?? properties.thumbnailImage,
+        phoneNumber: kakaoAccount.phoneNumber,
+        isEmailValid: kakaoAccount.isEmailValid,
+        isEmailVerified: kakaoAccount.isEmailVerified,
+        ageRange: kakaoAccount.ageRange,
+        birthday: kakaoAccount.birthday,
+        birthdayType: kakaoAccount.birthdayType,
+        birthyear: kakaoAccount.birthyear,
+        gender: kakaoAccount.gender,
+        isKorean: kakaoAccount.isKorean,
+        ageRangeNeedsAgreement: kakaoAccount.ageRangeNeedsAgreement,
+        birthdayNeedsAgreement: kakaoAccount.birthdayNeedsAgreement,
+        birthyearNeedsAgreement: kakaoAccount.birthyearNeedsAgreement,
+        emailNeedsAgreement: kakaoAccount.emailNeedsAgreement,
+        genderNeedsAgreement: kakaoAccount.genderNeedsAgreement,
+        isKoreanNeedsAgreement: kakaoAccount.isKoreanNeedsAgreement,
+        phoneNumberNeedsAgreement: kakaoAccount.phoneNumberNeedsAgreement,
+        profileNeedsAgreement: kakaoAccount.profileNeedsAgreement,
+        nameNeedsAgreement: kakaoAccount.nameNeedsAgreement,
+        profileImageNeedsAgreement: kakaoAccount.profileImageNeedsAgreement,
+        profileNicknameNeedsAgreement: kakaoAccount.profileNicknameNeedsAgreement,
+        legalBirthDateNeedsAgreement: kakaoAccount.legalBirthDateNeedsAgreement,
         connectedAt: isoToUnix(ret.connectedAt),
         synchedAt: isoToUnix(ret.synchedAt),
-      } as KakaoUser;
+      } as KakaoUserProfile;
     }),
 };
 

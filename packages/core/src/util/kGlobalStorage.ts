@@ -4,11 +4,12 @@ import AES from 'crypto-js/aes';
 import { kAssert } from './kAssert';
 
 const ______________K______________ = '______________K______________';
+const accessTokenStorageKey = 'kat';
 
 function getter(key: string) {
   const ret = localStorage.getItem(key);
 
-  return AES.decrypt(ret!, ______________K______________).toString(CryptoJS.enc.Utf8);
+  return ret ? AES.decrypt(ret, ______________K______________).toString(CryptoJS.enc.Utf8) : '';
 }
 
 function setter(key: string, value: string) {
@@ -38,13 +39,17 @@ class GlobalStorage {
   }
 
   get accessToken(): string {
-    const ret = getter('kat');
+    const ret = getter(accessTokenStorageKey);
     kAssert(ret, 'accessToken is not set. did you login to kakao?');
 
     return ret;
   }
   set accessToken(value: string) {
-    setter('kat', value);
+    setter(accessTokenStorageKey, value);
+  }
+
+  clearAccessToken() {
+    localStorage.removeItem(accessTokenStorageKey);
   }
 
   get headers(): object {
