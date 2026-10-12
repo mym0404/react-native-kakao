@@ -33,6 +33,40 @@ import SafariServices
     }
   }
 
+  @objc public func scrapImage(
+    _ imageUrl: String,
+    secureResource: Bool,
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    guard let url = URL(string: imageUrl) else {
+      RNCKakaoUtil.reject(reject, RNCKakaoError.unknown("Invalid image URL"))
+      return
+    }
+    onMain {
+      ShareApi.shared.imageScrap(imageUrl: url, secureResource: secureResource) { result, error in
+        if let error {
+          RNCKakaoUtil.reject(reject, error)
+        } else if let result {
+          let original = result.infos.original
+          resolve([
+            "infos": [
+              "original": [
+                "url": original.url.absoluteString,
+                "contentType": original.contentType,
+                "length": original.length,
+                "width": original.width,
+                "height": original.height
+              ]
+            ]
+          ])
+        } else {
+          RNCKakaoUtil.reject(reject, RNCKakaoError.responseNotFound(name: "imageUploadResult"))
+        }
+      }
+    }
+  }
+
   @objc public func shareOrSendMeOrSendFriendOrWhatever(
     _ sendType: String,
     templateType: String,

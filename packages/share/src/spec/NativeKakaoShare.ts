@@ -216,6 +216,18 @@ export interface KakaoCalendarTemplate {
   buttons?: KakaoTemplateButton[];
 }
 
+export type KakaoImageUploadResult = {
+  infos: {
+    original: {
+      url: string;
+      contentType: string;
+      length: Double;
+      width: Double;
+      height: Double;
+    };
+  };
+};
+
 export interface Spec extends TurboModule {
   shareScrapTemplate(
     requestUrl: string,
@@ -225,6 +237,7 @@ export interface Spec extends TurboModule {
     serverCallbackArgs?: Readonly<{ [key: string]: string }>,
   ): Promise<void>;
 
+  scrapImage(imageUrl: string, secureResource: boolean): Promise<KakaoImageUploadResult>;
   shareOrSendMeOrSendFriendOrWhatever(
     /* share, send-me, send-friend */
     sendType: string,

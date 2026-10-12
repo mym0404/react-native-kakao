@@ -9,6 +9,7 @@ import {
   type KakaoTemplateLink,
   type KakaoTemplateSocial,
   type KakaoTextTemplate,
+  scrapImage,
   sendCalendarTemplateToFriends,
   sendCalendarTemplateToMe,
   sendCommerceTemplateToFriends,
@@ -40,6 +41,9 @@ import { StyledScrollView } from '../component/StyledScrollView';
 import { Txt } from '../component/Txt';
 
 const webUrl = 'https://rnkakao.mjstudio.net';
+
+const scrapImageUrl =
+  'https://developers.kakao.com/assets/img/about/logos/kakaolink/kakaolink_btn_medium.png';
 
 const link: KakaoTemplateLink = {
   webUrl,
@@ -191,6 +195,16 @@ export default function Page() {
 
           return { started: true };
         }}
+      />
+      <E2EApiAction
+        id={'share-scrap-image'}
+        title={'Scrap Image'}
+        action={() => scrapImage({ imageUrl: scrapImageUrl })}
+      />
+      <E2EApiAction
+        id={'share-scrap-image-http'}
+        title={'Scrap Image (HTTP)'}
+        action={() => scrapImage({ imageUrl: scrapImageUrl, secureResource: false })}
       />
       <Txt>{'Custom'}</Txt>
       <Btn

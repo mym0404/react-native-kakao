@@ -1,7 +1,7 @@
 import { filterNonNullishKeys, snakeCaseObject } from '@mj-studio/js-util';
 import { kRunWebAPI } from '@react-native-kakao/core';
 
-import type { KakaoShareAPI } from './index';
+import type { KakaoImageUploadResult, KakaoShareAPI } from './index';
 
 declare const Kakao: {
   Share: {
@@ -11,6 +11,13 @@ declare const Kakao: {
       templateArgs: Record<string, string>;
       serverCallbackArgs: Record<string, string>;
     }) => void;
+    scrapImage: (args: { imageUrl: string }) => Promise<{
+      infos: {
+        original: Omit<KakaoImageUploadResult['infos']['original'], 'contentType'> & {
+          content_type: string;
+        };
+      };
+    }>;
     sendDefault: (args: any) => Promise<any>;
     sendCustom: (args: any) => Promise<any>;
   };
@@ -81,6 +88,21 @@ const KakaoShare: KakaoShareAPI = {
         filterNonNullishKeys({ requestUrl, templateId, templateArgs, serverCallbackArgs }),
       ),
     ),
+  scrapImage: ({ imageUrl, secureResource = true }) =>
+    kRunWebAPI(async () => {
+      const { infos } = await Kakao.Share.scrapImage({ imageUrl });
+      const { content_type: contentType, ...original } = infos.original;
+
+      return {
+        infos: {
+          original: {
+            ...original,
+            url: original.url.replace(/^https?:/, secureResource ? 'https:' : 'http:'),
+            contentType,
+          },
+        },
+      };
+    }),
   shareCustomTemplate: ({ templateArgs, templateId, serverCallbackArgs }) =>
     kRunWebAPI(() =>
       Kakao.Share.sendCustom({
@@ -143,6 +165,7 @@ const KakaoShare: KakaoShareAPI = {
 };
 export const {
   shareScrapTemplate,
+  scrapImage,
   sendCalendarTemplateToFriends,
   sendCalendarTemplateToMe,
   sendCommerceTemplateToFriends,

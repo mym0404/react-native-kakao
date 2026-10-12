@@ -27,6 +27,11 @@ RCT_EXPORT_METHOD(
                                     reject:reject];
 }
 
+RCT_EXPORT_METHOD(scrapImage : (NSString*)imageUrl secureResource : (BOOL)secureResource resolve : (
+    RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
+  [[self manager] scrapImage:imageUrl secureResource:secureResource resolve:resolve reject:reject];
+}
+
 // RNC_KAKAO_SHARE_EXPORT_DEFAULT_TEMPLATE(shareFeedTemplate, feed)
 // RNC_KAKAO_SHARE_EXPORT_DEFAULT_TEMPLATE(shareListTemplate, list)
 // RNC_KAKAO_SHARE_EXPORT_DEFAULT_TEMPLATE(shareLocationTemplate, location)
