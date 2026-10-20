@@ -96,6 +96,11 @@ export default function Page() {
             {'@react-native-kakao/channel'}
           </Txt>
         </Link>
+        <Link testID={'menu-cert'} href={'/cert'}>
+          <Txt textDecorationLine={'underline'} align={'center'}>
+            {'@react-native-kakao/cert'}
+          </Txt>
+        </Link>
       </Box>
     </StyledScrollView>
   );
