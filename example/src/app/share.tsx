@@ -39,12 +39,13 @@ import { E2EApiAction } from '../component/E2EApiAction';
 import { StyledScrollView } from '../component/StyledScrollView';
 import { Txt } from '../component/Txt';
 
+const webUrl = 'https://rnkakao.mjstudio.net';
 const scrapImageUrl =
   'https://developers.kakao.com/assets/img/about/logos/kakaolink/kakaolink_btn_medium.png';
 
 const link: KakaoTemplateLink = {
-  webUrl: 'https://mjstudio.net',
-  mobileWebUrl: 'https://mjstudio.net',
+  webUrl,
+  mobileWebUrl: webUrl,
   iosExecutionParams: {},
   androidExecutionParams: {},
 };

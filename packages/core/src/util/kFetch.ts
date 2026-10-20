@@ -27,10 +27,13 @@ const parseJsonSafely = (text: string): object | string => {
   }
 };
 
-function jsonToFormUrlEncoded(json: Record<string, any>) {
-  return Object.keys(json)
-    .map((key) => key + '=' + json[key])
-    .join('&');
+function jsonToFormUrlEncoded(json: object) {
+  return new URLSearchParams(
+    Object.entries(json).map(([key, value]) => [
+      key,
+      typeof value === 'object' ? JSON.stringify(value) : String(value),
+    ]),
+  ).toString();
 }
 
 // Write your own high order function to serialize request body and deserialize response body.
@@ -55,15 +58,17 @@ const returnFetchJson = (args?: ReturnFetchDefaultOptions, formUrlEncoded = fals
       },
     });
 
-    if (response.status === 401) {
-      throw kCreateWebError({
-        code: -401 + '',
-        isAuthFailed: true,
-        msg: 'this access token does not exist',
+    const body = parseJsonSafely(await response.text()) as T;
+
+    if (!response.ok) {
+      kCreateWebError({
+        code: String(-response.status),
+        message: typeof body === 'string' ? body : response.statusText,
+        ...(typeof body === 'object' && body !== null ? body : {}),
+        isApiFailed: true,
+        isAuthFailed: response.status === 401,
       });
     }
-
-    const body = parseJsonSafely(await response.text()) as T;
 
     return {
       headers: response.headers,
