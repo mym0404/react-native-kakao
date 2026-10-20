@@ -7,6 +7,7 @@ import type {
   KakaoImageUploadResult,
   KakaoListTemplate,
   KakaoLocationTemplate,
+  KakaoMessageSendResult,
   KakaoTemplateButton,
   KakaoTemplateCommerce,
   KakaoTemplateContent,
@@ -29,6 +30,7 @@ export type {
   KakaoTemplateCommerce,
   KakaoTemplateButton,
   KakaoLocationTemplate,
+  KakaoMessageSendResult,
   KakaoListTemplate,
   KakaoFeedTemplate,
   KakaoCommerceTemplate,
@@ -50,8 +52,9 @@ function shareOrSendMeOrSendFriendOrWhatever(
   useWebBrowserIfKakaoTalkNotAvailable: boolean,
   templateArgs: Readonly<{ [key: string]: string }>,
   serverCallbackArgs: Readonly<{ [key: string]: string }>,
+  includeFailureInfo?: boolean,
 ): Promise<any> {
-  return Native.shareOrSendMeOrSendFriendOrWhatever(
+  const response = Native.shareOrSendMeOrSendFriendOrWhatever(
     sendType,
     templateType,
     templateId,
@@ -61,7 +64,19 @@ function shareOrSendMeOrSendFriendOrWhatever(
     templateArgs,
     serverCallbackArgs,
   );
+
+  if (sendType === SendTypes.sendFriend) {
+    return response.then((result: KakaoMessageSendResult) =>
+      includeFailureInfo ? result : result.successfulReceiverUuids,
+    );
+  }
+
+  return response;
 }
+
+export type KakaoFriendMessageResult<T extends boolean = false> = T extends true
+  ? KakaoMessageSendResult
+  : string[];
 
 const SendTypes = { share: 'share', sendMe: 'send-me', sendFriend: 'send-friend' };
 const TemplateTypes = {
@@ -99,13 +114,16 @@ export async function sendScrapTemplateToMe({
   );
 }
 
-export function sendScrapTemplateToFriends({
+export function sendScrapTemplateToFriends<T extends boolean = false>({
   requestUrl,
   templateId = DefaultScrapTemplateId,
   templateArgs = {},
   receiverUuids,
-}: KakaoScrapMessageParams & { receiverUuids: string[] }): Promise<string[]> {
-  return Native.shareOrSendMeOrSendFriendOrWhatever(
+  includeFailureInfo,
+}: KakaoScrapMessageParams & { receiverUuids: string[]; includeFailureInfo?: T }): Promise<
+  KakaoFriendMessageResult<T>
+> {
+  return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.sendFriend,
     TemplateTypes.scrap,
     templateId,
@@ -114,6 +132,7 @@ export function sendScrapTemplateToFriends({
     false,
     templateArgs,
     {},
+    includeFailureInfo,
   );
 }
 
@@ -181,15 +200,17 @@ export function sendCustomTemplateToMe({
   );
 }
 
-export function sendCustomTemplateToFriends({
+export function sendCustomTemplateToFriends<T extends boolean = false>({
   templateId,
   templateArgs = {},
   receiverUuids,
+  includeFailureInfo,
 }: {
   templateId: number;
   templateArgs?: Record<string, string>;
   receiverUuids: string[];
-}): Promise<string[]> {
+  includeFailureInfo?: T;
+}): Promise<KakaoFriendMessageResult<T>> {
   return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.sendFriend,
     TemplateTypes.custom,
@@ -199,6 +220,7 @@ export function sendCustomTemplateToFriends({
     false,
     templateArgs,
     {},
+    includeFailureInfo,
   );
 }
 
@@ -236,13 +258,15 @@ export function sendFeedTemplateToMe({ template }: { template: KakaoFeedTemplate
   );
 }
 
-export function sendFeedTemplateToFriends({
+export function sendFeedTemplateToFriends<T extends boolean = false>({
   template,
   receiverUuids,
+  includeFailureInfo,
 }: {
   template: KakaoFeedTemplate;
   receiverUuids: string[];
-}): Promise<string[]> {
+  includeFailureInfo?: T;
+}): Promise<KakaoFriendMessageResult<T>> {
   return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.sendFriend,
     TemplateTypes.feed,
@@ -252,6 +276,7 @@ export function sendFeedTemplateToFriends({
     false,
     {},
     {},
+    includeFailureInfo,
   );
 }
 
@@ -289,13 +314,15 @@ export function sendListTemplateToMe({ template }: { template: KakaoListTemplate
   );
 }
 
-export function sendListTemplateToFriends({
+export function sendListTemplateToFriends<T extends boolean = false>({
   template,
   receiverUuids,
+  includeFailureInfo,
 }: {
   template: KakaoListTemplate;
   receiverUuids: string[];
-}): Promise<string[]> {
+  includeFailureInfo?: T;
+}): Promise<KakaoFriendMessageResult<T>> {
   return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.sendFriend,
     TemplateTypes.list,
@@ -305,6 +332,7 @@ export function sendListTemplateToFriends({
     false,
     {},
     {},
+    includeFailureInfo,
   );
 }
 
@@ -342,13 +370,15 @@ export function sendLocationTemplateToMe({ template }: { template: KakaoLocation
   );
 }
 
-export function sendLocationTemplateToFriends({
+export function sendLocationTemplateToFriends<T extends boolean = false>({
   template,
   receiverUuids,
+  includeFailureInfo,
 }: {
   template: KakaoLocationTemplate;
   receiverUuids: string[];
-}): Promise<string[]> {
+  includeFailureInfo?: T;
+}): Promise<KakaoFriendMessageResult<T>> {
   return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.sendFriend,
     TemplateTypes.location,
@@ -358,6 +388,7 @@ export function sendLocationTemplateToFriends({
     false,
     {},
     {},
+    includeFailureInfo,
   );
 }
 
@@ -395,13 +426,15 @@ export function sendCommerceTemplateToMe({ template }: { template: KakaoCommerce
   );
 }
 
-export function sendCommerceTemplateToFriends({
+export function sendCommerceTemplateToFriends<T extends boolean = false>({
   template,
   receiverUuids,
+  includeFailureInfo,
 }: {
   template: KakaoCommerceTemplate;
   receiverUuids: string[];
-}): Promise<string[]> {
+  includeFailureInfo?: T;
+}): Promise<KakaoFriendMessageResult<T>> {
   return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.sendFriend,
     TemplateTypes.commerce,
@@ -411,6 +444,7 @@ export function sendCommerceTemplateToFriends({
     false,
     {},
     {},
+    includeFailureInfo,
   );
 }
 
@@ -448,13 +482,15 @@ export function sendTextTemplateToMe({ template }: { template: KakaoTextTemplate
   );
 }
 
-export function sendTextTemplateToFriends({
+export function sendTextTemplateToFriends<T extends boolean = false>({
   template,
   receiverUuids,
+  includeFailureInfo,
 }: {
   template: KakaoTextTemplate;
   receiverUuids: string[];
-}): Promise<string[]> {
+  includeFailureInfo?: T;
+}): Promise<KakaoFriendMessageResult<T>> {
   return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.sendFriend,
     TemplateTypes.text,
@@ -464,6 +500,7 @@ export function sendTextTemplateToFriends({
     false,
     {},
     {},
+    includeFailureInfo,
   );
 }
 
@@ -501,13 +538,15 @@ export function sendCalendarTemplateToMe({ template }: { template: KakaoCalendar
   );
 }
 
-export function sendCalendarTemplateToFriends({
+export function sendCalendarTemplateToFriends<T extends boolean = false>({
   template,
   receiverUuids,
+  includeFailureInfo,
 }: {
   template: KakaoCalendarTemplate;
   receiverUuids: string[];
-}): Promise<string[]> {
+  includeFailureInfo?: T;
+}): Promise<KakaoFriendMessageResult<T>> {
   return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.sendFriend,
     TemplateTypes.calendar,
@@ -517,6 +556,7 @@ export function sendCalendarTemplateToFriends({
     false,
     {},
     {},
+    includeFailureInfo,
   );
 }
 

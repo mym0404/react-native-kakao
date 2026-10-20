@@ -366,7 +366,25 @@ class RNCKakaoShareModule internal constructor(
       } else if (messageSendResult == null) {
         promise.rejectWith(RNCKakaoResponseNotFoundException("messageSendResult"))
       } else {
-        promise.resolve(argArr().pushStringList(messageSendResult.successfulReceiverUuids ?: listOf()))
+        promise.resolve(
+          argMap().apply {
+            putArray("successfulReceiverUuids", argArr().pushStringList(messageSendResult.successfulReceiverUuids ?: listOf()))
+            putArray(
+              "failureInfos",
+              argArr().apply {
+                messageSendResult.failureInfos?.forEach { failure ->
+                  pushMap(
+                    argMap().apply {
+                      putInt("code", failure.code)
+                      putString("msg", failure.msg)
+                      putArray("receiverUuids", argArr().pushStringList(failure.receiverUuids))
+                    },
+                  )
+                }
+              },
+            )
+          },
+        )
       }
     }
     if (requestUrl != null) {

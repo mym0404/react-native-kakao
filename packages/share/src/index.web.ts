@@ -5,7 +5,12 @@ import {
 } from '@mj-studio/js-util';
 import { kRunWebAPI } from '@react-native-kakao/core';
 
-import type { KakaoImageUploadResult, KakaoShareAPI } from './index';
+import type {
+  KakaoFriendMessageResult,
+  KakaoImageUploadResult,
+  KakaoMessageSendResult,
+  KakaoShareAPI,
+} from './index';
 
 declare const Kakao: {
   Share: {
@@ -66,14 +71,42 @@ function createSendDefaultMe({ template, objectType }: { objectType: string; tem
   });
 }
 
-function createSendDefaultFriends({
+type WebMessageSendResult = {
+  successful_receiver_uuids?: string[];
+  failure_info?: { code: number; msg: string; receiver_uuids: string[] }[];
+};
+
+function getFriendMessageResult<T extends boolean = false>(
+  response: WebMessageSendResult,
+  includeFailureInfo?: T,
+): KakaoFriendMessageResult<T>;
+function getFriendMessageResult(
+  response: WebMessageSendResult,
+  includeFailureInfo?: boolean,
+): string[] | KakaoMessageSendResult {
+  const successfulReceiverUuids = response.successful_receiver_uuids ?? [];
+
+  return includeFailureInfo
+    ? {
+        successfulReceiverUuids,
+        failureInfos: (response.failure_info ?? []).map(({ receiver_uuids, ...failure }) => ({
+          ...failure,
+          receiverUuids: receiver_uuids,
+        })),
+      }
+    : successfulReceiverUuids;
+}
+
+function createSendDefaultFriends<T extends boolean = false>({
   objectType,
   template,
   receiverUuids,
+  includeFailureInfo,
 }: {
   template: any;
   objectType: any;
   receiverUuids: string[];
+  includeFailureInfo?: T;
 }) {
   return kRunWebAPI(() =>
     Kakao.API.request({
@@ -82,9 +115,8 @@ function createSendDefaultFriends({
         template_object: serializeMessageTemplate(objectType, template),
         receiver_uuids: receiverUuids,
       },
-    }).then(
-      (response: { successful_receiver_uuids?: string[] }) =>
-        response.successful_receiver_uuids ?? [],
+    }).then((response: WebMessageSendResult) =>
+      getFriendMessageResult(response, includeFailureInfo),
     ),
   );
 }
@@ -178,8 +210,14 @@ const KakaoShare: KakaoShareAPI = {
       }),
     );
   },
-  sendScrapTemplateToFriends: async ({ requestUrl, templateId, templateArgs, receiverUuids }) => {
-    const response: { successful_receiver_uuids?: string[] } = await kRunWebAPI(() =>
+  sendScrapTemplateToFriends: async ({
+    requestUrl,
+    templateId,
+    templateArgs,
+    receiverUuids,
+    includeFailureInfo,
+  }) => {
+    const response: WebMessageSendResult = await kRunWebAPI(() =>
       Kakao.API.request({
         url: '/v1/api/talk/friends/message/scrap/send',
         data: filterNonNullishKeys({
@@ -191,7 +229,7 @@ const KakaoShare: KakaoShareAPI = {
       }),
     );
 
-    return response.successful_receiver_uuids ?? [];
+    return getFriendMessageResult(response, includeFailureInfo);
   },
   scrapImage: ({ imageUrl, secureResource = true }) =>
     kRunWebAPI(async () => {
@@ -221,7 +259,7 @@ const KakaoShare: KakaoShareAPI = {
         data: filterNonNullishKeys({ template_id: templateId, template_args: templateArgs }),
       });
     }),
-  sendCustomTemplateToFriends: ({ templateArgs, templateId, receiverUuids }) =>
+  sendCustomTemplateToFriends: ({ templateArgs, templateId, receiverUuids, includeFailureInfo }) =>
     kRunWebAPI(() =>
       Kakao.API.request({
         url: '/v1/api/talk/friends/message/send',
@@ -230,44 +268,58 @@ const KakaoShare: KakaoShareAPI = {
           template_args: templateArgs,
           receiver_uuids: receiverUuids,
         }),
-      }).then(
-        (response: { successful_receiver_uuids?: string[] }) =>
-          response.successful_receiver_uuids ?? [],
+      }).then((response: WebMessageSendResult) =>
+        getFriendMessageResult(response, includeFailureInfo),
       ),
     ),
   shareFeedTemplate: ({ template, serverCallbackArgs }) =>
     createShareDefault({ template, serverCallbackArgs, objectType: 'feed' }),
   sendFeedTemplateToMe: ({ template }) => createSendDefaultMe({ template, objectType: 'feed' }),
-  sendFeedTemplateToFriends: ({ template, receiverUuids }) =>
-    createSendDefaultFriends({ template, receiverUuids, objectType: 'feed' }),
+  sendFeedTemplateToFriends: ({ template, receiverUuids, includeFailureInfo }) =>
+    createSendDefaultFriends({ template, receiverUuids, includeFailureInfo, objectType: 'feed' }),
   shareListTemplate: ({ template, serverCallbackArgs }) =>
     createShareDefault({ template, serverCallbackArgs, objectType: 'list' }),
   sendListTemplateToMe: ({ template }) => createSendDefaultMe({ template, objectType: 'list' }),
-  sendListTemplateToFriends: ({ template, receiverUuids }) =>
-    createSendDefaultFriends({ template, receiverUuids, objectType: 'list' }),
+  sendListTemplateToFriends: ({ template, receiverUuids, includeFailureInfo }) =>
+    createSendDefaultFriends({ template, receiverUuids, includeFailureInfo, objectType: 'list' }),
   shareLocationTemplate: ({ template, serverCallbackArgs }) =>
     createShareDefault({ template, serverCallbackArgs, objectType: 'location' }),
   sendLocationTemplateToMe: ({ template }) =>
     createSendDefaultMe({ template, objectType: 'location' }),
-  sendLocationTemplateToFriends: ({ template, receiverUuids }) =>
-    createSendDefaultFriends({ template, receiverUuids, objectType: 'location' }),
+  sendLocationTemplateToFriends: ({ template, receiverUuids, includeFailureInfo }) =>
+    createSendDefaultFriends({
+      template,
+      receiverUuids,
+      includeFailureInfo,
+      objectType: 'location',
+    }),
   shareCommerceTemplate: ({ template, serverCallbackArgs }) =>
     createShareDefault({ template, serverCallbackArgs, objectType: 'commerce' }),
   sendCommerceTemplateToMe: ({ template }) =>
     createSendDefaultMe({ template, objectType: 'commerce' }),
-  sendCommerceTemplateToFriends: ({ template, receiverUuids }) =>
-    createSendDefaultFriends({ template, receiverUuids, objectType: 'commerce' }),
+  sendCommerceTemplateToFriends: ({ template, receiverUuids, includeFailureInfo }) =>
+    createSendDefaultFriends({
+      template,
+      receiverUuids,
+      includeFailureInfo,
+      objectType: 'commerce',
+    }),
   shareTextTemplate: ({ template, serverCallbackArgs }) =>
     createShareDefault({ template, serverCallbackArgs, objectType: 'text' }),
   sendTextTemplateToMe: ({ template }) => createSendDefaultMe({ template, objectType: 'text' }),
-  sendTextTemplateToFriends: ({ template, receiverUuids }) =>
-    createSendDefaultFriends({ template, receiverUuids, objectType: 'text' }),
+  sendTextTemplateToFriends: ({ template, receiverUuids, includeFailureInfo }) =>
+    createSendDefaultFriends({ template, receiverUuids, includeFailureInfo, objectType: 'text' }),
   shareCalendarTemplate: ({ template, serverCallbackArgs }) =>
     createShareDefault({ template, serverCallbackArgs, objectType: 'calendar' }),
   sendCalendarTemplateToMe: ({ template }) =>
     createSendDefaultMe({ template, objectType: 'calendar' }),
-  sendCalendarTemplateToFriends: ({ template, receiverUuids }) =>
-    createSendDefaultFriends({ template, receiverUuids, objectType: 'calendar' }),
+  sendCalendarTemplateToFriends: ({ template, receiverUuids, includeFailureInfo }) =>
+    createSendDefaultFriends({
+      template,
+      receiverUuids,
+      includeFailureInfo,
+      objectType: 'calendar',
+    }),
 };
 export const {
   uploadImage,
