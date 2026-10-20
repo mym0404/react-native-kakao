@@ -16045,6 +16045,7 @@ __metadata:
     "@react-native-kakao/user": "workspace:*"
     "@react-native-styled-system/core": "npm:~2.2.1"
     expo: "catalog:"
+    expo-asset: "npm:~57.0.19"
     expo-build-properties: "npm:~57.0.22"
     expo-constants: "npm:~57.0.21"
     expo-linking: "npm:~57.0.12"

@@ -1,0 +1,53 @@
+---
+sidebar_label: 이미지 업로드
+---
+
+# 이미지 업로드
+
+`uploadImage()`는 이미지를 카카오 이미지 서버에 업로드하고 이미지 URL과 정보를 반환합니다. 카카오 SDK를 초기화한 뒤 호출해야 하며, 사용자 로그인은 필요하지 않습니다.
+
+```tsx
+import { uploadImage } from '@react-native-kakao/share';
+
+const { infos } = await uploadImage({ imageUri: localImageUri });
+
+const content = {
+  imageUrl: infos.original.url,
+  imageWidth: infos.original.width,
+  imageHeight: infos.original.height,
+  title: 'Image',
+  link: { webUrl: 'https://example.com' },
+};
+```
+
+## 이미지 입력
+
+| 플랫폼 | 사용할 수 있는 `imageUri` 값 |
+| --- | --- |
+| Android | 절대 파일 경로, `file://` URI, 읽기 권한이 있는 `content://` URI, base64 이미지 데이터 URI |
+| iOS | 절대 파일 경로, `file://` URI, base64 이미지 데이터 URI |
+| 웹 | Blob URL, 데이터 URI, 브라우저의 CORS 정책에 따라 가져올 수 있는 이미지 URL |
+
+브라우저의 `File`을 업로드하려면 `URL.createObjectURL(file)`로 Blob URL을 만들고 `imageUri`로 전달합니다. 업로드가 성공하거나 실패한 뒤에는 `URL.revokeObjectURL()`로 URL을 해제합니다. Android에서 콘텐츠 URI를 사용하려면 호출하는 앱에 읽기 권한이 있어야 합니다. 모듈이 만든 임시 파일은 업로드가 성공하거나 실패한 뒤 삭제합니다.
+
+`secureResource`의 기본값은 `true`이며 HTTPS 이미지 URL을 반환합니다. HTTP URL이 필요하면 `false`로 설정합니다. 웹에서는 JavaScript SDK가 이 옵션을 제공하지 않으므로, 반환된 카카오 CDN URL의 프로토콜을 요청한 값에 맞춥니다.
+
+## 응답
+
+```ts
+type KakaoImageUploadResult = {
+  infos: {
+    original: {
+      url: string;
+      contentType: string;
+      length: number; // Bytes
+      width: number; // Pixels
+      height: number; // Pixels
+    };
+  };
+};
+```
+
+5 MB 이하의 이미지만 업로드할 수 있으며, 카카오 서버에서 최대 100일 동안 보관합니다. iOS SDK는 업로드 전에 `UIImage`를 변환하므로, 응답의 이미지 형식과 바이트 크기가 Android·웹과 다를 수 있습니다. 이 API는 이미지를 업로드하며 메시지를 발송하지 않습니다.
+
+공식 [Android](https://developers.kakao.com/docs/en/kakaotalk-share/android-link#upload-image), [iOS](https://developers.kakao.com/docs/en/kakaotalk-share/ios-link#upload-image), [JavaScript](https://developers.kakao.com/docs/en/kakaotalk-share/js-link#upload-image) 문서를 참고하세요.
