@@ -15,6 +15,7 @@ import com.kakao.sdk.auth.model.Prompt.SELECT_ACCOUNT
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.UserApiClient
+import com.kakao.sdk.user.model.Gender
 import com.kakao.sdk.user.model.UserShippingAddresses
 import net.mjstudio.rnkakao.core.util.RNCKakaoResponseNotFoundException
 import net.mjstudio.rnkakao.core.util.RNCKakaoUtil
@@ -499,6 +500,18 @@ class RNCKakaoUserModule internal constructor(
               "legalBirthDateNeedsAgreement",
               user.kakaoAccount?.legalBirthDateNeedsAgreement,
             )
+            putString("legalName", user.kakaoAccount?.legalName)
+            putB("legalNameNeedsAgreement", user.kakaoAccount?.legalNameNeedsAgreement)
+            putString("legalBirthDate", user.kakaoAccount?.legalBirthDate)
+            putString(
+              "legalGender",
+              when (user.kakaoAccount?.legalGender) {
+                Gender.FEMALE -> "female"
+                Gender.MALE -> "male"
+                else -> null
+              },
+            )
+            putB("legalGenderNeedsAgreement", user.kakaoAccount?.legalGenderNeedsAgreement)
           },
         )
       }

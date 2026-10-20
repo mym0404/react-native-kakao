@@ -354,6 +354,22 @@ export default function Page() {
         }}
       />
       <E2EApiAction
+        id={'user-legal-identity'}
+        title={'Get Legal Identity Availability'}
+        action={async () => {
+          const user = await me();
+
+          return {
+            hasLegalName: user.legalName != null,
+            hasLegalBirthDate: user.legalBirthDate != null,
+            hasLegalGender: user.legalGender != null,
+            legalNameNeedsAgreement: user.legalNameNeedsAgreement,
+            legalBirthDateNeedsAgreement: user.legalBirthDateNeedsAgreement,
+            legalGenderNeedsAgreement: user.legalGenderNeedsAgreement,
+          };
+        }}
+      />
+      <E2EApiAction
         id={'user-properties'}
         minW={buttonMinWidth}
         title={'Get User Properties'}
