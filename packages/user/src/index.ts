@@ -170,6 +170,42 @@ export async function signup({ properties }: { properties?: Record<string, strin
   await Native.signup(properties);
 }
 
+export function loginWithKakao({
+  uiMode = 'auto',
+  prompts,
+  loginHint,
+  nonce,
+  channelPublicIds,
+  serviceTerms,
+  ios,
+}: {
+  uiMode?: 'auto' | 'light' | 'dark';
+  prompts?: ('Login' | 'Create' | 'Cert' | 'SelectAccount')[];
+  loginHint?: string;
+  nonce?: string;
+  channelPublicIds?: string[];
+  serviceTerms?: string[];
+  ios?: {
+    orientation?: 'auto' | 'portrait' | 'landscape';
+    launchMethod?: 'UniversalLink' | 'CustomScheme';
+  };
+} = {}): Promise<KakaoLoginToken> {
+  return Native.loginWithKakao(
+    uiMode,
+    ios?.orientation ?? 'auto',
+    ios?.launchMethod ?? 'UniversalLink',
+    prompts ?? [],
+    loginHint,
+    nonce,
+    channelPublicIds ?? [],
+    serviceTerms ?? [],
+  );
+}
+
+export function refreshToken(): Promise<KakaoLoginToken> {
+  return Native.refreshToken();
+}
+
 export function logout() {
   return Native.logout();
 }
@@ -268,6 +304,8 @@ export async function issueAccessTokenWithCodeWeb(params: {
 
 const KakaoUser = {
   login,
+  loginWithKakao,
+  refreshToken,
   signup,
   logout,
   unlink,

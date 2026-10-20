@@ -21,14 +21,14 @@ if (hasStoredToken) {
 
 The method returns only a boolean and does not expose the stored token.
 
-## Obtaining Token
+## Query token information
 
-Use `getAccessToken()` to retrieve the token.
+`getAccessToken()` validates the access token with Kakao and returns the user ID, app ID, and remaining lifetime in seconds. It does not return the access token string.
 
 It is defined as follows.
 
 ```tsx
-export function getAccessToken(): Promise<KakaoAccessTokenInfo>
+export function getAccessToken(): Promise<KakaoAccessTokenInfo>;
 ```
 
 The type is as follows.
@@ -44,22 +44,19 @@ export interface KakaoAccessTokenInfo {
 ### Example
 
 ```tsx
-getAccessToken()
+getAccessToken();
 ```
 
-## Setting Access Token (Web)
+## Refresh stored tokens
 
-After a successful web login, use `setAccessTokenWeb()` to store the `code` value from the redirect URL's search parameter for Kakao SDK access.
-
-### Example
-
-Call `setAccessTokenWeb` on the page configured as the login redirect URL, as shown below.
+`refreshToken()` uses the refresh token stored by the Android or iOS SDK to refresh the access token. The SDK stores the updated tokens and returns the same [`KakaoLoginToken` as `login()`](./login.mdx#response). Expiry timestamps use Unix seconds; remaining lifetimes use seconds.
 
 ```tsx
-const { code } = useGlobalSearchParams<{ code?: string }>();
-useEffect(() => {
-  if (code) {
-    setAccessTokenWeb(code);
-  }
-}, [code]);
+import { refreshToken } from '@react-native-kakao/user';
+
+const token = await refreshToken();
 ```
+
+If no refresh token is stored or it has expired, the method rejects with the Kakao SDK error. Call `login()` again. The JavaScript SDK does not expose token refresh, so web rejects with `Package-UnsupportedPlatform`.
+
+For web token exchange and storage, follow [Web login](./login-web.mdx).

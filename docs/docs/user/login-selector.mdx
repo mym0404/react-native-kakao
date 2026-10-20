@@ -1,0 +1,34 @@
+---
+sidebar_position: 110
+---
+
+# 로그인 방식 선택 화면
+
+`loginWithKakao()`는 Android와 iOS의 카카오 SDK가 제공하는 로그인 방식 선택 화면을 엽니다. 사용자가 카카오톡 또는 카카오계정 로그인을 선택하면 [`login()`과 같은 `KakaoLoginToken`](./login.mdx#응답)을 반환합니다. 화면을 닫거나 로그인을 취소하면 SDK 오류로 거절됩니다.
+
+```tsx
+import { loginWithKakao } from '@react-native-kakao/user';
+
+const token = await loginWithKakao({ uiMode: 'dark' });
+```
+
+## 옵션
+
+모든 옵션은 선택 사항입니다. 계정 로그인 옵션은 사용자가 카카오계정을 선택했을 때 적용됩니다.
+
+| 옵션               | 의미                                                              | 기본값          |
+| ------------------ | ----------------------------------------------------------------- | --------------- |
+| `uiMode`           | 선택 화면의 테마: `auto`, `light`, `dark`                         | `auto`          |
+| `prompts`          | 계정 로그인 요청: `Login`, `Create`, `Cert`, `SelectAccount` 배열 | 없음            |
+| `loginHint`        | 계정 ID 입력란에 미리 채울 이메일, 전화번호 또는 카카오메일 ID    | 없음            |
+| `channelPublicIds` | 동의 화면에 표시할 채널 프로필 ID 배열. 제휴 앱 권한 필요         | 없음            |
+| `serviceTerms`     | 동의 화면에 포함할 서비스 약관 태그 배열                          | 없음            |
+| `nonce`            | OpenID Connect ID 토큰을 검증할 값. Android에서만 사용 가능       | 없음            |
+| `ios.orientation`  | iOS 선택 화면 방향: `auto`, `portrait`, `landscape`               | `auto`          |
+| `ios.launchMethod` | iOS 카카오톡 실행 방식: `UniversalLink`, `CustomScheme`           | `UniversalLink` |
+
+현재 iOS SDK의 선택 화면은 카카오계정 로그인에 `nonce`를 전달하지 않습니다. iOS에서 `nonce`를 지정하면 화면을 열기 전에 오류를 반환합니다. iOS에서 ID 토큰의 `nonce` 검증이 필요하면 [`login({ nonce })`](./login.mdx)을 사용합니다.
+
+## 플랫폼 지원
+
+웹의 JavaScript SDK는 이 선택 화면을 제공하지 않으므로 `Package-UnsupportedPlatform` 오류를 반환합니다. 웹에서는 [`login({ web: { redirectUri } })`](./login-web.mdx)을 사용합니다.
