@@ -42,7 +42,9 @@ Route guidance is not available on the web platform.
 
 On mobile web, if the Kakao Navigation app is unavailable, the browser redirects to the Kakao Navi launch/installation guide.
 
-On desktop web, nothing happens.
+On desktop web, the function returns `false` without requesting app launch.
+
+On mobile web, `true` indicates a launch request, not confirmation that Kakao Navi is installed or running. The Kakao JS SDK controls its launch/installation fallback; `openWebInstallUrlIfNaviAppNotAvailable` applies only to native platforms.
 
 The announcement below describes the end of web route guidance support for Kakao Navi in Kakao's JavaScript SDK.
 

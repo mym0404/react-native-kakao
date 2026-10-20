@@ -2,9 +2,9 @@
 sidebar_position: 102
 ---
 
-# 카카오 로그인 (Web)
+# 카카오 로그인 (웹)
 
-웹 로그인은 Redirect URI로 페이지를 이동해야 하므로 추가 과정이 필요합니다.
+웹 로그인은 리디렉션 URI로 페이지를 이동해야 하므로 추가 과정이 필요합니다.
 
 :::tip
 로그인 외의 API는 [카카오 로그인](/docs/user/login)에 설명된 API와 동일하게 사용할 수 있습니다.
@@ -14,14 +14,14 @@ sidebar_position: 102
 
 카카오 로그인으로 회원가입, 로그인, 추가 동의 받기, 약관 동의 받기 등을 할 수 있습니다.
 
-## 카카오 콘솔에서 Redirect URI 추가
+## 카카오 콘솔에서 리디렉션 URI 추가 {#카카오-콘솔에서-redirect-uri-추가}
 
-카카오 콘솔의 카카오 로그인에서 Redirect URI를 추가합니다.
+카카오 콘솔의 카카오 로그인에서 리디렉션 URI를 추가합니다.
 
 ![feat](https://raw.githubusercontent.com/mym0404/image-archive/master/202405030144548.webp)
 
 :::warning
-위 예시는 개발 환경에서 포트 80을 사용한 경우입니다. 개발 환경과 릴리스 환경에서 필요한 Redirect URI를 모두 등록해야 합니다.
+위 예시는 개발 환경에서 포트 80을 사용한 경우입니다. 개발 환경과 릴리스 환경에서 필요한 리디렉션 URI를 모두 등록해야 합니다.
 :::
 
 ```tsx
@@ -43,15 +43,15 @@ useEffect(() => {
 }, [code]);
 ```
 
-## Step 1. 간편 로그인 후 이동한 페이지의 검색 매개변수에서 인가 코드 받기
+## 1단계. 간편 로그인 후 이동한 페이지의 검색 매개변수에서 인가 코드 받기 {#step-1-간편-로그인-후-이동한-페이지의-검색-매개변수에서-인가-코드-받기}
 
 `login()` 함수를 호출하면 카카오 로그인 페이지로 이동합니다.
 
 웹 플랫폼에서는 `web` 객체를 전달해야 합니다.
 
-`web` 객체 밖의 옵션은 무시됩니다.
+웹에서도 공통 옵션인 `scopes`, `serviceTerms`, `prompts`, `nonce`를 전달합니다. `SelectAccount`는 `select_account`로 변환합니다. `useKakaoAccountLogin: true`이면 카카오톡을 통한 로그인을 사용하지 않지만, `web.throughTalk`을 지정하면 그 값을 우선합니다.
 
-예를 들어 `prompt`는 `web` 객체 안팎에 모두 있지만 Web 플랫폼에서는 항상 `web` 안의 `prompt`만 사용합니다.
+`web.scope`, `web.serviceTerms`, `web.prompt`는 각각 대응하는 공통 옵션보다 우선합니다. `nonce`는 공통 옵션을 `web.nonce`보다 우선합니다.
 
 ```tsx
 import { login } from '@react-native-kakao/user';
@@ -66,18 +66,18 @@ login({
 })
 ```
 
-:::danger Dangerous
+:::danger 주의
 콘솔에 등록한 `redirectUri`와 `login`, `issueAccessTokenWithCodeWeb` 호출에 사용하는 값은 모두
 같아야 로그인이 동작합니다.
 :::
 
 인자들에 대한 자세한 정보는 [공식 문서](https://developers.kakao.com/docs/latest/ko/kakaologin/js#login)를 참고하세요.
 
-## Step 2. 인가 코드로 Access Token 발급받기
+## 2단계. 인가 코드로 액세스 토큰 발급받기 {#step-2-인가-코드로-access-token-발급받기}
 
-`issueAccessTokenWithCodeWeb()` 함수를 호출해 인가 코드로 Access Token을 발급받을 수 있습니다.
+`issueAccessTokenWithCodeWeb()` 함수를 호출해 인가 코드로 액세스 토큰을 발급받을 수 있습니다.
 
-발급받은 Access Token을 `setAccessTokenWeb()` 함수에 전달합니다.
+발급받은 액세스 토큰을 `setAccessTokenWeb()` 함수에 전달합니다.
 
 다음은 Expo Router에서 검색 매개변수의 `code`로 로그인을 완료하는 예시입니다.
 
@@ -100,7 +100,7 @@ useEffect(() => {
 }, [code]);
 ```
 
-:::tip TIP
+:::tip 참고
 위 코드는 예시입니다. 검색 매개변수에서 `code`를 얻은 뒤 `issueAccessTokenWithCodeWeb`, `setAccessTokenWeb`
 을 순서대로 호출해야 합니다.
 :::
