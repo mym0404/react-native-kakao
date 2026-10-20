@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { showMessage } from 'react-native-flash-message';
 import { formatJson } from '@mj-studio/js-util';
 import {
@@ -13,6 +13,8 @@ import { Btn } from '../component/Btn';
 import { E2EApiAction } from '../component/E2EApiAction';
 import { PrettyResult } from '../component/PrettyResult';
 import { StyledScrollView } from '../component/StyledScrollView';
+
+const pickerMode = 'full';
 
 export default function Page() {
   const [profile, setProfile] = useState<KakaoTalkProfile>();
@@ -30,6 +32,38 @@ export default function Page() {
         onSuccess={setProfile}
       />
       <PrettyResult label={'Profile'} result={profile} />
+      {[
+        { id: 'default', enableIndex: undefined },
+        { id: 'enabled', enableIndex: true },
+        { id: 'disabled', enableIndex: false },
+      ].map(({ id, enableIndex }) => (
+        <Fragment key={id}>
+          <E2EApiAction
+            id={`picker-index-single-${id}`}
+            title={`Single Friend Index: ${id}`}
+            action={async () => {
+              const result = await selectSingleFriend({
+                mode: pickerMode,
+                options: { enableIndex },
+              });
+
+              return { hasSelection: result != null, hasUuid: !!result?.uuid };
+            }}
+          />
+          <E2EApiAction
+            id={`picker-index-multiple-${id}`}
+            title={`Multiple Friends Index: ${id}`}
+            action={async () => {
+              const result = await selectMultipleFriends({
+                mode: pickerMode,
+                options: { enableIndex },
+              });
+
+              return { totalCount: result.totalCount, selectedCount: result.users.length };
+            }}
+          />
+        </Fragment>
+      ))}
       <Btn
         title={'Select Single Friend'}
         onPress={() =>
