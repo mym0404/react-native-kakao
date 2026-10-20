@@ -10,6 +10,7 @@ import {
   type KakaoUser,
   type KakaoUserAPI,
 } from './index';
+import { validateShippingAddressOptions } from './validateShippingAddressOptions';
 
 declare const Kakao: {
   Auth: {
@@ -143,6 +144,8 @@ const KakaoUser: KakaoUserAPI = {
     ),
   shippingAddresses: ({ addressId, fromUpdatedAt, pageSize } = {}) =>
     kRunWebAPI(async () => {
+      validateShippingAddressOptions({ addressId, fromUpdatedAt, pageSize });
+
       const response = camelCaseObject(
         await Kakao.API.request({
           url: '/v1/user/shipping_address',
