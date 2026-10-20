@@ -26,6 +26,8 @@ sidebar_position: 108
 | `fromUpdatedAt` | `number` | 이전 페이지 마지막 배송지의 `updatedAt`. 1970년 1월 1일부터 지난 초를 나타내는 정수이며, `0`은 처음부터 조회 |
 | `pageSize` | `number` | 페이지당 배송지 수인 정수. 기본값 `10`, 최소값 `2` |
 
+소수, `NaN`, 무한대는 거절합니다. `addressId`는 JavaScript 안전 정수, `fromUpdatedAt`은 0 이상의 안전 정수여야 하며, `pageSize`는 2 이상 2147483647 이하의 정수여야 합니다.
+
 기본 배송지가 먼저 나오고, 나머지는 최근 수정한 순서로 나옵니다. 다음 페이지를 조회할 때는 이전 페이지 마지막 배송지의 `updatedAt`을 `fromUpdatedAt`에 전달하세요. 기본 배송지는 조회 시각과 관계없이 먼저 포함됩니다.
 
 응답은 다음과 같습니다.

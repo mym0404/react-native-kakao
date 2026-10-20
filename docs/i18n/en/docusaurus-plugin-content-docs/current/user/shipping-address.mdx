@@ -26,6 +26,8 @@ Omit options to use the SDK's default query. When `addressId` is provided, only 
 | `fromUpdatedAt` | `number` | The previous page's last address `updatedAt`, as integer Unix seconds. Pass `0` to start from the beginning |
 | `pageSize` | `number` | Integer addresses per page. Default `10`, minimum `2` |
 
+Fractional values, `NaN`, and infinity are rejected. `addressId` must be a JavaScript safe integer, `fromUpdatedAt` a non-negative safe integer, and `pageSize` an integer between 2 and 2147483647.
+
 The default address comes first, followed by addresses in descending modification order. Pass the previous page's last address `updatedAt` as `fromUpdatedAt` for the next page. The default address is included first regardless of the query time.
 
 The response type is `Promise<KakaoShippingAddressResult>`.
