@@ -307,87 +307,95 @@ class RNCKakaoUserModule internal constructor(
     }
 
   @ReactMethod
-  override fun me(promise: Promise) =
-    onMain {
-      UserApiClient.instance.me { user, error ->
-        if (error != null) {
-          promise.rejectWith(error)
-        } else if (user == null) {
-          promise.rejectWith(RNCKakaoResponseNotFoundException("user"))
-        } else {
-          promise.resolve(
-            argMap().apply {
-              putD("id", user.id?.toDouble())
-              putL("connectedAt", user.connectedAt?.unix)
-              putL("synchedAt", user.synchedAt?.unix)
-              putString("name", user.kakaoAccount?.name)
+  override fun me(
+    propertyKeys: ReadableArray?,
+    promise: Promise,
+  ) = onMain {
+    UserApiClient.instance.me(propertyKeys?.filterIsInstance<String>()) { user, error ->
+      if (error != null) {
+        promise.rejectWith(error)
+      } else if (user == null) {
+        promise.rejectWith(RNCKakaoResponseNotFoundException("user"))
+      } else {
+        promise.resolve(
+          argMap().apply {
+            putD("id", user.id?.toDouble())
+            putMap(
+              "properties",
+              argMap().apply {
+                user.properties?.forEach { (key, value) -> putString(key, value) }
+              },
+            )
+            putL("connectedAt", user.connectedAt?.unix)
+            putL("synchedAt", user.synchedAt?.unix)
+            putString("name", user.kakaoAccount?.name)
 
-              putString("email", user.kakaoAccount?.email)
-              putString("nickname", user.kakaoAccount?.profile?.nickname)
-              putString("profileImageUrl", user.kakaoAccount?.profile?.profileImageUrl)
-              putString("thumbnailImageUrl", user.kakaoAccount?.profile?.thumbnailImageUrl)
-              putString("phoneNumber", user.kakaoAccount?.phoneNumber)
-              putString("ageRange", user.kakaoAccount?.ageRange?.name)
-              putString("birthday", user.kakaoAccount?.birthday)
-              putString("birthdayType", user.kakaoAccount?.birthdayType?.name)
-              putString("birthyear", user.kakaoAccount?.birthyear)
-              putString("gender", user.kakaoAccount?.gender?.name)
-              putB("isEmailValid", user.kakaoAccount?.isEmailValid)
-              putB("isEmailVerified", user.kakaoAccount?.isEmailVerified)
-              putB("isKorean", user.kakaoAccount?.isKorean)
-              putB(
-                "ageRangeNeedsAgreement",
-                user.kakaoAccount?.ageRangeNeedsAgreement,
-              )
-              putB(
-                "birthdayNeedsAgreement",
-                user.kakaoAccount?.birthdayNeedsAgreement,
-              )
-              putB(
-                "birthyearNeedsAgreement",
-                user.kakaoAccount?.birthyearNeedsAgreement,
-              )
-              putB(
-                "emailNeedsAgreement",
-                user.kakaoAccount?.emailNeedsAgreement,
-              )
-              putB(
-                "genderNeedsAgreement",
-                user.kakaoAccount?.genderNeedsAgreement,
-              )
-              putB(
-                "isKoreanNeedsAgreement",
-                user.kakaoAccount?.isKoreanNeedsAgreement,
-              )
-              putB(
-                "phoneNumberNeedsAgreement",
-                user.kakaoAccount?.phoneNumberNeedsAgreement,
-              )
-              putB(
-                "profileNeedsAgreement",
-                user.kakaoAccount?.profileNeedsAgreement,
-              )
-              putB(
-                "nameNeedsAgreement",
-                user.kakaoAccount?.nameNeedsAgreement,
-              )
-              putB(
-                "profileImageNeedsAgreement",
-                user.kakaoAccount?.profileImageNeedsAgreement,
-              )
-              putB(
-                "profileNicknameNeedsAgreement",
-                user.kakaoAccount?.profileNicknameNeedsAgreement,
-              )
-              putB(
-                "legalBirthDateNeedsAgreement",
-                user.kakaoAccount?.legalBirthDateNeedsAgreement,
-              )
-            },
-          )
-        }
+            putString("email", user.kakaoAccount?.email)
+            putString("nickname", user.kakaoAccount?.profile?.nickname)
+            putString("profileImageUrl", user.kakaoAccount?.profile?.profileImageUrl)
+            putString("thumbnailImageUrl", user.kakaoAccount?.profile?.thumbnailImageUrl)
+            putString("phoneNumber", user.kakaoAccount?.phoneNumber)
+            putString("ageRange", user.kakaoAccount?.ageRange?.name)
+            putString("birthday", user.kakaoAccount?.birthday)
+            putString("birthdayType", user.kakaoAccount?.birthdayType?.name)
+            putString("birthyear", user.kakaoAccount?.birthyear)
+            putString("gender", user.kakaoAccount?.gender?.name)
+            putB("isEmailValid", user.kakaoAccount?.isEmailValid)
+            putB("isEmailVerified", user.kakaoAccount?.isEmailVerified)
+            putB("isKorean", user.kakaoAccount?.isKorean)
+            putB(
+              "ageRangeNeedsAgreement",
+              user.kakaoAccount?.ageRangeNeedsAgreement,
+            )
+            putB(
+              "birthdayNeedsAgreement",
+              user.kakaoAccount?.birthdayNeedsAgreement,
+            )
+            putB(
+              "birthyearNeedsAgreement",
+              user.kakaoAccount?.birthyearNeedsAgreement,
+            )
+            putB(
+              "emailNeedsAgreement",
+              user.kakaoAccount?.emailNeedsAgreement,
+            )
+            putB(
+              "genderNeedsAgreement",
+              user.kakaoAccount?.genderNeedsAgreement,
+            )
+            putB(
+              "isKoreanNeedsAgreement",
+              user.kakaoAccount?.isKoreanNeedsAgreement,
+            )
+            putB(
+              "phoneNumberNeedsAgreement",
+              user.kakaoAccount?.phoneNumberNeedsAgreement,
+            )
+            putB(
+              "profileNeedsAgreement",
+              user.kakaoAccount?.profileNeedsAgreement,
+            )
+            putB(
+              "nameNeedsAgreement",
+              user.kakaoAccount?.nameNeedsAgreement,
+            )
+            putB(
+              "profileImageNeedsAgreement",
+              user.kakaoAccount?.profileImageNeedsAgreement,
+            )
+            putB(
+              "profileNicknameNeedsAgreement",
+              user.kakaoAccount?.profileNicknameNeedsAgreement,
+            )
+            putB(
+              "legalBirthDateNeedsAgreement",
+              user.kakaoAccount?.legalBirthDateNeedsAgreement,
+            )
+          },
+        )
       }
     }
+  }
 
   @ReactMethod
   override fun getAccessToken(promise: Promise) =
