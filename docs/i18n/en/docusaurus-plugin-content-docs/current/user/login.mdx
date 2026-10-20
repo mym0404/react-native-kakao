@@ -107,3 +107,7 @@ Use `isLogined()` to check if the user is currently logged in. It returns a `Pro
 ## Checking KakaoTalk Availability
 
 Use `isKakaoTalkLoginAvailable()` to check if KakaoTalk login is available. It returns a `Promise<boolean>`.
+
+## Complete signup in a manual connection app
+
+If automatic connection on login is disabled, call [`signup()`](./signup.mdx) after completing your service signup flow to connect the user to the app. Do not call it for an app that uses automatic connection.

@@ -92,6 +92,13 @@ const KakaoUser: KakaoUserAPI = {
         }),
       );
     }),
+  signup: ({ properties } = {}) =>
+    kRunWebAPI(async () => {
+      await Kakao.API.request({
+        url: '/v1/user/signup',
+        data: filterNonNullishKeys({ properties }),
+      });
+    }),
   logout: () =>
     kRunWebAPI(async () => {
       try {
@@ -236,6 +243,7 @@ const KakaoUser: KakaoUserAPI = {
 
       const ret = camelCaseObject(response) as {
         id: number;
+        hasSignedUp?: boolean | null;
         connectedAt?: string;
         synchedAt?: string;
         kakaoAccount?: Partial<KakaoUserProfile> & {
@@ -251,6 +259,7 @@ const KakaoUser: KakaoUserAPI = {
 
       return {
         id: ret.id,
+        hasSignedUp: ret.hasSignedUp ?? null,
         properties: response.properties ?? {},
         email: kakaoAccount.email,
         name: kakaoAccount.name,
@@ -289,6 +298,7 @@ export const {
   isLogined,
   hasToken,
   login,
+  signup,
   logout,
   me,
   updateProfile,
