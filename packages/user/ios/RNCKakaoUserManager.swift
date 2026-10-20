@@ -223,14 +223,17 @@ import RNCKakaoCore
         if let error {
           RNCKakaoUtil.reject(reject, error)
         } else if let serviceTerms {
-          resolve((serviceTerms.serviceTerms ?? []).map {
-            [
-              "tag": $0.tag,
-              "agreedAt": $0.agreedAt?.timeIntervalSince1970 as Any,
-              "agreed": $0.agreed,
-              "required": $0.required,
-              "revocable": $0.revocable
+          resolve((serviceTerms.serviceTerms ?? []).map { term in
+            var response: [String: Any] = [
+              "tag": term.tag,
+              "agreed": term.agreed,
+              "required": term.required,
+              "revocable": term.revocable
             ]
+            if let agreedAt = term.agreedAt {
+              response["agreedAt"] = agreedAt.timeIntervalSince1970
+            }
+            return response
           })
         } else {
           RNCKakaoUtil.reject(reject, RNCKakaoError.responseNotFound(name: "serviceTerms"))
@@ -270,6 +273,26 @@ import RNCKakaoCore
           ])
         } else {
           RNCKakaoUtil.reject(reject, RNCKakaoError.responseNotFound(name: "shippingAddresses"))
+        }
+      }
+    }
+  }
+
+  @objc public func revokeServiceTerms(
+    _ tags: [String],
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    onMain {
+      UserApi.shared.revokeServiceTerms(tags: tags) { response, error in
+        if let error {
+          RNCKakaoUtil.reject(reject, error)
+        } else if let response {
+          resolve((response.revokedServiceTerms ?? []).map {
+            ["tag": $0.tag, "agreed": $0.agreed]
+          })
+        } else {
+          RNCKakaoUtil.reject(reject, RNCKakaoError.responseNotFound(name: "revokeServiceTerms"))
         }
       }
     }

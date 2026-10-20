@@ -63,6 +63,11 @@ RCT_EXPORT_METHOD(shippingAddresses : (RCTPromiseResolveBlock)
   [[self manager] shippingAddresses:resolve reject:reject];
 }
 
+RCT_EXPORT_METHOD(revokeServiceTerms : (NSArray*)tags resolve : (RCTPromiseResolveBlock)
+                      resolve reject : (RCTPromiseRejectBlock)reject) {
+  [[self manager] revokeServiceTerms:tags resolve:resolve reject:reject];
+}
+
 RCT_EXPORT_METHOD(updateProfile : (NSDictionary*)properties resolve : (RCTPromiseResolveBlock)
                       resolve reject : (RCTPromiseRejectBlock)reject) {
   [[self manager] updateProfile:properties resolve:resolve reject:reject];
