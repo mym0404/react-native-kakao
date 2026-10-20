@@ -43,6 +43,11 @@ RCT_EXPORT_METHOD(isLogined : (RCTPromiseResolveBlock)resolve reject : (RCTPromi
   [[self manager] isLogined:resolve reject:reject];
 }
 
+RCT_EXPORT_METHOD(hasToken : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)
+                      reject) {
+  [[self manager] hasToken:resolve reject:reject];
+}
+
 RCT_EXPORT_METHOD(scopes : (NSArray*)scopes resolve : (RCTPromiseResolveBlock)
                       resolve reject : (RCTPromiseRejectBlock)reject) {
   [[self manager] scopes:scopes resolve:resolve reject:reject];

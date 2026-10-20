@@ -191,6 +191,12 @@ class RNCKakaoUserModule internal constructor(
     }
 
   @ReactMethod
+  override fun hasToken(promise: Promise) =
+    onMain {
+      promise.resolve(AuthApiClient.instance.hasToken())
+    }
+
+  @ReactMethod
   override fun scopes(
     scopes: ReadableArray?,
     promise: Promise,
