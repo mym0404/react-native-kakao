@@ -138,7 +138,11 @@ class RNCKakaoUserModule internal constructor(
   @ReactMethod
   override fun refreshToken(promise: Promise) =
     onMain {
-      AuthApiClient.instance.refreshToken(callback = tokenCallback(promise))
+      try {
+        AuthApiClient.instance.refreshToken(callback = tokenCallback(promise))
+      } catch (error: ClientError) {
+        promise.rejectWith(error)
+      }
     }
 
   @ReactMethod
