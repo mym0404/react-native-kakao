@@ -224,11 +224,14 @@ const KakaoUser: KakaoUserAPI = {
     kRunWebAPI(async () => {
       await Kakao.API.request({ url: '/v1/user/update_profile', data: { properties } });
     }),
-  me: ({ propertyKeys } = {}) =>
+  me: ({ propertyKeys, secureResource = true } = {}) =>
     kRunWebAPI(async () => {
       const response: { properties?: Record<string, string> } = await Kakao.API.request({
         url: '/v2/user/me',
-        data: filterNonNullishKeys({ property_keys: propertyKeys }),
+        data: filterNonNullishKeys({
+          property_keys: propertyKeys,
+          secure_resource: secureResource,
+        }),
       });
 
       const ret = camelCaseObject(response) as {
