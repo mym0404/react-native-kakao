@@ -197,6 +197,10 @@ const KakaoUser: KakaoUserAPI = {
         throw error;
       }
     }),
+  updateProfile: ({ properties }) =>
+    kRunWebAPI(async () => {
+      await Kakao.API.request({ url: '/v1/user/update_profile', data: { properties } });
+    }),
   me: ({ propertyKeys } = {}) =>
     kRunWebAPI(async () => {
       const response: { properties?: Record<string, string> } = await Kakao.API.request({
@@ -260,6 +264,7 @@ export const {
   login,
   logout,
   me,
+  updateProfile,
   revokeScopes,
   scopes,
   serviceTerms,
