@@ -19,12 +19,18 @@ import UIKit
   ) {
     DispatchQueue.global(qos: .userInitiated).async {
       do {
+        let maxImageBytes = 5 * 1024 * 1024
+        let imageSizeError = "Image must be no larger than 5 MB"
         let data: Data
         if imageUri.hasPrefix("data:image/") {
           let parts = imageUri.split(separator: ",", maxSplits: 1, omittingEmptySubsequences: false)
-          guard parts.count == 2, parts[0].hasSuffix(";base64"),
-                let decoded = Data(base64Encoded: String(parts[1]))
-          else {
+          guard parts.count == 2, parts[0].hasSuffix(";base64") else {
+            throw RNCKakaoError.unknown("Expected a base64 image data URI")
+          }
+          guard parts[1].utf8.count <= ((maxImageBytes + 2) / 3) * 4 else {
+            throw RNCKakaoError.unknown(imageSizeError)
+          }
+          guard let decoded = Data(base64Encoded: String(parts[1])) else {
             throw RNCKakaoError.unknown("Expected a base64 image data URI")
           }
           data = decoded
@@ -33,10 +39,12 @@ import UIKit
           guard let url, url.isFileURL else {
             throw RNCKakaoError.unknown("Expected a local file or base64 image data URI")
           }
-          data = try Data(contentsOf: url, options: .mappedIfSafe)
+          let file = try FileHandle(forReadingFrom: url)
+          defer { try? file.close() }
+          data = try file.read(upToCount: maxImageBytes + 1) ?? Data()
         }
-        guard data.count <= 5 * 1024 * 1024 else {
-          throw RNCKakaoError.unknown("Image must be no larger than 5 MB")
+        guard data.count <= maxImageBytes else {
+          throw RNCKakaoError.unknown(imageSizeError)
         }
         guard let image = UIImage(data: data) else {
           throw RNCKakaoError.unknown("Image file cannot be decoded")

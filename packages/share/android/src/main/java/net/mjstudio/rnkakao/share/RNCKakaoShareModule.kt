@@ -80,6 +80,9 @@ class RNCKakaoShareModule internal constructor(
               require(imageUri.startsWith("data:image/") && imageUri.substringBefore(',').endsWith(";base64")) {
                 "Expected a base64 image data URI"
               }
+              val encodedImageLength =
+                imageUri.asSequence().drop(imageUri.indexOf(',') + 1).count { !it.isWhitespace() }
+              require(encodedImageLength <= ((maxImageBytes + 2) / 3) * 4) { imageSizeError }
               val bytes = Base64.decode(imageUri.substringAfter(','), Base64.DEFAULT)
               require(bytes.size <= maxImageBytes) { imageSizeError }
               val decodedFile = createTemporaryImageFile()
