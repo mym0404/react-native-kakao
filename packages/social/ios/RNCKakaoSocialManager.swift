@@ -20,6 +20,7 @@ import RNCKakaoCore
           RNCKakaoUtil.reject(reject, error)
         } else if let profile {
           resolve([
+            "id": profile.id,
             "nickname": profile.nickname as Any,
             "countryISO": profile.countryISO as Any,
             "profileImageUrl": profile.profileImageUrl?.absoluteString as Any,
@@ -72,8 +73,9 @@ import RNCKakaoCore
                 "uuid": $0.uuid,
                 "id": $0.id as Any,
                 "favorite": $0.favorite as Any,
+                "maskingProfileNickname": $0.maskingProfileNickname as Any,
                 "profileNickname": $0.profileNickname as Any,
-                "profileThumbnailImage": $0.profileThumbnailImage as Any
+                "profileThumbnailImage": $0.profileThumbnailImage?.absoluteString as Any
               ]
             } ?? []
           ])
@@ -120,13 +122,15 @@ import RNCKakaoCore
             resolve([
               "totalCount": friends.totalCount,
               "favoriteCount": friends.favoriteCount as Any,
+              "beforeUrl": friends.beforeUrl?.absoluteString as Any,
+              "afterUrl": friends.afterUrl?.absoluteString as Any,
               "friends": items
                 .map {
                   [
                     "id": $0.id as Any,
                     "uuid": $0.uuid,
                     "profileNickname": $0.profileNickname as Any,
-                    "profileThumbnailImage": $0.profileThumbnailImage as Any,
+                    "profileThumbnailImage": $0.profileThumbnailImage?.absoluteString as Any,
                     "favorite": $0.favorite as Any,
                     "allowedMsg": $0.allowedMsg as Any
                   ]

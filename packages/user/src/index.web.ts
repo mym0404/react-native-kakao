@@ -4,6 +4,7 @@ import { kFetchFormUrlEncoded, kGlobalStorage, kRunWebAPI } from '@react-native-
 import {
   type KakaoLoginToken,
   type KakaoScopeInfo,
+  type KakaoServiceTerms,
   type KakaoShippingAddressResult,
   type KakaoUser as KakaoUserProfile,
   type KakaoUserAPI,
@@ -147,17 +148,12 @@ const KakaoUser: KakaoUserAPI = {
         data: scopes?.length ? { scopes } : undefined,
       });
 
-      return camelCaseObject(response.scopes) as KakaoScopeInfo[];
+      return camelCaseObject(response.scopes ?? []) as KakaoScopeInfo[];
     }),
-  revokeScopes: (scopes: string[]) =>
-    kRunWebAPI(async () => {
-      await Kakao.API.request({
-        url: '/v2/user/revoke/scopes',
-        data: {
-          scopes,
-        },
-      });
-    }),
+  revokeScopes: async (scopes: string[]) => {
+    await revokeScopesWithResult(scopes);
+  },
+  revokeScopesWithResult,
   serviceTerms: ({ result, tags } = {}) =>
     kRunWebAPI(async () => {
       const response: {
@@ -168,6 +164,7 @@ const KakaoUser: KakaoUserAPI = {
               agreed: boolean;
               required: boolean;
               revocable: boolean;
+              agreed_by?: string | null;
             }[]
           | null;
       } = await Kakao.API.request({
@@ -175,13 +172,22 @@ const KakaoUser: KakaoUserAPI = {
         data: filterNonNullishKeys({ result, tags: tags?.join(',') }),
       });
 
-      return (response.service_terms ?? []).map((term) => ({
-        tag: term.tag,
-        agreedAt: term.agreed_at ? isoToUnix(term.agreed_at) : undefined,
-        agreed: term.agreed,
-        required: term.required,
-        revocable: term.revocable,
-      }));
+      return (response.service_terms ?? []).map(
+        (term): KakaoServiceTerms =>
+          filterNonNullishKeys({
+            tag: term.tag,
+            agreedAt: term.agreed_at ? isoToUnix(term.agreed_at) : undefined,
+            agreed: term.agreed,
+            required: term.required,
+            revocable: term.revocable,
+            agreedBy:
+              term.agreed_by == null
+                ? undefined
+                : term.agreed_by === 'KAUTH' || term.agreed_by === 'KAPI'
+                  ? term.agreed_by
+                  : 'unknown',
+          }),
+      );
     }),
   revokeServiceTerms: (tags) =>
     kRunWebAPI(async () => {
@@ -324,6 +330,17 @@ const KakaoUser: KakaoUserAPI = {
       } as KakaoUserProfile;
     }),
 };
+
+export function revokeScopesWithResult(scopes: string[]): Promise<KakaoScopeInfo[]> {
+  return kRunWebAPI(async () => {
+    const response = await Kakao.API.request({
+      url: '/v2/user/revoke/scopes',
+      data: { scopes },
+    });
+
+    return camelCaseObject(response.scopes ?? []) as KakaoScopeInfo[];
+  });
+}
 
 export const {
   loginWithKakao,
