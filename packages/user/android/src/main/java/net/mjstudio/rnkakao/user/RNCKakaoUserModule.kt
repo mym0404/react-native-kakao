@@ -425,6 +425,7 @@ class RNCKakaoUserModule internal constructor(
           argMap().apply {
             putD("id", user.id?.toDouble())
             putB("hasSignedUp", user.hasSignedUp)
+            putString("uuid", user.uuid)
             putMap(
               "properties",
               argMap().apply {
@@ -439,10 +440,12 @@ class RNCKakaoUserModule internal constructor(
             putString("nickname", user.kakaoAccount?.profile?.nickname)
             putString("profileImageUrl", user.kakaoAccount?.profile?.profileImageUrl)
             putString("thumbnailImageUrl", user.kakaoAccount?.profile?.thumbnailImageUrl)
+            putB("isDefaultImage", user.kakaoAccount?.profile?.isDefaultImage)
             putString("phoneNumber", user.kakaoAccount?.phoneNumber)
             putString("ageRange", user.kakaoAccount?.ageRange?.name)
             putString("birthday", user.kakaoAccount?.birthday)
             putString("birthdayType", user.kakaoAccount?.birthdayType?.name)
+            putB("isLeapMonth", user.kakaoAccount?.isLeapMonth)
             putString("birthyear", user.kakaoAccount?.birthyear)
             putString("gender", user.kakaoAccount?.gender?.name)
             putB("isEmailValid", user.kakaoAccount?.isEmailValid)

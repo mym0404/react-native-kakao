@@ -62,16 +62,19 @@ export interface KakaoShippingAddress {
 export interface KakaoUser {
   id: number;
   hasSignedUp?: boolean | null;
+  uuid?: string | null;
   properties: Record<string, string>;
   email?: string | null;
   name?: string | null;
   nickname?: string | null;
   profileImageUrl?: string | null;
   thumbnailImageUrl?: string | null;
+  isDefaultImage?: boolean | null;
   phoneNumber?: string | null;
   ageRange?: string | null;
   birthday?: string | null;
   birthdayType?: string | null;
+  isLeapMonth?: boolean | null;
   birthyear?: string | null;
   gender?: string | null;
   isEmailValid?: boolean | null;
