@@ -1,0 +1,54 @@
+---
+sidebar_position: 102
+---
+
+# 웹 페이지 스크랩 메시지 발송
+
+`sendScrapTemplateToMe`와 `sendScrapTemplateToFriends`로 공개된 웹 페이지의 정보를 담은 카카오톡 메시지를 발송할 수 있습니다. 두 함수 모두 Android, iOS, 웹에서 사용할 수 있습니다.
+
+카카오디벨로퍼스의 제품 링크 > 웹 도메인에 페이지의 도메인을 등록해야 합니다. 카카오 로그인과 `talk_message` 동의항목이 필요합니다. 친구에게 발송하려면 앱에 카카오톡 친구·메시지 권한이 있어야 하며, 수신자도 메시지를 받을 수 있는 조건을 충족해야 합니다.
+
+두 함수는 공유 대상을 선택하는 화면 없이 메시지를 직접 발송합니다.
+
+## 나와의 채팅에 발송
+
+```tsx
+import { sendScrapTemplateToMe } from '@react-native-kakao/share';
+
+await sendScrapTemplateToMe({
+  requestUrl: 'https://your-registered-domain.example/article',
+});
+```
+
+`Promise<void>`를 반환하며 카카오 오류가 발생하면 거부합니다.
+
+## 친구에게 발송
+
+```tsx
+import { sendScrapTemplateToFriends } from '@react-native-kakao/share';
+
+const successfulReceiverUuids = await sendScrapTemplateToFriends({
+  requestUrl: 'https://your-registered-domain.example/article',
+  receiverUuids: selectedFriends.map(({ uuid }) => uuid),
+});
+```
+
+수신자의 UUID는 [친구 선택 화면](/docs/social/select-talk-friends)이나 [친구 조회 API](/docs/social/get-friends)로 받을 수 있습니다. 한 번에 최대 5명에게 발송할 수 있습니다.
+
+발송에 성공한 수신자의 UUID를 `Promise<string[]>`로 반환합니다. 다른 친구 메시지 함수와 마찬가지로 발송에 실패한 수신자는 응답에서 제외합니다. 일부 수신자에게만 발송됐는지 확인하려면 응답 목록과 `receiverUuids`를 비교합니다.
+
+## 사용자 정의 템플릿
+
+두 함수 모두 `templateId`와 문자열 값으로 구성된 `templateArgs`를 선택적으로 받습니다. `templateId`를 생략하면 카카오의 기본 스크랩 템플릿을 사용합니다.
+
+```tsx
+await sendScrapTemplateToMe({
+  requestUrl: 'https://your-registered-domain.example/article',
+  templateId: 12345,
+  templateArgs: { price: '20000' },
+});
+```
+
+사용자 정의 템플릿은 같은 카카오 앱에 등록된 템플릿이어야 합니다. 친구에게 발송할 때는 템플릿의 사용 목적을 **카카오톡 메시지**로 설정해야 합니다.
+
+공식 [Android](https://developers.kakao.com/docs/latest/en/kakaotalk-message/android), [iOS](https://developers.kakao.com/docs/latest/en/kakaotalk-message/ios), [JavaScript](https://developers.kakao.com/docs/latest/en/kakaotalk-message/js) 문서를 참고하세요.
