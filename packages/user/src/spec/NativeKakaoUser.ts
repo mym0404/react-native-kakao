@@ -20,6 +20,7 @@ export interface Spec extends TurboModule {
     useKakaoAccountLogin: boolean,
     scopes?: string[],
     nonce?: string,
+    loginHint?: string,
   ): Promise<KakaoLoginToken>;
   signup(properties?: UnsafeObject): Promise<void>;
   logout(): Promise<void>;
