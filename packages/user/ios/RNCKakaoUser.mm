@@ -68,6 +68,11 @@ RCT_EXPORT_METHOD(me : (NSArray*)propertyKeys resolve : (RCTPromiseResolveBlock)
   [[self manager] me:propertyKeys resolve:resolve reject:reject];
 }
 
+RCT_EXPORT_METHOD(selectShippingAddress : (RCTPromiseResolveBlock)
+                      resolve reject : (RCTPromiseRejectBlock)reject) {
+  [[self manager] selectShippingAddress:resolve reject:reject];
+}
+
 RCT_EXPORT_METHOD(getAccessToken : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)
                       reject) {
   [[self manager] getAccessToken:resolve reject:reject];

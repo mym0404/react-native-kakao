@@ -14,6 +14,7 @@ declare const Kakao: {
     authorize: Function;
     logout: Function;
     setAccessToken: Function;
+    selectShippingAddress: () => Promise<{ address_id: number }>;
   };
   API: { request: Function };
 };
@@ -179,6 +180,23 @@ const KakaoUser: KakaoUserAPI = {
         })),
       } as KakaoShippingAddressResult;
     }),
+  selectShippingAddress: () =>
+    kRunWebAPI(async () => {
+      try {
+        const { address_id } = await Kakao.Auth.selectShippingAddress();
+
+        return address_id;
+      } catch (error) {
+        if (error != null && typeof error === 'object' && 'error_code' in error) {
+          throw {
+            code: String(error.error_code),
+            message: 'error_msg' in error ? String(error.error_msg) : undefined,
+          };
+        }
+
+        throw error;
+      }
+    }),
   me: ({ propertyKeys } = {}) =>
     kRunWebAPI(async () => {
       const response: { properties?: Record<string, string> } = await Kakao.API.request({
@@ -246,6 +264,7 @@ export const {
   scopes,
   serviceTerms,
   shippingAddresses,
+  selectShippingAddress,
   unlink,
   setAccessTokenWeb,
   issueAccessTokenWithCodeWeb,

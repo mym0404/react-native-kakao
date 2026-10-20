@@ -10,6 +10,7 @@ import {
   logout,
   me,
   scopes,
+  selectShippingAddress,
   serviceTerms,
   shippingAddresses,
   unlink,
@@ -248,6 +249,16 @@ export default function Page() {
           const { properties } = await me({ propertyKeys: ['kakao_account.email'] });
 
           return { keys: Object.keys(properties) };
+        }}
+      />
+      <E2EApiAction
+        id={'shipping-address-picker'}
+        minW={buttonMinWidth}
+        title={'Select Shipping Address'}
+        action={async () => {
+          const addressId = await selectShippingAddress();
+
+          return { hasAddressId: Number.isSafeInteger(addressId) && addressId > 0 };
         }}
       />
       <Btn
