@@ -126,6 +126,10 @@
       "navi": "2.25.0",
       "friend": "2.25.0",
       "talk": "2.25.0"
+    },
+    "partnership": {
+      "android": "1.0.0",
+      "iosRevision": "83917aaf996e5d4072e73b681507228fbd967d42"
     }
   },
   "dependencies": {
