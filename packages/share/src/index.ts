@@ -74,6 +74,28 @@ const TemplateTypes = {
   calendar: 'calendar',
 };
 
+export function shareScrapTemplate({
+  requestUrl,
+  templateId,
+  templateArgs = {},
+  serverCallbackArgs = {},
+  useWebBrowserIfKakaoTalkNotAvailable = true,
+}: {
+  requestUrl: string;
+  templateId?: number;
+  templateArgs?: Record<string, string>;
+  serverCallbackArgs?: Record<string, string>;
+  useWebBrowserIfKakaoTalkNotAvailable?: boolean;
+}): Promise<void> {
+  return Native.shareScrapTemplate(
+    requestUrl,
+    useWebBrowserIfKakaoTalkNotAvailable,
+    templateId,
+    templateArgs,
+    serverCallbackArgs,
+  );
+}
+
 export function shareCustomTemplate({
   templateId,
   useWebBrowserIfKakaoTalkNotAvailable = true,
@@ -477,6 +499,7 @@ export function scrapImage({
 
 const KakaoShare = {
   uploadImage,
+  shareScrapTemplate,
   scrapImage,
   shareCustomTemplate,
   sendCustomTemplateToMe,
