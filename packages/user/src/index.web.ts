@@ -130,21 +130,26 @@ const KakaoUser: KakaoUserAPI = {
         },
       });
     }),
-  serviceTerms: () =>
+  serviceTerms: ({ result, tags } = {}) =>
     kRunWebAPI(async () => {
       const response: {
-        service_terms?: {
-          tag: string;
-          agreed_at?: string;
-          agreed: boolean;
-          required: boolean;
-          revocable: boolean;
-        }[];
-      } = await Kakao.API.request({ url: '/v2/user/service_terms' });
+        service_terms?:
+          | {
+              tag: string;
+              agreed_at?: string | null;
+              agreed: boolean;
+              required: boolean;
+              revocable: boolean;
+            }[]
+          | null;
+      } = await Kakao.API.request({
+        url: '/v2/user/service_terms',
+        data: filterNonNullishKeys({ result, tags: tags?.join(',') }),
+      });
 
       return (response.service_terms ?? []).map((term) => ({
         tag: term.tag,
-        agreedAt: isoToUnix(term.agreed_at),
+        agreedAt: term.agreed_at ? isoToUnix(term.agreed_at) : undefined,
         agreed: term.agreed,
         required: term.required,
         revocable: term.revocable,

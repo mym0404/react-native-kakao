@@ -53,9 +53,9 @@ RCT_EXPORT_METHOD(revokeScopes : (NSArray*)scopes resolve : (RCTPromiseResolveBl
   [[self manager] revokeScopes:scopes resolve:resolve reject:reject];
 }
 
-RCT_EXPORT_METHOD(serviceTerms : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)
-                      reject) {
-  [[self manager] serviceTerms:resolve reject:reject];
+RCT_EXPORT_METHOD(serviceTerms : (NSString*)result tags : (NSArray*)tags resolve : (
+    RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
+  [[self manager] serviceTerms:result tags:tags resolve:resolve reject:reject];
 }
 
 RCT_EXPORT_METHOD(shippingAddresses : (RCTPromiseResolveBlock)
