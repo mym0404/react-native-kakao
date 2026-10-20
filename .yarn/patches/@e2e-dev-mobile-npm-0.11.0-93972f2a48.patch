@@ -1,0 +1,13 @@
+diff --git a/dist/pool.js b/dist/pool.js
+index f0e4352dc6c5f88a132d895bd3e9ee80a5058676..ca05291433d06446c23236459ae4914670867c57 100644
+--- a/dist/pool.js
++++ b/dist/pool.js
+@@ -256,7 +256,7 @@ export class DevicePool {
+  */
+ async function prepareRunner(client, where, info, at) {
+     try {
+-        await runCommand('prepare ios-runner', () => client.command.prepare({ action: 'ios-runner', ...where }), info.signal, at);
++        await runCommand('prepare ios-runner', () => client.command.prepare({ action: 'ios-runner', ...where, timeoutMs: 360000 }), info.signal, at);
+         return true;
+     }
+     catch (cause) {

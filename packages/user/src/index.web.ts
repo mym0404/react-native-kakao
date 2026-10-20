@@ -8,6 +8,7 @@ import {
   type KakaoUser as KakaoUserProfile,
   type KakaoUserAPI,
 } from './index';
+import { validateShippingAddressOptions } from './validateShippingAddressOptions';
 
 declare const Kakao: {
   Auth: {
@@ -169,10 +170,19 @@ const KakaoUser: KakaoUserAPI = {
 
       return response.revoked_service_terms ?? [];
     }),
-  shippingAddresses: () =>
+  shippingAddresses: ({ addressId, fromUpdatedAt, pageSize } = {}) =>
     kRunWebAPI(async () => {
+      validateShippingAddressOptions({ addressId, fromUpdatedAt, pageSize });
+
       const response = camelCaseObject(
-        await Kakao.API.request({ url: '/v1/user/shipping_address' }),
+        await Kakao.API.request({
+          url: '/v1/user/shipping_address',
+          data: filterNonNullishKeys(
+            addressId != null
+              ? { address_id: addressId }
+              : { from_updated_at: fromUpdatedAt, page_size: pageSize },
+          ),
+        }),
       ) as {
         userId?: number;
         shippingAddressesNeedsAgreement?: boolean;
@@ -191,7 +201,7 @@ const KakaoUser: KakaoUserAPI = {
           ...address,
           updatedAt: isoToUnix(address.updatedAt),
         })),
-      } as KakaoShippingAddressResult;
+      };
     }),
   selectShippingAddress: () =>
     kRunWebAPI(async () => {
