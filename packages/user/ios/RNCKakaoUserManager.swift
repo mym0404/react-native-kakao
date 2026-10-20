@@ -34,6 +34,7 @@ import RNCKakaoCore
     scopes: [String],
     nonce: String?,
     loginHint: String?,
+    channelPublicIds: [String],
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
@@ -87,6 +88,7 @@ import RNCKakaoCore
         } else {
           UserApi.shared.loginWithKakaoAccount(
             prompts: self.emptyArrayToNil(_prompts),
+            channelPublicIds: self.emptyArrayToNil(channelPublicIds),
             serviceTerms: self.emptyArrayToNil(serviceTerms),
             nonce: nonce,
             completion: callback
@@ -113,6 +115,7 @@ import RNCKakaoCore
           }
         }
         UserApi.shared.loginWithKakaoTalk(
+          channelPublicIds: emptyArrayToNil(channelPublicIds),
           serviceTerms: emptyArrayToNil(serviceTerms),
           nonce: nonce,
           completion: talkCallback

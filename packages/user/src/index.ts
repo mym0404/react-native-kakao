@@ -113,6 +113,7 @@ export function login({
   scopes,
   nonce,
   loginHint,
+  channelPublicIds,
 }: {
   serviceTerms?: string[];
   prompts?: ('Login' | 'Create' | 'Cert' | 'SelectAccount')[];
@@ -120,6 +121,7 @@ export function login({
   useKakaoAccountLogin?: boolean;
   nonce?: string;
   loginHint?: string;
+  channelPublicIds?: string[];
   web?: {
     redirectUri: string;
     scope?: string[];
@@ -137,13 +139,20 @@ export function login({
   );
 
   kAssert(
-    is.notEmptyArray(scopes) ? !is.notEmptyArray(prompts) && !is.notEmptyArray(serviceTerms) : true,
-    '[login] `scopes` cannot be passed with `prompts` or `serviceTerms`',
+    is.notEmptyArray(scopes)
+      ? !is.notEmptyArray(prompts) &&
+          !is.notEmptyArray(serviceTerms) &&
+          !is.notEmptyArray(channelPublicIds)
+      : true,
+    '[login] `scopes` cannot be passed with `prompts`, `serviceTerms`, or `channelPublicIds`',
   );
 
   kAssert(
-    loginHint == null || (!is.notEmptyArray(scopes) && !is.notEmptyArray(serviceTerms)),
-    '[login] `loginHint` cannot be passed with `scopes` or `serviceTerms` on native platforms.',
+    loginHint == null ||
+      (!is.notEmptyArray(scopes) &&
+        !is.notEmptyArray(serviceTerms) &&
+        !is.notEmptyArray(channelPublicIds)),
+    '[login] `loginHint` cannot be passed with `scopes`, `serviceTerms`, or `channelPublicIds` on native platforms.',
   );
 
   return Native.login(
@@ -153,6 +162,7 @@ export function login({
     scopes ?? [],
     nonce,
     loginHint,
+    channelPublicIds ?? [],
   );
 }
 
