@@ -2,6 +2,7 @@ import { camelCaseObject, filterNonNullishKeys } from '@mj-studio/js-util';
 import { kRunWebAPI } from '@react-native-kakao/core';
 
 import type {
+  KakaoTalkFriend,
   KakaoTalkFriendProfile,
   KakaoTalkPartnerFriendSelectOptions,
 } from './spec/NativeKakaoSocial';
@@ -20,6 +21,7 @@ const KakaoSocial: KakaoSocialAPI = {
   getTalkProfile: () =>
     kRunWebAPI(async () => {
       const response: {
+        id: number;
         nickName?: string;
         profileImageURL?: string;
         thumbnailURL?: string;
@@ -27,6 +29,7 @@ const KakaoSocial: KakaoSocialAPI = {
       } = await Kakao.API.request({ url: '/v1/api/talk/profile' });
 
       return {
+        id: response.id,
         nickname: response.nickName,
         profileImageUrl: response.profileImageURL,
         thumbnailUrl: response.thumbnailURL,
@@ -81,7 +84,12 @@ const KakaoSocial: KakaoSocialAPI = {
         .then((response) => ({
           totalCount: response.totalCount,
           favoriteCount: response.favoriteCount,
-          friends: response.elements ?? [],
+          beforeUrl: response.beforeUrl ?? null,
+          afterUrl: response.afterUrl ?? null,
+          friends: (response.elements ?? []).map((friend: KakaoTalkFriend) => ({
+            ...friend,
+            profileNickname: friend.profileNickname ?? null,
+          })),
         }));
     }),
 };

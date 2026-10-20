@@ -41,10 +41,13 @@ export type KakaoServiceTerms = {
   agreed: boolean;
   required: boolean;
   revocable: boolean;
+  agreedBy?: 'KAUTH' | 'KAPI' | 'unknown';
 };
 ```
 
 `agreedAt` is a Unix timestamp in seconds when present. Terms retrieved with `app_service_terms` use the same response type, including `agreed` for each term.
+
+`agreedBy` identifies the consent source. `KAUTH` means Kakao Sync's Simple Signup consent screen; `KAPI` means other paths. Unrecognized SDK values become `unknown`. When the response has no consent source, this field is omitted.
 
 ## Revoke consent
 

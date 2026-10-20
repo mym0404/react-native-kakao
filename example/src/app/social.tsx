@@ -62,6 +62,22 @@ export default function Page() {
           return { totalCount: users.totalCount, selectedCount: users.users.length };
         }}
       />
+      <E2EApiAction
+        id={'talk-response-metadata'}
+        title={'Get Profile and Friend Metadata'}
+        action={async () => {
+          const talkProfile = await getTalkProfile();
+          const friends = await getFriends({ options: { limit: 1 } });
+
+          return {
+            hasProfileId: Number.isSafeInteger(talkProfile.id) && talkProfile.id > 0,
+            friendCount: friends.friends.length,
+            hasPreviousPage: !!friends.beforeUrl,
+            hasNextPage: !!friends.afterUrl,
+            nicknameKinds: friends.friends.map((friend) => typeof friend.profileNickname),
+          };
+        }}
+      />
       {[
         { id: 'default', enableIndex: undefined },
         { id: 'enabled', enableIndex: true },
@@ -77,7 +93,13 @@ export default function Page() {
                 options: { enableIndex },
               });
 
-              return { hasSelection: result != null, hasUuid: !!result?.uuid };
+              return {
+                hasSelection: result != null,
+                hasUuid: !!result?.uuid,
+                maskedNicknameKind: typeof result?.maskingProfileNickname,
+                nicknameKind: typeof result?.profileNickname,
+                thumbnailKind: typeof result?.profileThumbnailImage,
+              };
             }}
           />
           <E2EApiAction
