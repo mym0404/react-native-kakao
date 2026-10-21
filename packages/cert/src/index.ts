@@ -67,7 +67,8 @@ export type KakaoCertWebAuthorizeOptions = {
   identifyItems?: KakaoCertIdentifyItem[];
 };
 
-const maxActivityRequestCode = 65535;
+const minActivityRequestCode = -2147483648;
+const maxActivityRequestCode = 2147483647;
 
 export async function certLoginWithKakaoTalk(options: KakaoCertTalkLoginOptions) {
   validateLoginRequest(options);
@@ -75,8 +76,10 @@ export async function certLoginWithKakaoTalk(options: KakaoCertTalkLoginOptions)
   const requestCode = options.android?.requestCode;
   kAssert(
     requestCode == null ||
-      (Number.isInteger(requestCode) && requestCode >= 0 && requestCode <= maxActivityRequestCode),
-    `[certLoginWithKakaoTalk] requestCode must be an integer from 0 to ${maxActivityRequestCode}`,
+      (Number.isInteger(requestCode) &&
+        requestCode >= minActivityRequestCode &&
+        requestCode <= maxActivityRequestCode),
+    `[certLoginWithKakaoTalk] requestCode must be an integer from ${minActivityRequestCode} to ${maxActivityRequestCode}`,
   );
 
   return Native.certLoginWithKakaoTalk(options);

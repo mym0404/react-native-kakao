@@ -84,7 +84,7 @@ const accountResult = await certLoginWithKakaoAccount({
 | `nonce` | OpenID Connect ID 토큰 검증에 사용할 임의 문자열이에요. |
 | `channelPublicIds`, `serviceTerms` | 카카오톡 인증 로그인에서 추가할 채널·약관 목록이에요. |
 | `ios.launchMethod` | 카카오톡 앱 전환 방식으로 `UniversalLink` 또는 `CustomScheme`을 지정해요. 기본값은 `UniversalLink`예요. |
-| `android.requestCode` | 카카오톡 인증 로그인 액티비티의 요청 코드예요. 생략하면 SDK 기본값을 사용해요. |
+| `android.requestCode` | Android SDK에 전달할 카카오톡 인증 로그인 요청 코드예요. `-2147483648`부터 `2147483647`까지의 32비트 정수이며, 생략하면 SDK 기본값을 사용해요. SDK `2.25.1`은 진단 로그에만 사용하고 결과 콜백을 구분하지 않아요. |
 | `android.channelPublicIds`, `android.serviceTerms` | 카카오계정 인증 로그인에 전달해요. iOS 계정 방식의 공개 SDK는 이 옵션을 지원하지 않아요. |
 
 고정된 네이티브 SDK가 제공하는 서명자 항목은 위 네 가지예요. 다른 항목은 타입에 포함하지 않아요.

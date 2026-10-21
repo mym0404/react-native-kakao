@@ -55,6 +55,12 @@ When `scopes` are provided, login always uses a Kakao account.
 
 -  `useKakaoAccountLogin`: Attempt login with a Kakao account instead of KakaoTalk.
 
+- `android.requestCode`: Pass a KakaoTalk login request code to the Android SDK. It accepts a 32-bit integer from `-2147483648` to `2147483647`. Omitting it preserves the SDK default. Android SDK `2.25.1` currently uses this value only in diagnostic logs; it does not distinguish result callbacks. It does not apply to account login or additional consent, and is ignored on iOS and web.
+
+```tsx
+await login({ android: { requestCode: 20001 } });
+```
+
 - `ios.launchMethod`: Choose `UniversalLink` or `CustomScheme` when switching to Kakao Talk on iOS. The default is `UniversalLink`. It does not apply when Kakao Talk is unavailable or account login is requested, and is ignored on Android and web.
 
 ```tsx

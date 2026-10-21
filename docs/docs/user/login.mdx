@@ -59,6 +59,12 @@ login()
 
 - `useKakaoAccountLogin`: 항상 카카오톡이 아닌 카카오 계정으로 로그인을 시도합니다.
 
+- `android.requestCode`: Android SDK에 전달할 카카오톡 로그인 요청 코드예요. `-2147483648`부터 `2147483647`까지의 32비트 정수를 받아요. 생략하면 카카오 SDK의 기본 코드를 사용해요. 현재 Android SDK `2.25.1`은 이 값을 진단 로그에만 사용하며, 결과 콜백을 구분하지 않아요. 카카오계정 로그인과 추가 동의에는 적용하지 않으며, iOS와 웹에서도 사용하지 않아요.
+
+```tsx
+await login({ android: { requestCode: 20001 } });
+```
+
 - `ios.launchMethod`: iOS에서 카카오톡으로 전환할 방식을 `UniversalLink` 또는 `CustomScheme`으로 지정합니다. 기본값은 `UniversalLink`입니다. 카카오톡을 사용할 수 없거나 카카오계정 로그인을 요청한 경우에는 적용하지 않으며, Android와 웹에서도 사용하지 않습니다.
 
 ```tsx

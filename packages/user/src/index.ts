@@ -24,6 +24,8 @@ export type KakaoCodeTokenOptions = {
 };
 
 const defaultTalkLaunchMethod: KakaoTalkLaunchMethod = 'UniversalLink';
+const minActivityRequestCode = -2147483648;
+const maxActivityRequestCode = 2147483647;
 const webOnlyErrorCode = 'Package-UnsupportedPlatform';
 
 export interface KakaoScopeInfo {
@@ -126,6 +128,7 @@ export function login({
   nonce,
   loginHint,
   channelPublicIds,
+  android,
   ios,
 }: {
   serviceTerms?: string[];
@@ -135,6 +138,7 @@ export function login({
   nonce?: string;
   loginHint?: string;
   channelPublicIds?: string[];
+  android?: { requestCode?: number };
   ios?: { launchMethod?: KakaoTalkLaunchMethod };
   web?: {
     redirectUri: string;
@@ -147,6 +151,15 @@ export function login({
     nonce?: string;
   };
 } = {}): Promise<KakaoLoginToken> {
+  const requestCode = android?.requestCode;
+  kAssert(
+    requestCode == null ||
+      (Number.isInteger(requestCode) &&
+        requestCode >= minActivityRequestCode &&
+        requestCode <= maxActivityRequestCode),
+    `[login] android.requestCode must be an integer from ${minActivityRequestCode} to ${maxActivityRequestCode}`,
+  );
+
   kAssert(
     !useKakaoAccountLogin ? !is.notEmptyArray(prompts) && !is.notEmptyArray(scopes) : true,
     '[login] `prompts` and `scopes` cannot be passed if useKakaoAccountLogin is false.',
@@ -178,6 +191,7 @@ export function login({
     nonce,
     loginHint,
     channelPublicIds ?? [],
+    requestCode,
   );
 }
 
