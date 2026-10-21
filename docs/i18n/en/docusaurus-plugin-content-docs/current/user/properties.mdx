@@ -21,3 +21,19 @@ const selected = await me({ propertyKeys: ['properties.nickname'] });
 The property keys and returned values depend on the app's user-property settings, the user's consent, and which data Kakao returns. The dictionary has type `Record<string, string>`; do not assume a particular key is present. Calling this API reads user information without updating the profile or requesting additional consent.
 
 See Kakao's [user-information guide](https://developers.kakao.com/docs/en/kakaologin/rest-api#req-user-info) for supported filters and properties.
+
+## Store a custom user property
+
+Use `updateProfile({ properties })` to save registered custom property keys with string values. It resolves with no result on success and rejects SDK errors on Android, iOS, and web. Register keys in Kakao Developers under **Kakao Login > Advanced > User Properties** before calling it.
+
+```tsx
+import { me, updateProfile } from "@react-native-kakao/user";
+
+await updateProfile({ properties: { custom_key: "value" } });
+const { properties } = await me({ propertyKeys: ["properties.custom_key"] });
+const savedValue = properties.custom_key;
+```
+
+This stores app-specific user properties. It does not edit the user's Kakao Account profile, nickname, or profile image. The user must be logged in, and the app must have registered every key being updated.
+
+See Kakao's [user-property API](https://developers.kakao.com/docs/en/kakaologin/rest-api#update-profile) for prerequisites and errors.
