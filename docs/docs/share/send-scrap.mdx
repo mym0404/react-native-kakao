@@ -37,6 +37,8 @@ const successfulReceiverUuids = await sendScrapTemplateToFriends({
 
 발송에 성공한 수신자의 UUID를 `Promise<string[]>`로 반환합니다. 다른 친구 메시지 함수와 마찬가지로 발송에 실패한 수신자는 응답에서 제외합니다. 일부 수신자에게만 발송됐는지 확인하려면 응답 목록과 `receiverUuids`를 비교합니다.
 
+`includeFailureInfo: true`를 전달하면 성공 UUID와 수신자별 실패 정보를 함께 반환합니다. 자세한 응답 형식은 [발송 결과](/docs/share/message-results)를 참고하세요.
+
 ## 사용자 정의 템플릿
 
 두 함수 모두 `templateId`와 문자열 값으로 구성된 `templateArgs`를 선택적으로 받습니다. `templateId`를 생략하면 카카오의 기본 스크랩 템플릿을 사용합니다.

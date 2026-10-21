@@ -228,6 +228,15 @@ export type KakaoImageUploadResult = {
   };
 };
 
+export type KakaoMessageSendResult = {
+  successfulReceiverUuids: string[];
+  failureInfos: {
+    code: Int32;
+    msg: string;
+    receiverUuids: string[];
+  }[];
+};
+
 export interface Spec extends TurboModule {
   uploadImage(imageUri: string, secureResource: boolean): Promise<KakaoImageUploadResult>;
   shareScrapTemplate(
