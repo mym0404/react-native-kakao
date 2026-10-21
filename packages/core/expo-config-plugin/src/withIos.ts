@@ -3,22 +3,15 @@ import { type ConfigPlugin, withAppDelegate, withInfoPlist } from 'expo/config-p
 
 import type { KakaoIosConfig } from './type';
 
+const kakaoUrlTypeName = 'Kakao';
+
 const withIos: ConfigPlugin<{
-  nativeAppKey: string;
+  scheme: string;
   ios: KakaoIosConfig;
 }> = (
   config,
-  {
-    nativeAppKey,
-    ios: { handleKakaoOpenUrl, handleKakaoCertOpenUrl, naviApplicationQuerySchemes },
-  },
+  { scheme, ios: { handleKakaoOpenUrl, handleKakaoCertOpenUrl, naviApplicationQuerySchemes } },
 ) => {
-  if (!nativeAppKey) {
-    throw new Error(
-      "[@react-native-kakao/core] 'nativeAppKey' missing in expo config plugin value",
-    );
-  }
-
   config = withInfoPlist(config, (config) => {
     if (!config.modResults.LSApplicationQueriesSchemes) {
       config.modResults.LSApplicationQueriesSchemes = [];
@@ -29,16 +22,20 @@ const withIos: ConfigPlugin<{
     }
 
     // core
-    if (
-      config.modResults.CFBundleURLTypes?.findIndex((t) =>
-        t.CFBundleURLSchemes.some((s) => s === `kakao${nativeAppKey}`),
-      ) === -1
+    const kakaoUrlType = config.modResults.CFBundleURLTypes.find(
+      (type) => type.CFBundleURLName === kakaoUrlTypeName,
+    );
+
+    if (kakaoUrlType) {
+      kakaoUrlType.CFBundleURLSchemes = [scheme];
+    } else if (
+      !config.modResults.CFBundleURLTypes.some((type) => type.CFBundleURLSchemes.includes(scheme))
     ) {
       config.modResults.CFBundleURLTypes = [
         ...config.modResults.CFBundleURLTypes,
         {
-          CFBundleURLSchemes: [`kakao${nativeAppKey}`],
-          CFBundleURLName: 'Kakao',
+          CFBundleURLSchemes: [scheme],
+          CFBundleURLName: kakaoUrlTypeName,
         },
       ];
     }
