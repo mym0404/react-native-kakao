@@ -29,7 +29,7 @@ Android·iOS Kakao SDK의 공개 서비스 API를 Core, User, Social, Channel, S
 
 | 기능             | 공개 API·옵션                                                                       | 웹                                                                                 |
 | ---------------- | ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| SDK 초기화       | [`initializeKakaoSDK`](/docs/core/initialize-sdk), `customScheme`, `loggingEnabled` | JavaScript 키·REST API 키로 초기화해요. 네이티브 스킴·로깅 옵션은 적용하지 않아요. |
+| SDK 초기화       | [`initializeKakaoSDK`](/docs/core/initialize-sdk), `customScheme`, `loggingEnabled`, `android.sdkIdentifier` | JavaScript 키·REST API 키로 초기화해요. 네이티브 옵션은 적용하지 않아요. |
 | 버전·초기화 상태 | [`getKakaoSDKInfo`](/docs/core/initialize-sdk)                                      | `version`, `isInitialized`를 반환해요. 네이티브 설정 필드는 반환하지 않아요.       |
 | Android 키 해시  | [`getKeyHashAndroid`](/docs/core/get-android-keyhash)                               | `undefined`를 반환해요. Android 전용이에요.                                        |
 
@@ -37,10 +37,10 @@ Android·iOS Kakao SDK의 공개 서비스 API를 Core, User, Social, Channel, S
 
 | 기능                            | 공개 API·옵션                                                                                                                      | 웹                                                                                  |
 | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| 카카오톡·계정 로그인, 추가 동의 | [`login`](/docs/user/login): `useKakaoAccountLogin`, `scopes`, `prompts`, `serviceTerms`, `nonce`, `loginHint`, `channelPublicIds` | 인가 페이지로 이동해요. `web.redirectUri`와 후속 인가 코드 처리가 필요해요.         |
+| 카카오톡·계정 로그인, 추가 동의 | [`login`](/docs/user/login): `useKakaoAccountLogin`, `scopes`, `prompts`, `serviceTerms`, `nonce`, `loginHint`, `channelPublicIds`, `android.requestCode` | 인가 페이지로 이동해요. `web.redirectUri`와 후속 인가 코드 처리가 필요해요.         |
 | 로그인 방법 선택 화면           | [`loginWithKakao`](/docs/user/login-selector), UI·로그인 옵션                                                                      | `Package-UnsupportedPlatform` 오류를 반환해요.                                      |
 | 네이티브 앱 전환 방식           | [`login`·`loginWithKakao`](/docs/user/login): iOS `launchMethod`, 선택 화면의 iOS `throughTalk`                                    | 브라우저 로그인은 `web.throughTalk`을 사용해요. 네이티브 UI 옵션은 적용하지 않아요. |
-| 토큰 갱신                       | [`refreshToken`](/docs/user/access-token): 저장된 토큰 또는 직접 지정한 `token`                                                                                          | `Package-UnsupportedPlatform` 오류를 반환해요.                                      |
+| 토큰 갱신                       | [`refreshToken`](/docs/user/access-token): 저장된 토큰 또는 직접 지정한 `token`, iOS 요청별 `loggingEnabled` | `Package-UnsupportedPlatform` 오류를 반환해요.                                      |
 | 인가 코드로 토큰 발급(iOS) | [`issueAccessTokenWithCode`](/docs/user/access-token): `code`, PKCE `codeVerifier`, `redirectUri` | REST API로 발급하고 같은 토큰 형태를 반환해요. 액세스 토큰을 저장해요. |
 | 토큰 저장·유효 상태·정보        | [`hasToken`, `isLogined`, `getAccessToken`](/docs/user/access-token)                                                               | 지원해요. `hasToken`은 저장 여부이며 토큰 유효성을 보장하지 않아요.                 |
 | 로그아웃·연결 해제              | [`logout`, `unlink`](/docs/user/login)                                                                                             | 지원해요.                                                                           |
@@ -119,9 +119,11 @@ Android·iOS Kakao SDK의 공개 서비스 API를 Core, User, Social, Channel, S
 | 기능                       | 확인한 결과                                                                                                              | 남은 성공 경로·조건                                                                                                           |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
 | 모듈 연결                  | Android·iOS Release 빌드와 플랫폼별 스모크 테스트 8/8. Channel·Social·Share는 Core와 해당 모듈만 설치한 앱의 빌드도 통과 | 개별 기능의 이용 승인과 로그인은 별도 조건이에요.                                                                             |
-| SDK 초기화·정보            | 네이티브 설정 반영, 실제 웹 SDK 버전·초기화 상태                                                                         | 등록된 커스텀 멀티 앱 스킴의 실제 인증 콜백                                                                                   |
+| SDK 초기화·정보            | 네이티브 설정 반영, Android 식별자의 KA 헤더 반영·복원과 iOS 무시, 실제 웹 SDK 버전·초기화 상태 | 등록된 커스텀 멀티 앱 스킴의 실제 인증 콜백                                                                                   |
 | 로그인 방법 선택·갱신      | Android 로그인 선택·토큰 갱신 성공, 양쪽 로그아웃 오류·취소 경로                                                         | iOS 선택 로그인·갱신 성공, 카카오톡 설치 상태의 앱 전환과 콜백                                                                |
+| Android 로그인 요청 코드  | 부호 있는 32비트 정수 범위 검사, 범위 밖 입력 거부, 계정 로그인 대체 화면과 취소 응답 | 카카오톡 설치 상태의 전달. 고정 SDK는 이 값을 진단 로그에만 사용해요. |
 | 직접 지정한 토큰 갱신      | Android·iOS의 실제 `InvalidGrant`, 웹 미지원 오류, 실패 후 빈 저장 상태, 입력 검사 41건과 iOS SDK 갱신·응답 검사 20건 | 유효한 외부 토큰으로 갱신·저장하는 실제 성공 응답                                                                             |
+| iOS 갱신 요청 로그        | Debug 앱에서 `true`는 요청·응답 본문 출력, `false`는 요청 로그·응답 본문 숨김. 두 요청 모두 `InvalidGrant`를 반환하고 SDK 전체 로깅 설정은 `false` 유지 | SDK의 `response: -` 자리표시자는 출력돼요. |
 | 인가 코드 교환             | iOS 일반·인증 코드의 실제 `InvalidGrant`, 웹 일반 코드의 실제 `invalid_grant`, 플랫폼별 미지원 오류, 입력·응답·저장 계약 검사 24건 | 유효한 일반 인가 코드로 토큰 발급·저장 확인. 인증 코드 성공에는 이용 승인 앱도 필요해요.                                      |
 | 프로퍼티·약관·배송지 선택  | 세 플랫폼에서 프로퍼티 저장·조회·빈 값 복원, 선택 약관 동의·철회 후 조회, 배송지 ID 반환                                 | 웹 팝업을 직접 닫으면 SDK Promise가 대기할 수 있어요.                                                                         |
 | 배송지 조회                | 실제 ID·페이지 크기 조회, 숫자 범위 검사, 웹 REST 요청·응답 변환                                                         | 실제 다음 페이지 조회, 변경한 웹 REST 경로의 로그인된 응답                                                                    |

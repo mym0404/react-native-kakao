@@ -167,6 +167,7 @@ import RNCKakaoCore
 
   @objc public func refreshToken(
     _ token: [String: Any]?,
+    loggingEnabled: NSNumber?,
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
@@ -202,6 +203,7 @@ import RNCKakaoCore
       }
       AuthApi.shared.refreshToken(
         token: oldToken,
+        loggingEnabled: loggingEnabled?.boolValue ?? true,
         completion: tokenCallback(resolve, reject: reject)
       )
     }
