@@ -1,0 +1,135 @@
+---
+sidebar_position: 1
+---
+
+# Native SDK 지원 범위
+
+Android·iOS Kakao SDK의 공개 서비스 API를 Core, User, Social, Channel, Share, Navi, Cert 패키지로 제공해요. 웹은 JavaScript SDK와 사용자 토큰용 REST API가 지원하는 기능을 제공해요. 앱 전환, 로컬 키·세션, SDK 전용 URL 생성처럼 브라우저에서 같은 동작을 제공할 수 없는 기능은 아래에 구분했어요.
+
+구현 여부와 실제 성공 응답의 검증 여부는 달라요. 이용 승인을 받은 앱이나 설치된 카카오 앱이 필요한 성공 경로는 [검증 범위](#검증-범위)에 남겨 뒀어요.
+
+## SDK 버전과 대조 범위
+
+네이티브 기본 버전은 [`packages/core/package.json`의 `sdkVersions`](https://github.com/mym0404/react-native-kakao/blob/404c4a856abe63fc159df3701f63a5f1cec10f7a/packages/core/package.json)에서 관리해요. SDK 버전을 덮어쓰면 이 표와 실제 동작이 달라질 수 있어요. 실행 중인 버전은 [`getKakaoSDKInfo()`](/docs/core/initialize-sdk)로 확인해요.
+
+| SDK                  | 버전                                                                   | 범위                                                              |
+| -------------------- | ---------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| Android              | `2.25.1`                                                               | Common, Auth, User, Talk, Friend, Share, Template, Navi, Cert     |
+| iOS                  | `2.29.0`                                                               | 같은 서비스의 공개 SDK 제품                                       |
+| 제휴 친구 피커       | Android `1.0.0`, iOS 리비전 `83917aaf996e5d4072e73b681507228fbd967d42` | 제휴 친구 선택 옵션                                               |
+| JavaScript 검증 환경 | `2.8.4`                                                                | 웹 SDK 스크립트는 [웹 설정](/docs/install-web)에 따라 앱에서 설치 |
+
+이 대조는 위 SDK의 공개 서비스 메서드, 입력 옵션, 응답 필드를 대상으로 해요. SDK 내부 전용 메서드, 지원이 종료된 API, 같은 기능의 콜백·비동기 오버로드는 별도 JS API로 중복 제공하지 않아요. SDK 클라이언트와 토큰 저장소 교체도 노출하지 않아요. 푸시·톡캘린더·관리자용 REST API나 별도 카카오맵 SDK는 이 네이티브 SDK 대조 범위에 포함하지 않아요. 카카오 API 전체의 지원 여부는 [공식 지원 범위](https://developers.kakao.com/docs/ko/getting-started/scope-of-support)에서 확인해요.
+
+## 기능별 공개 API
+
+아래 기능은 Android·iOS에 구현돼 있어요. Android 키 해시와 웹 전용 인증 리다이렉트는 해당 플랫폼에서만 제공해요. 표의 웹 열은 같은 기능을 브라우저에서 호출했을 때의 동작이에요.
+
+### Core
+
+| 기능             | 공개 API·옵션                                                                       | 웹                                                                                 |
+| ---------------- | ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| SDK 초기화       | [`initializeKakaoSDK`](/docs/core/initialize-sdk), `customScheme`, `loggingEnabled` | JavaScript 키·REST API 키로 초기화해요. 네이티브 스킴·로깅 옵션은 적용하지 않아요. |
+| 버전·초기화 상태 | [`getKakaoSDKInfo`](/docs/core/initialize-sdk)                                      | `version`, `isInitialized`를 반환해요. 네이티브 설정 필드는 반환하지 않아요.       |
+| Android 키 해시  | [`getKeyHashAndroid`](/docs/core/get-android-keyhash)                               | `undefined`를 반환해요. Android 전용이에요.                                        |
+
+### User
+
+| 기능                            | 공개 API·옵션                                                                                                                      | 웹                                                                                  |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| 카카오톡·계정 로그인, 추가 동의 | [`login`](/docs/user/login): `useKakaoAccountLogin`, `scopes`, `prompts`, `serviceTerms`, `nonce`, `loginHint`, `channelPublicIds` | 인가 페이지로 이동해요. `web.redirectUri`와 후속 인가 코드 처리가 필요해요.         |
+| 로그인 방법 선택 화면           | [`loginWithKakao`](/docs/user/login-selector), UI·로그인 옵션                                                                      | `Package-UnsupportedPlatform` 오류를 반환해요.                                      |
+| 네이티브 앱 전환 방식           | [`login`·`loginWithKakao`](/docs/user/login): iOS `launchMethod`, 선택 화면의 iOS `throughTalk`                                    | 브라우저 로그인은 `web.throughTalk`을 사용해요. 네이티브 UI 옵션은 적용하지 않아요. |
+| 토큰 갱신                       | [`refreshToken`](/docs/user/access-token)                                                                                          | `Package-UnsupportedPlatform` 오류를 반환해요.                                      |
+| 토큰 저장·유효 상태·정보        | [`hasToken`, `isLogined`, `getAccessToken`](/docs/user/access-token)                                                               | 지원해요. `hasToken`은 저장 여부이며 토큰 유효성을 보장하지 않아요.                 |
+| 로그아웃·연결 해제              | [`logout`, `unlink`](/docs/user/login)                                                                                             | 지원해요.                                                                           |
+| 카카오톡 로그인 가능 여부       | [`isKakaoTalkLoginAvailable`](/docs/user/login)                                                                                    | 항상 `false`예요. 브라우저에서는 설치 여부를 판정하지 않아요.                       |
+| 사용자 정보·프로퍼티·이미지     | [`me`](/docs/user/profile): `propertyKeys`, `secureResource`, 기본 이미지·생일 메타데이터·UUID                                     | 지원해요. 응답 범위는 사용자 동의와 앱 권한에 따라 달라져요.                        |
+| 법정 정보·그룹 사용자 토큰      | [`me`](/docs/user/profile): `legalName`, `legalBirthDate`, `legalGender`, 동의 필드, `groupUserToken`                              | 같은 응답 필드를 제공해요. 제휴·그룹 설정이 필요해요.                               |
+| 사용자 프로퍼티 저장            | [`updateProfile`](/docs/user/properties)                                                                                           | 지원해요. 콘솔에 등록한 키를 사용해요.                                              |
+| 수동 연결                       | [`signup`](/docs/user/signup), 가입 시 `properties`                                                                                | 지원해요. 수동 연결 승인을 받은 앱에서 사용해요.                                    |
+| 동의항목 조회·철회              | [`scopes`, `revokeScopes`, `revokeScopesWithResult`](/docs/user/scope)                                                             | 지원해요. 상세 철회 결과는 `revokeScopesWithResult`로 받아요.                       |
+| 서비스 약관 조회·철회           | [`serviceTerms`, `revokeServiceTerms`](/docs/user/service-terms): 결과·태그 필터                                                   | 지원해요.                                                                           |
+| 배송지 조회                     | [`shippingAddresses`](/docs/user/shipping-address): `addressId`, `fromUpdatedAt`, `pageSize`                                       | 사용자 토큰용 REST API를 호출해요.                                                  |
+| 배송지 선택                     | [`selectShippingAddress`](/docs/user/shipping-address-picker)                                                                      | JavaScript SDK 팝업으로 선택하고 배송지 ID를 받아요.                                |
+
+로그인 옵션은 모든 조합을 함께 사용할 수 있는 것은 아니에요. 고정된 SDK의 추가 동의·로그인 힌트 제약과 웹 옵션 우선순위는 [로그인](/docs/user/login)·[웹 로그인](/docs/user/login-web)을 따라요. 웹 전용 `issueAccessTokenWithCodeWeb`와 `setAccessTokenWeb`은 네이티브에서 지원하지 않아요.
+
+### Social·Channel
+
+| 기능               | 공개 API·옵션                                                                                                                                                   | 웹                                                                                                        |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| 카카오톡 프로필    | [`getTalkProfile`](/docs/social/get-talk-profile)                                                                                                               | 지원해요.                                                                                                 |
+| 친구 목록          | [`getFriends`](/docs/social/get-friends): `offset`, `limit`, `order`, `friendOrder`, 이전·다음 페이지 URL                                                       | 지원해요.                                                                                                 |
+| 일반 친구 피커     | [`selectSingleFriend`, `selectMultipleFriends`](/docs/social/select-talk-friends): 검색·내 프로필·즐겨찾기·선택 수·이미 선택한 친구 표시, 화면 모양·방향·인덱스 | JavaScript SDK 팝업을 사용해요. `mode`, `viewAppearance`, `orientation`, `enableIndex`는 적용하지 않아요. |
+| 제휴 친구 피커     | [`selectSinglePartnerFriend`, `selectMultiplePartnerFriends`](/docs/social/select-partner-friends): 연결 상태·국가·OS 필터, 선택 제한, 전체 프로필 표시         | 지원하는 옵션을 JavaScript SDK에 전달해요. 서비스 미연결 친구 등은 제휴 권한이 필요해요.                  |
+| 채널 관계 조회     | [`channels`](/docs/channel/get-channels), `channelPublicIds`                                                                                                    | 지원해요.                                                                                                 |
+| 채널 추가·채팅     | [`addChannel`](/docs/channel/add-channel), [`chatChannel`](/docs/channel/chat-channel)                                                                          | 지원해요.                                                                                                 |
+| 채널 추가·채팅 URL | [`getAddChannelUrl`, `openAddChannelUrl`](/docs/channel/add-channel), [`getChatChannelUrl`, `openChatChannelUrl`](/docs/channel/chat-channel)                   | 지원해요. `get`은 URL만 반환하고 `open`은 해당 URL을 열어요.                                              |
+| 채널 간편 추가     | [`followChannel`](/docs/channel/follow-channel)                                                                                                                 | JavaScript SDK의 동의 흐름을 사용해요.                                                                    |
+
+### Share
+
+기본 템플릿은 피드·리스트·위치·커머스·텍스트·캘린더 여섯 종류예요. 각 종류에 공유, 나에게 보내기, 친구에게 보내기 함수를 제공해요. 예를 들어 피드는 `shareFeedTemplate`, `sendFeedTemplateToMe`, `sendFeedTemplateToFriends`를 사용해요.
+
+| 기능                                 | 공개 API·옵션                                                                                                                                   | 웹                                                                                    |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| 기본·사용자 정의 템플릿 공유         | [기본 템플릿](/docs/share/share-default-feed), [`shareCustomTemplate`](/docs/share/share-custom), 템플릿 인자·서버 콜백 인자·브라우저 대체 공유 | JavaScript SDK로 공유해요.                                                            |
+| URL 스크랩 공유                      | [`shareScrapTemplate`](/docs/share/share-scrap): 기본·사용자 정의 템플릿                                                                        | 지원해요.                                                                             |
+| 나에게·친구에게 메시지 보내기        | [기본 템플릿](/docs/share/send-default-feed), [사용자 정의](/docs/share/send-custom), [스크랩](/docs/share/send-scrap)                          | 지원해요. 로그인·메시지 동의와 수신자 권한이 필요해요.                                |
+| 친구 메시지 상세 결과                | [`includeFailureInfo: true`](/docs/share/message-results)                                                                                       | 성공 UUID·수신자별 오류를 같은 형태로 반환해요. 기본 반환은 성공 UUID 배열이에요.     |
+| 공유 대상 피커 설정                  | [`pickerSettings`](/docs/share/share-custom)                                                                                                    | JavaScript SDK에 전달해요. 네이티브 카카오톡의 표시 효과는 아래 검증 범위를 확인해요. |
+| 로컬 이미지 업로드·URL 이미지 스크랩 | [`uploadImage`](/docs/share/upload-image), [`scrapImage`](/docs/share/scrap-image), `secureResource`                                            | 지원해요. 전달한 이미지 URI를 읽어 업로드해요.                                        |
+| 공유 URL 생성                        | [`makeDefaultTemplateUrl`, `makeCustomTemplateUrl`, `makeScrapTemplateUrl`](/docs/share/build-url)                                              | `Package-UnsupportedPlatform` 오류를 반환해요.                                        |
+| 템플릿 경고·인자 진단                | [`getShareTemplateDiagnostics`](/docs/share/template-diagnostics)                                                                               | `Package-UnsupportedPlatform` 오류를 반환해요.                                        |
+| 카카오톡 공유 가능 여부              | `isKakaoTalkSharingAvailable`                                                                                                                   | 항상 `false`예요. 웹 공유 가능 여부를 뜻하지 않아요.                                  |
+
+템플릿의 버튼·이미지·소셜·커머스·아이템 필드와 실행 매개변수는 [컴포넌트 타입](/docs/share/component-types)을 따라요. 실행 매개변수의 키·값은 인코딩하지 않은 문자열로 전달해요. 공유 URL 생성은 앱이나 웹 페이지를 열지 않고, 진단은 메시지를 보내지 않아요.
+
+### Navi·Cert
+
+| 기능                   | 공개 API·옵션                                                                                                                                      | 웹                                                                                    |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| 카카오내비 설치 여부   | `isKakaoNaviInstalled`                                                                                                                             | 항상 `false`예요. 브라우저에서는 설치 여부를 판정하지 않아요.                         |
+| 길 안내·목적지 공유    | [`navigateTo`](/docs/navi/navigate-destination), [`shareTo`](/docs/navi/share-destination): 목적지·경유지·`rpflag`·경로 옵션·설치 페이지 대체 열기 | 모바일 브라우저에서 JavaScript SDK를 호출하고 데스크톱에서는 `false`를 반환해요.      |
+| 카카오내비 URL 생성    | [`getNavigateUrl`, `getShareUrl`](/docs/navi/build-url), 최대 세 경유지와 네이티브 경로 옵션                                                       | `Package-UnsupportedPlatform` 오류를 반환해요.                                        |
+| 인증 로그인            | [`certLoginWithKakaoTalk`, `certLoginWithKakaoAccount`](/docs/cert/intro): K2100·K2220에 맞는 입력·로그인 옵션                                     | 네이티브 함수는 지원하지 않아요. K2100은 `authorizeForCertWeb` 리다이렉트를 사용해요. |
+| 공개 키·저장 세션      | [`getPublicKey`, `getSessionInfo`, `isValidSession`, `deleteKeyPair`](/docs/cert/intro)                                                            | `Package-UnsupportedPlatform` 오류를 반환해요.                                        |
+| 서버 세션 조회         | [`fetchSessionInfo`, `fetchSessionInfoByAppKey`](/docs/cert/intro)                                                                                 | `Package-UnsupportedPlatform` 오류를 반환해요.                                        |
+| 카카오톡 서명·축약서명 | [`isKakaoTalkSignAvailable`, `signWithKakaoTalk`, `reducedSign`](/docs/cert/intro), K2220·K3220                                                    | 가능 여부는 `false`, 서명 함수는 `Package-UnsupportedPlatform` 오류를 반환해요.       |
+
+인증·전자서명은 카카오 이용 승인과 서버 트랜잭션이 필요해요. `authorizeForCertWeb`은 웹 전용이며, 리다이렉트 요청의 완료가 인증·서명 완료를 뜻하지 않아요. 네이티브에서 호출하면 `Package-UnsupportedPlatform` 오류를 반환해요.
+
+## 응답 계약
+
+타임스탬프는 Unix 초, 유효 시간은 초 단위예요. SDK 응답의 키 이름과 enum 표현을 공개 TypeScript 타입에 맞춰 변환해요. 사용자 동의나 앱 권한이 없어 받은 `null`·미제공 필드를 성공 데이터로 채우지 않아요.
+
+성공 반환값이 없는 공유·메시지·로그아웃·프로퍼티 변경 함수는 `Promise<void>`로 완료돼요. 친구에게 보내기는 기본적으로 성공 UUID 배열을 반환하고, 상세 옵션을 사용하면 `{ successfulReceiverUuids, failureInfos }`를 반환해요. 실제 메시지 수신, 앱 전환 완료, 웹 리다이렉트 이후의 인증 결과는 각 흐름에서 따로 확인해야 해요.
+
+비동기 데이터 조회·변경 API는 SDK·HTTP 오류를 Promise 거부로 전달해요. `isLogined`와 `navigateTo`·`shareTo`처럼 상태나 실행 여부를 반환하는 함수는 토큰 조회·SDK 실행 실패를 `false`로 반환하기도 해요. JavaScript 입력 검사는 Promise를 반환하기 전에 동기적으로 오류를 던질 수 있어요. 각 함수의 반환 타입과 오류 처리는 해당 사용 문서를 따라요.
+
+## 검증 범위
+
+다음은 2026년 10월 21일 기준 실제 응답·실행에서 확인한 범위예요. 빌드와 입력·응답 변환 검사를 통과해도, 앱 권한이나 설치 조건이 없는 성공 경로까지 검증한 것은 아니에요. 각 PR의 `Confidence level`은 해당 변경에서 확인한 범위를 나타내요.
+
+로그인한 계정으로 확인한 API 성공 응답에는 Android `2.25.0`과 JavaScript `2.7.1`에서 얻은 결과도 포함돼요. 버전을 올린 뒤 다시 확인한 범위는 [SDK 업데이트](https://github.com/mym0404/react-native-kakao/pull/174)와 후속 PR에 기록돼 있어요. 아래 표에서 로그인이 필요한 모든 기능의 성공 경로를 Android `2.25.1`·JavaScript `2.8.4`에서 재실행한 것은 아니에요.
+
+| 기능                       | 확인한 결과                                                                                                              | 남은 성공 경로·조건                                                                                                           |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
+| 모듈 연결                  | Android·iOS Release 빌드와 플랫폼별 스모크 테스트 8/8. Channel·Social·Share는 Core와 해당 모듈만 설치한 앱의 빌드도 통과 | 개별 기능의 이용 승인과 로그인은 별도 조건이에요.                                                                             |
+| SDK 초기화·정보            | 네이티브 설정 반영, 실제 웹 SDK 버전·초기화 상태                                                                         | 등록된 커스텀 멀티 앱 스킴의 실제 인증 콜백                                                                                   |
+| 로그인 방법 선택·갱신      | Android 로그인 선택·토큰 갱신 성공, 양쪽 로그아웃 오류·취소 경로                                                         | iOS 선택 로그인·갱신 성공, 카카오톡 설치 상태의 앱 전환과 콜백                                                                |
+| 프로퍼티·약관·배송지 선택  | 세 플랫폼에서 프로퍼티 저장·조회·빈 값 복원, 선택 약관 동의·철회 후 조회, 배송지 ID 반환                                 | 웹 팝업을 직접 닫으면 SDK Promise가 대기할 수 있어요.                                                                         |
+| 배송지 조회                | 실제 ID·페이지 크기 조회, 숫자 범위 검사, 웹 REST 요청·응답 변환                                                         | 실제 다음 페이지 조회, 변경한 웹 REST 경로의 로그인된 응답                                                                    |
+| 사용자 프로필              | 세 플랫폼의 이미지 선택·기본 이미지·미제공 필드 응답, 변환 입력 검사                                                     | 채워진 생일 메타데이터·UUID·법정 정보·그룹 토큰, enum 동의 필드의 실제 응답                                                   |
+| 수동 연결·로그인 채널 선택 | 등록 사용자 오류, 채널 설정 오류, 입력·응답 변환                                                                         | 수동 연결 승인 앱의 가입 성공, 제휴·그룹 앱 데이터, 연결 채널의 동의 성공                                                     |
+| 소셜·채널                  | 일반 피커에서 세 플랫폼 선택 성공, Android·웹 로그인 상태 조회, 채널 URL 생성                                            | 큰 친구 목록의 인덱스·페이지 이동, 실제 동의항목 철회, iOS 로그인 응답, 제휴 전용 필터·프로필 선택                            |
+| 이미지                     | 세 플랫폼 업로드·스크랩, 네이티브 크기 경계, Android 문서 URI의 권한 거부·권한 전달 후 업로드 성공                          | Android `content://` URI를 읽으려면 호출 앱에 읽기 권한이 있어야 해요.                                                         |
+| 스크랩 메시지              | 세 플랫폼의 나에게·친구에게, 기본·사용자 정의 템플릿 요청 총 12건을 카카오 API가 수락                                    | 실제 채팅의 최종 표시, 상세 친구 메시지 결과·수신자별 부분 실패                                                               |
+| 공유 URL·진단              | 양쪽 URL의 템플릿·인자·특수문자, iOS 실제 경고 응답, 웹 미지원 오류                                                      | Android 진단 성공에는 카카오톡 설치가 필요해요. 유효한 캘린더 ID·채워진 `argumentMsg`·카카오톡 피커 설정 효과도 미확인이에요. |
+| 카카오내비                 | 양쪽 URL의 경로 옵션·경유지, 미설치 응답, 웹 모바일·데스크톱 분기                                                        | 설치된 카카오내비의 실제 전달·길 안내                                                                                         |
+| 인증·전자서명              | 양쪽 로컬 키·세션·삭제, 오류·취소, 웹 미지원·인가 오류                                                                   | 이용 승인 앱과 서버 트랜잭션으로 토큰 발급·유효 세션·최종 서명 확인                                                           |
+
+Android `2.25.1`에서 문서 URI에 임시 읽기 권한을 전달한 뒤 74바이트·2×2 PNG 업로드에 성공했어요. 반환된 HTTPS URL에서 다운로드한 파일도 입력 이미지와 바이트가 일치했어요.
+
+구체적인 검증 근거와 제한은 [이미지 업로드](https://github.com/mym0404/react-native-kakao/pull/146), [프로퍼티](https://github.com/mym0404/react-native-kakao/pull/151), [스크랩 메시지](https://github.com/mym0404/react-native-kakao/pull/156), [제휴 피커](https://github.com/mym0404/react-native-kakao/pull/172), [인증·전자서명](https://github.com/mym0404/react-native-kakao/pull/173), [공유 URL](https://github.com/mym0404/react-native-kakao/pull/185), [템플릿 진단](https://github.com/mym0404/react-native-kakao/pull/186) PR에서 확인할 수 있어요.

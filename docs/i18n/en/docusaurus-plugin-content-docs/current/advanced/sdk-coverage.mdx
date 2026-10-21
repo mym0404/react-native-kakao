@@ -1,0 +1,135 @@
+---
+sidebar_position: 1
+---
+
+# Native SDK coverage
+
+The Core, User, Social, Channel, Share, Navi, and Cert packages expose the public service APIs of the Kakao Android and iOS SDKs. Web uses the JavaScript SDK and REST APIs available to user access tokens. Browser limitations for app switching, local keys and sessions, and SDK URL builders are listed below.
+
+Implementation coverage and verified success responses are separate. Success paths that require an approved app or an installed Kakao app are listed under [Verification coverage](#verification-coverage).
+
+## SDK versions and audit scope
+
+Native defaults come from [`sdkVersions` in `packages/core/package.json`](https://github.com/mym0404/react-native-kakao/blob/404c4a856abe63fc159df3701f63a5f1cec10f7a/packages/core/package.json). Overrides can change the behavior described here. Use [`getKakaoSDKInfo()`](/docs/core/initialize-sdk) to inspect the running version.
+
+| SDK                                 | Version                                                                  | Scope                                                                |
+| ----------------------------------- | ------------------------------------------------------------------------ | -------------------------------------------------------------------- |
+| Android                             | `2.25.1`                                                                 | Common, Auth, User, Talk, Friend, Share, Template, Navi, Cert        |
+| iOS                                 | `2.29.0`                                                                 | Public SDK products for the same services                            |
+| Partnership friend picker           | Android `1.0.0`, iOS revision `83917aaf996e5d4072e73b681507228fbd967d42` | Partnership friend selection options                                 |
+| JavaScript verification environment | `2.8.4`                                                                  | The app installs its SDK script using [Web setup](/docs/install-web) |
+
+The audit covers public service methods, input options, and response fields in these SDKs. Internal methods, retired APIs, and callback/async overloads of the same operation are not duplicated as separate JS APIs. SDK client replacement and token-store replacement are not exposed. Push, Talk Calendar, administrator REST APIs, and the separate Kakao Maps SDK are outside this native SDK comparison. See Kakao's [official support matrix](https://developers.kakao.com/docs/en/getting-started/scope-of-support) for the wider API catalog.
+
+## Public APIs by feature
+
+The features below have Android and iOS implementations. Android key hashes and web authorization redirects are platform specific. The Web column describes browser behavior.
+
+### Core
+
+| Feature                          | Public APIs and options                                                             | Web                                                                                            |
+| -------------------------------- | ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| SDK initialization               | [`initializeKakaoSDK`](/docs/core/initialize-sdk), `customScheme`, `loggingEnabled` | Initializes with JavaScript and REST API keys. Native scheme and logging options do not apply. |
+| Version and initialization state | [`getKakaoSDKInfo`](/docs/core/initialize-sdk)                                      | Returns `version` and `isInitialized`, without native configuration fields.                    |
+| Android key hash                 | [`getKeyHashAndroid`](/docs/core/get-android-keyhash)                               | Returns `undefined`. This utility is Android only.                                             |
+
+### User
+
+| Feature                                       | Public APIs and options                                                                                                            | Web                                                                                                |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| Talk/account login and additional consent     | [`login`](/docs/user/login): `useKakaoAccountLogin`, `scopes`, `prompts`, `serviceTerms`, `nonce`, `loginHint`, `channelPublicIds` | Redirects to authorization. Requires `web.redirectUri` and subsequent authorization-code handling. |
+| Login-method selector                         | [`loginWithKakao`](/docs/user/login-selector), UI and login options                                                                | Rejects with `Package-UnsupportedPlatform`.                                                        |
+| Native app launch controls                    | [`login` and `loginWithKakao`](/docs/user/login): iOS `launchMethod`, selector iOS `throughTalk`                                   | Browser login uses `web.throughTalk`. Native UI options do not apply.                              |
+| Token refresh                                 | [`refreshToken`](/docs/user/access-token)                                                                                          | Rejects with `Package-UnsupportedPlatform`.                                                        |
+| Stored token, validity, and token information | [`hasToken`, `isLogined`, `getAccessToken`](/docs/user/access-token)                                                               | Supported. `hasToken` checks storage and does not guarantee token validity.                        |
+| Logout and unlink                             | [`logout`, `unlink`](/docs/user/login)                                                                                             | Supported.                                                                                         |
+| KakaoTalk login availability                  | [`isKakaoTalkLoginAvailable`](/docs/user/login)                                                                                    | Always `false`. Browsers do not determine installation state.                                      |
+| User data, properties, and images             | [`me`](/docs/user/profile): `propertyKeys`, `secureResource`, default-image and birthday metadata, UUID                            | Supported, subject to consent and app permissions.                                                 |
+| Legal identity and group user token           | [`me`](/docs/user/profile): `legalName`, `legalBirthDate`, `legalGender`, agreement fields, `groupUserToken`                       | The same fields are exposed. Partnership or group configuration is required.                       |
+| Save user properties                          | [`updateProfile`](/docs/user/properties)                                                                                           | Supported for property keys registered in the console.                                             |
+| Manual connection                             | [`signup`](/docs/user/signup), signup `properties`                                                                                 | Supported for apps approved for manual connection.                                                 |
+| Query and revoke scopes                       | [`scopes`, `revokeScopes`, `revokeScopesWithResult`](/docs/user/scope)                                                             | Supported. Use `revokeScopesWithResult` for the detailed response.                                 |
+| Query and revoke service terms                | [`serviceTerms`, `revokeServiceTerms`](/docs/user/service-terms), result and tag filters                                           | Supported.                                                                                         |
+| Query shipping addresses                      | [`shippingAddresses`](/docs/user/shipping-address): `addressId`, `fromUpdatedAt`, `pageSize`                                       | Calls the REST API with the user token.                                                            |
+| Select a shipping address                     | [`selectShippingAddress`](/docs/user/shipping-address-picker)                                                                      | Uses the JavaScript SDK popup and returns the address ID.                                          |
+
+Login options cannot be combined arbitrarily. See [Login](/docs/user/login) and [Web login](/docs/user/login-web) for the pinned SDK's additional-consent/login-hint restrictions and web precedence rules. The web-only `issueAccessTokenWithCodeWeb` and `setAccessTokenWeb` are unsupported on native platforms.
+
+### Social and Channel
+
+| Feature                       | Public APIs and options                                                                                                                                                                       | Web                                                                                                                    |
+| ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| KakaoTalk profile             | [`getTalkProfile`](/docs/social/get-talk-profile)                                                                                                                                             | Supported.                                                                                                             |
+| Friends list                  | [`getFriends`](/docs/social/get-friends): `offset`, `limit`, `order`, `friendOrder`, previous/next URLs                                                                                       | Supported.                                                                                                             |
+| Standard friend picker        | [`selectSingleFriend`, `selectMultipleFriends`](/docs/social/select-talk-friends): search, self profile, favorites, selection counts, selected-friend display, appearance, orientation, index | Uses the JavaScript SDK popup. `mode`, `viewAppearance`, `orientation`, and `enableIndex` do not apply.                |
+| Partnership friend picker     | [`selectSinglePartnerFriend`, `selectMultiplePartnerFriends`](/docs/social/select-partner-friends): registration, country and OS filters, selection restrictions, expanded profiles           | Forwards supported options to the JavaScript SDK. Unconnected friends and other partnership features require approval. |
+| Channel relationships         | [`channels`](/docs/channel/get-channels), `channelPublicIds`                                                                                                                                  | Supported.                                                                                                             |
+| Add a channel or start a chat | [`addChannel`](/docs/channel/add-channel), [`chatChannel`](/docs/channel/chat-channel)                                                                                                        | Supported.                                                                                                             |
+| Channel URLs                  | [`getAddChannelUrl`, `openAddChannelUrl`](/docs/channel/add-channel), [`getChatChannelUrl`, `openChatChannelUrl`](/docs/channel/chat-channel)                                                 | Supported. `get` returns the URL; `open` opens it.                                                                     |
+| Follow a channel              | [`followChannel`](/docs/channel/follow-channel)                                                                                                                                               | Uses the JavaScript SDK consent flow.                                                                                  |
+
+### Share
+
+The six default templates are feed, list, location, commerce, text, and calendar. Each has share, send-to-me, and send-to-friends functions. For example, feed uses `shareFeedTemplate`, `sendFeedTemplateToMe`, and `sendFeedTemplateToFriends`.
+
+| Feature                                      | Public APIs and options                                                                                                                                        | Web                                                                                                      |
+| -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| Default and custom template sharing          | [Default templates](/docs/share/share-default-feed), [`shareCustomTemplate`](/docs/share/share-custom), template arguments, server callbacks, browser fallback | Uses the JavaScript SDK.                                                                                 |
+| URL scrap sharing                            | [`shareScrapTemplate`](/docs/share/share-scrap), default or custom template                                                                                    | Supported.                                                                                               |
+| Send to self or friends                      | [Default templates](/docs/share/send-default-feed), [custom](/docs/share/send-custom), [scrap](/docs/share/send-scrap)                                         | Supported. Requires login, message consent, and recipient permissions.                                   |
+| Detailed friend-message results              | [`includeFailureInfo: true`](/docs/share/message-results)                                                                                                      | Returns successful UUIDs and recipient errors in the same shape. The default is a successful UUID array. |
+| Share target picker settings                 | [`pickerSettings`](/docs/share/share-custom)                                                                                                                   | Forwarded to the JavaScript SDK. See verification coverage for native KakaoTalk UI effects.              |
+| Local image upload and remote image scraping | [`uploadImage`](/docs/share/upload-image), [`scrapImage`](/docs/share/scrap-image), `secureResource`                                                           | Supported. Uploads from the supplied image URI.                                                          |
+| Sharing URL builders                         | [`makeDefaultTemplateUrl`, `makeCustomTemplateUrl`, `makeScrapTemplateUrl`](/docs/share/build-url)                                                             | Reject with `Package-UnsupportedPlatform`.                                                               |
+| Template warning and argument diagnostics    | [`getShareTemplateDiagnostics`](/docs/share/template-diagnostics)                                                                                              | Rejects with `Package-UnsupportedPlatform`.                                                              |
+| KakaoTalk sharing availability               | `isKakaoTalkSharingAvailable`                                                                                                                                  | Always `false`. This does not indicate whether web sharing works.                                        |
+
+See [Component types](/docs/share/component-types) for button, image, social, commerce, item, and execution-parameter fields. Pass execution-parameter keys and values as unencoded strings. URL builders do not open apps or pages; diagnostics do not send messages.
+
+### Navi and Cert
+
+| Feature                               | Public APIs and options                                                                                                                                             | Web                                                                                   |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| Kakao Navi installation               | `isKakaoNaviInstalled`                                                                                                                                              | Always `false`. Browsers do not determine installation state.                         |
+| Navigation and destination sharing    | [`navigateTo`](/docs/navi/navigate-destination), [`shareTo`](/docs/navi/share-destination): destination, stops, `rpflag`, route options, installation-page fallback | Calls the JavaScript SDK on mobile browsers and returns `false` on desktop.           |
+| Kakao Navi URL builders               | [`getNavigateUrl`, `getShareUrl`](/docs/navi/build-url), up to three stops and native route options                                                                 | Reject with `Package-UnsupportedPlatform`.                                            |
+| Certification login                   | [`certLoginWithKakaoTalk`, `certLoginWithKakaoAccount`](/docs/cert/intro), product-specific K2100/K2220 inputs and login options                                    | Native functions are unsupported. K2100 uses the `authorizeForCertWeb` redirect.      |
+| Public key and stored session         | [`getPublicKey`, `getSessionInfo`, `isValidSession`, `deleteKeyPair`](/docs/cert/intro)                                                                             | Reject with `Package-UnsupportedPlatform`.                                            |
+| Fetch server sessions                 | [`fetchSessionInfo`, `fetchSessionInfoByAppKey`](/docs/cert/intro)                                                                                                  | Reject with `Package-UnsupportedPlatform`.                                            |
+| KakaoTalk signing and reduced signing | [`isKakaoTalkSignAvailable`, `signWithKakaoTalk`, `reducedSign`](/docs/cert/intro), K2220/K3220                                                                     | Availability is `false`; signing functions reject with `Package-UnsupportedPlatform`. |
+
+Certification requires Kakao approval and server transactions. `authorizeForCertWeb` is web only; completing its redirect request does not complete authentication or signing. Calling it on native rejects with `Package-UnsupportedPlatform`.
+
+## Response contracts
+
+Timestamps use Unix seconds; validity durations use seconds. SDK keys and enums are mapped to the public TypeScript types. `null` or absent fields caused by missing consent or app permissions are not filled with invented success data.
+
+Sharing, messaging, logout, and property mutations without a success value complete as `Promise<void>`. Friend sends return successful UUIDs by default, or `{ successfulReceiverUuids, failureInfos }` with detailed results enabled. Message receipt, completed app switching, and authentication after a web redirect require separate checks in each flow.
+
+Asynchronous data queries and mutations propagate SDK/HTTP failures as Promise rejections. Status and launch functions such as `isLogined`, `navigateTo`, and `shareTo` can return `false` for token-query or SDK-launch failures. JavaScript input validation can throw synchronously before returning a Promise. Follow each API's guide for its return type and error handling.
+
+## Verification coverage
+
+This is the verification status as of October 21, 2026. Builds and input/response checks do not verify success paths when app permissions or installation prerequisites are missing. Each PR's `Confidence level` describes the scope verified for that change.
+
+Earlier authenticated checks also used Android `2.25.0` and JavaScript `2.7.1`. The [SDK update](https://github.com/mym0404/react-native-kakao/pull/174) and subsequent PRs record the checks performed after version updates. Not every authenticated success flow below was rerun with Android `2.25.1` and JavaScript `2.8.4`.
+
+| Feature                              | Verified                                                                                                                                           | Remaining success paths or conditions                                                                                                                    |
+| ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Module integration                   | Android/iOS Release builds and 8/8 smoke tests per platform. Channel, Social, and Share also build with only Core + the selected module installed. | Feature approval and authentication are separate prerequisites.                                                                                          |
+| SDK initialization and information   | Native settings, actual web SDK version and initialized state                                                                                      | Authentication callback with a registered custom multi-app scheme                                                                                        |
+| Login selector and refresh           | Android selector login and token refresh; signed-out errors and cancellation on both platforms                                                     | Successful iOS selector login/refresh, installed-KakaoTalk switching and callbacks                                                                       |
+| Properties, terms, address selection | Save/read/empty-value restoration, optional-term consent/revocation with readback, and address ID return on all three platforms                    | Manually closing the web popup can leave the SDK Promise pending.                                                                                        |
+| Address queries                      | Live ID/page-size queries, numeric boundaries, web REST requests and response mapping                                                              | Live next-page continuation and authenticated responses through the changed web REST path                                                                |
+| User profile                         | Image selection, default-image and unavailable-field responses on all three platforms; input mapping                                               | Populated birthday metadata, UUID, legal identity, group token, and real enum/consent responses                                                          |
+| Manual connection and login channels | Registered-user errors, channel configuration errors, input/response mapping                                                                       | Successful signup in an approved manual-connection app, partnership/group data, and connected-channel consent                                            |
+| Social and Channel                   | Standard picker selection on all three platforms, authenticated Android/web queries, channel URLs                                                  | Large-list index/pagination, actual scope revocation, authenticated iOS responses, partnership filters/profile selection                                 |
+| Images                               | Upload/scrap on all three platforms, native size boundaries, and Android document URI denial followed by a successful upload with a read grant       | The calling app needs read permission for Android `content://` URIs.                                                                                      |
+| Scrap messages                       | Kakao accepted 12 requests across three platforms, self/friend recipients, and default/custom templates                                            | Final chat rendering, detailed friend-message results, and recipient partial failures                                                                    |
+| Sharing URLs and diagnostics         | Native templates/arguments/special characters, actual iOS warning responses, web unsupported errors                                                | Android diagnostics success needs KakaoTalk installed. Valid calendar IDs, populated `argumentMsg`, and KakaoTalk picker UI effects are also unverified. |
+| Kakao Navi                           | Native route options/stops in URLs, unavailable-app results, mobile/desktop web branches                                                           | Actual delivery and navigation in an installed Kakao Navi app                                                                                            |
+| Certification                        | Native local keys/sessions/deletion, error/cancel paths, web unsupported and authorization errors                                                  | Token issuance, valid sessions, and completed signatures with an approved app and server transaction                                                     |
+
+On Android `2.25.1`, a document URI uploaded successfully after receiving a temporary read grant, returning a 74-byte, 2×2 PNG. The file downloaded from the returned HTTPS URL matched the input image byte for byte.
+
+Evidence and limitations are recorded in the PRs for [image uploads](https://github.com/mym0404/react-native-kakao/pull/146), [properties](https://github.com/mym0404/react-native-kakao/pull/151), [scrap messages](https://github.com/mym0404/react-native-kakao/pull/156), [partnership pickers](https://github.com/mym0404/react-native-kakao/pull/172), [certification](https://github.com/mym0404/react-native-kakao/pull/173), [sharing URLs](https://github.com/mym0404/react-native-kakao/pull/185), and [template diagnostics](https://github.com/mym0404/react-native-kakao/pull/186).
