@@ -30,6 +30,21 @@ function isoToUnix(value?: string | number) {
 }
 
 const KakaoUser: KakaoUserAPI = {
+  loginWithKakao: () =>
+    kRunWebAPI(() => {
+      throw {
+        code: 'Package-UnsupportedPlatform',
+        message:
+          'loginWithKakao is supported on Android and iOS. Use login with web.redirectUri on web.',
+      };
+    }),
+  refreshToken: () =>
+    kRunWebAPI(() => {
+      throw {
+        code: 'Package-UnsupportedPlatform',
+        message: 'The Kakao JavaScript SDK does not support refreshToken.',
+      };
+    }),
   hasToken: () => kRunWebAPI(() => Kakao.Auth.getAccessToken() != null),
   getAccessToken: () =>
     kRunWebAPI(async () => {
@@ -311,6 +326,8 @@ const KakaoUser: KakaoUserAPI = {
 };
 
 export const {
+  loginWithKakao,
+  refreshToken,
   isKakaoTalkLoginAvailable,
   isLogined,
   hasToken,

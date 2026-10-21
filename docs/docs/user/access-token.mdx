@@ -21,14 +21,14 @@ if (hasStoredToken) {
 
 반환값은 토큰 존재 여부를 나타내는 불리언이며, 저장된 토큰 자체는 반환하지 않습니다.
 
-## 토큰 얻어오기
+## 토큰 정보 조회
 
-`getAccessToken()`으로 토큰을 불러올 수 있습니다.
+`getAccessToken()`은 카카오에 액세스 토큰의 유효성을 확인하고 사용자 ID, 앱 ID, 남은 유효 시간(초)을 반환합니다. 액세스 토큰 문자열은 반환하지 않습니다.
 
 다음과 같이 정의됩니다.
 
 ```tsx
-export function getAccessToken(): Promise<KakaoAccessTokenInfo>
+export function getAccessToken(): Promise<KakaoAccessTokenInfo>;
 ```
 
 타입은 다음과 같습니다.
@@ -44,5 +44,17 @@ export interface KakaoAccessTokenInfo {
 ### 예시
 
 ```tsx
-getAccessToken()
+getAccessToken();
 ```
+
+## 저장된 토큰 갱신
+
+`refreshToken()`은 Android와 iOS SDK에 저장된 리프레시 토큰으로 액세스 토큰을 갱신합니다. SDK가 갱신한 토큰을 저장하고, [`login()`과 같은 `KakaoLoginToken`](./login.mdx#응답)을 반환합니다. 만료 시각은 Unix 시간(초), 남은 유효 시간은 초 단위입니다.
+
+```tsx
+import { refreshToken } from '@react-native-kakao/user';
+
+const token = await refreshToken();
+```
+
+저장된 리프레시 토큰이 없거나 만료됐다면 카카오 SDK 오류로 거절됩니다. 이 경우 `login()`으로 다시 로그인해야 합니다. 웹의 JavaScript SDK는 토큰 갱신 API를 제공하지 않으므로 `Package-UnsupportedPlatform` 오류를 반환합니다.

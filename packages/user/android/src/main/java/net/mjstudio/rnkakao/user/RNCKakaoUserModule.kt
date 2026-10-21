@@ -8,6 +8,7 @@ import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.kakao.sdk.auth.AuthApiClient
 import com.kakao.sdk.auth.model.OAuthToken
+import com.kakao.sdk.auth.model.Prompt
 import com.kakao.sdk.auth.model.Prompt.CERT
 import com.kakao.sdk.auth.model.Prompt.CREATE
 import com.kakao.sdk.auth.model.Prompt.LOGIN
@@ -15,7 +16,9 @@ import com.kakao.sdk.auth.model.Prompt.SELECT_ACCOUNT
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.UserApiClient
+import com.kakao.sdk.user.model.AccountLoginParams
 import com.kakao.sdk.user.model.Gender
+import com.kakao.sdk.user.model.LoginUiMode
 import com.kakao.sdk.user.model.UserShippingAddresses
 import net.mjstudio.rnkakao.core.util.RNCKakaoResponseNotFoundException
 import net.mjstudio.rnkakao.core.util.RNCKakaoUtil
@@ -53,58 +56,10 @@ class RNCKakaoUserModule internal constructor(
         promise.rejectWith(ActivityNotFoundException())
         return@onMain
       }
-    val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
-      if (error != null) {
-        promise.rejectWith(error)
-      } else if (token == null) {
-        promise.rejectWith(RNCKakaoResponseNotFoundException("token"))
-      } else {
-        promise.resolve(
-          argMap().apply {
-            putString("accessToken", token.accessToken)
-            putString("refreshToken", token.refreshToken)
-            putString("tokenType", null)
-            putString("idToken", token.idToken)
-            putDouble(
-              "accessTokenExpiresAt",
-              token.accessTokenExpiresAt.unix.toDouble(),
-            )
-            putDouble(
-              "refreshTokenExpiresAt",
-              token.refreshTokenExpiresAt.unix.toDouble(),
-            )
-            putDouble(
-              "accessTokenExpiresIn",
-              RNCKakaoUtil.diffSec(token.accessTokenExpiresAt, Date()).toDouble(),
-            )
-            putDouble(
-              "refreshTokenExpiresIn",
-              RNCKakaoUtil.diffSec(token.refreshTokenExpiresAt, Date()).toDouble(),
-            )
-            putArray(
-              "scopes",
-              argArr().apply {
-                pushStringList(token.scopes ?: listOf())
-              },
-            )
-          },
-        )
-      }
-    }
+    val callback = tokenCallback(promise)
     val requestedServiceTerms = serviceTerms?.filterIsInstance<String>()?.ifEmpty { null }
     val requestedChannelPublicIds = channelPublicIds?.filterIsInstance<String>()?.ifEmpty { null }
-    val requestedPrompts =
-      prompts
-        ?.filterIsInstance<String>()
-        ?.mapNotNull {
-          when (it) {
-            "Login" -> LOGIN
-            "Create" -> CREATE
-            "Cert" -> CERT
-            "SelectAccount" -> SELECT_ACCOUNT
-            else -> null
-          }
-        }?.ifEmpty { null }
+    val requestedPrompts = loginPrompts(prompts)
     val accountLogin = {
       UserApiClient.instance.loginWithKakaoAccount(
         context,
@@ -151,6 +106,44 @@ class RNCKakaoUserModule internal constructor(
       accountLogin()
     }
   }
+
+  @ReactMethod
+  override fun loginWithKakao(
+    uiMode: String,
+    orientation: String,
+    launchMethod: String,
+    prompts: ReadableArray,
+    loginHint: String?,
+    nonce: String?,
+    channelPublicIds: ReadableArray?,
+    serviceTerms: ReadableArray?,
+    promise: Promise,
+  ) = onMain {
+    val context =
+      reactApplicationContext.currentActivity ?: run {
+        promise.rejectWith(ActivityNotFoundException())
+        return@onMain
+      }
+    UserApiClient.instance.loginWithKakao(
+      context,
+      uiMode = LoginUiMode.entries.firstOrNull { it.name.equals(uiMode, ignoreCase = true) } ?: LoginUiMode.AUTO,
+      accountParams = AccountLoginParams(prompts = loginPrompts(prompts), loginHint = loginHint),
+      nonce = nonce,
+      channelPublicIds = channelPublicIds?.filterIsInstance<String>()?.ifEmpty { null },
+      serviceTerms = serviceTerms?.filterIsInstance<String>()?.ifEmpty { null },
+      callback = tokenCallback(promise),
+    )
+  }
+
+  @ReactMethod
+  override fun refreshToken(promise: Promise) =
+    onMain {
+      try {
+        AuthApiClient.instance.refreshToken(callback = tokenCallback(promise))
+      } catch (error: ClientError) {
+        promise.rejectWith(error)
+      }
+    }
 
   @ReactMethod
   override fun isKakaoTalkLoginAvailable(promise: Promise) =
@@ -542,4 +535,57 @@ class RNCKakaoUserModule internal constructor(
         }
       }
     }
+
+  private fun tokenCallback(promise: Promise): (OAuthToken?, Throwable?) -> Unit =
+    { token, error ->
+      if (error != null) {
+        promise.rejectWith(error)
+      } else if (token == null) {
+        promise.rejectWith(RNCKakaoResponseNotFoundException("token"))
+      } else {
+        promise.resolve(
+          argMap().apply {
+            putString("accessToken", token.accessToken)
+            putString("refreshToken", token.refreshToken)
+            putString("tokenType", null)
+            putString("idToken", token.idToken)
+            putDouble(
+              "accessTokenExpiresAt",
+              token.accessTokenExpiresAt.unix.toDouble(),
+            )
+            putDouble(
+              "refreshTokenExpiresAt",
+              token.refreshTokenExpiresAt.unix.toDouble(),
+            )
+            putDouble(
+              "accessTokenExpiresIn",
+              RNCKakaoUtil.diffSec(token.accessTokenExpiresAt, Date()).toDouble(),
+            )
+            putDouble(
+              "refreshTokenExpiresIn",
+              RNCKakaoUtil.diffSec(token.refreshTokenExpiresAt, Date()).toDouble(),
+            )
+            putArray(
+              "scopes",
+              argArr().apply {
+                pushStringList(token.scopes ?: listOf())
+              },
+            )
+          },
+        )
+      }
+    }
+
+  private fun loginPrompts(prompts: ReadableArray?): List<Prompt>? =
+    prompts
+      ?.filterIsInstance<String>()
+      ?.mapNotNull {
+        when (it) {
+          "Login" -> LOGIN
+          "Create" -> CREATE
+          "Cert" -> CERT
+          "SelectAccount" -> SELECT_ACCOUNT
+          else -> null
+        }
+      }?.ifEmpty { null }
 }
