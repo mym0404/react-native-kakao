@@ -38,6 +38,7 @@ import { px } from '../util/px';
 const buttonMinWidth = px(240);
 const allServiceTermsResult = 'app_service_terms';
 const profileVerificationKey = 'rn_kakao_verification';
+const tokenVerificationLifetimeSeconds = 3600;
 const testServiceTermTag = 'rnc_example_optional_service_term';
 
 function getTokenSummary(token: KakaoLoginToken) {
@@ -165,6 +166,28 @@ export default function Page() {
           />
         </>
       )}
+      <E2EApiAction
+        id={'token-refresh-explicit'}
+        title={'Refresh Invalid External Token'}
+        minW={buttonMinWidth}
+        action={async () => {
+          const now = Math.floor(Date.now() / 1000);
+
+          return getTokenSummary(
+            await refreshToken({
+              token: {
+                accessToken: 'not-a-native-access-token',
+                refreshToken: 'not-a-native-refresh-token',
+                accessTokenExpiresAt: now - tokenVerificationLifetimeSeconds,
+                refreshTokenExpiresAt: now + tokenVerificationLifetimeSeconds,
+                accessTokenExpiresIn: -tokenVerificationLifetimeSeconds,
+                refreshTokenExpiresIn: tokenVerificationLifetimeSeconds,
+                scopes: [],
+              },
+            }),
+          );
+        }}
+      />
       <E2EApiAction
         id={'token-code-exchange'}
         title={'Exchange Invalid Authorization Code'}

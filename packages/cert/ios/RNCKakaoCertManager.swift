@@ -308,14 +308,15 @@ private let transactionIdKey = "txId"
   }
 
   private func mapToken(_ token: OAuthToken) -> [String: Any] {
+    let now = Date()
     var result: [String: Any] = [
       "accessToken": token.accessToken,
       "refreshToken": token.refreshToken,
       "tokenType": token.tokenType,
       "accessTokenExpiresAt": token.expiredAt.timeIntervalSince1970,
       "refreshTokenExpiresAt": token.refreshTokenExpiredAt.timeIntervalSince1970,
-      "accessTokenExpiresIn": token.expiresIn,
-      "refreshTokenExpiresIn": token.refreshTokenExpiresIn,
+      "accessTokenExpiresIn": token.expiredAt.timeIntervalSince(now),
+      "refreshTokenExpiresIn": token.refreshTokenExpiredAt.timeIntervalSince(now),
       "scopes": token.scopes ?? []
     ]
     if let idToken = token.idToken {
