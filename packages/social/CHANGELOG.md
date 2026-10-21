@@ -1,5 +1,12 @@
 # Change Log
 
+## 3.1.0-next.1
+
+### Patch Changes
+
+- Remove unused React Native module dependencies so Channel, Social, and Share can be installed independently with Core.
+- @react-native-kakao/core@3.1.0-next.1
+
 ## 3.1.0-next.0
 
 ### Patch Changes

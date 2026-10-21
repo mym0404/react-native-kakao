@@ -1,5 +1,12 @@
 # Change Log
 
+## 3.1.0-next.1
+
+### Patch Changes
+
+- Preserve false iOS navigation and installation-fallback options when forwarding NSNumber values to Swift booleans.
+- @react-native-kakao/core@3.1.0-next.1
+
 ## 3.1.0-next.0
 
 ### Patch Changes

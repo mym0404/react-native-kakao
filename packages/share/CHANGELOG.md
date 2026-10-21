@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 3.1.0-next.1
+
+### Patch Changes
+
+- Remove unused React Native module dependencies so Channel, Social, and Share can be installed independently with Core.
+- @react-native-kakao/core@3.1.0-next.1
+
 ## 3.1.0-next.0
 
 ### Minor Changes
