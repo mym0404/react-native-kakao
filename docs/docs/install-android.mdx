@@ -75,7 +75,7 @@ Android의 `AndroidManifest.xml`에 인터넷 사용 권한을 추가합니다.
 
 ## R8 코드 축소 규칙
 
-`@react-native-kakao/core`의 Android 라이브러리를 앱에 연결하면 Kakao SDK 2.25.0과 Retrofit에 필요한 소비자 규칙이 앱 빌드에 자동으로 포함됩니다. React Native의 autolinking을 사용하는 앱은 릴리스 빌드에서 R8 코드 축소(`minifyEnabled true`)를 켜도 앱의 `proguard-rules.pro`에 Kakao 전용 규칙을 추가할 필요가 없습니다. `@react-native-kakao/user`를 사용하는 앱도 core 라이브러리를 함께 연결하면 같은 규칙을 받습니다.
+`@react-native-kakao/core`의 Android 라이브러리를 앱에 연결하면 Kakao SDK 2.25.1과 Retrofit에 필요한 소비자 규칙이 앱 빌드에 자동으로 포함됩니다. React Native의 autolinking을 사용하는 앱은 릴리스 빌드에서 R8 코드 축소(`minifyEnabled true`)를 켜도 앱의 `proguard-rules.pro`에 Kakao 전용 규칙을 추가할 필요가 없습니다. `@react-native-kakao/user`를 사용하는 앱도 core 라이브러리를 함께 연결하면 같은 규칙을 받습니다.
 
 autolinking을 사용하지 않고 Android 라이브러리를 직접 연결한다면 core 라이브러리를 Gradle 의존성에 추가하세요. core 라이브러리를 포함할 수 없는 방식으로 통합한다면 설치한 패키지의 `node_modules/@react-native-kakao/core/android/consumer-rules.pro` 내용을 앱의 `proguard-rules.pro`에 복사해야 합니다.
 
