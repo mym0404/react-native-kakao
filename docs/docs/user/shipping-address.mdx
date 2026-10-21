@@ -14,7 +14,7 @@ sidebar_position: 108
 사용자에게 `shipping_address` 권한 동의를 받은 비즈니스 앱에서만 사용할 수 있습니다.
 :::
 
-현재 SDK의 `shippingAddresses()`는 배송지 조회 v1 API를 사용합니다. 카카오는 2027년 4월 6일에 v1 지원을 종료할 예정이므로 [공식 안내](https://devtalk.kakao.com/t/151885)를 확인하세요.
+`shippingAddresses()`는 배송지 조회 v1 API를 사용합니다. 웹에서는 JavaScript SDK 2.8.4가 v1 요청을 제공하지 않으므로 현재 액세스 토큰으로 REST API를 직접 호출합니다. Android·iOS와 같은 조회 옵션과 응답 형식을 사용합니다. 카카오는 2027년 4월 6일에 v1 지원을 종료할 예정이므로 [공식 안내](https://devtalk.kakao.com/t/151885)를 확인하세요.
 
 ### 조회 옵션
 

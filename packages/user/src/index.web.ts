@@ -1,5 +1,5 @@
 import { camelCaseObject, filterNonNullishKeys, is } from '@mj-studio/js-util';
-import { kFetchFormUrlEncoded, kGlobalStorage, kRunWebAPI } from '@react-native-kakao/core';
+import { kFetch, kFetchFormUrlEncoded, kGlobalStorage, kRunWebAPI } from '@react-native-kakao/core';
 
 import {
   type KakaoLoginToken,
@@ -204,16 +204,22 @@ const KakaoUser: KakaoUserAPI = {
     kRunWebAPI(async () => {
       validateShippingAddressOptions({ addressId, fromUpdatedAt, pageSize });
 
-      const response = camelCaseObject(
-        await Kakao.API.request({
-          url: '/v1/user/shipping_address',
-          data: filterNonNullishKeys(
+      const query = new URLSearchParams(
+        Object.entries(
+          filterNonNullishKeys(
             addressId != null
               ? { address_id: addressId }
               : { from_updated_at: fromUpdatedAt, page_size: pageSize },
           ),
-        }),
-      ) as {
+        ).map(([key, value]) => [key, String(value)]),
+      );
+
+      const { body } = await kFetch<Record<string, unknown>>(
+        `https://kapi.kakao.com/v1/user/shipping_address?${query}`,
+        { headers: { Authorization: `Bearer ${Kakao.Auth.getAccessToken() ?? ''}` } },
+      );
+
+      const response = camelCaseObject(body) as {
         userId?: number;
         shippingAddressesNeedsAgreement?: boolean;
         shippingAddresses?: (Omit<
