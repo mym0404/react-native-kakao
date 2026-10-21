@@ -63,9 +63,14 @@ RCT_EXPORT_METHOD(serviceTerms : (NSString*)result tags : (NSArray*)tags resolve
   [[self manager] serviceTerms:result tags:tags resolve:resolve reject:reject];
 }
 
-RCT_EXPORT_METHOD(shippingAddresses : (RCTPromiseResolveBlock)
+RCT_EXPORT_METHOD(shippingAddresses : (NSNumber*)addressId fromUpdatedAt : (
+    NSNumber*)fromUpdatedAt pageSize : (NSNumber*)pageSize resolve : (RCTPromiseResolveBlock)
                       resolve reject : (RCTPromiseRejectBlock)reject) {
-  [[self manager] shippingAddresses:resolve reject:reject];
+  [[self manager] shippingAddresses:addressId
+                      fromUpdatedAt:fromUpdatedAt
+                           pageSize:pageSize
+                            resolve:resolve
+                             reject:reject];
 }
 
 RCT_EXPORT_METHOD(revokeServiceTerms : (NSArray*)tags resolve : (RCTPromiseResolveBlock)

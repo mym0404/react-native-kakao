@@ -8,11 +8,27 @@ sidebar_position: 108
 
 [Official Documentation](https://developers.kakao.com/docs/latest/ko/kakaologin/ios#shipping-address-get)
 
-You can fetch the user's shipping address information using `shippingAddresses()`.
+Use `shippingAddresses()` to retrieve the user's shipping addresses. Android, iOS, and web support querying an address by ID or paging through the list by modification time and page size.
 
 :::warning
 This feature is only available in business apps that have obtained user consent for the `shipping_address` permission.
 :::
+
+The current SDK's `shippingAddresses()` uses the shipping address v1 API. Kakao will end v1 support on April 6, 2027; check the [official notice](https://devtalk.kakao.com/t/151885).
+
+### Query options
+
+Omit options to use the SDK's default query. When `addressId` is provided, only that address is requested; `fromUpdatedAt` and `pageSize` are ignored.
+
+| Option | Type | Meaning |
+| --- | --- | --- |
+| `addressId` | `number` | Integer ID of the address to retrieve |
+| `fromUpdatedAt` | `number` | The previous page's last address `updatedAt`, as integer Unix seconds. Pass `0` to start from the beginning |
+| `pageSize` | `number` | Integer addresses per page. Default `10`, minimum `2` |
+
+Fractional values, `NaN`, and infinity are rejected. `addressId` must be a JavaScript safe integer, `fromUpdatedAt` a non-negative safe integer, and `pageSize` an integer between 2 and 2147483647.
+
+The default address comes first, followed by addresses in descending modification order. Pass the previous page's last address `updatedAt` as `fromUpdatedAt` for the next page. The default address is included first regardless of the query time.
 
 The response type is `Promise<KakaoShippingAddressResult>`.
 
@@ -45,4 +61,24 @@ export type KakaoShippingAddress = {
 
 ```tsx
 shippingAddresses()
+```
+
+Specify an address ID to retrieve one address.
+
+```tsx
+await shippingAddresses({ addressId: 123 });
+```
+
+Retrieve the first page, then request the next page using the last address's modification time.
+
+```tsx
+const firstPage = await shippingAddresses({ fromUpdatedAt: 0, pageSize: 2 });
+const lastAddress = firstPage.shippingAddresses.at(-1);
+
+if (lastAddress?.updatedAt != null) {
+  const nextPage = await shippingAddresses({
+    fromUpdatedAt: lastAddress.updatedAt,
+    pageSize: 2,
+  });
+}
 ```
