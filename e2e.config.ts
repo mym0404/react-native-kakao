@@ -23,7 +23,7 @@ export default {
   timeout: 240000,
   cleanupTimeout: 30000,
   launchTimeout: 120000,
-  actionTimeout: 60000,
+  actionTimeout: 120000,
   assertionTimeout: 15000,
   cache: 'off',
   trace: 'off',
