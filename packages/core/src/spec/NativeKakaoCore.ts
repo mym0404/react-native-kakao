@@ -11,7 +11,12 @@ export type KakaoSDKInfo = {
 };
 
 export interface Spec extends TurboModule {
-  initializeKakaoSDK(appKey: string, loggingEnabled: boolean, customScheme?: string): Promise<void>;
+  initializeKakaoSDK(
+    appKey: string,
+    loggingEnabled: boolean,
+    customScheme?: string,
+    androidSdkIdentifier?: string,
+  ): Promise<void>;
   getKakaoSDKInfo(): Promise<KakaoSDKInfo>;
   getKeyHashAndroid(): Promise<string | undefined>;
 }

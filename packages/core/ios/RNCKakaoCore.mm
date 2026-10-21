@@ -14,8 +14,9 @@
 RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(initializeKakaoSDK : (NSString*)appKey loggingEnabled : (
-    BOOL)loggingEnabled customScheme : (NSString*)customScheme resolve : (RCTPromiseResolveBlock)
-                      resolve reject : (RCTPromiseRejectBlock)reject) {
+    BOOL)loggingEnabled customScheme : (NSString*)customScheme androidSdkIdentifier : (NSString*)
+                      androidSdkIdentifier resolve : (RCTPromiseResolveBlock)
+                          resolve reject : (RCTPromiseRejectBlock)reject) {
   [[self manager] initializeKakaoSDK:appKey
                       loggingEnabled:loggingEnabled
                         customScheme:customScheme
