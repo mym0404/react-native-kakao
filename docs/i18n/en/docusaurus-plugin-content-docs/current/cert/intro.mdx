@@ -105,6 +105,8 @@ const result = await issueCertTokenWithCode({
 
 `codeVerifier` is the PKCE verification value from that authorization request; pass the same value if PKCE was used. Omitting `redirectUri` uses the initialized iOS SDK's default URI. An explicit URI must match the authorization request. Android and web reject this API with `Package-UnsupportedPlatform`.
 
+For web, exchange certification authorization codes through REST on your service server. Use the returned `tx_id` to verify the signature on the server. Follow the [official K2100 guide](https://developers.kakao.com/docs/ko/kakao-certification/k2100) for the integration sequence.
+
 ## Keys, sessions, and abbreviated signatures
 
 For `K2220` and `K3220`, the SDK stores a temporary key pair on the device. This example sends the `K2220` public key to your server, completes certification login, and retrieves the session. Implement `prepareOnServer()` and `verifyOnServer()` on your own server.
