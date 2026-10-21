@@ -18,16 +18,19 @@ The `KakaoUser` type is defined as:
 export type KakaoUser = {
   id: number;
   hasSignedUp?: boolean | null;
+  uuid?: string | null;
   properties: Record<string, string>;
   email?: string | null;
   name?: string | null;
   nickname?: string | null;
   profileImageUrl?: string | null;
   thumbnailImageUrl?: string | null;
+  isDefaultImage?: boolean | null;
   phoneNumber?: string | null;
   ageRange?: string | null;
   birthday?: string | null;
   birthdayType?: string | null;
+  isLeapMonth?: boolean | null;
   birthyear?: string | null;
   gender?: string | null;
   isEmailValid?: boolean | null;
@@ -55,6 +58,18 @@ export type KakaoUser = {
 ```tsx
 me()
 ```
+
+## Profile metadata
+
+These fields use the same names on Android, iOS, and web. Values that Kakao does not provide are `null`; `false` remains a value rather than an absence marker.
+
+| Field | Meaning | Availability |
+| --- | --- | --- |
+| `isDefaultImage` | `true` means the default profile image; `false` means an image registered by the user. | The user has consented to the profile image scope. |
+| `isLeapMonth` | Whether the birthday falls in a leap month. | The user has consented to the birthday scope. |
+| `uuid` | The user's own ID in KakaoTalk friend information, distinct from the service user ID in `id`. | The app has KakaoTalk friends or messaging permission. |
+
+For example, `user.isDefaultImage === false` identifies an image registered by the user. `null` does not establish whether the image is a default. See the [user information response](https://developers.kakao.com/docs/en/kakaologin/rest-api#req-user-info-response) for availability conditions.
 
 ## Query options
 

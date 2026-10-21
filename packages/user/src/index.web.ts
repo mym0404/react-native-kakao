@@ -244,11 +244,15 @@ const KakaoUser: KakaoUserAPI = {
       const ret = camelCaseObject(response) as {
         id: number;
         hasSignedUp?: boolean | null;
+        forPartner?: { uuid?: string };
         connectedAt?: string;
         synchedAt?: string;
         kakaoAccount?: Partial<KakaoUserProfile> & {
           profile?: Partial<
-            Pick<KakaoUserProfile, 'nickname' | 'profileImageUrl' | 'thumbnailImageUrl'>
+            Pick<
+              KakaoUserProfile,
+              'nickname' | 'profileImageUrl' | 'thumbnailImageUrl' | 'isDefaultImage'
+            >
           >;
         };
         properties?: { nickname?: string; profileImage?: string; thumbnailImage?: string };
@@ -261,6 +265,9 @@ const KakaoUser: KakaoUserAPI = {
         id: ret.id,
         hasSignedUp: ret.hasSignedUp ?? null,
         properties: response.properties ?? {},
+        uuid: ret.forPartner?.uuid ?? null,
+        isDefaultImage: profile.isDefaultImage ?? null,
+        isLeapMonth: kakaoAccount.isLeapMonth ?? null,
         email: kakaoAccount.email,
         name: kakaoAccount.name,
         nickname: profile.nickname ?? properties.nickname,
