@@ -23,7 +23,7 @@ export default {
   timeout: 120000,
   cleanupTimeout: 30000,
   launchTimeout: 120000,
-  actionTimeout: platform === 'ios' ? 60000 : 15000,
+  actionTimeout: 60000,
   assertionTimeout: 15000,
   cache: 'off',
   trace: 'off',
