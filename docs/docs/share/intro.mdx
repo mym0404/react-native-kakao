@@ -16,6 +16,8 @@ import TabItem from '@theme/TabItem';
 
 `share` 패키지는 카카오톡 공유와 메시지 발송 기능을 제공합니다.
 
+`share*Template`과 `send*TemplateToMe`는 Android·iOS·웹에서 `Promise<void>`를 반환합니다. 성공 시 반환값은 없습니다. 공유 함수는 공유 화면을 여는 요청을 처리하며, 사용자가 메시지를 발송했는지 반환하지 않습니다. 친구 메시지 함수는 [수신자별 발송 결과](/docs/share/message-results)를 반환합니다.
+
 [공식 문서](https://developers.kakao.com/docs/latest/ko/message/common)를 참고하세요.
 
 ![image](https://raw.githubusercontent.com/mym0404/image-archive/master/202404271646217.webp)

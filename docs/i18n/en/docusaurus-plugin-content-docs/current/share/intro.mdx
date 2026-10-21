@@ -16,6 +16,8 @@ Make sure to install the dependencies for the `core` package by referring to the
 
 The `share` package provides Kakao Talk sharing and message sending.
 
+`share*Template` and `send*TemplateToMe` return `Promise<void>` on Android, iOS, and web, with no success value. Sharing functions handle opening the sharing interface; they do not report whether the user sent the message. Friend-message functions return [per-recipient results](/docs/share/message-results).
+
 Refer to the [Official Documentation](https://developers.kakao.com/docs/latest/ko/message/common) for more details.
 
 ![image](https://raw.githubusercontent.com/mym0404/image-archive/master/202404271646217.webp)

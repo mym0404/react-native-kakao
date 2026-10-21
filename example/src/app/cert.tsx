@@ -66,9 +66,10 @@ export default function Page() {
             id={`cert-delete-${certType}`}
             title={`Delete ${certType} Key Pair`}
             action={async () => {
-              await deleteKeyPair({ certType });
+              const result = await deleteKeyPair({ certType });
 
               return {
+                hasReturnValue: result !== undefined,
                 hasSession: (await getSessionInfo({ certType })) != null,
                 isValid: await isValidSession({ certType }),
               };

@@ -428,7 +428,7 @@ class RNCKakaoShareModule internal constructor(
       if (e != null) {
         promise.rejectWith(e)
       } else {
-        promise.resolve(42)
+        promise.resolve(null)
       }
     }
     if (requestUrl != null) {
@@ -518,7 +518,6 @@ class RNCKakaoShareModule internal constructor(
       return
     }
 
-    val result = if (requestUrl != null) null else 42
     val callback = { sharingResult: SharingResult?, error: Throwable? ->
       if (error != null) {
         promise.rejectWith(error)
@@ -532,12 +531,10 @@ class RNCKakaoShareModule internal constructor(
           )
         } else {
           context.startActivity(sharingResult.intent)
-          promise.resolve(result)
+          promise.resolve(null)
         }
-      } else if (diagnosticsOnly || requestUrl != null) {
-        promise.rejectWith(RNCKakaoResponseNotFoundException("sharingResult"))
       } else {
-        promise.resolve(result)
+        promise.rejectWith(RNCKakaoResponseNotFoundException("sharingResult"))
       }
     }
 
@@ -609,13 +606,13 @@ class RNCKakaoShareModule internal constructor(
           }
         try {
           KakaoCustomTabsClient.openWithDefault(context, sharerUrl)
-          promise.resolve(result)
+          promise.resolve(null)
           return
         } catch (_: UnsupportedOperationException) {
         }
         try {
           KakaoCustomTabsClient.open(context, sharerUrl)
-          promise.resolve(result)
+          promise.resolve(null)
           return
         } catch (_: ActivityNotFoundException) {
         }

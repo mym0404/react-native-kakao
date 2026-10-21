@@ -398,7 +398,7 @@ private let noCustomTemplateId: Int64 = -1
       if let error {
         RNCKakaoUtil.reject(reject, error)
       } else {
-        resolve(42)
+        resolve(nil)
       }
     }
 
@@ -506,7 +506,6 @@ private let noCustomTemplateId: Int64 = -1
     reject: @escaping RCTPromiseRejectBlock,
     diagnosticsOnly: Bool = false
   ) {
-    let result: Any? = requestUrl == nil ? 42 : nil
     let shareCompletion = { (sharingResult: SharingResult?, error: Error?) in
       if let error {
         RNCKakaoUtil.reject(reject, error)
@@ -520,7 +519,7 @@ private let noCustomTemplateId: Int64 = -1
         }
         UIApplication.shared.open(sharingResult.url, options: [:]) { success in
           if success {
-            resolve(result)
+            resolve(nil)
           } else {
             RNCKakaoUtil.reject(
               reject,
@@ -627,7 +626,7 @@ private let noCustomTemplateId: Int64 = -1
       safariViewController.modalPresentationStyle = .overCurrentContext
       RNCKakaoUtil.presentViewController(safariViewController) { success in
         if success {
-          resolve(result)
+          resolve(nil)
         } else {
           RNCKakaoUtil.reject(
             reject,

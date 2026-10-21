@@ -234,7 +234,7 @@ import RNCKakaoCore
         if let error {
           RNCKakaoUtil.reject(reject, error)
         } else {
-          resolve(42)
+          resolve(nil)
         }
       }
     }

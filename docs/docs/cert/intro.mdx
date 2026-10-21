@@ -137,7 +137,7 @@ await deleteKeyPair({ certType });
 
 `K3220`은 `isKakaoTalkSignAvailable()`로 서명 가능 여부를 확인하고 `signWithKakaoTalk({ txId, targetAppKey? })`를 호출해요. 응답은 `{ txId, requestedAt?, requestExpiredAt?, signedAt? }`이고 시간 단위는 Unix 초예요. 이후 `fetchSessionInfoByAppKey({ certType: 'K3220', txId, targetAppKey? })`로 세션을 조회해요. 나머지 로컬 키·세션 함수는 `K2220`과 같아요.
 
-세션이 없거나 만료되면 축약서명이 실패해요. `deleteKeyPair()`는 선택한 상품의 키와 세션을 삭제해요. SDK 오류가 발생했을 때 다시 시작할 순서는 공식 문서를 따라요.
+세션이 없거나 만료되면 축약서명이 실패해요. `deleteKeyPair()`는 선택한 상품의 키와 세션을 삭제하고, 성공하면 반환값 없이 `Promise<void>`가 완료돼요. SDK 오류가 발생했을 때 다시 시작할 순서는 공식 문서를 따라요.
 
 iOS에서 `signWithKakaoTalk()` 요청이 진행 중이면 다음 요청은 거부해요. 먼저 시작한 요청의 완료를 기다린 뒤 다시 호출해요.
 

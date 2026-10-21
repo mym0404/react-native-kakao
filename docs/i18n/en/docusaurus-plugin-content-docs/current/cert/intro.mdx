@@ -137,7 +137,7 @@ await deleteKeyPair({ certType });
 
 For `K3220`, check `isKakaoTalkSignAvailable()` and call `signWithKakaoTalk({ txId, targetAppKey? })`. Its response contains `{ txId, requestedAt?, requestExpiredAt?, signedAt? }`, with timestamps in Unix seconds. Then call `fetchSessionInfoByAppKey({ certType: 'K3220', txId, targetAppKey? })`. The remaining local key and session methods work as for `K2220`.
 
-Signing fails if a session is missing or expired. `deleteKeyPair()` deletes the selected product's key pair and session. Follow the official recovery sequence when the SDK reports an error.
+Signing fails if a session is missing or expired. `deleteKeyPair()` deletes the selected product's key pair and session; its `Promise<void>` resolves without a success value. Follow the official recovery sequence when the SDK reports an error.
 
 On iOS, `signWithKakaoTalk()` rejects a new request while another is pending. Wait for the first request to finish before calling it again.
 

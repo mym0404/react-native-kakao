@@ -133,8 +133,8 @@ export function isValidSession({ certType }: { certType: KakaoCertSessionType })
   return Native.isValidSession(certType);
 }
 
-export function deleteKeyPair({ certType }: { certType: KakaoCertSessionType }) {
-  return Native.deleteKeyPair(certType);
+export async function deleteKeyPair({ certType }: { certType: KakaoCertSessionType }) {
+  await Native.deleteKeyPair(certType);
 }
 
 export function reducedSign({ certType, data }: { certType: KakaoCertSessionType; data: string }) {

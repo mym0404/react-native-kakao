@@ -210,7 +210,7 @@ class RNCKakaoUserModule internal constructor(
         if (it != null) {
           promise.rejectWith(it)
         } else {
-          promise.resolve(42)
+          promise.resolve(null)
         }
       }
     }
@@ -222,7 +222,7 @@ class RNCKakaoUserModule internal constructor(
         if (it != null) {
           promise.rejectWith(it)
         } else {
-          promise.resolve(42)
+          promise.resolve(null)
         }
       }
     }

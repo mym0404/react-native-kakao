@@ -374,6 +374,13 @@ export default function Page() {
         title={'Reject Invalid Share Picker Limit'}
         action={() => shareTextTemplate({ template: text, pickerSettings: { limit: 0 } })}
       />
+      <E2EApiAction
+        id={'share-void-result'}
+        title={'Share Text Return Shape'}
+        action={async () => ({
+          hasReturnValue: (await shareTextTemplate({ template: text })) !== undefined,
+        })}
+      />
       <TextInput
         accessibilityLabel={'Image URI'}
         testID={'share-upload-image-uri'}

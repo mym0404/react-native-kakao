@@ -12,6 +12,8 @@ sidebar_position: 102
 
 `addChannel` 함수로 카카오톡 채널을 추가할 수 있습니다.
 
+성공하면 반환값 없이 `Promise<void>`가 완료됩니다. 사용자가 실제로 채널을 추가했는지는 반환값으로 확인할 수 없습니다.
+
 ```tsx
 export function addChannel(channelPublicId: string): Promise<void>
 ```
