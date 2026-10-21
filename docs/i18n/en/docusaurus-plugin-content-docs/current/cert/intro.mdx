@@ -16,7 +16,7 @@ Your server issues settlement IDs, prepares and verifies signatures, and retriev
 
 ## Installation and callbacks
 
-Install the packages below and [initialize Core](../core/initialize-sdk).
+Install the packages below and [initialize Core](/docs/core/initialize-sdk).
 
 ```sh
 yarn add @react-native-kakao/core @react-native-kakao/user @react-native-kakao/cert
@@ -75,7 +75,7 @@ const accountResult = await certLoginWithKakaoAccount({
 });
 ```
 
-Both methods return `{ token, txId }`. The token uses the same `KakaoLoginToken` type as [regular login](../user/login). Your server uses `txId` to verify the signature. For `K2220`, pass the server-prepared transaction ID to `certLoginWithKakaoTalk({ certType: 'K2220', txId })`. Kakao Account login supports `K2100` only.
+Both methods return `{ token, txId }`. The token uses the same `KakaoLoginToken` type as [regular login](/docs/user/login). Your server uses `txId` to verify the signature. For `K2220`, pass the server-prepared transaction ID to `certLoginWithKakaoTalk({ certType: 'K2220', txId })`. Kakao Account login supports `K2100` only.
 
 | Option | Behavior |
 | --- | --- |
@@ -125,7 +125,7 @@ On iOS, `signWithKakaoTalk()` rejects a new request while another is pending. Wa
 
 ## Web certification login
 
-On web, `authorizeForCertWeb()` starts the `K2100` certification login redirect. Load the JavaScript SDK and [initialize Core for web](../core/initialize-sdk).
+On web, `authorizeForCertWeb()` starts the `K2100` certification login redirect. Load the JavaScript SDK and [initialize Core for web](/docs/core/initialize-sdk).
 
 ```tsx
 import { authorizeForCertWeb } from '@react-native-kakao/cert';
