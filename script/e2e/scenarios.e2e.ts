@@ -55,7 +55,7 @@ test.beforeEach(async ({ app, device, platform, screen }) => {
 
 describe('navigation', () => {
   test('menus', async ({ app, screen }) => {
-    for (const menu of ['User', 'Share', 'Navi', 'Social', 'Channel']) {
+    for (const menu of ['User', 'Share', 'Navi', 'Social', 'Channel', 'Cert']) {
       await openMenu(screen, menu);
 
       await app.back();

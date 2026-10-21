@@ -6,7 +6,13 @@ import type { KakaoIosConfig } from './type';
 const withIos: ConfigPlugin<{
   nativeAppKey: string;
   ios: KakaoIosConfig;
-}> = (config, { nativeAppKey, ios: { handleKakaoOpenUrl, naviApplicationQuerySchemes } }) => {
+}> = (
+  config,
+  {
+    nativeAppKey,
+    ios: { handleKakaoOpenUrl, handleKakaoCertOpenUrl, naviApplicationQuerySchemes },
+  },
+) => {
   if (!nativeAppKey) {
     throw new Error(
       "[@react-native-kakao/core] 'nativeAppKey' missing in expo config plugin value",
@@ -46,6 +52,12 @@ const withIos: ConfigPlugin<{
       ]),
     ];
 
+    if (handleKakaoCertOpenUrl) {
+      config.modResults.LSApplicationQueriesSchemes = [
+        ...new Set([...config.modResults.LSApplicationQueriesSchemes, 'kakaotalk']),
+      ];
+    }
+
     // kakao navi
     if (naviApplicationQuerySchemes) {
       config.modResults.LSApplicationQueriesSchemes = [
@@ -57,16 +69,22 @@ const withIos: ConfigPlugin<{
   });
 
   if (handleKakaoOpenUrl) {
-    config = withKakaoUserSdkAppDelegate(config);
+    config = withKakaoSdkAppDelegate(config, { module: 'User' });
+  }
+
+  if (handleKakaoCertOpenUrl) {
+    config = withKakaoSdkAppDelegate(config, { module: 'Cert' });
   }
 
   return config;
 };
 
-const withKakaoUserSdkAppDelegate: ConfigPlugin = (config) => {
+const withKakaoSdkAppDelegate: ConfigPlugin<{ module: 'User' | 'Cert' }> = (config, { module }) => {
+  const bridgeName = `RNCKakao${module}Util`;
+  const urlCheck = module === 'User' ? 'isKakaoTalkLoginUrl' : 'isKakaoTalkSignReturnUrl';
   const modifyObjcContents = (contents: string): string => {
     const importRctLinkingManager = '#import <React/RCTLinkingManager.h>';
-    const importMod = '#import <RNCKakaoUser/RNCKakaoUserUtil.h>';
+    const importMod = `#import <RNCKakao${module}/${bridgeName}.h>`;
 
     if (!contents.includes(importRctLinkingManager)) {
       contents = `${importRctLinkingManager}\n${contents}`;
@@ -79,11 +97,11 @@ const withKakaoUserSdkAppDelegate: ConfigPlugin = (config) => {
       );
     }
 
-    if (!contents.includes('RNCKakaoUserUtil handleOpenUrl')) {
+    if (!contents.includes(`${bridgeName} handleOpenUrl`)) {
       contents = contents.replace(
         'options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {',
         `options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
-        if([RNCKakaoUserUtil isKakaoTalkLoginUrl:url]) { return [RNCKakaoUserUtil handleOpenUrl:url]; }
+        if([${bridgeName} ${urlCheck}:url]) { return [${bridgeName} handleOpenUrl:url]; }
         `,
       );
     }
@@ -93,7 +111,7 @@ const withKakaoUserSdkAppDelegate: ConfigPlugin = (config) => {
 
   const modifySwiftContents = (contents: string): string => {
     const importAnchor = 'import Expo';
-    const importMod = 'import RNCKakaoUser';
+    const importMod = `import RNCKakao${module}`;
     // Match the full signature because AppDelegate has multiple three-parameter application callbacks.
     const openUrlFunctionPattern =
       /\bfunc\s+application\s*\(\s*_\s+[^\s:]+\s*:\s*UIApplication\s*,\s*open\s+([^\s:]+)\s*:\s*URL\s*,\s*options(?:\s+[^\s:]+)?\s*:\s*\[UIApplication\.OpenURLOptionsKey\s*:\s*Any\]\s*(?:=\s*\[:\])?\s*\)\s*->\s*Bool\s*\{/m;
@@ -107,8 +125,8 @@ const withKakaoUserSdkAppDelegate: ConfigPlugin = (config) => {
       }
     }
 
-    const kakaoOpenUrlCall = `RNCKakaoUserUtil.handleOpen(${urlParameter})`;
-    const kakaoOpenUrlHandler = `if(RNCKakaoUserUtil.isKakaoTalkLoginUrl(${urlParameter})) { return ${kakaoOpenUrlCall} }`;
+    const kakaoOpenUrlCall = `${bridgeName}.handleOpen(${urlParameter})`;
+    const kakaoOpenUrlHandler = `if(${bridgeName}.${urlCheck}(${urlParameter})) { return ${kakaoOpenUrlCall} }`;
 
     if (!contents.includes(importAnchor)) {
       contents = `${importAnchor}\n${contents}`;
