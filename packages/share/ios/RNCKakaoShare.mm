@@ -38,6 +38,22 @@ RCT_EXPORT_METHOD(uploadImage : (NSString*)imageUri secureResource : (BOOL)
   [[self manager] uploadImage:imageUri secureResource:secureResource resolve:resolve reject:reject];
 }
 
+RCT_EXPORT_METHOD(getTemplateDiagnostics : (NSString*)templateType templateId : (
+    double)templateId templateJson : (NSDictionary*)templateJson templateArgs : (NSDictionary*)
+                      templateArgs serverCallbackArgs : (NSDictionary*)
+                          serverCallbackArgs pickerSettings : (NSDictionary*)
+                              pickerSettings resolve : (RCTPromiseResolveBlock)
+                                  resolve reject : (RCTPromiseRejectBlock)reject) {
+  [[self manager] getTemplateDiagnostics:templateType
+                              templateId:templateId
+                            templateJson:templateJson
+                            templateArgs:templateArgs
+                      serverCallbackArgs:serverCallbackArgs
+                          pickerSettings:pickerSettings
+                                 resolve:resolve
+                                  reject:reject];
+}
+
 RCT_EXPORT_METHOD(
     shareScrapTemplate : (NSString*)requestUrl useWebBrowserIfKakaoTalkNotAvailable : (BOOL)
         useWebBrowserIfKakaoTalkNotAvailable templateId : (NSNumber*)templateId templateArgs : (

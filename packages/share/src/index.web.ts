@@ -151,6 +151,12 @@ function serializeExecutionParams(template: object) {
 
 const KakaoShare: KakaoShareAPI = {
   isKakaoTalkSharingAvailable: async () => false,
+  getShareTemplateDiagnostics: async () => {
+    kCreateWebError({
+      code: 'Package-UnsupportedPlatform',
+      message: 'The Kakao JavaScript SDK does not expose sharing template diagnostics.',
+    });
+  },
   makeDefaultTemplateUrl: unsupportedUrlBuilder,
   makeCustomTemplateUrl: unsupportedUrlBuilder,
   makeScrapTemplateUrl: unsupportedUrlBuilder,
@@ -358,6 +364,7 @@ async function unsupportedUrlBuilder(): Promise<never> {
 
 export const {
   isKakaoTalkSharingAvailable,
+  getShareTemplateDiagnostics,
   makeDefaultTemplateUrl,
   makeCustomTemplateUrl,
   makeScrapTemplateUrl,

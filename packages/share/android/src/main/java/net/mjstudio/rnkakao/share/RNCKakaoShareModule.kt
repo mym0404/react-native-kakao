@@ -79,6 +79,38 @@ class RNCKakaoShareModule internal constructor(
   }
 
   @ReactMethod
+  override fun getTemplateDiagnostics(
+    templateType: String,
+    templateId: Double,
+    templateJson: ReadableMap,
+    templateArgs: ReadableMap,
+    serverCallbackArgs: ReadableMap,
+    pickerSettings: ReadableMap?,
+    promise: Promise,
+  ) = onMain {
+    runCatching {
+      val requestUrl =
+        if (templateType == "scrap") {
+          requireNotNull(templateJson.getString("requestUrl")) { "requestUrl is required" }
+        } else {
+          null
+        }
+      runShare(
+        templateType = templateType,
+        templateId = templateId.takeUnless { templateType != "custom" && it == NO_CUSTOM_TEMPLATE_ID },
+        defaultTemplate = templateJson,
+        useWebBrowserIfKakaoTalkNotAvailable = false,
+        templateArgs = templateArgs,
+        serverCallbackArgs = serverCallbackArgs,
+        pickerSettings = pickerSettings,
+        promise = promise,
+        requestUrl = requestUrl,
+        diagnosticsOnly = true,
+      )
+    }.onFailure { promise.rejectWith(it) }
+  }
+
+  @ReactMethod
   override fun uploadImage(
     imageUri: String,
     secureResource: Boolean,
@@ -478,8 +510,9 @@ class RNCKakaoShareModule internal constructor(
     pickerSettings: ReadableMap?,
     promise: Promise,
     requestUrl: String? = null,
+    diagnosticsOnly: Boolean = false,
   ) {
-    val context = reactApplicationContext.currentActivity
+    val context = if (diagnosticsOnly) reactApplicationContext else reactApplicationContext.currentActivity
     if (context == null) {
       promise.rejectWith(ActivityNotFoundException())
       return
@@ -489,8 +522,17 @@ class RNCKakaoShareModule internal constructor(
       if (error != null) {
         promise.rejectWith(error)
       } else if (sharingResult != null) {
-        context.startActivity(sharingResult.intent)
-        promise.resolve(null)
+        if (diagnosticsOnly) {
+          promise.resolve(
+            argMap().apply {
+              putMap("warningMsg", argMap().apply { sharingResult.warningMsg.forEach { (key, value) -> putString(key, value) } })
+              putMap("argumentMsg", argMap().apply { sharingResult.argumentMsg.forEach { (key, value) -> putString(key, value) } })
+            },
+          )
+        } else {
+          context.startActivity(sharingResult.intent)
+          promise.resolve(null)
+        }
       } else {
         promise.rejectWith(RNCKakaoResponseNotFoundException("sharingResult"))
       }

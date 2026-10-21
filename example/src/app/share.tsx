@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Platform, TextInput } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import {
+  getShareTemplateDiagnostics,
   isKakaoTalkSharingAvailable,
   type KakaoCalendarTemplate,
   type KakaoCommerceTemplate,
@@ -286,6 +287,79 @@ export default function Page() {
             templateArgs: scrapTemplateArgs,
             serverCallbackArgs: urlServerCallbackArgs,
           })
+        }
+      />
+      {defaultTemplateUrlCases.map((params) => (
+        <E2EApiAction
+          key={`diagnostics-${params.templateType}`}
+          id={`share-diagnostics-${params.templateType}`}
+          title={`Inspect ${params.templateType} template`}
+          action={() => getShareTemplateDiagnostics(params)}
+        />
+      ))}
+      <E2EApiAction
+        id={'share-diagnostics-custom'}
+        title={'Inspect custom template'}
+        action={() =>
+          getShareTemplateDiagnostics({
+            templateType: 'custom',
+            templateId: kakaoLinkTemplateId,
+            templateArgs: scrapTemplateArgs,
+            serverCallbackArgs: urlServerCallbackArgs,
+            pickerSettings: { type: 'chat', limit: 2 },
+          })
+        }
+      />
+      <E2EApiAction
+        id={'share-diagnostics-scrap'}
+        title={'Inspect scrap template'}
+        action={() =>
+          getShareTemplateDiagnostics({ templateType: 'scrap', requestUrl: scrapRequestUrl })
+        }
+      />
+      <E2EApiAction
+        id={'share-diagnostics-scrap-custom'}
+        title={'Inspect custom scrap template'}
+        action={() =>
+          getShareTemplateDiagnostics({
+            templateType: 'scrap',
+            requestUrl: scrapRequestUrl,
+            templateId: kakaoLinkTemplateId,
+            templateArgs: scrapTemplateArgs,
+          })
+        }
+      />
+      <E2EApiAction
+        id={'share-diagnostics-invalid-template'}
+        title={'Inspect invalid template ID'}
+        action={() => getShareTemplateDiagnostics({ templateType: 'custom', templateId: -1 })}
+      />
+      <E2EApiAction
+        id={'share-diagnostics-invalid-picker'}
+        title={'Reject invalid diagnostic picker limit'}
+        action={() =>
+          getShareTemplateDiagnostics({
+            templateType: 'text',
+            template: text,
+            pickerSettings: { limit: 0 },
+          })
+        }
+      />
+      <E2EApiAction
+        id={'share-diagnostics-warning'}
+        title={'Inspect unregistered link warning'}
+        action={() =>
+          getShareTemplateDiagnostics({
+            templateType: 'text',
+            template: { text: 'Diagnostic only', link: { webUrl: 'https://example.invalid' } },
+          })
+        }
+      />
+      <E2EApiAction
+        id={'share-diagnostics-missing-args'}
+        title={'Inspect missing custom arguments'}
+        action={() =>
+          getShareTemplateDiagnostics({ templateType: 'custom', templateId: kakaoLinkTemplateId })
         }
       />
       <E2EApiAction
