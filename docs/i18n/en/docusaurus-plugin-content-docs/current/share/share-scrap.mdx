@@ -1,0 +1,27 @@
+---
+sidebar_position: 6
+---
+
+# Share a Scraped Web Page
+
+`shareScrapTemplate()` shares the title, description, and image scraped from a web page on Android, iOS, and web. Register the page's domain in your Kakao Developers app's **Product Link** settings first.
+
+```tsx
+import { shareScrapTemplate } from '@react-native-kakao/share';
+
+await shareScrapTemplate({ requestUrl: 'https://developers.kakao.com' });
+```
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `requestUrl` | `string` | Required | Web page to scrape. |
+| `templateId` | `number` | Omitted | Optional custom message template. |
+| `templateArgs` | `Record<string, string>` | `{}` | Custom template argument values. Keys remain unchanged. |
+| `serverCallbackArgs` | `Record<string, string>` | `{}` | Arguments for the configured share server callback. |
+| `useWebBrowserIfKakaoTalkNotAvailable` | `boolean` | `true` | Android/iOS use browser sharing when KakaoTalk is unavailable. Web uses the JavaScript SDK's share flow. |
+
+The function returns `Promise<void>`. It resolves after the native share screen opens or the web SDK starts its share flow. Resolution does not confirm message delivery or that the user selected a recipient. Native platforms reject with `Package-KakaoAppNotAvailable` when KakaoTalk is unavailable and browser fallback is disabled.
+
+Call it from a user gesture, such as a button press, so browsers can open the share window. The Kakao JavaScript SDK manages its popup and mobile app handoff.
+
+See the official [Android](https://developers.kakao.com/docs/en/kakaotalk-share/android-link), [iOS](https://developers.kakao.com/docs/en/kakaotalk-share/ios-link), and [JavaScript](https://developers.kakao.com/docs/en/kakaotalk-share/js-link) guides.
