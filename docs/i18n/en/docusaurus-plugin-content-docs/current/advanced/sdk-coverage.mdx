@@ -110,7 +110,9 @@ Asynchronous data queries and mutations propagate SDK/HTTP failures as Promise r
 
 ## Verification coverage
 
-These are the actual responses and execution paths checked on October 21, 2026. Builds and input/response checks do not verify success paths when app permissions or installation prerequisites are missing. Each PR's `Confidence level` describes the scope verified for that change.
+This is the verification status as of October 21, 2026. Builds and input/response checks do not verify success paths when app permissions or installation prerequisites are missing. Each PR's `Confidence level` describes the scope verified for that change.
+
+Earlier authenticated checks also used Android `2.25.0` and JavaScript `2.7.1`. The [SDK update](https://github.com/mym0404/react-native-kakao/pull/174) and subsequent PRs record the checks performed after version updates. Not every authenticated success flow below was rerun with Android `2.25.1` and JavaScript `2.8.4`.
 
 | Feature                              | Verified                                                                                                                                           | Remaining success paths or conditions                                                                                                                    |
 | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
