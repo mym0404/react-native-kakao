@@ -45,3 +45,21 @@ export type KakaoServiceTerms = {
 ```
 
 `agreedAt`이 있으면 초 단위 Unix 타임스탬프입니다. `app_service_terms`로 조회한 약관도 같은 타입으로 반환하며, 각 약관의 `agreed`로 동의 여부를 확인할 수 있습니다.
+
+## 약관 동의 철회
+
+`revokeServiceTerms(tags)`로 Android, iOS, 웹에서 앱에 등록된 약관 중 `revocable: true`인 약관의 동의를 철회할 수 있습니다. 호출하면 사용자의 동의 상태가 바뀝니다. 필수 약관의 동의를 철회하기 전에 앱의 서비스 정책을 확인해야 합니다.
+
+```tsx
+import { revokeServiceTerms, serviceTerms } from '@react-native-kakao/user';
+
+const revokedTerms = await revokeServiceTerms(['optional_service_2020_0218']);
+const currentTerms = await serviceTerms({
+  result: 'app_service_terms',
+  tags: ['optional_service_2020_0218'],
+});
+```
+
+`Promise<KakaoRevokedServiceTerms[]>`를 반환하며 각 항목은 `tag: string`과 `agreed: boolean`을 갖습니다. 응답에 철회한 약관 목록이 없으면 빈 배열을 반환합니다. 인증 오류가 발생하거나 유효하지 않은 태그를 전달하면 카카오 오류로 `Promise`를 거부합니다.
+
+[공식 문서](https://developers.kakao.com/docs/en/kakaologin/rest-api#revoke-service-terms)

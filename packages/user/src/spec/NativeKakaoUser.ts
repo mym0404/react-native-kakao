@@ -5,6 +5,7 @@ import type { UnsafeObject } from 'react-native/Libraries/Types/CodegenTypes';
 import type {
   KakaoAccessTokenInfo,
   KakaoLoginToken,
+  KakaoRevokedServiceTerms,
   KakaoScopeInfo,
   KakaoServiceTerms,
   KakaoShippingAddressResult,
@@ -26,6 +27,7 @@ export interface Spec extends TurboModule {
   scopes(scopes?: string[]): Promise<KakaoScopeInfo[]>;
   revokeScopes(scopes: string[]): Promise<void>;
   serviceTerms(result?: string, tags?: string[]): Promise<KakaoServiceTerms[]>;
+  revokeServiceTerms(tags: string[]): Promise<KakaoRevokedServiceTerms[]>;
   shippingAddresses(): Promise<KakaoShippingAddressResult>;
   selectShippingAddress(): Promise<number>;
   me(propertyKeys?: string[]): Promise<KakaoUser>;

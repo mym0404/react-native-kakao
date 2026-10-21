@@ -156,6 +156,17 @@ const KakaoUser: KakaoUserAPI = {
         revocable: term.revocable,
       }));
     }),
+  revokeServiceTerms: (tags) =>
+    kRunWebAPI(async () => {
+      const response: {
+        revoked_service_terms?: { tag: string; agreed: boolean }[] | null;
+      } = await Kakao.API.request({
+        url: '/v2/user/revoke/service_terms',
+        data: { tags: tags.join(',') },
+      });
+
+      return response.revoked_service_terms ?? [];
+    }),
   shippingAddresses: () =>
     kRunWebAPI(async () => {
       const response = camelCaseObject(
@@ -268,6 +279,7 @@ export const {
   revokeScopes,
   scopes,
   serviceTerms,
+  revokeServiceTerms,
   shippingAddresses,
   selectShippingAddress,
   unlink,

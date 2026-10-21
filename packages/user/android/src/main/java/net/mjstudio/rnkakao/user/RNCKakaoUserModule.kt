@@ -260,10 +260,35 @@ class RNCKakaoUserModule internal constructor(
             serviceTerms.serviceTerms?.map { term ->
               argMap().apply {
                 putString("tag", term.tag)
-                putD("agreedAt", term.agreedAt?.unix?.toDouble())
+                term.agreedAt?.let { putDouble("agreedAt", it.unix.toDouble()) }
                 putBoolean("agreed", term.agreed)
                 putBoolean("required", term.required)
                 putBoolean("revocable", term.revocable)
+              }
+            } ?: listOf(),
+          ),
+        )
+      }
+    }
+  }
+
+  @ReactMethod
+  override fun revokeServiceTerms(
+    tags: ReadableArray,
+    promise: Promise,
+  ) = onMain {
+    UserApiClient.instance.revokeServiceTerms(tags.filterIsInstance<String>()) { response, error ->
+      if (error != null) {
+        promise.rejectWith(error)
+      } else if (response == null) {
+        promise.rejectWith(RNCKakaoResponseNotFoundException("revokeServiceTerms"))
+      } else {
+        promise.resolve(
+          argArr().pushMapList(
+            response.revokedServiceTerms?.map { term ->
+              argMap().apply {
+                putString("tag", term.tag)
+                putBoolean("agreed", term.agreed)
               }
             } ?: listOf(),
           ),
