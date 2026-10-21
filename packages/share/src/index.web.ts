@@ -10,7 +10,9 @@ import type {
   KakaoImageUploadResult,
   KakaoMessageSendResult,
   KakaoShareAPI,
+  KakaoSharePickerSettings,
 } from './index';
+import { validateSharePickerSettings } from './validateSharePickerSettings';
 
 declare const Kakao: {
   Share: {
@@ -26,6 +28,7 @@ declare const Kakao: {
       templateId?: number;
       templateArgs: Record<string, string>;
       serverCallbackArgs: Record<string, string>;
+      pickerSettings?: KakaoSharePickerSettings;
     }) => void;
     scrapImage: (args: { imageUrl: string }) => Promise<{
       infos: {
@@ -44,10 +47,12 @@ function createShareDefault({
   serverCallbackArgs,
   template,
   objectType,
+  pickerSettings,
 }: {
   objectType: string;
   template: any;
   serverCallbackArgs?: Record<string, string>;
+  pickerSettings?: KakaoSharePickerSettings;
 }) {
   return kRunWebAPI(() =>
     Kakao.Share.sendDefault(
@@ -55,6 +60,7 @@ function createShareDefault({
         objectType,
         ...serializeExecutionParams(template),
         serverCallbackArgs,
+        pickerSettings: validateSharePickerSettings(pickerSettings),
       }),
     ),
   );
@@ -193,10 +199,22 @@ const KakaoShare: KakaoShareAPI = {
         },
       };
     }),
-  shareScrapTemplate: ({ requestUrl, templateId, templateArgs = {}, serverCallbackArgs = {} }) =>
+  shareScrapTemplate: ({
+    requestUrl,
+    templateId,
+    templateArgs = {},
+    serverCallbackArgs = {},
+    pickerSettings,
+  }) =>
     kRunWebAPI(() =>
       Kakao.Share.sendScrap(
-        filterNonNullishKeys({ requestUrl, templateId, templateArgs, serverCallbackArgs }),
+        filterNonNullishKeys({
+          requestUrl,
+          templateId,
+          templateArgs,
+          serverCallbackArgs,
+          pickerSettings: validateSharePickerSettings(pickerSettings),
+        }),
       ),
     ),
   sendScrapTemplateToMe: async ({ requestUrl, templateId, templateArgs }) => {
@@ -247,10 +265,15 @@ const KakaoShare: KakaoShareAPI = {
         },
       };
     }),
-  shareCustomTemplate: ({ templateArgs, templateId, serverCallbackArgs }) =>
+  shareCustomTemplate: ({ templateArgs, templateId, serverCallbackArgs, pickerSettings }) =>
     kRunWebAPI(() =>
       Kakao.Share.sendCustom(
-        filterNonNullishKeys({ templateId, templateArgs, serverCallbackArgs }),
+        filterNonNullishKeys({
+          templateId,
+          templateArgs,
+          serverCallbackArgs,
+          pickerSettings: validateSharePickerSettings(pickerSettings),
+        }),
       ),
     ),
   sendCustomTemplateToMe: ({ templateId, templateArgs }) =>
@@ -273,18 +296,18 @@ const KakaoShare: KakaoShareAPI = {
         getFriendMessageResult(response, includeFailureInfo),
       ),
     ),
-  shareFeedTemplate: ({ template, serverCallbackArgs }) =>
-    createShareDefault({ template, serverCallbackArgs, objectType: 'feed' }),
+  shareFeedTemplate: ({ template, serverCallbackArgs, pickerSettings }) =>
+    createShareDefault({ template, serverCallbackArgs, pickerSettings, objectType: 'feed' }),
   sendFeedTemplateToMe: ({ template }) => createSendDefaultMe({ template, objectType: 'feed' }),
   sendFeedTemplateToFriends: ({ template, receiverUuids, includeFailureInfo }) =>
     createSendDefaultFriends({ template, receiverUuids, includeFailureInfo, objectType: 'feed' }),
-  shareListTemplate: ({ template, serverCallbackArgs }) =>
-    createShareDefault({ template, serverCallbackArgs, objectType: 'list' }),
+  shareListTemplate: ({ template, serverCallbackArgs, pickerSettings }) =>
+    createShareDefault({ template, serverCallbackArgs, pickerSettings, objectType: 'list' }),
   sendListTemplateToMe: ({ template }) => createSendDefaultMe({ template, objectType: 'list' }),
   sendListTemplateToFriends: ({ template, receiverUuids, includeFailureInfo }) =>
     createSendDefaultFriends({ template, receiverUuids, includeFailureInfo, objectType: 'list' }),
-  shareLocationTemplate: ({ template, serverCallbackArgs }) =>
-    createShareDefault({ template, serverCallbackArgs, objectType: 'location' }),
+  shareLocationTemplate: ({ template, serverCallbackArgs, pickerSettings }) =>
+    createShareDefault({ template, serverCallbackArgs, pickerSettings, objectType: 'location' }),
   sendLocationTemplateToMe: ({ template }) =>
     createSendDefaultMe({ template, objectType: 'location' }),
   sendLocationTemplateToFriends: ({ template, receiverUuids, includeFailureInfo }) =>
@@ -294,8 +317,8 @@ const KakaoShare: KakaoShareAPI = {
       includeFailureInfo,
       objectType: 'location',
     }),
-  shareCommerceTemplate: ({ template, serverCallbackArgs }) =>
-    createShareDefault({ template, serverCallbackArgs, objectType: 'commerce' }),
+  shareCommerceTemplate: ({ template, serverCallbackArgs, pickerSettings }) =>
+    createShareDefault({ template, serverCallbackArgs, pickerSettings, objectType: 'commerce' }),
   sendCommerceTemplateToMe: ({ template }) =>
     createSendDefaultMe({ template, objectType: 'commerce' }),
   sendCommerceTemplateToFriends: ({ template, receiverUuids, includeFailureInfo }) =>
@@ -305,13 +328,13 @@ const KakaoShare: KakaoShareAPI = {
       includeFailureInfo,
       objectType: 'commerce',
     }),
-  shareTextTemplate: ({ template, serverCallbackArgs }) =>
-    createShareDefault({ template, serverCallbackArgs, objectType: 'text' }),
+  shareTextTemplate: ({ template, serverCallbackArgs, pickerSettings }) =>
+    createShareDefault({ template, serverCallbackArgs, pickerSettings, objectType: 'text' }),
   sendTextTemplateToMe: ({ template }) => createSendDefaultMe({ template, objectType: 'text' }),
   sendTextTemplateToFriends: ({ template, receiverUuids, includeFailureInfo }) =>
     createSendDefaultFriends({ template, receiverUuids, includeFailureInfo, objectType: 'text' }),
-  shareCalendarTemplate: ({ template, serverCallbackArgs }) =>
-    createShareDefault({ template, serverCallbackArgs, objectType: 'calendar' }),
+  shareCalendarTemplate: ({ template, serverCallbackArgs, pickerSettings }) =>
+    createShareDefault({ template, serverCallbackArgs, pickerSettings, objectType: 'calendar' }),
   sendCalendarTemplateToMe: ({ template }) =>
     createSendDefaultMe({ template, objectType: 'calendar' }),
   sendCalendarTemplateToFriends: ({ template, receiverUuids, includeFailureInfo }) =>
