@@ -76,17 +76,19 @@ export interface KakaoTalkFriendProfile {
    */
   uuid: string;
   /** 친구의 회원번호, 앱과 연결된 친구에게만 존재 */
-  id?: number;
+  id?: number | null;
   /** 즐겨찾기 추가 여부, 채팅방 피커에서는 미제공 */
-  favorite?: boolean;
+  favorite?: boolean | null;
+  /** 마스킹된 프로필 닉네임. SDK 응답에 따라 제공되지 않거나 null일 수 있습니다. */
+  maskingProfileNickname?: string | null;
   /** 프로필 닉네임, 프로필 닉네임 동의 항목에 동의하지 않은 친구나 앱과 연결되지 않는 친구의 경우,
    * 닉네임을 마스킹 처리하여 제공(닉네임 원본을 받으려면 권한 및 displayAllProfile 설정 필요) */
-  profileNickname?: string;
+  profileNickname?: string | null;
   /**
    * 프로필 썸네일 이미지, 프로필 썸네일 이미지 동의 항목에 동의하지 않은 친구나 앱과 연결되지 않은 친구의 경우,
    * 프로필 이미지 미제공(프로필 이미지를 받으려면 권한 및 displayAllProfile 설정 필요)
    */
-  profileThumbnailImage?: string;
+  profileThumbnailImage?: string | null;
 }
 ```
 
