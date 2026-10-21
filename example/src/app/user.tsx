@@ -135,7 +135,9 @@ export default function Page() {
           <E2EApiAction
             id={'login-invalid-android-request-code'}
             title={'Reject Invalid Android Request Code'}
-            action={async () => getTokenSummary(await login({ android: { requestCode: 65536 } }))}
+            action={async () =>
+              getTokenSummary(await login({ android: { requestCode: 2147483648 } }))
+            }
           />
           {(['auto', 'light', 'dark'] as const).map((uiMode) => (
             <E2EApiAction

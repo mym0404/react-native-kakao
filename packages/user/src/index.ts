@@ -24,7 +24,8 @@ export type KakaoCodeTokenOptions = {
 };
 
 const defaultTalkLaunchMethod: KakaoTalkLaunchMethod = 'UniversalLink';
-const maxActivityRequestCode = 65535;
+const minActivityRequestCode = -2147483648;
+const maxActivityRequestCode = 2147483647;
 const webOnlyErrorCode = 'Package-UnsupportedPlatform';
 
 export interface KakaoScopeInfo {
@@ -153,8 +154,10 @@ export function login({
   const requestCode = android?.requestCode;
   kAssert(
     requestCode == null ||
-      (Number.isInteger(requestCode) && requestCode >= 0 && requestCode <= maxActivityRequestCode),
-    `[login] android.requestCode must be an integer from 0 to ${maxActivityRequestCode}`,
+      (Number.isInteger(requestCode) &&
+        requestCode >= minActivityRequestCode &&
+        requestCode <= maxActivityRequestCode),
+    `[login] android.requestCode must be an integer from ${minActivityRequestCode} to ${maxActivityRequestCode}`,
   );
 
   kAssert(

@@ -84,7 +84,7 @@ Both methods return `{ token, txId }`. The token uses the same `KakaoLoginToken`
 | `nonce` | Random string used to verify the OpenID Connect ID token. |
 | `channelPublicIds`, `serviceTerms` | Channels and terms requested during KakaoTalk certification login. |
 | `ios.launchMethod` | Switches to KakaoTalk through `UniversalLink` or `CustomScheme`. Defaults to `UniversalLink`. |
-| `android.requestCode` | Activity request code for KakaoTalk certification login. Defaults to the SDK value. |
+| `android.requestCode` | KakaoTalk certification login request code passed to the Android SDK. Accepts a 32-bit integer from `-2147483648` to `2147483647`; defaults to the SDK value when omitted. |
 | `android.channelPublicIds`, `android.serviceTerms` | Kakao Account certification login options. The public iOS account SDK does not support them. |
 
 The pinned native SDKs expose only the four signer-information items listed above. Other items are excluded from the type.
