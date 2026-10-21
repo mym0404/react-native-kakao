@@ -6,7 +6,9 @@ import {
   getTalkProfile,
   type KakaoTalkProfile,
   selectMultipleFriends,
+  selectMultiplePartnerFriends,
   selectSingleFriend,
+  selectSinglePartnerFriend,
 } from '@react-native-kakao/social';
 
 import { Btn } from '../component/Btn';
@@ -46,6 +48,34 @@ export default function Page() {
             hasNextPage: !!friends.afterUrl,
             nicknameKinds: friends.friends.map((friend) => typeof friend.profileNickname),
           };
+        }}
+      />
+      <E2EApiAction
+        id={'partner-picker-single'}
+        title={'Select Single Partner Friend'}
+        action={async () => {
+          const user = await selectSinglePartnerFriend({
+            options: { friendFilter: 'invitable', displayAllProfile: false },
+          });
+
+          return {
+            hasSelection: user != null,
+            hasUuid: !!user?.uuid,
+            maskedNicknameKind: typeof user?.maskingProfileNickname,
+            thumbnailKind: typeof user?.profileThumbnailImage,
+          };
+        }}
+      />
+      <E2EApiAction
+        id={'partner-picker-multiple'}
+        title={'Select Multiple Partner Friends'}
+        action={async () => {
+          const users = await selectMultiplePartnerFriends({
+            mode: 'popup',
+            options: { friendFilter: 'registered', minPickableCount: 1, maxPickableCount: 2 },
+          });
+
+          return { totalCount: users.totalCount, selectedCount: users.users.length };
         }}
       />
       {[

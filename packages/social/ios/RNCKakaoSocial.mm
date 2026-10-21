@@ -30,6 +30,16 @@ RCT_EXPORT_METHOD(getFriends : (NSDictionary*)options resolve : (RCTPromiseResol
   [[self manager] getFriendsWithOptions:options resolve:resolve reject:reject];
 }
 
+RCT_EXPORT_METHOD(selectPartnerFriends : (BOOL)multiple mode : (NSString*)
+                      mode options : (NSDictionary*)options resolve : (RCTPromiseResolveBlock)
+                          resolve reject : (RCTPromiseRejectBlock)reject) {
+  [[self manager] selectPartnerFriends:multiple
+                                  mode:mode
+                               options:options
+                               resolve:resolve
+                                reject:reject];
+}
+
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
     (const facebook::react::ObjCTurboModule::InitParams&)params {
   return std::make_shared<facebook::react::NativeKakaoSocialSpecJSI>(params);

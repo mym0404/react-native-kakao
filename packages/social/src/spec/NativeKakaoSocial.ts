@@ -109,9 +109,30 @@ export interface KakaoTalkGetFriendsOptions {
   friendOrder?: 'nickname' | 'age' | 'favorite';
 }
 
+export type KakaoTalkDisableSelectOption =
+  | { reason: 'custom'; message: string; uuids: string[] }
+  | {
+      reason: 'msgBlocked' | 'registered' | 'unregistered' | 'notFriend';
+      message?: string;
+      uuids?: string[];
+    };
+
+export type KakaoTalkPartnerFriendSelectOptions = KakaoTalkFriendSelectOptions & {
+  friendFilter?: 'none' | 'registered' | 'invitable';
+  countryCodeFilters?: string[];
+  usingOsFilter?: 'all' | 'android' | 'ios';
+  disableSelectOptions?: KakaoTalkDisableSelectOption[];
+  displayAllProfile?: boolean;
+};
+
 export interface Spec extends TurboModule {
   getProfile(): Promise<KakaoTalkProfile>;
   selectFriends(
+    multiple: boolean,
+    mode: string,
+    options: UnsafeObject,
+  ): Promise<KakaoTalkFriendSelectResult>;
+  selectPartnerFriends(
     multiple: boolean,
     mode: string,
     options: UnsafeObject,

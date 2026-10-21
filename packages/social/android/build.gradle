@@ -1,5 +1,6 @@
 apply from: file('./../../core/android/package-json.gradle')
 def Versions = project.ext.RNCKakaoSdkVersions
+def PartnershipVersions = project.ext.RNCKakaoCorePkg.sdkVersions.partnership
 Project coreProject = project.ext.getWorkspaceProject("core")
 
 project.ext.applyPlugins()
@@ -41,4 +42,5 @@ dependencies {
     api coreProject
     api "com.kakao.sdk:v2-friend:${Versions.friend}"
     api "com.kakao.sdk:v2-talk:${Versions.talk}"
+    implementation "com.kakao.sdk:partnership-social:${PartnershipVersions.android}"
 }
