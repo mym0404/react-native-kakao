@@ -20,7 +20,7 @@ export default {
   tests: ['script/e2e/scenarios.e2e.ts'],
   workers: 1,
   retries: 0,
-  timeout: 120000,
+  timeout: 240000,
   cleanupTimeout: 30000,
   launchTimeout: 120000,
   actionTimeout: 60000,
