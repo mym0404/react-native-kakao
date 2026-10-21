@@ -8,8 +8,54 @@ import RNCKakaoCore
 import SafariServices
 import UIKit
 
+private let noCustomTemplateId: Int64 = -1
+
 @objc public class RNCKakaoShareManager: NSObject {
   @objc public static let shared = RNCKakaoShareManager()
+
+  @objc public func makeTemplateUrl(
+    _ templateType: String,
+    templateId: Int64,
+    templateJson: [String: Any],
+    templateArgs: [String: String]?,
+    serverCallbackArgs: [String: String]?,
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    onMain {
+      do {
+        let url: URL?
+        if templateType == "custom" {
+          url = ShareApi.shared.makeCustomUrl(
+            templateId: templateId, templateArgs: templateArgs,
+            serverCallbackArgs: serverCallbackArgs
+          )
+        } else if templateType == "scrap" {
+          guard let requestUrl = templateJson["requestUrl"] as? String else {
+            throw RNCKakaoError.unknown("requestUrl is required")
+          }
+          url = ShareApi.shared.makeScrapUrl(
+            requestUrl: requestUrl,
+            templateId: templateId == noCustomTemplateId ? nil : templateId,
+            templateArgs: templateArgs,
+            serverCallbackArgs: serverCallbackArgs
+          )
+        } else {
+          var template: [String: Any?] = templateJson
+          let templatable = try self.generateTemplatable(templateType, &template)
+          url = ShareApi.shared.makeDefaultUrl(
+            templatable: templatable, serverCallbackArgs: serverCallbackArgs
+          )
+        }
+        guard let url else {
+          throw RNCKakaoError.unknown("Failed to create sharing URL")
+        }
+        resolve(url.absoluteString)
+      } catch {
+        RNCKakaoUtil.reject(reject, error)
+      }
+    }
+  }
 
   @objc public func isKakaoTalkSharingAvailable(_ resolve: @escaping RCTPromiseResolveBlock) {
     onMain {
@@ -181,7 +227,7 @@ import UIKit
           )
           return
         }
-        let customTemplateId: Int64? = templateId == -1 ? nil : templateId
+        let customTemplateId: Int64? = templateId == noCustomTemplateId ? nil : templateId
         if sendType == "send-me" {
           self.runSendMe(
             templateType: templateType,

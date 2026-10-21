@@ -5,6 +5,7 @@ import {
   isKakaoTalkSharingAvailable,
   type KakaoCalendarTemplate,
   type KakaoCommerceTemplate,
+  type KakaoDefaultTemplateParams,
   type KakaoFeedTemplate,
   type KakaoListTemplate,
   type KakaoLocationTemplate,
@@ -12,6 +13,9 @@ import {
   type KakaoTemplateLink,
   type KakaoTemplateSocial,
   type KakaoTextTemplate,
+  makeCustomTemplateUrl,
+  makeDefaultTemplateUrl,
+  makeScrapTemplateUrl,
   scrapImage,
   sendCalendarTemplateToFriends,
   sendCalendarTemplateToMe,
@@ -172,6 +176,27 @@ const calendar: KakaoCalendarTemplate = {
   ],
 };
 
+const urlVerificationText = 'URL & 한글';
+const urlExecutionParams = { source: urlVerificationText, special: 'a=b&c?d#e%f', empty: '' };
+const urlLink = {
+  ...link,
+  androidExecutionParams: urlExecutionParams,
+  iosExecutionParams: urlExecutionParams,
+};
+const urlContent = { ...content, link: urlLink };
+const urlServerCallbackArgs = { verification: urlVerificationText, empty: '' };
+const defaultTemplateUrlCases: KakaoDefaultTemplateParams[] = [
+  { templateType: 'feed', template: { ...feed, content: urlContent } },
+  {
+    templateType: 'list',
+    template: { ...list, headerLink: urlLink, contents: [urlContent, content2] },
+  },
+  { templateType: 'location', template: { ...location, content: urlContent } },
+  { templateType: 'commerce', template: { ...commerce, content: urlContent } },
+  { templateType: 'text', template: { ...text, text: urlVerificationText, link: urlLink } },
+  { templateType: 'calendar', template: { ...calendar, content: urlContent } },
+];
+
 async function sendDetailedMessage(templateType: 'text' | 'custom' | 'scrap') {
   const selected = await selectMultipleFriends(scrapFriendPickerParams);
   const params = {
@@ -219,6 +244,49 @@ export default function Page() {
         id={'share-availability'}
         title={'Is Kakao Talk Sharing Available'}
         action={isKakaoTalkSharingAvailable}
+      />
+      {defaultTemplateUrlCases.map((params) => (
+        <E2EApiAction
+          key={params.templateType}
+          id={`share-url-${params.templateType}`}
+          title={`Build ${params.templateType} sharing URL`}
+          action={() =>
+            makeDefaultTemplateUrl({ ...params, serverCallbackArgs: urlServerCallbackArgs })
+          }
+        />
+      ))}
+      <E2EApiAction
+        id={'share-url-custom'}
+        title={'Build custom sharing URL'}
+        action={() =>
+          makeCustomTemplateUrl({
+            templateId: kakaoLinkTemplateId,
+            templateArgs: { ...scrapTemplateArgs, verification: urlVerificationText },
+            serverCallbackArgs: urlServerCallbackArgs,
+          })
+        }
+      />
+      <E2EApiAction
+        id={'share-url-scrap'}
+        title={'Build scrap sharing URL'}
+        action={() =>
+          makeScrapTemplateUrl({
+            requestUrl: `${scrapRequestUrl}/?source=${encodeURIComponent(urlVerificationText)}`,
+            serverCallbackArgs: urlServerCallbackArgs,
+          })
+        }
+      />
+      <E2EApiAction
+        id={'share-url-scrap-custom'}
+        title={'Build custom scrap sharing URL'}
+        action={() =>
+          makeScrapTemplateUrl({
+            requestUrl: scrapRequestUrl,
+            templateId: kakaoLinkTemplateId,
+            templateArgs: scrapTemplateArgs,
+            serverCallbackArgs: urlServerCallbackArgs,
+          })
+        }
       />
       <E2EApiAction
         id={'share-void-result'}

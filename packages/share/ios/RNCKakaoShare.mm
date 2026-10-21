@@ -18,6 +18,20 @@ RCT_EXPORT_METHOD(isKakaoTalkSharingAvailable : (RCTPromiseResolveBlock)
   [[self manager] isKakaoTalkSharingAvailable:resolve];
 }
 
+RCT_EXPORT_METHOD(makeTemplateUrl : (NSString*)templateType templateId : (
+    double)templateId templateJson : (NSDictionary*)templateJson templateArgs : (NSDictionary*)
+                      templateArgs serverCallbackArgs : (NSDictionary*)
+                          serverCallbackArgs resolve : (RCTPromiseResolveBlock)
+                              resolve reject : (RCTPromiseRejectBlock)reject) {
+  [[self manager] makeTemplateUrl:templateType
+                       templateId:templateId
+                     templateJson:templateJson
+                     templateArgs:templateArgs
+               serverCallbackArgs:serverCallbackArgs
+                          resolve:resolve
+                           reject:reject];
+}
+
 RCT_EXPORT_METHOD(uploadImage : (NSString*)imageUri secureResource : (BOOL)
                       secureResource resolve : (RCTPromiseResolveBlock)
                           resolve reject : (RCTPromiseRejectBlock)reject) {

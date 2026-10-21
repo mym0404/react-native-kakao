@@ -7,6 +7,8 @@ sidebar_position: 200
 
 All types are also documented with TypeScript comments for easy reference while coding.
 
+Pass unencoded string keys and values to `androidExecutionParams` and `iosExecutionParams`. The package URL-encodes each key and value, preserving `&`, `=`, and Unicode within a value. For example, `{ query: 'A&B' }` becomes `query=A%26B`. Sharing, message sending, and sharing URL builders use the same rule.
+
 ```tsx
 /**
  * Object containing link information for navigating when clicking on content or buttons within a message.
