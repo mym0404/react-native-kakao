@@ -1,7 +1,6 @@
 apply from: file('./../../core/android/package-json.gradle')
 def Versions = project.ext.RNCKakaoSdkVersions
 Project coreProject = project.ext.getWorkspaceProject("core")
-Project socialProject = project.ext.getWorkspaceProject("social")
 
 project.ext.applyPlugins()
 
@@ -40,6 +39,6 @@ dependencies {
     implementation "com.facebook.react:react-android"
 
     api coreProject
-    api socialProject
     implementation "com.kakao.sdk:v2-share:${Versions.share}"
+    implementation "com.kakao.sdk:v2-talk:${Versions.talk}"
 }
