@@ -68,9 +68,9 @@ RCT_EXPORT_METHOD(issueAccessTokenWithCode : (NSString*)code codeVerifier : (
                                     reject:reject];
 }
 
-RCT_EXPORT_METHOD(refreshToken : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)
-                      reject) {
-  [[self manager] refreshToken:resolve reject:reject];
+RCT_EXPORT_METHOD(refreshToken : (NSDictionary*)token resolve : (RCTPromiseResolveBlock)
+                      resolve reject : (RCTPromiseRejectBlock)reject) {
+  [[self manager] refreshToken:token resolve:resolve reject:reject];
 }
 
 RCT_EXPORT_METHOD(logout : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {

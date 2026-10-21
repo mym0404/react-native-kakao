@@ -67,16 +67,22 @@ export interface KakaoAccessTokenInfo {
 getAccessToken();
 ```
 
-## Refresh stored tokens
+## Refresh tokens
 
-`refreshToken()` uses the refresh token stored by the Android or iOS SDK to refresh the access token. The SDK stores the updated tokens and returns the same [`KakaoLoginToken` as `login()`](./login.mdx#response). Expiry timestamps use Unix seconds; remaining lifetimes use seconds.
+`refreshToken()` refreshes the token stored by the Android or iOS SDK. Pass `refreshToken({ token })` to choose an existing token explicitly. The SDK uses that token's refresh token even when its storage is empty or contains a different token.
 
 ```tsx
 import { refreshToken } from '@react-native-kakao/user';
 
-const token = await refreshToken();
+const refreshedStoredToken = await refreshToken();
+
+const refreshedExternalToken = await refreshToken({ token: previousToken });
 ```
 
-If no refresh token is stored or it has expired, the method rejects with the Kakao SDK error. Call `login()` again. The JavaScript SDK does not expose token refresh, so web rejects with `Package-UnsupportedPlatform`.
+Pass the `KakaoLoginToken` returned by `login()` or `issueAccessTokenWithCode()` as `previousToken`. A refresh-token string alone is insufficient because the SDK retains the previous expiry information when it does not issue a new refresh token. An expired access token can still be refreshed if its refresh token remains valid.
+
+On success, the SDK stores the updated token and returns the same `KakaoLoginToken` shape. Expiry timestamps use Unix seconds; remaining lifetimes are calculated from each expiry timestamp in seconds. `tokenType` and `idToken` are omitted when the SDK does not provide them.
+
+If the selected refresh token is missing or expired, the method rejects with the Kakao SDK error. Call `login()` again. The JavaScript SDK does not expose token refresh, so web rejects with `Package-UnsupportedPlatform` whether or not a token is supplied.
 
 For web token exchange and storage, follow [Web login](./login-web.mdx).

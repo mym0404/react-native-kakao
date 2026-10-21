@@ -1,0 +1,7 @@
+---
+'@react-native-kakao/user': minor
+'@react-native-kakao/cert': patch
+---
+
+Allow explicit native tokens when refreshing and normalize remaining token lifetimes and optional fields across native responses.
+
