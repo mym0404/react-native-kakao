@@ -12,6 +12,11 @@
 
 RCT_EXPORT_MODULE()
 
+RCT_EXPORT_METHOD(isKakaoNaviInstalled : (RCTPromiseResolveBlock)
+                      resolve reject : (RCTPromiseRejectBlock)reject) {
+  [[self manager] isKakaoNaviInstalled:resolve];
+}
+
 RCT_EXPORT_METHOD(navigateOrShareTo : (NSDictionary*)destination option : (NSDictionary*)
                       option viaList : (NSArray*)viaList openWebInstallUrlIfNaviAppNotAvailable : (
                           NSNumber*)openWebInstallUrlIfNaviAppNotAvailable isShare : (NSNumber*)

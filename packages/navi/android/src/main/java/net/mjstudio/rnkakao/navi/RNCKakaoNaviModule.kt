@@ -32,6 +32,12 @@ class RNCKakaoNaviModule internal constructor(
   context: ReactApplicationContext,
 ) : NativeKakaoNaviSpec(context) {
   @ReactMethod
+  override fun isKakaoNaviInstalled(promise: Promise) =
+    onMain {
+      promise.resolve(NaviClient.instance.isKakaoNaviInstalled(reactApplicationContext))
+    }
+
+  @ReactMethod
   override fun navigateOrShareTo(
     destination: ReadableMap,
     option: ReadableMap?,

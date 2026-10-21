@@ -38,6 +38,10 @@ export type {
   KakaoImageUploadResult,
 };
 
+export function isKakaoTalkSharingAvailable(): Promise<boolean> {
+  return Native.isKakaoTalkSharingAvailable();
+}
+
 function shareOrSendMeOrSendFriendOrWhatever(
   /* share, send-me, send-friend */
   sendType: string,
@@ -581,6 +585,7 @@ export function scrapImage({
 }
 
 const KakaoShare = {
+  isKakaoTalkSharingAvailable,
   uploadImage,
   shareScrapTemplate,
   sendScrapTemplateToMe,

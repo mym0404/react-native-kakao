@@ -16,7 +16,7 @@ Make sure to install the dependencies for the `Core` package by referring to the
 
 The `navi` package provides Kakao Navigation functions.
 
-Kakao Navigation provides an SDK and APIs for adding navigation to your service. You can launch the Kakao Navigation app for navigation or implement navigation and route information features within your service app.
+It opens the Kakao Navi app to request navigation or share a destination.
 
 Refer to the [Official Documentation](https://developers.kakao.com/docs/latest/ko/kakaonavi/common) for more details.
 
@@ -39,3 +39,15 @@ Refer to the [Official Documentation](https://developers.kakao.com/docs/latest/k
     ```
   </TabItem>
 </Tabs>
+
+## Kakao Navi installation status
+
+After initializing the SDK, call `isKakaoNaviInstalled()` to check whether Kakao Navi is installed. This only queries availability; it does not open the app or its installation page.
+
+```tsx
+import { isKakaoNaviInstalled } from '@react-native-kakao/navi';
+
+const isInstalled = await isKakaoNaviInstalled();
+```
+
+Android returns the Kakao SDK's installation check. iOS checks whether it can open the `kakaonavi-sdk` URL scheme and requires the query scheme in [Navi setup](/docs/navi/intro-ios). Web returns `false` because it cannot inspect installed apps; use `navigateTo` and `shareTo` to request a launch from mobile web.

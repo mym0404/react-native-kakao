@@ -32,6 +32,12 @@ class RNCKakaoShareModule internal constructor(
   context: ReactApplicationContext,
 ) : NativeKakaoShareSpec(context) {
   @ReactMethod
+  override fun isKakaoTalkSharingAvailable(promise: Promise) =
+    onMain {
+      promise.resolve(ShareClient.instance.isKakaoTalkSharingAvailable(reactApplicationContext))
+    }
+
+  @ReactMethod
   override fun uploadImage(
     imageUri: String,
     secureResource: Boolean,

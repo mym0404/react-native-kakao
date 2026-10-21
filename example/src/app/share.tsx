@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Platform, TextInput } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import {
+  isKakaoTalkSharingAvailable,
   type KakaoCalendarTemplate,
   type KakaoCommerceTemplate,
   type KakaoFeedTemplate,
@@ -214,6 +215,11 @@ export default function Page() {
       flex={1}
       contentContainerSx={{ pt: 12, pb: 48, alignItems: 'center', px: 4, gap: 4 }}
     >
+      <E2EApiAction
+        id={'share-availability'}
+        title={'Is Kakao Talk Sharing Available'}
+        action={isKakaoTalkSharingAvailable}
+      />
       <TextInput
         accessibilityLabel={'Image URI'}
         testID={'share-upload-image-uri'}
