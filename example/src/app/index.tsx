@@ -1,4 +1,4 @@
-import { Image } from 'react-native';
+import { Image, Pressable } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import { login, logout } from '@react-native-kakao/user';
 import { Link } from 'expo-router';
@@ -71,36 +71,15 @@ export default function Page() {
               );
           }}
         />
-        <Link testID={'menu-user'} href={'/user'}>
-          <Txt textDecorationLine={'underline'} align={'center'}>
-            {'@react-native-kakao/user'}
-          </Txt>
-        </Link>
-        <Link testID={'menu-share'} href={'/share'}>
-          <Txt textDecorationLine={'underline'} align={'center'}>
-            {'@react-native-kakao/share'}
-          </Txt>
-        </Link>
-        <Link testID={'menu-navi'} href={'/navi'}>
-          <Txt textDecorationLine={'underline'} align={'center'}>
-            {'@react-native-kakao/navi'}
-          </Txt>
-        </Link>
-        <Link testID={'menu-social'} href={'/social'}>
-          <Txt textDecorationLine={'underline'} align={'center'}>
-            {'@react-native-kakao/social'}
-          </Txt>
-        </Link>
-        <Link testID={'menu-channel'} href={'/channel'}>
-          <Txt textDecorationLine={'underline'} align={'center'}>
-            {'@react-native-kakao/channel'}
-          </Txt>
-        </Link>
-        <Link testID={'menu-cert'} href={'/cert'}>
-          <Txt textDecorationLine={'underline'} align={'center'}>
-            {'@react-native-kakao/cert'}
-          </Txt>
-        </Link>
+        {(['user', 'share', 'navi', 'social', 'channel', 'cert'] as const).map((module) => (
+          <Link key={module} testID={`menu-${module}`} href={`/${module}`} asChild>
+            <Pressable>
+              <Txt textDecorationLine={'underline'} align={'center'}>
+                {`@react-native-kakao/${module}`}
+              </Txt>
+            </Pressable>
+          </Link>
+        ))}
       </Box>
     </StyledScrollView>
   );
