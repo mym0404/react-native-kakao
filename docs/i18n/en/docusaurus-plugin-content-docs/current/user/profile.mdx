@@ -65,6 +65,18 @@ export type KakaoUser = {
 me()
 ```
 
+## Age range, gender, and birthday type
+
+`me()` returns Kakao's string values across platforms. Availability requires the app's consent-item configuration and user consent.
+
+| Field | Provided values |
+| --- | --- |
+| `ageRange` | `0~9`, `10~14`, `15~19`, `20~29`, `30~39`, `40~49`, `50~59`, `60~69`, `70~79`, `80~89`, `90~` |
+| `gender` | `female` or `male` |
+| `birthdayType` | `SOLAR` for solar birthdays or `LUNAR` for lunar birthdays |
+
+Android SDK unknown values map to `null`. Check both `null` and `undefined` for unavailable fields, for example with `user.ageRange == null`. `birthdayType` is distinct from the birthday date in `birthday`.
+
 ## Profile metadata
 
 These fields use the same names on Android, iOS, and web. Values that Kakao does not provide are `null`; `false` remains a value rather than an absence marker.
