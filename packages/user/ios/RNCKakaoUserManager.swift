@@ -437,7 +437,7 @@ import RNCKakaoCore
             "phoneNumber": user.kakaoAccount?.phoneNumber as Any,
             "ageRange": user.kakaoAccount?.ageRange?.rawValue as Any,
             "birthday": user.kakaoAccount?.birthday as Any,
-            "birthdayType": user.kakaoAccount?.birthdayType as Any,
+            "birthdayType": user.kakaoAccount?.birthdayType?.rawValue as Any,
             "isLeapMonth": user.kakaoAccount?.isLeapMonth as Any,
             "birthyear": user.kakaoAccount?.birthyear as Any,
             "gender": user.kakaoAccount?.gender?.rawValue as Any,
