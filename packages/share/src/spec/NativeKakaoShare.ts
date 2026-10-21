@@ -263,7 +263,7 @@ export interface Spec extends TurboModule {
     useWebBrowserIfKakaoTalkNotAvailable: boolean,
     templateArgs: Readonly<{ [key: string]: string }>,
     serverCallbackArgs: Readonly<{ [key: string]: string }>,
-  ): Promise<any>;
+  ): Promise<KakaoMessageSendResult | null>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('RNCKakaoShare');
