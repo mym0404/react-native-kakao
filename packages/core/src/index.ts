@@ -11,6 +11,7 @@ export type { KakaoSDKInfo } from './spec/NativeKakaoCore';
 export type KakaoSDKOptions = {
   customScheme?: string;
   loggingEnabled?: boolean;
+  android?: { sdkIdentifier?: string };
   web?: { javascriptKey: string; restApiKey: string };
 };
 
@@ -21,7 +22,17 @@ export async function initializeKakaoSDK(appKey: string, options?: KakaoSDKOptio
     '[initializeKakaoSDK] customScheme must be a URL scheme without ://',
   );
 
-  await Native.initializeKakaoSDK(appKey, options?.loggingEnabled ?? false, options?.customScheme);
+  kAssert(
+    options?.android?.sdkIdentifier == null || typeof options.android.sdkIdentifier === 'string',
+    '[initializeKakaoSDK] android.sdkIdentifier must be a string',
+  );
+
+  await Native.initializeKakaoSDK(
+    appKey,
+    options?.loggingEnabled ?? false,
+    options?.customScheme,
+    options?.android?.sdkIdentifier,
+  );
 }
 
 export function getKakaoSDKInfo() {

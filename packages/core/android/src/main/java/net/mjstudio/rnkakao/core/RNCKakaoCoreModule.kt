@@ -4,6 +4,7 @@ import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactMethod
 import com.kakao.sdk.common.KakaoSdk
+import com.kakao.sdk.common.model.SdkIdentifier
 import com.kakao.sdk.common.util.Utility
 import net.mjstudio.rnkakao.core.util.argMap
 import net.mjstudio.rnkakao.core.util.onMain
@@ -18,6 +19,7 @@ class RNCKakaoCoreModule internal constructor(
     appKey: String,
     loggingEnabled: Boolean,
     customScheme: String?,
+    androidSdkIdentifier: String?,
     promise: Promise,
   ) = onMain {
     try {
@@ -26,6 +28,7 @@ class RNCKakaoCoreModule internal constructor(
         appKey = appKey,
         customScheme = customScheme,
         loggingEnabled = loggingEnabled,
+        sdkIdentifier = androidSdkIdentifier?.let { SdkIdentifier(it) },
       )
       promise.resolve(null)
     } catch (error: Exception) {
