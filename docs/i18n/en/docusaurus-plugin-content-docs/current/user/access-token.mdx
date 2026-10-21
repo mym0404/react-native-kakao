@@ -4,6 +4,23 @@ sidebar_position: 104
 
 # Managing Tokens
 
+## Check Stored Token Presence
+
+`hasToken()` returns `Promise<boolean>` on Android, iOS, and web. It reads the current platform SDK's local token storage without calling Kakao's token information API or refreshing a token. This lets an app check for stored credentials during startup or while offline.
+
+```tsx
+import { hasToken, isLogined } from '@react-native-kakao/user';
+
+const hasStoredToken = await hasToken();
+if (hasStoredToken) {
+  const isTokenValid = await isLogined();
+}
+```
+
+`true` means the SDK has a stored token. That token may have expired or been revoked. Use `isLogined()` to validate it with Kakao before treating the user as authenticated.
+
+The method returns only a boolean and does not expose the stored token.
+
 ## Obtaining Token
 
 Use `getAccessToken()` to retrieve the token.

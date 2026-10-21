@@ -24,6 +24,7 @@ export interface Spec extends TurboModule {
   logout(): Promise<void>;
   unlink(): Promise<void>;
   isLogined(): Promise<boolean>;
+  hasToken(): Promise<boolean>;
   scopes(scopes?: string[]): Promise<KakaoScopeInfo[]>;
   revokeScopes(scopes: string[]): Promise<void>;
   serviceTerms(result?: string, tags?: string[]): Promise<KakaoServiceTerms[]>;
