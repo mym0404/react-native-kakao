@@ -9,11 +9,23 @@ let isInstalled = false;
 const findVisible = async (device: Device, id: string) => {
   const target = device.locator(`id=${id} visible=true`);
   // Android also exposes an outer ScrollView; the innermost one owns page content.
-  await device.locator('role=ScrollView').last().scrollUntilVisible(target, {
-    direction: 'down',
-    momentum: 'slow',
-    timeout: 120000,
-  });
+  const container = device.locator('role=ScrollView').last();
+  const scrollOptions = { momentum: 'slow', timeout: 60000 } as const;
+
+  try {
+    await container.scrollUntilVisible(target, { ...scrollOptions, direction: 'down' });
+  } catch (error) {
+    if (
+      error == null ||
+      typeof error !== 'object' ||
+      !('code' in error) ||
+      error.code !== 'LOCATOR_NOT_FOUND'
+    ) {
+      throw error;
+    }
+
+    await container.scrollUntilVisible(target, { ...scrollOptions, direction: 'up' });
+  }
 
   return target;
 };
