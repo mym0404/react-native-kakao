@@ -275,6 +275,23 @@ import RNCKakaoCore
     }
   }
 
+  @objc public func selectShippingAddress(
+    _ resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    onMain {
+      UserApi.shared.selectShippingAddress { addressId, error in
+        if let error {
+          RNCKakaoUtil.reject(reject, error)
+        } else if let addressId {
+          resolve(addressId)
+        } else {
+          RNCKakaoUtil.reject(reject, RNCKakaoError.responseNotFound(name: "addressId"))
+        }
+      }
+    }
+  }
+
   @objc public func me(
     _ propertyKeys: [String]?,
     resolve: @escaping RCTPromiseResolveBlock,
