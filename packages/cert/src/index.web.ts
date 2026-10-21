@@ -5,9 +5,11 @@ import type { KakaoCertAPI } from './index';
 
 declare const Kakao: { Auth: { authorizeForCert: (options: object) => void } };
 
+const unsupportedPlatformErrorCode = 'Package-UnsupportedPlatform';
+
 async function unsupported(): Promise<never> {
   kCreateWebError({
-    code: 'Package-UnsupportedPlatform',
+    code: unsupportedPlatformErrorCode,
     message: 'This certification operation requires the Android or iOS Cert SDK.',
   });
 }
@@ -15,6 +17,12 @@ async function unsupported(): Promise<never> {
 const KakaoCert: KakaoCertAPI = {
   certLoginWithKakaoTalk: unsupported,
   certLoginWithKakaoAccount: unsupported,
+  issueCertTokenWithCode: async () => {
+    kCreateWebError({
+      code: unsupportedPlatformErrorCode,
+      message: 'issueCertTokenWithCode is only available on iOS.',
+    });
+  },
   getPublicKey: unsupported,
   getSessionInfo: unsupported,
   fetchSessionInfo: unsupported,
@@ -41,6 +49,7 @@ const KakaoCert: KakaoCertAPI = {
 export const {
   certLoginWithKakaoTalk,
   certLoginWithKakaoAccount,
+  issueCertTokenWithCode,
   getPublicKey,
   getSessionInfo,
   fetchSessionInfo,

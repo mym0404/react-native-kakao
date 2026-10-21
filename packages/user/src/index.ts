@@ -16,6 +16,12 @@ export interface KakaoLoginToken {
   scopes: string[];
 }
 export type KakaoTalkLaunchMethod = 'UniversalLink' | 'CustomScheme';
+export type KakaoCodeTokenOptions = {
+  code: string;
+  codeVerifier?: string;
+  redirectUri?: string;
+  web?: { clientSecret?: string };
+};
 
 const defaultTalkLaunchMethod: KakaoTalkLaunchMethod = 'UniversalLink';
 const webOnlyErrorCode = 'Package-UnsupportedPlatform';
@@ -284,6 +290,16 @@ export function me({
   return Native.me(propertyKeys, secureResource);
 }
 
+export async function issueAccessTokenWithCode({
+  code,
+  codeVerifier,
+  redirectUri,
+}: KakaoCodeTokenOptions): Promise<KakaoLoginToken> {
+  kAssert(is.string(code) && code.length > 0, '[issueAccessTokenWithCode] code is required');
+
+  return Native.issueAccessTokenWithCode(code, codeVerifier, redirectUri);
+}
+
 export function getAccessToken(): Promise<KakaoAccessTokenInfo> {
   return Native.getAccessToken();
 }
@@ -309,6 +325,7 @@ export async function issueAccessTokenWithCodeWeb(params: {
   redirectUri: string;
   clientSecret?: string;
   code: string;
+  codeVerifier?: string;
 }): Promise<{
   tokenType: string;
   accessToken: string;
@@ -328,6 +345,7 @@ const KakaoUser = {
   login,
   loginWithKakao,
   refreshToken,
+  issueAccessTokenWithCode,
   signup,
   logout,
   unlink,

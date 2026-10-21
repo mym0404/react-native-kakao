@@ -14,6 +14,7 @@ import com.kakao.sdk.auth.model.Prompt
 import com.kakao.sdk.cert.CertApiClient
 import com.kakao.sdk.cert.model.SessionInfo
 import net.mjstudio.rnkakao.core.util.RNCKakaoResponseNotFoundException
+import net.mjstudio.rnkakao.core.util.RNCKakaoUnsupportedPlatformException
 import net.mjstudio.rnkakao.core.util.argArr
 import net.mjstudio.rnkakao.core.util.argMap
 import net.mjstudio.rnkakao.core.util.filterIsInstance
@@ -43,6 +44,16 @@ class RNCKakaoCertModule internal constructor(
     options: ReadableMap,
     promise: Promise,
   ) = login(options, false, promise)
+
+  @ReactMethod
+  override fun issueCertTokenWithCode(
+    code: String,
+    codeVerifier: String?,
+    redirectUri: String?,
+    promise: Promise,
+  ) {
+    promise.rejectWith(RNCKakaoUnsupportedPlatformException("issueCertTokenWithCode", "iOS"))
+  }
 
   private fun login(
     options: ReadableMap,

@@ -21,6 +21,15 @@ RCT_EXPORT_METHOD(certLoginWithKakaoAccount : (NSDictionary*)options resolve : (
     RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
   [[self manager] certLoginWithKakaoAccount:options resolve:resolve reject:reject];
 }
+RCT_EXPORT_METHOD(issueCertTokenWithCode : (NSString*)code codeVerifier : (
+    NSString*)codeVerifier redirectUri : (NSString*)redirectUri resolve : (RCTPromiseResolveBlock)
+                      resolve reject : (RCTPromiseRejectBlock)reject) {
+  [[self manager] issueCertTokenWithCode:code
+                            codeVerifier:codeVerifier
+                             redirectUri:redirectUri
+                                 resolve:resolve
+                                  reject:reject];
+}
 RCT_EXPORT_METHOD(publicKey : (NSString*)certType resolve : (RCTPromiseResolveBlock)
                       resolve reject : (RCTPromiseRejectBlock)reject) {
   [[self manager] publicKey:certType resolve:resolve reject:reject];
