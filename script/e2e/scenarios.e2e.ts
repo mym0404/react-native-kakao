@@ -26,13 +26,30 @@ const openMenu = async (screen: Screen, menu: string) => {
   await expect(screen.getByTestId(screenTitle)).toHaveText(menu);
 };
 
-test.beforeEach(async ({ app, device, screen }) => {
+test.beforeEach(async ({ app, device, platform, screen }) => {
   if (!isInstalled) {
     await device.installApp();
     isInstalled = true;
   }
 
-  await app.open();
+  try {
+    await app.open();
+  } catch (error) {
+    const isSimulatorTimeout =
+      platform === 'ios' &&
+      error != null &&
+      typeof error === 'object' &&
+      'message' in error &&
+      typeof error.message === 'string' &&
+      error.message.includes('xcrun timed out after');
+
+    if (!isSimulatorTimeout) {
+      throw error;
+    }
+
+    await app.open();
+  }
+
   await expect(screen.getByTestId(screenTitle)).toHaveText('Index');
 });
 
