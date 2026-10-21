@@ -395,6 +395,7 @@ import RNCKakaoCore
           resolve([
             "id": user.id as Any,
             "uuid": user.uuid as Any,
+            "groupUserToken": user.groupUserToken as Any,
             "properties": user.properties ?? [:],
             "hasSignedUp": user.hasSignedUp as Any,
             "connectedAt": user.connectedAt?.timeIntervalSince1970 as Any,

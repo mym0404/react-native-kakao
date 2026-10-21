@@ -245,6 +245,7 @@ const KakaoUser: KakaoUserAPI = {
         id: number;
         hasSignedUp?: boolean | null;
         forPartner?: { uuid?: string };
+        groupUserToken?: string;
         connectedAt?: string;
         synchedAt?: string;
         kakaoAccount?: Partial<KakaoUserProfile> & {
@@ -267,6 +268,7 @@ const KakaoUser: KakaoUserAPI = {
         hasSignedUp: ret.hasSignedUp ?? null,
         properties: response.properties ?? {},
         uuid: ret.forPartner?.uuid ?? null,
+        groupUserToken: ret.groupUserToken ?? null,
         isDefaultImage: profile.isDefaultImage ?? null,
         isLeapMonth: kakaoAccount.isLeapMonth ?? null,
         legalName: kakaoAccount.legalName ?? null,
