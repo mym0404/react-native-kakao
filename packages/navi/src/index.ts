@@ -3,6 +3,10 @@ import Native from './spec/NativeKakaoNavi';
 
 export type { KakaoNaviLocation, KakaoNaviOption } from './spec/NativeKakaoNavi';
 
+export function isKakaoNaviInstalled(): Promise<boolean> {
+  return Native.isKakaoNaviInstalled();
+}
+
 export function navigateTo({
   destination,
   option,
@@ -43,6 +47,6 @@ export function shareTo({
   );
 }
 
-const KakaoNavi = { navigateTo, shareTo };
+const KakaoNavi = { isKakaoNaviInstalled, navigateTo, shareTo };
 export default KakaoNavi;
 export type KakaoNaviAPI = typeof KakaoNavi;

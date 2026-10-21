@@ -14,7 +14,7 @@ Make sure to install the dependencies for the `core` package by referring to the
 
 ## Getting Started
 
-The `share` package contains Kakao login and related functions.
+The `share` package provides Kakao Talk sharing and message sending.
 
 Refer to the [Official Documentation](https://developers.kakao.com/docs/latest/ko/message/common) for more details.
 
@@ -49,3 +49,15 @@ The image above shows browser sharing when KakaoTalk is not installed. If KakaoT
 Before implementing Kakao share and messaging, configure the additional settings in the Kakao developer console.
 
 Refer to the [Official Documentation](https://developers.kakao.com/docs/latest/ko/message/prerequisite) for more information.
+
+## Kakao Talk sharing availability
+
+After initializing the SDK, call `isKakaoTalkSharingAvailable()` to check whether Kakao Talk sharing can run on the device. This only queries availability; it does not open Kakao Talk or the browser.
+
+```tsx
+import { isKakaoTalkSharingAvailable } from '@react-native-kakao/share';
+
+const isAvailable = await isKakaoTalkSharingAvailable();
+```
+
+Android and iOS return the Kakao SDK's result. iOS requires the query schemes in [Common iOS setup](/docs/install-ios). Web returns `false` because it cannot inspect installed apps. Existing sharing APIs still support web sharing.

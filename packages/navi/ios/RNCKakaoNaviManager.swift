@@ -2,9 +2,16 @@ import Foundation
 import KakaoSDKNavi
 import React
 import RNCKakaoCore
+import UIKit
 
 @objc public class RNCKakaoNaviManager: NSObject {
   @objc public static let shared = RNCKakaoNaviManager()
+
+  @objc public func isKakaoNaviInstalled(_ resolve: @escaping RCTPromiseResolveBlock) {
+    onMain {
+      resolve(UIApplication.shared.canOpenURL(URL(string: "kakaonavi-sdk://")!))
+    }
+  }
 
   @objc public func navigateOrShareTo(
     _ dest: [String: Any],

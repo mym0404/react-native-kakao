@@ -1,4 +1,4 @@
-import { navigateTo, shareTo } from '@react-native-kakao/navi';
+import { isKakaoNaviInstalled, navigateTo, shareTo } from '@react-native-kakao/navi';
 
 import { Btn } from '../component/Btn';
 import { E2EApiAction } from '../component/E2EApiAction';
@@ -49,6 +49,11 @@ export default function Page() {
           })
         }
         onSuccess={console.log}
+      />
+      <E2EApiAction
+        id={'navi-availability'}
+        title={'Is Kakao Navi Installed'}
+        action={isKakaoNaviInstalled}
       />
     </StyledScrollView>
   );

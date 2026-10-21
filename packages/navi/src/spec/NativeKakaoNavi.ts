@@ -28,6 +28,7 @@ export interface KakaoNaviLocation {
 }
 
 export interface Spec extends TurboModule {
+  isKakaoNaviInstalled(): Promise<boolean>;
   navigateOrShareTo(
     destination: UnsafeObject,
     option?: UnsafeObject,

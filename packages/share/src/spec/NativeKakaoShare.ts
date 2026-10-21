@@ -238,6 +238,7 @@ export type KakaoMessageSendResult = {
 };
 
 export interface Spec extends TurboModule {
+  isKakaoTalkSharingAvailable(): Promise<boolean>;
   uploadImage(imageUri: string, secureResource: boolean): Promise<KakaoImageUploadResult>;
   shareScrapTemplate(
     requestUrl: string,
