@@ -19,7 +19,7 @@ test('ZX reports nonzero exits, deadlines, and cancellation', async () => {
 
     const script = 'setInterval(() => {}, 1000)';
     await assert.rejects(
-      logCommand($({ quiet: true })`${node} -e ${script}`.timeout(100, 'SIGKILL'), log),
+      logCommand($({ quiet: true })`exec ${node} -e ${script}`.timeout(100, 'SIGKILL'), log),
       /SIGKILL/,
     );
 
@@ -29,7 +29,7 @@ test('ZX reports nonzero exits, deadlines, and cancellation', async () => {
           quiet: true,
           signal: AbortSignal.timeout(100),
           detached: true,
-        })`${node} -e ${script}`,
+        })`exec ${node} -e ${script}`,
         log,
       ),
       /SIGTERM/,
