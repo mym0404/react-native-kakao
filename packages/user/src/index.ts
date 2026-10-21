@@ -103,12 +103,14 @@ export function login({
   useKakaoAccountLogin,
   scopes,
   nonce,
+  loginHint,
 }: {
   serviceTerms?: string[];
   prompts?: ('Login' | 'Create' | 'Cert' | 'SelectAccount')[];
   scopes?: string[];
   useKakaoAccountLogin?: boolean;
   nonce?: string;
+  loginHint?: string;
   web?: {
     redirectUri: string;
     scope?: string[];
@@ -130,12 +132,18 @@ export function login({
     '[login] `scopes` cannot be passed with `prompts` or `serviceTerms`',
   );
 
+  kAssert(
+    loginHint == null || (!is.notEmptyArray(scopes) && !is.notEmptyArray(serviceTerms)),
+    '[login] `loginHint` cannot be passed with `scopes` or `serviceTerms` on native platforms.',
+  );
+
   return Native.login(
     serviceTerms ?? [],
     prompts ?? [],
     useKakaoAccountLogin ?? false,
     scopes ?? [],
     nonce,
+    loginHint,
   );
 }
 
