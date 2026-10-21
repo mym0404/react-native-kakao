@@ -77,11 +77,17 @@ import { refreshToken } from '@react-native-kakao/user';
 const refreshedStoredToken = await refreshToken();
 
 const refreshedExternalToken = await refreshToken({ token: previousToken });
+
+const refreshedWithoutRequestLogs = await refreshToken({
+  ios: { loggingEnabled: false },
+});
 ```
 
 Pass the `KakaoLoginToken` returned by `login()` or `issueAccessTokenWithCode()` as `previousToken`. A refresh-token string alone is insufficient because the SDK retains the previous expiry information when it does not issue a new refresh token. An expired access token can still be refreshed if its refresh token remains valid.
 
 On success, the SDK stores the updated token and returns the same `KakaoLoginToken` shape. Expiry timestamps use Unix seconds; remaining lifetimes are calculated from each expiry timestamp in seconds. `tokenType` and `idToken` are omitted when the SDK does not provide them.
+
+`ios.loggingEnabled` defaults to `true`, preserving the iOS SDK's default logging behavior. Set it to `false` to hide this refresh request's logs and response body without changing global SDK logging. iOS SDK `2.29.0` still logs a `response: -` placeholder. It applies to stored and explicitly supplied tokens. Android ignores this iOS option.
 
 If the selected refresh token is missing or expired, the method rejects with the Kakao SDK error. Call `login()` again. The JavaScript SDK does not expose token refresh, so web rejects with `Package-UnsupportedPlatform` whether or not a token is supplied.
 

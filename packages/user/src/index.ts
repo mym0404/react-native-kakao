@@ -233,7 +233,16 @@ export function loginWithKakao({
 
 export function refreshToken({
   token,
-}: { token?: KakaoLoginToken } = {}): Promise<KakaoLoginToken> {
+  ios,
+}: {
+  token?: KakaoLoginToken;
+  ios?: { loggingEnabled?: boolean };
+} = {}): Promise<KakaoLoginToken> {
+  kAssert(
+    ios?.loggingEnabled == null || typeof ios.loggingEnabled === 'boolean',
+    '[refreshToken] ios.loggingEnabled must be a boolean',
+  );
+
   if (token !== undefined) {
     kAssert(
       token != null &&
@@ -260,7 +269,7 @@ export function refreshToken({
     );
   }
 
-  return Native.refreshToken(token);
+  return Native.refreshToken(token, ios?.loggingEnabled ?? true);
 }
 
 export async function logout() {

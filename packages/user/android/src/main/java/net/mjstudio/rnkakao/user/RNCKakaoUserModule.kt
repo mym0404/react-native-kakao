@@ -158,6 +158,7 @@ class RNCKakaoUserModule internal constructor(
   @ReactMethod
   override fun refreshToken(
     token: ReadableMap?,
+    iosLoggingEnabled: Boolean?,
     promise: Promise,
   ) = onMain {
     try {
