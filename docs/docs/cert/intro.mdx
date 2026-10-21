@@ -16,7 +16,7 @@ sidebar_position: 1
 
 ## 설치와 콜백 설정
 
-다음 패키지를 설치하고 [코어 초기화](../core/initialize-sdk)를 완료해요.
+다음 패키지를 설치하고 [코어 초기화](/docs/core/initialize-sdk)를 완료해요.
 
 ```sh
 yarn add @react-native-kakao/core @react-native-kakao/user @react-native-kakao/cert
@@ -75,7 +75,7 @@ const accountResult = await certLoginWithKakaoAccount({
 });
 ```
 
-두 함수는 `{ token, txId }`를 반환해요. `token`은 [일반 로그인 토큰](../user/login)과 같은 `KakaoLoginToken` 타입이에요. `txId`는 서버의 전자서명 검증에 사용해요. `K2220`은 `certLoginWithKakaoTalk({ certType: 'K2220', txId })`로 서버가 준비한 접수번호를 전달해요. 카카오계정 방식은 `K2100`만 지원해요.
+두 함수는 `{ token, txId }`를 반환해요. `token`은 [일반 로그인 토큰](/docs/user/login)과 같은 `KakaoLoginToken` 타입이에요. `txId`는 서버의 전자서명 검증에 사용해요. `K2220`은 `certLoginWithKakaoTalk({ certType: 'K2220', txId })`로 서버가 준비한 접수번호를 전달해요. 카카오계정 방식은 `K2100`만 지원해요.
 
 | 옵션 | 동작 |
 | --- | --- |
@@ -125,7 +125,7 @@ iOS에서 `signWithKakaoTalk()` 요청이 진행 중이면 다음 요청은 거�
 
 ## 웹 인증 로그인
 
-웹은 `authorizeForCertWeb()`로 `K2100` 인증 로그인 리다이렉트를 시작해요. JavaScript SDK 스크립트와 [웹 코어 초기화](../core/initialize-sdk)가 필요해요.
+웹은 `authorizeForCertWeb()`로 `K2100` 인증 로그인 리다이렉트를 시작해요. JavaScript SDK 스크립트와 [웹 코어 초기화](/docs/core/initialize-sdk)가 필요해요.
 
 ```tsx
 import { authorizeForCertWeb } from '@react-native-kakao/cert';
