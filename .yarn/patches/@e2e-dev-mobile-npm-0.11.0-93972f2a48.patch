@@ -1,13 +1,39 @@
 diff --git a/dist/pool.js b/dist/pool.js
-index f0e4352dc6c5f88a132d895bd3e9ee80a5058676..ca05291433d06446c23236459ae4914670867c57 100644
+index f0e4352dc6c5f88a132d895bd3e9ee80a5058676..678f3775c551894e3525b7c7512da63a502ad44d 100644
 --- a/dist/pool.js
 +++ b/dist/pool.js
-@@ -256,7 +256,7 @@ export class DevicePool {
+@@ -17,6 +17,7 @@ import { asDeviceProvider, LeasedDevices } from './provider.js';
+ const UDID = /^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}$/i;
+ /** An Android emulator's adb serial. */
+ const EMULATOR_SERIAL = /^emulator-\d+$/;
++const devicePreparationTimeoutMs = 360000;
+ /**
+  * The selection agent-device commands take for a binding: an id the pool
+  * discovered goes under the platform's id field (`udid` for a simulator,
+@@ -211,7 +212,16 @@ export class DevicePool {
+             const client = this.createClient(session, binding);
+             this.retain(info.targetName, client);
+             info.log(`booting ${label} (${slot + 1} of ${bindings.length})`);
+-            await runCommand('boot', () => client.devices.boot(where), info.signal, at);
++            const boot = () => runCommand('boot', () => client.devices.boot({ ...where, timeoutMs: devicePreparationTimeoutMs }), info.signal, at);
++            try {
++                await boot();
++            }
++            catch (cause) {
++                if (this.options.platform !== 'ios' || info.signal.aborted || !message(cause).includes('xcrun timed out after'))
++                    throw cause;
++                info.log(`${label}: retrying simulator boot after xcrun timeout`);
++                await boot();
++            }
+             const runnerUp = this.options.platform !== 'ios' || (await prepareRunner(client, where, info, at));
+             const app = pinnedApp(info.app, binding.installedApp);
+             if (app === undefined || !runnerUp) {
+@@ -256,7 +266,7 @@ export class DevicePool {
   */
  async function prepareRunner(client, where, info, at) {
      try {
 -        await runCommand('prepare ios-runner', () => client.command.prepare({ action: 'ios-runner', ...where }), info.signal, at);
-+        await runCommand('prepare ios-runner', () => client.command.prepare({ action: 'ios-runner', ...where, timeoutMs: 360000 }), info.signal, at);
++        await runCommand('prepare ios-runner', () => client.command.prepare({ action: 'ios-runner', ...where, timeoutMs: devicePreparationTimeoutMs }), info.signal, at);
          return true;
      }
      catch (cause) {
