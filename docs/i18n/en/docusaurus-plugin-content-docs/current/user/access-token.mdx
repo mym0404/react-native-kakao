@@ -4,6 +4,26 @@ sidebar_position: 104
 
 # Managing Tokens
 
+## Exchange an authorization code
+
+`issueAccessTokenWithCode()` exchanges an existing authorization code for a `KakaoLoginToken` on iOS and web. Use it when handling a code obtained through a separate authorization flow. Regular [`login()`](./login.mdx) already performs the exchange.
+
+```tsx
+import { issueAccessTokenWithCode } from '@react-native-kakao/user';
+
+const token = await issueAccessTokenWithCode({
+  code: authorizationCode,
+  codeVerifier,
+  redirectUri,
+});
+```
+
+`codeVerifier` is the verification value created for a PKCE (Proof Key for Code Exchange) authorization request. Pass the same value if that request used PKCE. `redirectUri` must also match the authorization request. On iOS, omitting it uses the initialized SDK's default redirect URI. Web requires it.
+
+The iOS SDK stores the issued tokens. Web uses the REST API key supplied during Core initialization, then stores the access token in the JavaScript SDK and the library's web storage. The refresh token is returned but not stored. Pass `web: { clientSecret }` if your web app requires a client secret. Expiry timestamps use Unix seconds, lifetimes use seconds, and `scopes` contains scope IDs.
+
+The public Android SDK does not provide a separate code-exchange API, so Android rejects with `Package-UnsupportedPlatform`. Use `login()` or `loginWithKakao()` there. The existing `issueAccessTokenWithCodeWeb()` remains web only and returns its existing REST response shape without storing tokens.
+
 ## Check Stored Token Presence
 
 `hasToken()` returns `Promise<boolean>` on Android, iOS, and web. It reads the current platform SDK's local token storage without calling Kakao's token information API or refreshing a token. This lets an app check for stored credentials during startup or while offline.

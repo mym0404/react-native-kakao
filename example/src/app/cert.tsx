@@ -7,6 +7,7 @@ import {
   getPublicKey,
   getSessionInfo,
   isKakaoTalkSignAvailable,
+  issueCertTokenWithCode,
   isValidSession,
   reducedSign,
   signWithKakaoTalk,
@@ -20,6 +21,15 @@ const verificationData = 'rn-kakao-cert-verification';
 export default function Page() {
   return (
     <StyledScrollView contentContainerSx={{ px: 4, gap: 3, pt: 4, pb: 10 }}>
+      <E2EApiAction
+        id={'cert-code-exchange'}
+        title={'Exchange Invalid Certification Code'}
+        action={async () => {
+          const info = await issueCertTokenWithCode({ code: verificationData });
+
+          return { hasTransaction: !!info.txId, hasAccessToken: !!info.token.accessToken };
+        }}
+      />
       <E2EApiAction
         id={'cert-talk-available'}
         title={'Check Signing Availability'}

@@ -24,6 +24,7 @@ import com.kakao.sdk.user.model.LoginUiMode
 import com.kakao.sdk.user.model.Scope
 import com.kakao.sdk.user.model.UserShippingAddresses
 import net.mjstudio.rnkakao.core.util.RNCKakaoResponseNotFoundException
+import net.mjstudio.rnkakao.core.util.RNCKakaoUnsupportedPlatformException
 import net.mjstudio.rnkakao.core.util.RNCKakaoUtil
 import net.mjstudio.rnkakao.core.util.argArr
 import net.mjstudio.rnkakao.core.util.argMap
@@ -137,6 +138,16 @@ class RNCKakaoUserModule internal constructor(
       serviceTerms = serviceTerms?.filterIsInstance<String>()?.ifEmpty { null },
       callback = tokenCallback(promise),
     )
+  }
+
+  @ReactMethod
+  override fun issueAccessTokenWithCode(
+    code: String,
+    codeVerifier: String?,
+    redirectUri: String?,
+    promise: Promise,
+  ) {
+    promise.rejectWith(RNCKakaoUnsupportedPlatformException("issueAccessTokenWithCode", "iOS and web"))
   }
 
   @ReactMethod

@@ -7,6 +7,11 @@ import type { KakaoCertSessionInfo, KakaoCertSignStatusInfo, KakaoCertTokenInfo 
 export interface Spec extends TurboModule {
   certLoginWithKakaoTalk(options: UnsafeObject): Promise<KakaoCertTokenInfo>;
   certLoginWithKakaoAccount(options: UnsafeObject): Promise<KakaoCertTokenInfo>;
+  issueCertTokenWithCode(
+    code: string,
+    codeVerifier?: string,
+    redirectUri?: string,
+  ): Promise<KakaoCertTokenInfo>;
   publicKey(certType: string): Promise<string | null>;
   sessionInfo(certType: string): Promise<KakaoCertSessionInfo | null>;
   fetchSessionInfo(certType: string, txId: string): Promise<KakaoCertSessionInfo>;

@@ -89,6 +89,24 @@ const accountResult = await certLoginWithKakaoAccount({
 
 고정된 네이티브 SDK가 제공하는 서명자 항목은 위 네 가지예요. 다른 항목은 타입에 포함하지 않아요.
 
+## 인증 인가 코드로 토큰 발급
+
+iOS의 `issueCertTokenWithCode()`는 별도 인증 흐름에서 받은 인증 인가 코드를 `{ token, txId }`로 교환하고 토큰을 SDK에 저장해요. 이용 승인을 받은 앱의 인증 인가 코드가 필요해요. 반환값은 인증 로그인 함수와 같은 `KakaoCertTokenInfo`예요.
+
+```tsx
+import { issueCertTokenWithCode } from '@react-native-kakao/cert';
+
+const result = await issueCertTokenWithCode({
+  code: certificationAuthorizationCode,
+  codeVerifier,
+  redirectUri,
+});
+```
+
+`codeVerifier`는 해당 인가 요청의 PKCE 검증값이며, 사용한 경우 같은 값을 전달해요. `redirectUri`를 생략하면 초기화한 iOS SDK의 기본 URI를 사용해요. 직접 지정할 때는 인가 요청의 URI와 일치해야 해요. Android와 웹은 이 API를 지원하지 않아 `Package-UnsupportedPlatform` 오류를 반환해요.
+
+웹의 인증 인가 코드는 이용기관 서버에서 REST API로 교환해요. 응답의 `tx_id`로 서버에서 전자서명을 검증해야 해요. 자세한 연동 순서는 [K2100 공식 문서](https://developers.kakao.com/docs/ko/kakao-certification/k2100)를 확인해요.
+
 ## 키·세션·축약서명
 
 `K2220`과 `K3220`은 SDK가 기기 안에 임시 키 쌍을 보관해요. 다음 예제는 `K2220`의 공개 키를 서버에 보내 전자서명을 준비한 뒤, 인증 로그인과 세션 조회를 이어가는 순서예요. `prepareOnServer()`와 `verifyOnServer()`는 이용기관 서버에 구현할 함수예요.

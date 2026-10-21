@@ -35,6 +35,27 @@ private let transactionIdKey = "txId"
     login(options, isTalk: false, resolve: resolve, reject: reject)
   }
 
+  @objc public func issueCertTokenWithCode(
+    _ code: String,
+    codeVerifier: String?,
+    redirectUri: String?,
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    onMain { [self] in
+      guard let _ = try? KakaoSDK.shared.appKey() else {
+        RNCKakaoUtil.reject(reject, RNCKakaoError.sdkNotInitialized)
+        return
+      }
+      AuthApi.shared.certToken(
+        code: code,
+        codeVerifier: codeVerifier,
+        redirectUri: redirectUri ?? KakaoSDK.shared.redirectUri(),
+        completion: tokenCallback(resolve, reject: reject)
+      )
+    }
+  }
+
   private func login(
     _ options: [String: Any],
     isTalk: Bool,
@@ -59,15 +80,7 @@ private let transactionIdKey = "txId"
       let signData = options["signData"] as? String
       let settleId = options["settleId"] as? String
       let nonce = options["nonce"] as? String
-      let callback = { (info: CertTokenInfo?, error: Error?) in
-        if let error {
-          RNCKakaoUtil.reject(reject, error)
-        } else if let info {
-          resolve([transactionIdKey: info.txId, "token": self.mapToken(info.token)])
-        } else {
-          RNCKakaoUtil.reject(reject, RNCKakaoError.responseNotFound(name: "certTokenInfo"))
-        }
-      }
+      let callback = self.tokenCallback(resolve, reject: reject)
       if isTalk {
         let ios = options["ios"] as? [String: Any]
         CertApi.shared.certLoginWithKakaoTalk(
@@ -277,6 +290,21 @@ private let transactionIdKey = "txId"
       "sessionStartAt": info.sessionStartAt.timeIntervalSince1970,
       "sessionEndAt": info.sessionEndAt.timeIntervalSince1970
     ]
+  }
+
+  private func tokenCallback(
+    _ resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) -> (CertTokenInfo?, Error?) -> Void {
+    { info, error in
+      if let error {
+        RNCKakaoUtil.reject(reject, error)
+      } else if let info {
+        resolve([transactionIdKey: info.txId, "token": self.mapToken(info.token)])
+      } else {
+        RNCKakaoUtil.reject(reject, RNCKakaoError.responseNotFound(name: "certTokenInfo"))
+      }
+    }
   }
 
   private func mapToken(_ token: OAuthToken) -> [String: Any] {
