@@ -113,6 +113,22 @@ import RNCKakaoCore
     }
   }
 
+  @objc public func signup(
+    _ properties: [String: String]?,
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    onMain {
+      UserApi.shared.signup(properties: properties) { _, error in
+        if let error {
+          RNCKakaoUtil.reject(reject, error)
+        } else {
+          resolve(nil)
+        }
+      }
+    }
+  }
+
   @objc public func logout(
     _ resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
@@ -369,6 +385,7 @@ import RNCKakaoCore
           resolve([
             "id": user.id as Any,
             "properties": user.properties ?? [:],
+            "hasSignedUp": user.hasSignedUp as Any,
             "connectedAt": user.connectedAt?.timeIntervalSince1970 as Any,
             "synchedAt": user.synchedAt?.timeIntervalSince1970 as Any,
             "name": user.kakaoAccount?.name as Any,
