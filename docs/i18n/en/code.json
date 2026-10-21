@@ -1,4 +1,13 @@
 {
+  "homepage.tagline": {
+    "message": "Native Kakao SDKs in one project"
+  },
+  "homepage.getStarted": {
+    "message": "Get started in 5 min"
+  },
+  "homepage.description": {
+    "message": "Kakao SDKs in one project"
+  },
   "모든 카카오 SDK": {
     "message": "All Kakao SDKs"
   },

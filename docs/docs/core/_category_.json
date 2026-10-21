@@ -1,8 +1,9 @@
 {
-  "label": "Package - Core",
+  "label": "Core 패키지",
   "position": 1000,
   "link": {
     "type": "generated-index",
-    "description": "Core 패키지 사용법"
+    "description": "Core 패키지 사용법",
+    "slug": "/category/package---core"
   }
 }
