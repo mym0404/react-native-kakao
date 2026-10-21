@@ -12,6 +12,8 @@ The API redirects the user to add the KakaoTalk channel as a friend.
 
 You can add a KakaoTalk channel using the `addChannel` function.
 
+Its `Promise<void>` resolves without a success value. The return value does not confirm whether the user added the channel.
+
 ```tsx
 export function addChannel(channelPublicId: string): Promise<void>
 ```

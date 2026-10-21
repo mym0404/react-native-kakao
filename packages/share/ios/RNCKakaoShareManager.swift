@@ -309,7 +309,7 @@ import UIKit
       if let error {
         RNCKakaoUtil.reject(reject, error)
       } else {
-        resolve(42)
+        resolve(nil)
       }
     }
 
@@ -415,14 +415,13 @@ import UIKit
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
-    let result: Any? = requestUrl == nil ? 42 : nil
     let shareCompletion = { (sharingResult: SharingResult?, error: Error?) in
       if let error {
         RNCKakaoUtil.reject(reject, error)
       } else if let sharingResult {
         UIApplication.shared.open(sharingResult.url, options: [:]) { success in
           if success {
-            resolve(result)
+            resolve(nil)
           } else {
             RNCKakaoUtil.reject(
               reject,
@@ -521,7 +520,7 @@ import UIKit
       safariViewController.modalPresentationStyle = .overCurrentContext
       RNCKakaoUtil.presentViewController(safariViewController) { success in
         if success {
-          resolve(result)
+          resolve(nil)
         } else {
           RNCKakaoUtil.reject(
             reject,

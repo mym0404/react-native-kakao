@@ -42,7 +42,25 @@ export function isKakaoTalkSharingAvailable(): Promise<boolean> {
   return Native.isKakaoTalkSharingAvailable();
 }
 
+type ShareArgs = [
+  templateType: string,
+  templateId: Double,
+  templateJson: UnsafeObject,
+  receiverUuids: readonly string[],
+  useWebBrowserIfKakaoTalkNotAvailable: boolean,
+  templateArgs: Readonly<Record<string, string>>,
+  serverCallbackArgs: Readonly<Record<string, string>>,
+];
+
+function shareOrSendMeOrSendFriendOrWhatever<T extends boolean = false>(
+  sendType: 'send-friend',
+  ...args: [...ShareArgs, includeFailureInfo?: T]
+): Promise<KakaoFriendMessageResult<T>>;
 function shareOrSendMeOrSendFriendOrWhatever(
+  sendType: 'share' | 'send-me',
+  ...args: ShareArgs
+): Promise<void>;
+async function shareOrSendMeOrSendFriendOrWhatever(
   /* share, send-me, send-friend */
   sendType: string,
   /* custom, feed, list, location, commerce, text, calendar */
@@ -57,8 +75,8 @@ function shareOrSendMeOrSendFriendOrWhatever(
   templateArgs: Readonly<{ [key: string]: string }>,
   serverCallbackArgs: Readonly<{ [key: string]: string }>,
   includeFailureInfo?: boolean,
-): Promise<any> {
-  const response = Native.shareOrSendMeOrSendFriendOrWhatever(
+): Promise<void | string[] | KakaoMessageSendResult> {
+  const response = await Native.shareOrSendMeOrSendFriendOrWhatever(
     sendType,
     templateType,
     templateId,
@@ -70,19 +88,19 @@ function shareOrSendMeOrSendFriendOrWhatever(
   );
 
   if (sendType === SendTypes.sendFriend) {
-    return response.then((result: KakaoMessageSendResult) =>
-      includeFailureInfo ? result : result.successfulReceiverUuids,
-    );
-  }
+    if (response == null) {
+      throw new Error('Native friend-message result is missing.');
+    }
 
-  return response;
+    return includeFailureInfo ? response : response.successfulReceiverUuids;
+  }
 }
 
 export type KakaoFriendMessageResult<T extends boolean = false> = T extends true
   ? KakaoMessageSendResult
   : string[];
 
-const SendTypes = { share: 'share', sendMe: 'send-me', sendFriend: 'send-friend' };
+const SendTypes = { share: 'share', sendMe: 'send-me', sendFriend: 'send-friend' } as const;
 const TemplateTypes = {
   custom: 'custom',
   scrap: 'scrap',
@@ -140,7 +158,7 @@ export function sendScrapTemplateToFriends<T extends boolean = false>({
   );
 }
 
-export function shareScrapTemplate({
+export async function shareScrapTemplate({
   requestUrl,
   templateId,
   templateArgs = {},
@@ -153,7 +171,7 @@ export function shareScrapTemplate({
   serverCallbackArgs?: Record<string, string>;
   useWebBrowserIfKakaoTalkNotAvailable?: boolean;
 }): Promise<void> {
-  return Native.shareScrapTemplate(
+  await Native.shareScrapTemplate(
     requestUrl,
     useWebBrowserIfKakaoTalkNotAvailable,
     templateId,
