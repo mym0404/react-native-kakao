@@ -3,6 +3,7 @@ import type { Double, UnsafeObject } from 'react-native/Libraries/Types/CodegenT
 import type {
   KakaoCalendarTemplate,
   KakaoCommerceTemplate,
+  KakaoDefaultTemplateParams,
   KakaoFeedTemplate,
   KakaoImageUploadResult,
   KakaoListTemplate,
@@ -39,6 +40,7 @@ export type {
   KakaoCommerceTemplate,
   KakaoCalendarTemplate,
   KakaoImageUploadResult,
+  KakaoDefaultTemplateParams,
 };
 
 export function isKakaoTalkSharingAvailable(): Promise<boolean> {
@@ -117,6 +119,58 @@ const TemplateTypes = {
   calendar: 'calendar',
 };
 const DefaultScrapTemplateId = -1;
+
+export async function makeDefaultTemplateUrl({
+  templateType,
+  template,
+  serverCallbackArgs = {},
+}: KakaoDefaultTemplateParams): Promise<string> {
+  return Native.makeTemplateUrl(
+    templateType,
+    DefaultScrapTemplateId,
+    swapMobileExecutionParamsFieldValueIntoStringInIOS(template),
+    {},
+    serverCallbackArgs,
+  );
+}
+
+export async function makeCustomTemplateUrl({
+  templateId,
+  templateArgs = {},
+  serverCallbackArgs = {},
+}: {
+  templateId: number;
+  templateArgs?: Record<string, string>;
+  serverCallbackArgs?: Record<string, string>;
+}): Promise<string> {
+  return Native.makeTemplateUrl(
+    TemplateTypes.custom,
+    templateId,
+    {},
+    templateArgs,
+    serverCallbackArgs,
+  );
+}
+
+export async function makeScrapTemplateUrl({
+  requestUrl,
+  templateId = DefaultScrapTemplateId,
+  templateArgs = {},
+  serverCallbackArgs = {},
+}: {
+  requestUrl: string;
+  templateId?: number;
+  templateArgs?: Record<string, string>;
+  serverCallbackArgs?: Record<string, string>;
+}): Promise<string> {
+  return Native.makeTemplateUrl(
+    TemplateTypes.scrap,
+    templateId,
+    { requestUrl },
+    templateArgs,
+    serverCallbackArgs,
+  );
+}
 
 export type KakaoScrapMessageParams = {
   requestUrl: string;
@@ -641,6 +695,9 @@ export function scrapImage({
 
 const KakaoShare = {
   isKakaoTalkSharingAvailable,
+  makeDefaultTemplateUrl,
+  makeCustomTemplateUrl,
+  makeScrapTemplateUrl,
   uploadImage,
   shareScrapTemplate,
   sendScrapTemplateToMe,
