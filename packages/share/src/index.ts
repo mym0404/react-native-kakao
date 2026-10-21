@@ -8,6 +8,7 @@ import type {
   KakaoListTemplate,
   KakaoLocationTemplate,
   KakaoMessageSendResult,
+  KakaoSharePickerSettings,
   KakaoTemplateButton,
   KakaoTemplateCommerce,
   KakaoTemplateContent,
@@ -19,6 +20,7 @@ import type {
 } from './spec/NativeKakaoShare';
 import Native from './spec/NativeKakaoShare';
 import { swapMobileExecutionParamsFieldValueIntoStringInIOS } from './util/swapMobileExecutionParamsFieldValueIntoStringInIOS';
+import { validateSharePickerSettings } from './validateSharePickerSettings';
 
 export type {
   KakaoTemplateSocial,
@@ -31,6 +33,7 @@ export type {
   KakaoTemplateButton,
   KakaoLocationTemplate,
   KakaoMessageSendResult,
+  KakaoSharePickerSettings,
   KakaoListTemplate,
   KakaoFeedTemplate,
   KakaoCommerceTemplate,
@@ -58,7 +61,7 @@ function shareOrSendMeOrSendFriendOrWhatever<T extends boolean = false>(
 ): Promise<KakaoFriendMessageResult<T>>;
 function shareOrSendMeOrSendFriendOrWhatever(
   sendType: 'share' | 'send-me',
-  ...args: ShareArgs
+  ...args: [...ShareArgs, includeFailureInfo?: false, pickerSettings?: KakaoSharePickerSettings]
 ): Promise<void>;
 async function shareOrSendMeOrSendFriendOrWhatever(
   /* share, send-me, send-friend */
@@ -75,6 +78,7 @@ async function shareOrSendMeOrSendFriendOrWhatever(
   templateArgs: Readonly<{ [key: string]: string }>,
   serverCallbackArgs: Readonly<{ [key: string]: string }>,
   includeFailureInfo?: boolean,
+  pickerSettings?: KakaoSharePickerSettings,
 ): Promise<void | string[] | KakaoMessageSendResult> {
   const response = await Native.shareOrSendMeOrSendFriendOrWhatever(
     sendType,
@@ -85,6 +89,7 @@ async function shareOrSendMeOrSendFriendOrWhatever(
     useWebBrowserIfKakaoTalkNotAvailable,
     templateArgs,
     serverCallbackArgs,
+    validateSharePickerSettings(pickerSettings),
   );
 
   if (sendType === SendTypes.sendFriend) {
@@ -133,6 +138,7 @@ export async function sendScrapTemplateToMe({
     false,
     templateArgs,
     {},
+    undefined,
   );
 }
 
@@ -163,12 +169,14 @@ export async function shareScrapTemplate({
   templateId,
   templateArgs = {},
   serverCallbackArgs = {},
+  pickerSettings,
   useWebBrowserIfKakaoTalkNotAvailable = true,
 }: {
   requestUrl: string;
   templateId?: number;
   templateArgs?: Record<string, string>;
   serverCallbackArgs?: Record<string, string>;
+  pickerSettings?: KakaoSharePickerSettings;
   useWebBrowserIfKakaoTalkNotAvailable?: boolean;
 }): Promise<void> {
   await Native.shareScrapTemplate(
@@ -177,6 +185,7 @@ export async function shareScrapTemplate({
     templateId,
     templateArgs,
     serverCallbackArgs,
+    validateSharePickerSettings(pickerSettings),
   );
 }
 
@@ -184,12 +193,14 @@ export function shareCustomTemplate({
   templateId,
   useWebBrowserIfKakaoTalkNotAvailable = true,
   serverCallbackArgs = {},
+  pickerSettings,
   templateArgs = {},
 }: {
   templateId: number;
   useWebBrowserIfKakaoTalkNotAvailable?: boolean;
   templateArgs?: Record<string, string>;
   serverCallbackArgs?: Record<string, string>;
+  pickerSettings?: KakaoSharePickerSettings;
 }) {
   return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.share,
@@ -200,6 +211,8 @@ export function shareCustomTemplate({
     useWebBrowserIfKakaoTalkNotAvailable,
     templateArgs,
     serverCallbackArgs,
+    undefined,
+    pickerSettings,
   );
 }
 
@@ -250,10 +263,12 @@ export function shareFeedTemplate({
   template,
   useWebBrowserIfKakaoTalkNotAvailable = true,
   serverCallbackArgs = {},
+  pickerSettings,
 }: {
   template: KakaoFeedTemplate;
   useWebBrowserIfKakaoTalkNotAvailable?: boolean;
   serverCallbackArgs?: Record<string, string>;
+  pickerSettings?: KakaoSharePickerSettings;
 }) {
   return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.share,
@@ -264,6 +279,8 @@ export function shareFeedTemplate({
     useWebBrowserIfKakaoTalkNotAvailable,
     {},
     serverCallbackArgs,
+    undefined,
+    pickerSettings,
   );
 }
 
@@ -306,10 +323,12 @@ export function shareListTemplate({
   template,
   useWebBrowserIfKakaoTalkNotAvailable = true,
   serverCallbackArgs = {},
+  pickerSettings,
 }: {
   template: KakaoListTemplate;
   useWebBrowserIfKakaoTalkNotAvailable?: boolean;
   serverCallbackArgs?: Record<string, string>;
+  pickerSettings?: KakaoSharePickerSettings;
 }) {
   return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.share,
@@ -320,6 +339,8 @@ export function shareListTemplate({
     useWebBrowserIfKakaoTalkNotAvailable,
     {},
     serverCallbackArgs,
+    undefined,
+    pickerSettings,
   );
 }
 
@@ -362,10 +383,12 @@ export function shareLocationTemplate({
   template,
   useWebBrowserIfKakaoTalkNotAvailable = true,
   serverCallbackArgs = {},
+  pickerSettings,
 }: {
   template: KakaoLocationTemplate;
   useWebBrowserIfKakaoTalkNotAvailable?: boolean;
   serverCallbackArgs?: Record<string, string>;
+  pickerSettings?: KakaoSharePickerSettings;
 }) {
   return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.share,
@@ -376,6 +399,8 @@ export function shareLocationTemplate({
     useWebBrowserIfKakaoTalkNotAvailable,
     {},
     serverCallbackArgs,
+    undefined,
+    pickerSettings,
   );
 }
 
@@ -418,10 +443,12 @@ export function shareCommerceTemplate({
   template,
   useWebBrowserIfKakaoTalkNotAvailable = true,
   serverCallbackArgs = {},
+  pickerSettings,
 }: {
   template: KakaoCommerceTemplate;
   useWebBrowserIfKakaoTalkNotAvailable?: boolean;
   serverCallbackArgs?: Record<string, string>;
+  pickerSettings?: KakaoSharePickerSettings;
 }) {
   return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.share,
@@ -432,6 +459,8 @@ export function shareCommerceTemplate({
     useWebBrowserIfKakaoTalkNotAvailable,
     {},
     serverCallbackArgs,
+    undefined,
+    pickerSettings,
   );
 }
 
@@ -474,10 +503,12 @@ export function shareTextTemplate({
   template,
   useWebBrowserIfKakaoTalkNotAvailable = true,
   serverCallbackArgs = {},
+  pickerSettings,
 }: {
   template: KakaoTextTemplate;
   useWebBrowserIfKakaoTalkNotAvailable?: boolean;
   serverCallbackArgs?: Record<string, string>;
+  pickerSettings?: KakaoSharePickerSettings;
 }) {
   return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.share,
@@ -488,6 +519,8 @@ export function shareTextTemplate({
     useWebBrowserIfKakaoTalkNotAvailable,
     {},
     serverCallbackArgs,
+    undefined,
+    pickerSettings,
   );
 }
 
@@ -530,10 +563,12 @@ export function shareCalendarTemplate({
   template,
   useWebBrowserIfKakaoTalkNotAvailable = true,
   serverCallbackArgs = {},
+  pickerSettings,
 }: {
   template: KakaoCalendarTemplate;
   useWebBrowserIfKakaoTalkNotAvailable?: boolean;
   serverCallbackArgs?: Record<string, string>;
+  pickerSettings?: KakaoSharePickerSettings;
 }) {
   return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.share,
@@ -544,6 +579,8 @@ export function shareCalendarTemplate({
     useWebBrowserIfKakaoTalkNotAvailable,
     {},
     serverCallbackArgs,
+    undefined,
+    pickerSettings,
   );
 }
 
