@@ -1,4 +1,4 @@
-import { $, path } from 'zx';
+import { $, fs, path } from 'zx';
 
 import { logCommand } from './e2e-log.ts';
 
@@ -25,12 +25,30 @@ export const buildE2EApp = async ({
 
   const buildLog = path.resolve(platformDir, 'build.log');
   if (platform === 'android') {
-    await logCommand(
-      $({
-        cwd: path.resolve(root, 'example/android'),
-      })`./gradlew :app:assembleRelease --build-cache --no-daemon --console=plain -PreactNativeArchitectures=${buildAbi}`,
-      buildLog,
-    );
+    const repositoryDir = await fs.mkdtemp(path.join(platformDir, 'repositories-'));
+    try {
+      const initScript = path.join(repositoryDir, 'content.gradle');
+      await fs.writeFile(
+        initScript,
+        `gradle.beforeProject { project ->
+  project.repositories.withType(org.gradle.api.artifacts.repositories.MavenArtifactRepository).configureEach { repo ->
+    if (repo.url.toString().replaceAll('/+$', '') == 'https://devrepo.kakao.com/nexus/content/groups/public') {
+      repo.content { includeGroup 'com.kakao.sdk' }
+    }
+  }
+}
+`,
+      );
+
+      await logCommand(
+        $({
+          cwd: path.resolve(root, 'example/android'),
+        })`./gradlew :app:assembleRelease --init-script ${initScript} --build-cache --no-daemon --console=plain -PreactNativeArchitectures=${buildAbi}`,
+        buildLog,
+      );
+    } finally {
+      await fs.remove(repositoryDir);
+    }
   } else {
     const ccachePath = (await $`command -v ccache`).stdout.trim();
     $.env = {
