@@ -10,16 +10,25 @@ index f0e4352dc6c5f88a132d895bd3e9ee80a5058676..678f3775c551894e3525b7c7512da63a
  /**
   * The selection agent-device commands take for a binding: an id the pool
   * discovered goes under the platform's id field (`udid` for a simulator,
-@@ -211,7 +212,7 @@ export class DevicePool {
+@@ -211,7 +212,16 @@ export class DevicePool {
              const client = this.createClient(session, binding);
              this.retain(info.targetName, client);
              info.log(`booting ${label} (${slot + 1} of ${bindings.length})`);
 -            await runCommand('boot', () => client.devices.boot(where), info.signal, at);
-+            await runCommand('boot', () => client.devices.boot({ ...where, timeoutMs: devicePreparationTimeoutMs }), info.signal, at);
++            const boot = () => runCommand('boot', () => client.devices.boot({ ...where, timeoutMs: devicePreparationTimeoutMs }), info.signal, at);
++            try {
++                await boot();
++            }
++            catch (cause) {
++                if (this.options.platform !== 'ios' || info.signal.aborted || !message(cause).includes('xcrun timed out after'))
++                    throw cause;
++                info.log(`${label}: retrying simulator boot after xcrun timeout`);
++                await boot();
++            }
              const runnerUp = this.options.platform !== 'ios' || (await prepareRunner(client, where, info, at));
              const app = pinnedApp(info.app, binding.installedApp);
              if (app === undefined || !runnerUp) {
-@@ -256,7 +257,7 @@ export class DevicePool {
+@@ -256,7 +266,7 @@ export class DevicePool {
   */
  async function prepareRunner(client, where, info, at) {
      try {
