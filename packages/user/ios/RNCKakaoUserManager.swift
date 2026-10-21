@@ -213,15 +213,17 @@ import RNCKakaoCore
   }
 
   @objc public func serviceTerms(
-    _ resolve: @escaping RCTPromiseResolveBlock,
+    _ result: String?,
+    tags: [String]?,
+    resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
     onMain {
-      UserApi.shared.serviceTerms { serviceTerms, error in
+      UserApi.shared.serviceTerms(result: result, tags: tags) { serviceTerms, error in
         if let error {
           RNCKakaoUtil.reject(reject, error)
-        } else if let serviceTerms = serviceTerms?.serviceTerms {
-          resolve(serviceTerms.map {
+        } else if let serviceTerms {
+          resolve((serviceTerms.serviceTerms ?? []).map {
             [
               "tag": $0.tag,
               "agreedAt": $0.agreedAt?.timeIntervalSince1970 as Any,

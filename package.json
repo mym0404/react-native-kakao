@@ -57,7 +57,7 @@
     "@babel/eslint-parser": "^7.29.0",
     "@changesets/cli": "3.0.3",
     "@commitlint/config-conventional": "^17.0.2",
-    "@e2e-dev/mobile": "0.11.0",
+    "@e2e-dev/mobile": "patch:@e2e-dev/mobile@npm%3A0.11.0#~/.yarn/patches/@e2e-dev-mobile-npm-0.11.0-93972f2a48.patch",
     "@mj-studio/eslint-config-react": "1.0.7",
     "@react-native/eslint-config": "0.79.2",
     "@types/fs-extra": "^11",

@@ -5082,6 +5082,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@e2e-dev/mobile@patch:@e2e-dev/mobile@npm%3A0.11.0#~/.yarn/patches/@e2e-dev-mobile-npm-0.11.0-93972f2a48.patch":
+  version: 0.11.0
+  resolution: "@e2e-dev/mobile@patch:@e2e-dev/mobile@npm%3A0.11.0#~/.yarn/patches/@e2e-dev-mobile-npm-0.11.0-93972f2a48.patch::version=0.11.0&hash=ef596c"
+  dependencies:
+    agent-device: "npm:0.21.22"
+    pngjs: "npm:7.0.0"
+    zod: "npm:4.6.1"
+  peerDependencies:
+    ai: ^7.0.0
+    e2e: ">=0.15.0 <1"
+  peerDependenciesMeta:
+    ai:
+      optional: true
+  checksum: 10/7606528eefa6d977d9294dd4a420de662a99e5170bb1810e03e004a1f3951654294716b4f950157a8ebdbaae3286ccf8b9d981a2085efa4fb01b029a05699258
+  languageName: node
+  linkType: hard
+
 "@eslint-community/eslint-utils@npm:^4.2.0, @eslint-community/eslint-utils@npm:^4.4.0":
   version: 4.4.0
   resolution: "@eslint-community/eslint-utils@npm:4.4.0"
@@ -22009,7 +22026,7 @@ __metadata:
     "@babel/eslint-parser": "npm:^7.29.0"
     "@changesets/cli": "npm:3.0.3"
     "@commitlint/config-conventional": "npm:^17.0.2"
-    "@e2e-dev/mobile": "npm:0.11.0"
+    "@e2e-dev/mobile": "patch:@e2e-dev/mobile@npm%3A0.11.0#~/.yarn/patches/@e2e-dev-mobile-npm-0.11.0-93972f2a48.patch"
     "@mj-studio/eslint-config-react": "npm:1.0.7"
     "@react-native/eslint-config": "npm:0.79.2"
     "@types/fs-extra": "npm:^11"
