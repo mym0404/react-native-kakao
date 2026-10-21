@@ -1,0 +1,53 @@
+---
+sidebar_label: Upload image
+---
+
+# Upload image
+
+Use `uploadImage()` to upload an image to Kakao's image server and receive its URL and metadata. Initialize the Kakao SDK first; user login is not required.
+
+```tsx
+import { uploadImage } from '@react-native-kakao/share';
+
+const { infos } = await uploadImage({ imageUri: localImageUri });
+
+const content = {
+  imageUrl: infos.original.url,
+  imageWidth: infos.original.width,
+  imageHeight: infos.original.height,
+  title: 'Image',
+  link: { webUrl: 'https://example.com' },
+};
+```
+
+## Image input
+
+| Platform | Supported `imageUri` values |
+| --- | --- |
+| Android | Absolute file paths, `file://` URIs, readable `content://` URIs, and base64 image data URIs |
+| iOS | Absolute file paths, `file://` URIs, and base64 image data URIs |
+| Web | Blob URLs, data URIs, and image URLs that the browser can fetch under its CORS policy |
+
+For a browser `File`, create a blob URL with `URL.createObjectURL(file)`, pass it as `imageUri`, and release it with `URL.revokeObjectURL()` after the upload settles. On Android, the caller must already have read permission for a content URI. Temporary copies created by this module are deleted after completion or failure.
+
+`secureResource` defaults to `true`, returning an HTTPS image URL. Set it to `false` for HTTP. The web implementation normalizes the Kakao CDN URL because the JavaScript SDK does not expose this option.
+
+## Result
+
+```ts
+type KakaoImageUploadResult = {
+  infos: {
+    original: {
+      url: string;
+      contentType: string;
+      length: number; // Bytes
+      width: number; // Pixels
+      height: number; // Pixels
+    };
+  };
+};
+```
+
+Images must be no larger than 5 MB and are stored on Kakao's server for up to 100 days. The iOS SDK converts its `UIImage` input before upload, so the returned format and byte length can differ from Android and web. This API uploads the image without sending a message.
+
+See the official [Android](https://developers.kakao.com/docs/en/kakaotalk-share/android-link#upload-image), [iOS](https://developers.kakao.com/docs/en/kakaotalk-share/ios-link#upload-image), and [JavaScript](https://developers.kakao.com/docs/en/kakaotalk-share/js-link#upload-image) guides.

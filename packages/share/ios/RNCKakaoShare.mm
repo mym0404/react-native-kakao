@@ -13,6 +13,12 @@
 
 RCT_EXPORT_MODULE()
 
+RCT_EXPORT_METHOD(uploadImage : (NSString*)imageUri secureResource : (BOOL)
+                      secureResource resolve : (RCTPromiseResolveBlock)
+                          resolve reject : (RCTPromiseRejectBlock)reject) {
+  [[self manager] uploadImage:imageUri secureResource:secureResource resolve:resolve reject:reject];
+}
+
 RCT_EXPORT_METHOD(scrapImage : (NSString*)imageUrl secureResource : (BOOL)secureResource resolve : (
     RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
   [[self manager] scrapImage:imageUrl secureResource:secureResource resolve:resolve reject:reject];

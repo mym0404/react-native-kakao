@@ -455,6 +455,16 @@ export function sendCalendarTemplateToFriends({
   );
 }
 
+export function uploadImage({
+  imageUri,
+  secureResource = true,
+}: {
+  imageUri: string;
+  secureResource?: boolean;
+}) {
+  return Native.uploadImage(imageUri, secureResource);
+}
+
 export function scrapImage({
   imageUrl,
   secureResource = true,
@@ -466,6 +476,7 @@ export function scrapImage({
 }
 
 const KakaoShare = {
+  uploadImage,
   scrapImage,
   shareCustomTemplate,
   sendCustomTemplateToMe,
