@@ -26,17 +26,19 @@ Refer to the [Official Documentation](https://developers.kakao.com/docs/latest/k
 <Tabs>
   <TabItem value="npm" label="NPM" default>
     ```shell
-    npm install --save @react-native-kakao/user @react-native-kakao/social
+    npm install --save @react-native-kakao/core @react-native-kakao/social
     ```
   </TabItem>
   <TabItem value="yarn" label="Yarn">
     ```shell
-    yarn add @react-native-kakao/{user, social}
+    yarn add @react-native-kakao/core @react-native-kakao/social
     ```
   </TabItem>
   <TabItem value="expo" label="Expo">
     ```shell
-    npx expo install @react-native-kakao/user @react-native-kakao/social
+    npx expo install @react-native-kakao/core @react-native-kakao/social
     ```
   </TabItem>
 </Tabs>
+
+Install `social` with `core`. Also install the [`user` package](/docs/user/intro) if your app handles Kakao Login or requests additional consent.
