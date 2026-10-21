@@ -46,6 +46,7 @@ class RNCKakaoUserModule internal constructor(
     serviceTerms: ReadableArray?,
     prompts: ReadableArray?,
     useKakaoAccountLogin: Boolean,
+    iosLaunchMethod: String,
     scopes: ReadableArray?,
     nonce: String?,
     loginHint: String?,
