@@ -1,5 +1,5 @@
 import { is } from '@mj-studio/js-util';
-import { kAssert } from '@react-native-kakao/core';
+import { kAssert, kCreateWebError } from '@react-native-kakao/core';
 
 import Native from './spec/NativeKakaoUser';
 import { validateShippingAddressOptions } from './validateShippingAddressOptions';
@@ -15,6 +15,11 @@ export interface KakaoLoginToken {
   refreshTokenExpiresIn: number;
   scopes: string[];
 }
+export type KakaoTalkLaunchMethod = 'UniversalLink' | 'CustomScheme';
+
+const defaultTalkLaunchMethod: KakaoTalkLaunchMethod = 'UniversalLink';
+const webOnlyErrorCode = 'Package-UnsupportedPlatform';
+
 export interface KakaoScopeInfo {
   id: string;
   agreed: boolean;
@@ -115,6 +120,7 @@ export function login({
   nonce,
   loginHint,
   channelPublicIds,
+  ios,
 }: {
   serviceTerms?: string[];
   prompts?: ('Login' | 'Create' | 'Cert' | 'SelectAccount')[];
@@ -123,6 +129,7 @@ export function login({
   nonce?: string;
   loginHint?: string;
   channelPublicIds?: string[];
+  ios?: { launchMethod?: KakaoTalkLaunchMethod };
   web?: {
     redirectUri: string;
     scope?: string[];
@@ -160,6 +167,7 @@ export function login({
     serviceTerms ?? [],
     prompts ?? [],
     useKakaoAccountLogin ?? false,
+    ios?.launchMethod ?? defaultTalkLaunchMethod,
     scopes ?? [],
     nonce,
     loginHint,
@@ -188,13 +196,13 @@ export function loginWithKakao({
   serviceTerms?: string[];
   ios?: {
     orientation?: 'auto' | 'portrait' | 'landscape';
-    launchMethod?: 'UniversalLink' | 'CustomScheme';
+    launchMethod?: KakaoTalkLaunchMethod;
   };
 } = {}): Promise<KakaoLoginToken> {
   return Native.loginWithKakao(
     uiMode,
     ios?.orientation ?? 'auto',
-    ios?.launchMethod ?? 'UniversalLink',
+    ios?.launchMethod ?? defaultTalkLaunchMethod,
     prompts ?? [],
     loginHint,
     nonce,
@@ -289,7 +297,13 @@ export function updateProfile({
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function setAccessTokenWeb(token: string) {}
+export function setAccessTokenWeb(token: string): void {
+  kCreateWebError({
+    code: webOnlyErrorCode,
+    message: '[setAccessTokenWeb] This API is only supported on web.',
+  });
+}
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function issueAccessTokenWithCodeWeb(params: {
   redirectUri: string;
@@ -304,7 +318,10 @@ export async function issueAccessTokenWithCodeWeb(params: {
   refreshTokenExpiresIn: number;
   scope?: string;
 }> {
-  return {} as any;
+  kCreateWebError({
+    code: webOnlyErrorCode,
+    message: '[issueAccessTokenWithCodeWeb] This API is only supported on web.',
+  });
 }
 
 const KakaoUser = {

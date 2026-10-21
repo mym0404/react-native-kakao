@@ -8,6 +8,7 @@ import {
   hasToken,
   isKakaoTalkLoginAvailable,
   isLogined,
+  issueAccessTokenWithCodeWeb,
   type KakaoLoginToken,
   login,
   loginWithKakao,
@@ -19,6 +20,7 @@ import {
   scopes,
   selectShippingAddress,
   serviceTerms,
+  setAccessTokenWeb,
   shippingAddresses,
   signup,
   unlink,
@@ -135,6 +137,30 @@ export default function Page() {
             id={'refresh-token'}
             title={'Refresh Stored Token'}
             action={async () => getTokenSummary(await refreshToken())}
+          />
+          {Platform.OS === 'ios' ? (
+            <E2EApiAction
+              id={'login-talk-custom-scheme'}
+              title={'Login With Talk Custom Scheme'}
+              action={async () =>
+                getTokenSummary(await login({ ios: { launchMethod: 'CustomScheme' } }))
+              }
+            />
+          ) : null}
+          <E2EApiAction
+            id={'native-web-token-set'}
+            title={'Set Web Token On Native'}
+            action={async () => setAccessTokenWeb('not-a-native-access-token')}
+          />
+          <E2EApiAction
+            id={'native-web-token-issue'}
+            title={'Issue Web Token On Native'}
+            action={() =>
+              issueAccessTokenWithCodeWeb({
+                code: 'not-a-native-authorization-code',
+                redirectUri: 'https://example.com/unused-native-callback',
+              })
+            }
           />
         </>
       )}
