@@ -426,6 +426,7 @@ class RNCKakaoUserModule internal constructor(
             putD("id", user.id?.toDouble())
             putB("hasSignedUp", user.hasSignedUp)
             putString("uuid", user.uuid)
+            putString("groupUserToken", user.groupUserToken)
             putL("connectedAt", user.connectedAt?.unix)
             putL("synchedAt", user.synchedAt?.unix)
             putString("name", user.kakaoAccount?.name)
