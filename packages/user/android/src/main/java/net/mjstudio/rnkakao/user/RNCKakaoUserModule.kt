@@ -152,6 +152,20 @@ class RNCKakaoUserModule internal constructor(
     }
 
   @ReactMethod
+  override fun signup(
+    properties: ReadableMap?,
+    promise: Promise,
+  ) = onMain {
+    UserApiClient.instance.signup(properties?.toStringMap()) { error ->
+      if (error != null) {
+        promise.rejectWith(error)
+      } else {
+        promise.resolve(null)
+      }
+    }
+  }
+
+  @ReactMethod
   override fun logout(promise: Promise) =
     onMain {
       UserApiClient.instance.logout {
@@ -407,6 +421,7 @@ class RNCKakaoUserModule internal constructor(
         promise.resolve(
           argMap().apply {
             putD("id", user.id?.toDouble())
+            putB("hasSignedUp", user.hasSignedUp)
             putL("connectedAt", user.connectedAt?.unix)
             putL("synchedAt", user.synchedAt?.unix)
             putString("name", user.kakaoAccount?.name)

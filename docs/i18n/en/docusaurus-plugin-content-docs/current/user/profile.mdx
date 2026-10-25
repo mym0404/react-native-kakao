@@ -17,6 +17,7 @@ The `KakaoUser` type is defined as:
 ```tsx
 export type KakaoUser = {
   id: number;
+  hasSignedUp?: boolean | null;
   email: string;
   name: string;
   nickname: string;
@@ -63,3 +64,9 @@ Pass `secureResource: false` only when you need HTTP image URLs. This option cha
 ```tsx
 const user = await me({ secureResource: false });
 ```
+
+## Manual connection state
+
+`hasSignedUp` reports whether a user has completed connection to a manual connection app. `false` means pending, `true` means connected, and `null` means Kakao omitted the field. An omitted value in an automatic connection app does not mean the user is signed out.
+
+Connect a pending user with [manual signup](./signup.mdx).
