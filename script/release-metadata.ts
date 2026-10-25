@@ -14,7 +14,7 @@ type PullRequest = {
   merged_at: string | null;
   user: { login: string } | null;
 };
-type Api = <T>(path: string, method?: 'GET' | 'PATCH', body?: object) => Promise<T>;
+type Api = <T>(path: string, method?: 'GET' | 'PATCH', body?: Record<string, unknown>) => Promise<T>;
 
 export function isBackport(title: string, body: string): boolean {
   return /\bbackport\b|\bsync (?:recent )?merged\b|\bport(?:ed|ing)?\b.*\bto v[23]\b/i.test(title)
@@ -184,7 +184,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
       }
       console.log('Backport provenance verified.');
     } else {
-      if (!repository || !tag || !['v2', 'v3', 'main'].includes(branch)) {
+      if (!repository || !tag || !branch || !['v2', 'v3', 'main'].includes(branch)) {
         throw new Error('Usage: node script/release-metadata.ts <version> <v2|v3|main>');
       }
       await reconcileRelease(repository, tag, branch, githubApi);
