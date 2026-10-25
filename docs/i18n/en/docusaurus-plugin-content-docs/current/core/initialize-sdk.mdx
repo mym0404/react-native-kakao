@@ -22,6 +22,7 @@ Android and iOS support a custom URL scheme and internal SDK logging. Web ignore
 | --- | --- | --- |
 | `customScheme` | `kakao{native app key}` | URL scheme for SDK authentication and share callbacks, without `://` |
 | `loggingEnabled` | `false` | Whether to enable internal Kakao native SDK logging |
+| `android.sdkIdentifier` | Omitted | Wrapper SDK identifier appended unchanged to Android's KA request header; ignored on iOS and web |
 
 The custom scheme must match the configuration registered with Kakao Developers. Follow the [official multi-app guide](https://developers.kakao.com/docs/en/kakaologin/multi-app) when maintaining an existing multi-app setup. An arbitrary scheme cannot receive a real login callback.
 
@@ -47,6 +48,14 @@ With Expo, set the same `customScheme` in the core plugin and run prebuild again
 ```
 
 Without Expo, update the callback schemes in AndroidManifest.xml and iOS Info.plist yourself. Changing the SDK initialization option alone does not change the OS URL registration.
+
+Set `android.sdkIdentifier` to identify a wrapper SDK on Android. Kakao appends the string unchanged to its KA header. Include a leading space to separate it from existing header fields, as shown below. This runtime option does not require Expo plugin configuration.
+
+```tsx
+await initializeKakaoSDK('{{ native app key }}', {
+  android: { sdkIdentifier: ' wrapper/my-sdk' },
+});
+```
 
 ## Web initialization
 
