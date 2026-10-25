@@ -151,28 +151,36 @@ export default function Page() {
           />
         </>
       )}
-      <E2EApiAction
-        id={'token-refresh-explicit'}
-        title={'Refresh Invalid External Token'}
-        minW={buttonMinWidth}
-        action={async () => {
-          const now = Math.floor(Date.now() / 1000);
+      {[true, false].map((loggingEnabled) => (
+        <E2EApiAction
+          key={String(loggingEnabled)}
+          id={loggingEnabled ? 'token-refresh-explicit' : 'token-refresh-no-ios-logs'}
+          title={
+            loggingEnabled
+              ? 'Refresh Invalid External Token'
+              : 'Refresh Invalid Token Without iOS Logs'
+          }
+          minW={buttonMinWidth}
+          action={async () => {
+            const now = Math.floor(Date.now() / 1000);
 
-          return getTokenSummary(
-            await refreshToken({
-              token: {
-                accessToken: 'not-a-native-access-token',
-                refreshToken: 'not-a-native-refresh-token',
-                accessTokenExpiresAt: now - tokenVerificationLifetimeSeconds,
-                refreshTokenExpiresAt: now + tokenVerificationLifetimeSeconds,
-                accessTokenExpiresIn: -tokenVerificationLifetimeSeconds,
-                refreshTokenExpiresIn: tokenVerificationLifetimeSeconds,
-                scopes: [],
-              },
-            }),
-          );
-        }}
-      />
+            return getTokenSummary(
+              await refreshToken({
+                ios: { loggingEnabled },
+                token: {
+                  accessToken: 'not-a-native-access-token',
+                  refreshToken: 'not-a-native-refresh-token',
+                  accessTokenExpiresAt: now - tokenVerificationLifetimeSeconds,
+                  refreshTokenExpiresAt: now + tokenVerificationLifetimeSeconds,
+                  accessTokenExpiresIn: -tokenVerificationLifetimeSeconds,
+                  refreshTokenExpiresIn: tokenVerificationLifetimeSeconds,
+                  scopes: [],
+                },
+              }),
+            );
+          }}
+        />
+      ))}
       <E2EApiAction
         id={'token-code-exchange'}
         title={'Exchange Invalid Authorization Code'}

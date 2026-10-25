@@ -39,7 +39,7 @@ export interface Spec extends TurboModule {
     codeVerifier?: string,
     redirectUri?: string,
   ): Promise<KakaoLoginToken>;
-  refreshToken(token?: UnsafeObject): Promise<KakaoLoginToken>;
+  refreshToken(token?: UnsafeObject, iosLoggingEnabled?: boolean): Promise<KakaoLoginToken>;
   signup(properties?: UnsafeObject): Promise<void>;
   logout(): Promise<void>;
   unlink(): Promise<void>;
