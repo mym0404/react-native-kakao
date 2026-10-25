@@ -97,7 +97,7 @@ test('reconciliation credits original author, selects v3 and is idempotent', asy
   };
   await reconcileRelease(repo, '2.4.12', 'v2', api);
   assert.equal(latest, '3.10.0');
-  assert.ok(releases[0].body.includes('by @bb8654838-lgtm'));
+  assert.ok(releases[0]?.body.includes('by @bb8654838-lgtm'));
   assert.ok(changed.some((item) => item.path.endsWith('/102') && item.payload.make_latest === 'true'));
   assert.ok(!changed.some((item) => item.path.endsWith('/100') && item.payload.make_latest === 'true'));
   const writes = changed.filter((item) => typeof item.payload.body === 'string').length;
