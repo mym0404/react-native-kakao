@@ -13,6 +13,11 @@
 
 RCT_EXPORT_MODULE()
 
+RCT_EXPORT_METHOD(isKakaoTalkSharingAvailable : (RCTPromiseResolveBlock)
+                      resolve reject : (RCTPromiseRejectBlock)reject) {
+  [[self manager] isKakaoTalkSharingAvailable:resolve];
+}
+
 RCT_EXPORT_METHOD(uploadImage : (NSString*)imageUri secureResource : (BOOL)
                       secureResource resolve : (RCTPromiseResolveBlock)
                           resolve reject : (RCTPromiseRejectBlock)reject) {
