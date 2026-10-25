@@ -6,7 +6,7 @@ sidebar_position: 104
 
 ## Exchange an authorization code
 
-`issueAccessTokenWithCode()` exchanges an existing authorization code for a `KakaoLoginToken` on iOS and web. Use it when handling a code obtained through a separate authorization flow. Regular [`login()`](./login.mdx) already performs the exchange.
+`issueAccessTokenWithCode()` exchanges an existing authorization code for a `KakaoLoginToken` on iOS and web. Use it when handling a code obtained through a separate authorization flow. On iOS, [`login()`](./login.mdx) performs the exchange. On web, `login()` redirects to authorization; exchange the code returned by that redirect separately.
 
 ```tsx
 import { issueAccessTokenWithCode } from '@react-native-kakao/user';

@@ -6,7 +6,7 @@ sidebar_position: 104
 
 ## 인가 코드로 토큰 발급
 
-`issueAccessTokenWithCode()`는 iOS와 웹에서 이미 받은 인가 코드를 `KakaoLoginToken`으로 교환해요. 별도 인가 흐름에서 받은 코드를 처리할 때 사용해요. 일반 로그인은 [`login()`](./login.mdx)이 코드 교환까지 처리해요.
+`issueAccessTokenWithCode()`는 iOS와 웹에서 이미 받은 인가 코드를 `KakaoLoginToken`으로 교환해요. 별도 인가 흐름에서 받은 코드를 처리할 때 사용해요. iOS의 [`login()`](./login.mdx)은 코드 교환까지 처리해요. 웹의 `login()`은 인가 화면으로 이동하므로, 리다이렉트로 받은 코드를 별도로 교환해야 해요.
 
 ```tsx
 import { issueAccessTokenWithCode } from '@react-native-kakao/user';
