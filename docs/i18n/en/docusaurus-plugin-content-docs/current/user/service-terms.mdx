@@ -45,3 +45,21 @@ export type KakaoServiceTerms = {
 ```
 
 `agreedAt` is a Unix timestamp in seconds when present. Terms retrieved with `app_service_terms` use the same response type, including `agreed` for each term.
+
+## Revoke consent
+
+`revokeServiceTerms(tags)` revokes consent for registered terms with `revocable: true` on Android, iOS, and web. This changes the user's consent state. Check your app's service policy before revoking a required term.
+
+```tsx
+import { revokeServiceTerms, serviceTerms } from '@react-native-kakao/user';
+
+const revokedTerms = await revokeServiceTerms(['optional_service_2020_0218']);
+const currentTerms = await serviceTerms({
+  result: 'app_service_terms',
+  tags: ['optional_service_2020_0218'],
+});
+```
+
+Returns `Promise<KakaoRevokedServiceTerms[]>`, where each item has `tag: string` and `agreed: boolean`. An absent revoked terms list becomes an empty array. Authentication errors and invalid tags reject the promise with Kakao's error.
+
+[Official documentation](https://developers.kakao.com/docs/en/kakaologin/rest-api#revoke-service-terms)
