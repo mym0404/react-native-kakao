@@ -58,6 +58,12 @@ jobs:
         run: |
           yarn t
           yarn test
+      - name: Verify original PR metadata for backports
+        env:
+          GH_REPO: ${{ github.repository }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: node script/release-metadata.ts verify-backport
 
 #      - name: Cache Gradle
 #        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
