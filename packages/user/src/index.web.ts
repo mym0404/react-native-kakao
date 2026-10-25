@@ -174,9 +174,14 @@ const KakaoUser: KakaoUserAPI = {
         })),
       } as KakaoShippingAddressResult;
     }),
-  me: () =>
+  me: ({ propertyKeys } = {}) =>
     kRunWebAPI(async () => {
-      const ret = camelCaseObject(await Kakao.API.request({ url: '/v2/user/me' })) as {
+      const response: { properties?: Record<string, string> } = await Kakao.API.request({
+        url: '/v2/user/me',
+        data: filterNonNullishKeys({ property_keys: propertyKeys }),
+      });
+
+      const ret = camelCaseObject(response) as {
         id: number;
         connectedAt?: string;
         synchedAt?: string;
@@ -193,6 +198,7 @@ const KakaoUser: KakaoUserAPI = {
 
       return {
         id: ret.id,
+        properties: response.properties ?? {},
         email: kakaoAccount.email,
         name: kakaoAccount.name,
         nickname: profile.nickname ?? properties.nickname,

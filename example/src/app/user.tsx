@@ -186,6 +186,41 @@ export default function Page() {
           showMessage({ type: 'success', message: 'Success' });
         }}
       />
+      <E2EApiAction
+        id={'user-properties'}
+        minW={buttonMinWidth}
+        title={'Get User Properties'}
+        action={async () => {
+          const { properties } = await me({ propertyKeys: ['properties.'] });
+
+          return {
+            keys: Object.keys(properties),
+            hasNickname: typeof properties.nickname === 'string',
+            hasProfileImage: typeof properties.profile_image === 'string',
+            hasThumbnailImage: typeof properties.thumbnail_image === 'string',
+          };
+        }}
+      />
+      <E2EApiAction
+        id={'user-property-nickname'}
+        minW={buttonMinWidth}
+        title={'Get Nickname Property'}
+        action={async () => {
+          const { properties } = await me({ propertyKeys: ['properties.nickname'] });
+
+          return { keys: Object.keys(properties) };
+        }}
+      />
+      <E2EApiAction
+        id={'user-properties-empty'}
+        minW={buttonMinWidth}
+        title={'Get Profile Without Properties'}
+        action={async () => {
+          const { properties } = await me({ propertyKeys: ['kakao_account.email'] });
+
+          return { keys: Object.keys(properties) };
+        }}
+      />
       <Btn
         minW={buttonMinWidth}
         title={'Get Access Token'}
