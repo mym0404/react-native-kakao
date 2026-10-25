@@ -251,6 +251,29 @@ export type KakaoDefaultTemplateParams = (
   | { templateType: 'calendar'; template: KakaoCalendarTemplate }
 ) & { serverCallbackArgs?: Readonly<Record<string, string>> };
 
+export type KakaoShareTemplateDiagnosticsParams = (
+  | KakaoDefaultTemplateParams
+  | {
+      templateType: 'custom';
+      templateId: Double;
+      templateArgs?: Readonly<Record<string, string>>;
+    }
+  | {
+      templateType: 'scrap';
+      requestUrl: string;
+      templateId?: Double;
+      templateArgs?: Readonly<Record<string, string>>;
+    }
+) & {
+  serverCallbackArgs?: Readonly<Record<string, string>>;
+  pickerSettings?: KakaoSharePickerSettings;
+};
+
+export type KakaoShareTemplateDiagnostics = {
+  warningMsg: Readonly<{ [key: string]: string }>;
+  argumentMsg: Readonly<{ [key: string]: string }>;
+};
+
 export interface Spec extends TurboModule {
   isKakaoTalkSharingAvailable(): Promise<boolean>;
   makeTemplateUrl(
@@ -260,6 +283,14 @@ export interface Spec extends TurboModule {
     templateArgs: Readonly<{ [key: string]: string }>,
     serverCallbackArgs: Readonly<{ [key: string]: string }>,
   ): Promise<string>;
+  getTemplateDiagnostics(
+    templateType: string,
+    templateId: Double,
+    templateJson: UnsafeObject,
+    templateArgs: Readonly<{ [key: string]: string }>,
+    serverCallbackArgs: Readonly<{ [key: string]: string }>,
+    pickerSettings?: UnsafeObject,
+  ): Promise<KakaoShareTemplateDiagnostics>;
   uploadImage(imageUri: string, secureResource: boolean): Promise<KakaoImageUploadResult>;
   shareScrapTemplate(
     requestUrl: string,

@@ -63,6 +63,40 @@ private let noCustomTemplateId: Int64 = -1
     }
   }
 
+  @objc public func getTemplateDiagnostics(
+    _ templateType: String,
+    templateId: Int64,
+    templateJson: [String: Any],
+    templateArgs: [String: String]?,
+    serverCallbackArgs: [String: String]?,
+    pickerSettings: [String: Any]?,
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    onMain {
+      let requestUrl = templateType == "scrap" ? templateJson["requestUrl"] as? String : nil
+      guard templateType != "scrap" || requestUrl != nil else {
+        RNCKakaoUtil.reject(reject, RNCKakaoError.unknown("requestUrl is required"))
+        return
+      }
+      let customTemplateId: Int64? =
+        templateType == "custom" || templateId != noCustomTemplateId ? templateId : nil
+      self.runShare(
+        templateType: templateType,
+        templateId: customTemplateId,
+        defaultTemplate: templateJson,
+        useWebBrowserIfKakaoTalkNotAvailable: false,
+        templateArgs: templateArgs,
+        serverCallbackArgs: serverCallbackArgs,
+        pickerSettings: pickerSettings,
+        requestUrl: requestUrl,
+        resolve: resolve,
+        reject: reject,
+        diagnosticsOnly: true
+      )
+    }
+  }
+
   @objc public func uploadImage(
     _ imageUri: String,
     secureResource: Bool,
@@ -469,13 +503,21 @@ private let noCustomTemplateId: Int64 = -1
     pickerSettings: [String: Any]?,
     requestUrl: String? = nil,
     resolve: @escaping RCTPromiseResolveBlock,
-    reject: @escaping RCTPromiseRejectBlock
+    reject: @escaping RCTPromiseRejectBlock,
+    diagnosticsOnly: Bool = false
   ) {
     let result: Any? = requestUrl == nil ? 42 : nil
     let shareCompletion = { (sharingResult: SharingResult?, error: Error?) in
       if let error {
         RNCKakaoUtil.reject(reject, error)
       } else if let sharingResult {
+        if diagnosticsOnly {
+          resolve([
+            "warningMsg": sharingResult.warningMsg ?? [:],
+            "argumentMsg": sharingResult.argumentMsg ?? [:]
+          ])
+          return
+        }
         UIApplication.shared.open(sharingResult.url, options: [:]) { success in
           if success {
             resolve(result)
@@ -491,7 +533,7 @@ private let noCustomTemplateId: Int64 = -1
       }
     }
 
-    if ShareApi.isKakaoTalkSharingAvailable() {
+    if diagnosticsOnly || ShareApi.isKakaoTalkSharingAvailable() {
       let shareType = (pickerSettings?["type"] as? String).flatMap(ShareType.init(rawValue:))
       let limit = (pickerSettings?["limit"] as? NSNumber)?.intValue
       if let requestUrl {
