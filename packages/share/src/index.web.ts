@@ -1,10 +1,21 @@
-import { filterNonNullishKeys, snakeCaseObject } from '@mj-studio/js-util';
+import {
+  filterNonNullishKeys,
+  replaceJsonValuesRecursively,
+  snakeCaseObject,
+} from '@mj-studio/js-util';
 import { kRunWebAPI } from '@react-native-kakao/core';
 
-import type { KakaoShareAPI } from './index';
+import type { KakaoImageUploadResult, KakaoShareAPI } from './index';
 
 declare const Kakao: {
   Share: {
+    scrapImage: (args: { imageUrl: string }) => Promise<{
+      infos: {
+        original: Omit<KakaoImageUploadResult['infos']['original'], 'contentType'> & {
+          content_type: string;
+        };
+      };
+    }>;
     sendDefault: (args: any) => Promise<any>;
     sendCustom: (args: any) => Promise<any>;
   };
@@ -21,26 +32,25 @@ function createShareDefault({
   serverCallbackArgs?: Record<string, string>;
 }) {
   return kRunWebAPI(() =>
-    Kakao.Share.sendDefault({
-      objectType,
-      ...template,
-      serverCallbackArgs,
-    }),
+    Kakao.Share.sendDefault(
+      filterNonNullishKeys({
+        objectType,
+        ...serializeExecutionParams(template),
+        serverCallbackArgs,
+      }),
+    ),
   );
 }
 
 function createSendDefaultMe({ template, objectType }: { objectType: string; template: any }) {
-  return kRunWebAPI(() =>
-    Kakao.API.request({
+  return kRunWebAPI(async () => {
+    await Kakao.API.request({
       url: '/v2/api/talk/memo/default/send',
       data: {
-        template_object: snakeCaseObject({
-          objectType,
-          ...template,
-        }),
+        template_object: serializeMessageTemplate(objectType, template),
       },
-    }),
-  );
+    });
+  });
 }
 
 function createSendDefaultFriends({
@@ -56,44 +66,80 @@ function createSendDefaultFriends({
     Kakao.API.request({
       url: '/v1/api/talk/friends/message/default/send',
       data: {
-        template_object: snakeCaseObject(
-          filterNonNullishKeys({
-            objectType,
-            ...template,
-          }),
-        ),
+        template_object: serializeMessageTemplate(objectType, template),
         receiver_uuids: receiverUuids,
       },
-    }),
+    }).then(
+      (response: { successful_receiver_uuids?: string[] }) =>
+        response.successful_receiver_uuids ?? [],
+    ),
   );
 }
 
+function serializeMessageTemplate(objectType: string, template: object) {
+  return snakeCaseObject({ objectType, ...serializeExecutionParams(template) });
+}
+
+function serializeExecutionParams(template: object) {
+  return replaceJsonValuesRecursively(template, {
+    stripUndefined: true,
+    replacer: {
+      androidExecutionParams: encodeExecutionParams,
+      iosExecutionParams: encodeExecutionParams,
+    },
+  });
+
+  function encodeExecutionParams(params?: Record<string, string>) {
+    return params == null
+      ? undefined
+      : Object.entries(params)
+          .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+          .join('&');
+  }
+}
+
 const KakaoShare: KakaoShareAPI = {
+  scrapImage: ({ imageUrl, secureResource = true }) =>
+    kRunWebAPI(async () => {
+      const { infos } = await Kakao.Share.scrapImage({ imageUrl });
+      const { content_type: contentType, ...original } = infos.original;
+
+      return {
+        infos: {
+          original: {
+            ...original,
+            url: original.url.replace(/^https?:/, secureResource ? 'https:' : 'http:'),
+            contentType,
+          },
+        },
+      };
+    }),
   shareCustomTemplate: ({ templateArgs, templateId, serverCallbackArgs }) =>
     kRunWebAPI(() =>
-      Kakao.Share.sendCustom({
-        templateId,
-        templateArgs,
-        serverCallbackArgs,
-      }),
+      Kakao.Share.sendCustom(
+        filterNonNullishKeys({ templateId, templateArgs, serverCallbackArgs }),
+      ),
     ),
   sendCustomTemplateToMe: ({ templateId, templateArgs }) =>
-    kRunWebAPI(() =>
-      Kakao.API.request({
+    kRunWebAPI(async () => {
+      await Kakao.API.request({
         url: '/v2/api/talk/memo/send',
-        data: { template_id: templateId, template_args: templateArgs },
-      }),
-    ),
+        data: filterNonNullishKeys({ template_id: templateId, template_args: templateArgs }),
+      });
+    }),
   sendCustomTemplateToFriends: ({ templateArgs, templateId, receiverUuids }) =>
     kRunWebAPI(() =>
       Kakao.API.request({
         url: '/v1/api/talk/friends/message/send',
-        data: {
+        data: filterNonNullishKeys({
           template_id: templateId,
           template_args: templateArgs,
           receiver_uuids: receiverUuids,
-        },
-      }),
+        }),
+      }).then(
+        (response: { successful_receiver_uuids?: string[] }) =>
+          response.successful_receiver_uuids ?? [],
+      ),
     ),
   shareFeedTemplate: ({ template, serverCallbackArgs }) =>
     createShareDefault({ template, serverCallbackArgs, objectType: 'feed' }),
@@ -130,6 +176,7 @@ const KakaoShare: KakaoShareAPI = {
     createSendDefaultFriends({ template, receiverUuids, objectType: 'calendar' }),
 };
 export const {
+  scrapImage,
   sendCalendarTemplateToFriends,
   sendCalendarTemplateToMe,
   sendCommerceTemplateToFriends,

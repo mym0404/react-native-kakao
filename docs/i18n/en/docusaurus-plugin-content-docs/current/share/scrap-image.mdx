@@ -1,0 +1,43 @@
+---
+sidebar_label: Scrap image
+---
+
+# Scrap image
+
+Use `scrapImage()` to copy a publicly accessible image URL to Kakao's image server. Android, iOS, and web return the same image metadata. Initialize the Kakao SDK before calling this API; user login is not required.
+
+```tsx
+import { scrapImage } from '@react-native-kakao/share';
+
+const { infos } = await scrapImage({ imageUrl: 'https://example.com/image.png' });
+
+const content = {
+  imageUrl: infos.original.url,
+  imageWidth: infos.original.width,
+  imageHeight: infos.original.height,
+  title: 'Image',
+  link: { webUrl: 'https://example.com' },
+};
+```
+
+`secureResource` defaults to `true` and returns an HTTPS image URL. Set it to `false` to request an HTTP URL. On web, the JavaScript SDK does not expose this setting, so the returned Kakao CDN URL is normalized to the requested scheme.
+
+The result has this shape:
+
+```ts
+type KakaoImageUploadResult = {
+  infos: {
+    original: {
+      url: string;
+      contentType: string;
+      length: number; // Bytes
+      width: number; // Pixels
+      height: number; // Pixels
+    };
+  };
+};
+```
+
+Images must be accessible to Kakao's server and no larger than 5 MB. Uploaded images are stored for 100 days. This call prepares an image; it does not send a message.
+
+See the [official image scraping guide](https://developers.kakao.com/docs/en/kakaotalk-share/android-link#scrap-image).

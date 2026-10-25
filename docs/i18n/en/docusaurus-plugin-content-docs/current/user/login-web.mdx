@@ -49,9 +49,9 @@ Calling the `login()` function redirects the user to the Kakao login page.
 
 On the web platform, you must pass the `web` object.
 
-Other options outside the `web` object are ignored.
+Common `scopes`, `serviceTerms`, `prompts`, and `nonce` options are forwarded on web. `SelectAccount` maps to `select_account`; `useKakaoAccountLogin: true` disables login through KakaoTalk unless `web.throughTalk` overrides it.
 
-For example, `prompt` is available both inside and outside the `web` object, but the web platform uses only the `prompt` inside the `web` object.
+`web.scope`, `web.serviceTerms`, and `web.prompt` take precedence over their common equivalents. The common `nonce` takes precedence over `web.nonce`.
 
 ```tsx
 import { login } from '@react-native-kakao/user';
