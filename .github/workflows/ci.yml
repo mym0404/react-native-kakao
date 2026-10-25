@@ -58,6 +58,9 @@ jobs:
         run: |
           yarn t
           yarn test
+
+      - name: Build web example
+        run: yarn example exec expo export --platform web --output-dir ../build/web
       - name: Verify original PR metadata for backports
         env:
           GH_REPO: ${{ github.repository }}
