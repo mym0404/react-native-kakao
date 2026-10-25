@@ -339,8 +339,40 @@ jobs:
           xcrun simctl shutdown "$E2E_IOS_DEVICE" || true
           xcrun simctl delete "$E2E_IOS_DEVICE"
 
+  build-minimum:
+    name: build-minimum (${{ matrix.platform }}, RN 0.76.0)
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: android
+            runner: ubuntu-latest
+          - platform: ios
+            runner: macos-latest
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install JDK
+        if: matrix.platform == 'android'
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: zulu
+          java-version: '17'
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Build packages
+        run: yarn build
+
+      - name: Build all published modules on the minimum React Native version
+        run: node script/ci-minimum-rn.ts ${{ matrix.platform }}
+
   ci-result:
-    needs: [changes, lint, build-android, build-ios]
+    needs: [changes, lint, build-android, build-ios, build-minimum]
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -353,12 +385,13 @@ jobs:
           IOS_CHANGED: ${{ needs.changes.outputs.ios }}
           ANDROID_RESULT: ${{ needs.build-android.result }}
           IOS_RESULT: ${{ needs.build-ios.result }}
+          MINIMUM_RESULT: ${{ needs.build-minimum.result }}
         run: |
           echo "changes=$CHANGES_RESULT lint=$LINT_RESULT"
           echo "android=$ANDROID_CHANGED:$ANDROID_RESULT ios=$IOS_CHANGED:$IOS_RESULT"
-          for result in "$CHANGES_RESULT" "$LINT_RESULT"; do
+          for result in "$CHANGES_RESULT" "$LINT_RESULT" "$MINIMUM_RESULT"; do
             if [[ "$result" != 'success' ]]; then
-              echo '::error::Change detection and lint must both succeed.'
+              echo '::error::Change detection, lint, and minimum-version builds must succeed.'
               exit 1
             fi
           done
