@@ -20,8 +20,9 @@ RCT_EXPORT_METHOD(isKakaoTalkLoginAvailable : (RCTPromiseResolveBlock)
 RCT_EXPORT_METHOD(
     login : (NSArray*)serviceTerms prompts : (NSArray*)prompts useKakaoAccountLogin : (BOOL)
         useKakaoAccountLogin scopes : (NSArray*)scopes nonce : (NSString*)
-            nonce loginHint : (NSString*)loginHint channelPublicIds : (NSArray*)channelPublicIds
-                resolve : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
+            nonce loginHint : (NSString*)loginHint channelPublicIds : (NSArray*)
+                channelPublicIds androidRequestCode : (NSNumber*)androidRequestCode resolve : (
+                    RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
   [[self manager] login:serviceTerms
                    prompts:prompts
       useKakaoAccountLogin:useKakaoAccountLogin

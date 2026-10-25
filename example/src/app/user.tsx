@@ -124,6 +124,18 @@ export default function Page() {
       />
       {Platform.OS === 'web' ? null : (
         <>
+          <E2EApiAction
+            id={'login-android-request-code'}
+            title={'Login With Android Request Code'}
+            action={async () => getTokenSummary(await login({ android: { requestCode: 20001 } }))}
+          />
+          <E2EApiAction
+            id={'login-invalid-android-request-code'}
+            title={'Reject Invalid Android Request Code'}
+            action={async () =>
+              getTokenSummary(await login({ android: { requestCode: 2147483648 } }))
+            }
+          />
           {(['auto', 'light', 'dark'] as const).map((uiMode) => (
             <E2EApiAction
               key={uiMode}

@@ -22,6 +22,7 @@ export interface Spec extends TurboModule {
     nonce?: string,
     loginHint?: string,
     channelPublicIds?: string[],
+    androidRequestCode?: number,
   ): Promise<KakaoLoginToken>;
   loginWithKakao(
     uiMode: string,

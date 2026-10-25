@@ -22,6 +22,9 @@ export type KakaoCodeTokenOptions = {
   web?: { clientSecret?: string };
 };
 
+const minActivityRequestCode = -2147483648;
+const maxActivityRequestCode = 2147483647;
+
 export interface KakaoScopeInfo {
   id: string;
   agreed: boolean;
@@ -120,6 +123,7 @@ export function login({
   nonce,
   loginHint,
   channelPublicIds,
+  android,
 }: {
   serviceTerms?: string[];
   prompts?: ('Login' | 'Create' | 'Cert' | 'SelectAccount')[];
@@ -128,6 +132,7 @@ export function login({
   nonce?: string;
   loginHint?: string;
   channelPublicIds?: string[];
+  android?: { requestCode?: number };
   web?: {
     redirectUri: string;
     scope?: string[];
@@ -139,6 +144,15 @@ export function login({
     nonce?: string;
   };
 } = {}): Promise<KakaoLoginToken> {
+  const requestCode = android?.requestCode;
+  kAssert(
+    requestCode == null ||
+      (Number.isInteger(requestCode) &&
+        requestCode >= minActivityRequestCode &&
+        requestCode <= maxActivityRequestCode),
+    `[login] android.requestCode must be an integer from ${minActivityRequestCode} to ${maxActivityRequestCode}`,
+  );
+
   kAssert(
     !useKakaoAccountLogin ? !is.notEmptyArray(prompts) && !is.notEmptyArray(scopes) : true,
     '[login] `prompts` and `scopes` cannot be passed if useKakaoAccountLogin is false.',
@@ -169,6 +183,7 @@ export function login({
     nonce,
     loginHint,
     channelPublicIds ?? [],
+    requestCode,
   );
 }
 
