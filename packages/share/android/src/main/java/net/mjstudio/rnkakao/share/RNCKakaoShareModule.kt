@@ -11,6 +11,7 @@ import com.facebook.react.bridge.ReadableMap
 import com.kakao.sdk.common.util.KakaoCustomTabsClient
 import com.kakao.sdk.share.ShareClient
 import com.kakao.sdk.share.WebSharerClient
+import com.kakao.sdk.share.model.ShareType
 import com.kakao.sdk.share.model.SharingResult
 import com.kakao.sdk.talk.TalkApiClient
 import com.kakao.sdk.talk.model.MessageSendResult
@@ -153,6 +154,7 @@ class RNCKakaoShareModule internal constructor(
     templateId: Double?,
     templateArgs: ReadableMap?,
     serverCallbackArgs: ReadableMap?,
+    pickerSettings: ReadableMap?,
     promise: Promise,
   ) = onMain {
     runShare(
@@ -161,6 +163,7 @@ class RNCKakaoShareModule internal constructor(
       useWebBrowserIfKakaoTalkNotAvailable = useWebBrowserIfKakaoTalkNotAvailable,
       templateArgs = templateArgs,
       serverCallbackArgs = serverCallbackArgs,
+      pickerSettings = pickerSettings,
       requestUrl = requestUrl,
       promise = promise,
     )
@@ -212,6 +215,7 @@ class RNCKakaoShareModule internal constructor(
     useWebBrowserIfKakaoTalkNotAvailable: Boolean,
     templateArgs: ReadableMap,
     serverCallbackArgs: ReadableMap,
+    pickerSettings: ReadableMap?,
     promise: Promise,
   ) = onMain {
     if (templateType == "custom") {
@@ -223,6 +227,7 @@ class RNCKakaoShareModule internal constructor(
         useWebBrowserIfKakaoTalkNotAvailable,
         templateArgs,
         serverCallbackArgs,
+        pickerSettings,
         promise,
       )
     } else if (templateType == "scrap") {
@@ -260,6 +265,7 @@ class RNCKakaoShareModule internal constructor(
         receiverUuids = receiverUuids.filterIsInstance<String>(),
         useWebBrowserIfKakaoTalkNotAvailable,
         serverCallbackArgs,
+        pickerSettings,
         promise,
       )
     }
@@ -273,6 +279,7 @@ class RNCKakaoShareModule internal constructor(
     useWebBrowserIfKakaoTalkNotAvailable: Boolean,
     templateArgs: ReadableMap?,
     serverCallbackArgs: ReadableMap?,
+    pickerSettings: ReadableMap?,
     promise: Promise,
   ) = when (sendType) {
     "share" -> {
@@ -283,6 +290,7 @@ class RNCKakaoShareModule internal constructor(
         useWebBrowserIfKakaoTalkNotAvailable,
         templateArgs,
         serverCallbackArgs,
+        pickerSettings,
         promise,
       )
     }
@@ -307,6 +315,7 @@ class RNCKakaoShareModule internal constructor(
     receiverUuids: List<String>,
     useWebBrowserIfKakaoTalkNotAvailable: Boolean,
     serverCallbackArgs: ReadableMap?,
+    pickerSettings: ReadableMap?,
     promise: Promise,
   ) = when (sendType) {
     "share" -> {
@@ -317,6 +326,7 @@ class RNCKakaoShareModule internal constructor(
         useWebBrowserIfKakaoTalkNotAvailable,
         argMap(),
         serverCallbackArgs,
+        pickerSettings,
         promise,
       )
     }
@@ -425,6 +435,7 @@ class RNCKakaoShareModule internal constructor(
     useWebBrowserIfKakaoTalkNotAvailable: Boolean,
     templateArgs: ReadableMap? = null,
     serverCallbackArgs: ReadableMap? = null,
+    pickerSettings: ReadableMap?,
     promise: Promise,
     requestUrl: String? = null,
   ) {
@@ -449,6 +460,9 @@ class RNCKakaoShareModule internal constructor(
     }
 
     if (ShareClient.instance.isKakaoTalkSharingAvailable(context)) {
+      val pickerType = pickerSettings?.takeIf { it.hasKey("type") }?.getString("type")
+      val shareType = ShareType.entries.firstOrNull { it.value == pickerType }
+      val limit = pickerSettings?.takeIf { it.hasKey("limit") }?.getDouble("limit")?.toInt()
       if (requestUrl != null) {
         ShareClient.instance.shareScrap(
           context,
@@ -456,6 +470,8 @@ class RNCKakaoShareModule internal constructor(
           templateId = templateId?.toLong(),
           templateArgs = templateArgs?.toStringMap(),
           serverCallbackArgs = serverCallbackArgs?.toStringMap(),
+          shareType = shareType,
+          limit = limit,
           callback = callback,
         )
       } else if (templateId != null) {
@@ -464,6 +480,8 @@ class RNCKakaoShareModule internal constructor(
           templateId.toLong(),
           templateArgs = templateArgs?.toStringMap(),
           serverCallbackArgs = serverCallbackArgs?.toStringMap(),
+          shareType = shareType,
+          limit = limit,
           callback = callback,
         )
       } else if (defaultTemplate != null) {
@@ -472,6 +490,8 @@ class RNCKakaoShareModule internal constructor(
             context,
             RNCKakaoShareTemplates.createDefaultTemplate(defaultTemplate, templateType),
             serverCallbackArgs = serverCallbackArgs?.toStringMap(),
+            shareType = shareType,
+            limit = limit,
             callback = callback,
           )
         }.onFailure {

@@ -13,6 +13,7 @@ export function share${props.name[0].toUpperCase() + props.name.slice(1)}Templat
   template: Kakao${props.name[0].toUpperCase() + props.name.slice(1)}Template;
   useWebBrowserIfKakaoTalkNotAvailable?: boolean;
   serverCallbackArgs?: Record<string, string>;
+  pickerSettings?: KakaoSharePickerSettings;
 })
 `.trim()}
 </CodeBlock>
@@ -20,6 +21,8 @@ export function share${props.name[0].toUpperCase() + props.name.slice(1)}Templat
 - `template`: 템플릿 객체입니다.
 - `useWebBrowserIfKakaoTalkNotAvailable`: 카카오톡을 사용할 수 없을 때 웹 브라우저로 공유할지 여부입니다. 기본값은 `true`입니다.
 - `serverCallbackArgs`: 서버 콜백 인자입니다. 모든 값은 문자열로 전달해야 합니다.
+
+- `pickerSettings`: [공유 대상 선택 화면 설정](/docs/share/intro#share-picker-settings)입니다.
 
 :::info
 자세한 컴포넌트 타입은 [컴포넌트 타입들](/docs/share/component-types)을 참고하세요.

@@ -20,6 +20,7 @@ export function shareCustomTemplate(params: {
   useWebBrowserIfKakaoTalkNotAvailable?: boolean;
   templateArgs?: Record<string, string>;
   serverCallbackArgs?: Record<string, string>;
+  pickerSettings?: KakaoSharePickerSettings;
 });
 ```
 
@@ -27,6 +28,8 @@ export function shareCustomTemplate(params: {
 -  `useWebBrowserIfKakaoTalkNotAvailable`: Indicates whether to use a web browser for sharing if KakaoTalk is not available. The default value is `true`.
 -  `templateArgs`: Template arguments. All values must be passed as strings.
 -  `serverCallbackArgs`: Server callback arguments. All values must be passed as strings.
+
+- `pickerSettings`: [Share target selection settings](/docs/share/intro#share-picker-settings).
 
 :::info
 Refer to the [Component Types](/docs/share/component-types) for detailed component types.

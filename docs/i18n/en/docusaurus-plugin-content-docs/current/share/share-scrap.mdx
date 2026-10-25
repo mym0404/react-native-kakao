@@ -19,6 +19,7 @@ await shareScrapTemplate({ requestUrl: 'https://developers.kakao.com' });
 | `templateArgs` | `Record<string, string>` | `{}` | Custom template argument values. Keys remain unchanged. |
 | `serverCallbackArgs` | `Record<string, string>` | `{}` | Arguments for the configured share server callback. |
 | `useWebBrowserIfKakaoTalkNotAvailable` | `boolean` | `true` | Android/iOS use browser sharing when KakaoTalk is unavailable. Web uses the JavaScript SDK's share flow. |
+| `pickerSettings` | `KakaoSharePickerSettings` | Omitted | [Share target selection settings](/docs/share/intro#share-picker-settings). |
 
 The function returns `Promise<void>`. It resolves after the native share screen opens or the web SDK starts its share flow. Resolution does not confirm message delivery or that the user selected a recipient. Native platforms reject with `Package-KakaoAppNotAvailable` when KakaoTalk is unavailable and browser fallback is disabled.
 
