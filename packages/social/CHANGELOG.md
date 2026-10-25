@@ -1,5 +1,13 @@
 # Change Log
 
+## 3.1.0
+
+### Patch Changes
+
+- 3afe0d3: Align web SDK options, response shapes, timestamps, and session errors with native APIs.
+- Updated dependencies [3afe0d3]
+  - @react-native-kakao/core@3.1.0
+
 ## 3.0.0
 
 ### Major Changes

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 3.1.0
+
+### Patch Changes
+
+- 3afe0d3: Align web SDK options, response shapes, timestamps, and session errors with native APIs.
+
 ## 3.0.0
 
 ### Major Changes
