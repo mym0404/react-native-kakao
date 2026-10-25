@@ -27,7 +27,7 @@ class RNCKakaoChannelModule internal constructor(
     promise: Promise,
   ) = onMain {
     val context =
-      currentActivity ?: run {
+      reactApplicationContext.currentActivity ?: run {
         promise.rejectWith(ActivityNotFoundException())
         return@onMain
       }
@@ -49,7 +49,7 @@ class RNCKakaoChannelModule internal constructor(
     promise: Promise,
   ) = onMain {
     val context =
-      currentActivity ?: run {
+      reactApplicationContext.currentActivity ?: run {
         promise.rejectWith(ActivityNotFoundException())
         return@onMain
       }
@@ -82,7 +82,7 @@ class RNCKakaoChannelModule internal constructor(
     promise: Promise,
   ) = onMain {
     val context =
-      currentActivity ?: run {
+      reactApplicationContext.currentActivity ?: run {
         promise.rejectWith(ActivityNotFoundException())
         return@onMain
       }
@@ -101,7 +101,7 @@ class RNCKakaoChannelModule internal constructor(
     promise: Promise,
   ) = onMain {
     val context =
-      currentActivity ?: run {
+      reactApplicationContext.currentActivity ?: run {
         promise.rejectWith(ActivityNotFoundException())
         return@onMain
       }
@@ -134,7 +134,7 @@ class RNCKakaoChannelModule internal constructor(
     promise: Promise,
   ) = onMain {
     val context =
-      currentActivity ?: run {
+      reactApplicationContext.currentActivity ?: run {
         promise.rejectWith(ActivityNotFoundException())
         return@onMain
       }
