@@ -1,5 +1,5 @@
 import { camelCaseObject, filterNonNullishKeys, is } from '@mj-studio/js-util';
-import { kFetchFormUrlEncoded, kGlobalStorage, kRunWebAPI } from '@react-native-kakao/core';
+import { kFetch, kFetchFormUrlEncoded, kGlobalStorage, kRunWebAPI } from '@react-native-kakao/core';
 
 import {
   type KakaoLoginToken,
@@ -8,6 +8,7 @@ import {
   type KakaoUser as KakaoUserProfile,
   type KakaoUserAPI,
 } from './index';
+import { validateShippingAddressOptions } from './validateShippingAddressOptions';
 
 declare const Kakao: {
   Auth: {
@@ -169,11 +170,26 @@ const KakaoUser: KakaoUserAPI = {
 
       return response.revoked_service_terms ?? [];
     }),
-  shippingAddresses: () =>
+  shippingAddresses: ({ addressId, fromUpdatedAt, pageSize } = {}) =>
     kRunWebAPI(async () => {
-      const response = camelCaseObject(
-        await Kakao.API.request({ url: '/v1/user/shipping_address' }),
-      ) as {
+      validateShippingAddressOptions({ addressId, fromUpdatedAt, pageSize });
+
+      const query = new URLSearchParams(
+        Object.entries(
+          filterNonNullishKeys(
+            addressId != null
+              ? { address_id: addressId }
+              : { from_updated_at: fromUpdatedAt, page_size: pageSize },
+          ),
+        ).map(([key, value]) => [key, String(value)]),
+      );
+
+      const { body } = await kFetch<Record<string, unknown>>(
+        `https://kapi.kakao.com/v1/user/shipping_address?${query}`,
+        { headers: { Authorization: `Bearer ${Kakao.Auth.getAccessToken() ?? ''}` } },
+      );
+
+      const response = camelCaseObject(body) as {
         userId?: number;
         shippingAddressesNeedsAgreement?: boolean;
         shippingAddresses?: (Omit<
@@ -191,7 +207,7 @@ const KakaoUser: KakaoUserAPI = {
           ...address,
           updatedAt: isoToUnix(address.updatedAt),
         })),
-      } as KakaoShippingAddressResult;
+      };
     }),
   selectShippingAddress: () =>
     kRunWebAPI(async () => {

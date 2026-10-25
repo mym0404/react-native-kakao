@@ -228,6 +228,41 @@ export default function Page() {
         action={() => serviceTerms({ result: allServiceTermsResult, tags: [testServiceTermTag] })}
       />
       <E2EApiAction
+        id={'shipping-address-by-id'}
+        minW={buttonMinWidth}
+        title={'Get Shipping Address by ID'}
+        action={async () => {
+          const { shippingAddresses: addresses } = await shippingAddresses();
+          const address = addresses[0];
+
+          if (!address) {
+            return { hasAddress: false };
+          }
+
+          const { shippingAddresses: matches } = await shippingAddresses({ addressId: address.id });
+
+          return {
+            count: matches.length,
+            didMatchAddress: matches.length === 1 && matches[0]?.id === address.id,
+          };
+        }}
+      />
+      <E2EApiAction
+        id={'shipping-address-page'}
+        minW={buttonMinWidth}
+        title={'Get Shipping Address Page'}
+        action={async () => {
+          const pageSize = 2;
+          const result = await shippingAddresses({ fromUpdatedAt: 0, pageSize });
+
+          return {
+            count: result.shippingAddresses.length,
+            needsAgreement: result.needsAgreement ?? false,
+            isWithinPageSize: result.shippingAddresses.length <= pageSize,
+          };
+        }}
+      />
+      <E2EApiAction
         id={'user-profile'}
         minW={buttonMinWidth}
         title={'Get Profile'}
