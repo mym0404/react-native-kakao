@@ -1,0 +1,34 @@
+---
+sidebar_position: 110
+---
+
+# Login method selection
+
+`loginWithKakao()` opens the Android or iOS SDK's login method selector. After the user chooses KakaoTalk or Kakao Account and completes login, it returns the same [`KakaoLoginToken` as `login()`](./login.mdx#response). Closing the selector or cancelling login rejects with the SDK error.
+
+```tsx
+import { loginWithKakao } from '@react-native-kakao/user';
+
+const token = await loginWithKakao({ uiMode: 'dark' });
+```
+
+## Options
+
+All options are optional. Account login options apply when the user selects Kakao Account.
+
+| Option             | Meaning                                                                          | Default         |
+| ------------------ | -------------------------------------------------------------------------------- | --------------- |
+| `uiMode`           | Selector theme: `auto`, `light`, or `dark`                                       | `auto`          |
+| `prompts`          | Account login prompts: an array of `Login`, `Create`, `Cert`, or `SelectAccount` | None            |
+| `loginHint`        | Email, phone number, or Kakao Mail ID to prefill in the account ID field         | None            |
+| `channelPublicIds` | Channel profile IDs to display on the consent screen. Requires partner approval  | None            |
+| `serviceTerms`     | Service term tags to include on the consent screen                               | None            |
+| `nonce`            | Value used to verify the OpenID Connect ID token. Android only                   | None            |
+| `ios.orientation`  | iOS selector orientation: `auto`, `portrait`, or `landscape`                     | `auto`          |
+| `ios.launchMethod` | iOS KakaoTalk launch method: `UniversalLink` or `CustomScheme`                   | `UniversalLink` |
+
+The current iOS SDK selector does not forward `nonce` to account login. Providing it on iOS rejects before opening the selector. Use [`login({ nonce })`](./login.mdx) when iOS ID token verification requires a nonce.
+
+## Platform support
+
+The JavaScript SDK does not provide this selector, so web rejects with `Package-UnsupportedPlatform`. Use [`login({ web: { redirectUri } })`](./login-web.mdx) on web.

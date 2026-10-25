@@ -38,6 +38,29 @@ RCT_EXPORT_METHOD(signup : (NSDictionary*)properties resolve : (RCTPromiseResolv
   [[self manager] signup:properties resolve:resolve reject:reject];
 }
 
+RCT_EXPORT_METHOD(loginWithKakao : (NSString*)uiMode orientation : (NSString*)
+                      orientation launchMethod : (NSString*)launchMethod prompts : (NSArray*)
+                          prompts loginHint : (NSString*)loginHint nonce : (NSString*)
+                              nonce channelPublicIds : (NSArray*)channelPublicIds serviceTerms : (
+                                  NSArray*)serviceTerms resolve : (RCTPromiseResolveBlock)
+                                  resolve reject : (RCTPromiseRejectBlock)reject) {
+  [[self manager] loginWithKakao:uiMode
+                     orientation:orientation
+                    launchMethod:launchMethod
+                         prompts:prompts
+                       loginHint:loginHint
+                           nonce:nonce
+                channelPublicIds:channelPublicIds
+                    serviceTerms:serviceTerms
+                         resolve:resolve
+                          reject:reject];
+}
+
+RCT_EXPORT_METHOD(refreshToken : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)
+                      reject) {
+  [[self manager] refreshToken:resolve reject:reject];
+}
+
 RCT_EXPORT_METHOD(logout : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
   [[self manager] logout:resolve reject:reject];
 }

@@ -43,41 +43,9 @@ import RNCKakaoCore
         RNCKakaoUtil.reject(reject, RNCKakaoError.sdkNotInitialized)
         return
       }
-      let callback = { (token: OAuthToken?, error: Error?) in
-        if let error {
-          RNCKakaoUtil.reject(reject, error)
-        } else if let token {
-          resolve([
-            "accessToken": token.accessToken,
-            "refreshToken": token.refreshToken,
-            "tokenType": token.tokenType,
-            "idToken": token.idToken as Any,
-            "accessTokenExpiresAt": token.expiredAt.timeIntervalSince1970,
-            "refreshTokenExpiresAt": token.refreshTokenExpiredAt.timeIntervalSince1970,
-            "accessTokenExpiresIn": token.expiresIn,
-            "refreshTokenExpiresIn": token.refreshTokenExpiresIn,
-            "scopes": token.scopes ?? []
-          ])
-        } else {
-          RNCKakaoUtil.reject(reject, RNCKakaoError.responseNotFound(name: "token"))
-        }
-      }
+      let callback = tokenCallback(resolve, reject: reject)
       let accountLogin = {
-        var _prompts: [Prompt] = []
-        for p in prompts {
-          if p == "Login" {
-            _prompts.append(.Login)
-          }
-          if p == "Cert" {
-            _prompts.append(.Cert)
-          }
-          if p == "Create" {
-            _prompts.append(.Create)
-          }
-          if p == "SelectAccount" {
-            _prompts.append(.SelectAccount)
-          }
-        }
+        let _prompts = self.loginPrompts(prompts)
         if let loginHint {
           UserApi.shared.loginWithKakaoAccount(
             prompts: self.emptyArrayToNil(_prompts),
@@ -123,6 +91,67 @@ import RNCKakaoCore
       } else {
         accountLogin()
       }
+    }
+  }
+
+  @objc public func loginWithKakao(
+    _ uiMode: String,
+    orientation: String,
+    launchMethod: String,
+    prompts: [String],
+    loginHint: String?,
+    nonce: String?,
+    channelPublicIds: [String],
+    serviceTerms: [String],
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    onMain { [self] in
+      guard let _ = try? KakaoSDK.shared.appKey() else {
+        RNCKakaoUtil.reject(reject, RNCKakaoError.sdkNotInitialized)
+        return
+      }
+      guard nonce == nil else {
+        RNCKakaoUtil.reject(
+          reject,
+          RNCKakaoError
+            .unknown(
+              "The Kakao iOS login chooser does not forward nonce for account login. Use login instead."
+            )
+        )
+        return
+      }
+      UserApi.shared.loginWithKakao(
+        BridgeConfiguration(
+          orientation: LoginOrientation(rawValue: orientation),
+          uiMode: LoginUiMode(rawValue: uiMode)
+        ),
+        loginProperties: LoginConfiguration(
+          talk: LoginConfiguration
+            .Talk(launchMethod: launchMethod == "CustomScheme" ? .CustomScheme : .UniversalLink),
+          account: LoginConfiguration.Account(
+            prompts: emptyArrayToNil(loginPrompts(prompts)),
+            loginHint: loginHint
+          ),
+          channelPublicIds: emptyArrayToNil(channelPublicIds),
+          serviceTerms: emptyArrayToNil(serviceTerms),
+          nonce: nonce
+        ),
+        completion: tokenCallback(resolve, reject: reject)
+      )
+    }
+  }
+
+  @objc public func refreshToken(
+    _ resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    onMain { [self] in
+      guard let _ = try? KakaoSDK.shared.appKey() else {
+        RNCKakaoUtil.reject(reject, RNCKakaoError.sdkNotInitialized)
+        return
+      }
+      AuthApi.shared.refreshToken(completion: tokenCallback(resolve, reject: reject))
     }
   }
 
@@ -458,6 +487,36 @@ import RNCKakaoCore
         } else {
           RNCKakaoUtil.reject(reject, RNCKakaoError.responseNotFound(name: "accessTokenInfo"))
         }
+      }
+    }
+  }
+
+  private func loginPrompts(_ prompts: [String]) -> [Prompt] {
+    prompts
+      .compactMap { Prompt(rawValue: $0 == "SelectAccount" ? "select_account" : $0.lowercased()) }
+  }
+
+  private func tokenCallback(
+    _ resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) -> (OAuthToken?, Error?) -> Void {
+    { (token: OAuthToken?, error: Error?) in
+      if let error {
+        RNCKakaoUtil.reject(reject, error)
+      } else if let token {
+        resolve([
+          "accessToken": token.accessToken,
+          "refreshToken": token.refreshToken,
+          "tokenType": token.tokenType,
+          "idToken": token.idToken as Any,
+          "accessTokenExpiresAt": token.expiredAt.timeIntervalSince1970,
+          "refreshTokenExpiresAt": token.refreshTokenExpiredAt.timeIntervalSince1970,
+          "accessTokenExpiresIn": token.expiresIn,
+          "refreshTokenExpiresIn": token.refreshTokenExpiresIn,
+          "scopes": token.scopes ?? []
+        ])
+      } else {
+        RNCKakaoUtil.reject(reject, RNCKakaoError.responseNotFound(name: "token"))
       }
     }
   }
