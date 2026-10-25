@@ -1,10 +1,37 @@
-import type { KakaoNaviLocation, KakaoNaviOption } from './spec/NativeKakaoNavi';
+import { kAssert } from '@react-native-kakao/core';
+
+import type {
+  KakaoNaviLocation,
+  KakaoNaviOption,
+  KakaoNaviRouteParams,
+} from './spec/NativeKakaoNavi';
 import Native from './spec/NativeKakaoNavi';
 
-export type { KakaoNaviLocation, KakaoNaviOption } from './spec/NativeKakaoNavi';
+export type {
+  KakaoNaviLocation,
+  KakaoNaviOption,
+  KakaoNaviRouteParams,
+} from './spec/NativeKakaoNavi';
 
 export function isKakaoNaviInstalled(): Promise<boolean> {
   return Native.isKakaoNaviInstalled();
+}
+
+export function getNavigateUrl(params: KakaoNaviRouteParams): Promise<string> {
+  return makeNaviUrl(params, false);
+}
+
+export function getShareUrl(params: KakaoNaviRouteParams): Promise<string> {
+  return makeNaviUrl(params, true);
+}
+
+async function makeNaviUrl(
+  { destination, option, viaList }: KakaoNaviRouteParams,
+  isShare: boolean,
+) {
+  kAssert(viaList == null || viaList.length <= 3, 'viaList must contain at most 3 stops.');
+
+  return Native.makeNaviUrl(destination, isShare, option, viaList);
 }
 
 export function navigateTo({
@@ -47,6 +74,6 @@ export function shareTo({
   );
 }
 
-const KakaoNavi = { isKakaoNaviInstalled, navigateTo, shareTo };
+const KakaoNavi = { isKakaoNaviInstalled, getNavigateUrl, getShareUrl, navigateTo, shareTo };
 export default KakaoNavi;
 export type KakaoNaviAPI = typeof KakaoNavi;
