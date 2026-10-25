@@ -17,6 +17,8 @@ import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.UserApiClient
 import com.kakao.sdk.user.model.AccountLoginParams
+import com.kakao.sdk.user.model.AgeRange
+import com.kakao.sdk.user.model.BirthdayType
 import com.kakao.sdk.user.model.Gender
 import com.kakao.sdk.user.model.LoginUiMode
 import com.kakao.sdk.user.model.UserShippingAddresses
@@ -434,12 +436,12 @@ class RNCKakaoUserModule internal constructor(
             putString("thumbnailImageUrl", user.kakaoAccount?.profile?.thumbnailImageUrl)
             putB("isDefaultImage", user.kakaoAccount?.profile?.isDefaultImage)
             putString("phoneNumber", user.kakaoAccount?.phoneNumber)
-            putString("ageRange", user.kakaoAccount?.ageRange?.name)
+            putString("ageRange", user.kakaoAccount?.ageRange.toBridgeValue())
             putString("birthday", user.kakaoAccount?.birthday)
-            putString("birthdayType", user.kakaoAccount?.birthdayType?.name)
+            putString("birthdayType", user.kakaoAccount?.birthdayType.toBridgeValue())
             putB("isLeapMonth", user.kakaoAccount?.isLeapMonth)
             putString("birthyear", user.kakaoAccount?.birthyear)
-            putString("gender", user.kakaoAccount?.gender?.name)
+            putString("gender", user.kakaoAccount?.gender.toBridgeValue())
             putB("isEmailValid", user.kakaoAccount?.isEmailValid)
             putB("isEmailVerified", user.kakaoAccount?.isEmailVerified)
             putB("isKorean", user.kakaoAccount?.isKorean)
@@ -494,14 +496,7 @@ class RNCKakaoUserModule internal constructor(
             putString("legalName", user.kakaoAccount?.legalName)
             putB("legalNameNeedsAgreement", user.kakaoAccount?.legalNameNeedsAgreement)
             putString("legalBirthDate", user.kakaoAccount?.legalBirthDate)
-            putString(
-              "legalGender",
-              when (user.kakaoAccount?.legalGender) {
-                Gender.FEMALE -> "female"
-                Gender.MALE -> "male"
-                else -> null
-              },
-            )
+            putString("legalGender", user.kakaoAccount?.legalGender.toBridgeValue())
             putB("legalGenderNeedsAgreement", user.kakaoAccount?.legalGenderNeedsAgreement)
           },
         )
@@ -582,3 +577,33 @@ class RNCKakaoUserModule internal constructor(
         }
       }?.ifEmpty { null }
 }
+
+private fun AgeRange?.toBridgeValue(): String? =
+  when (this) {
+    AgeRange.AGE_0_9 -> "0~9"
+    AgeRange.AGE_10_14 -> "10~14"
+    AgeRange.AGE_15_19 -> "15~19"
+    AgeRange.AGE_20_29 -> "20~29"
+    AgeRange.AGE_30_39 -> "30~39"
+    AgeRange.AGE_40_49 -> "40~49"
+    AgeRange.AGE_50_59 -> "50~59"
+    AgeRange.AGE_60_69 -> "60~69"
+    AgeRange.AGE_70_79 -> "70~79"
+    AgeRange.AGE_80_89 -> "80~89"
+    AgeRange.AGE_90_ABOVE -> "90~"
+    AgeRange.UNKNOWN, null -> null
+  }
+
+private fun Gender?.toBridgeValue(): String? =
+  when (this) {
+    Gender.FEMALE -> "female"
+    Gender.MALE -> "male"
+    Gender.UNKNOWN, null -> null
+  }
+
+private fun BirthdayType?.toBridgeValue(): String? =
+  when (this) {
+    BirthdayType.SOLAR -> "SOLAR"
+    BirthdayType.LUNAR -> "LUNAR"
+    BirthdayType.UNKNOWN, null -> null
+  }
