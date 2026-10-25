@@ -10,7 +10,7 @@ sidebar_position: 101
 
 ![image](https://raw.githubusercontent.com/mym0404/image-archive/master/202404271643817.webp)
 
-## Usage
+## 사용법
 
 `login()` 함수를 호출하면 바로 로그인을 시작합니다.
 
@@ -57,6 +57,20 @@ login()
 
 - `useKakaoAccountLogin`: 항상 카카오톡이 아닌 카카오 계정으로 로그인을 시도합니다.
 
+- `loginHint`: 카카오계정 로그인 화면의 ID 입력란에 미리 채울 이메일, 전화번호 또는 카카오메일 ID입니다. Android, iOS, 웹에서 사용할 수 있습니다. 카카오톡으로 바로 로그인하거나 브라우저에 로그인한 상태라면 ID 입력 화면이 생략될 수 있습니다.
+
+ID 입력 화면을 표시하려면 다음과 같이 카카오계정 로그인을 요청합니다. 이 값은 입력란만 채우며, 해당 계정이 존재하는지는 확인하지 않습니다.
+
+```tsx
+login({
+  useKakaoAccountLogin: true,
+  prompts: ['Login'],
+  loginHint: 'user@example.com',
+});
+```
+
+웹에서는 [웹 로그인](/docs/user/login-web)에 따라 `web.redirectUri`도 전달합니다. `loginHint`와 `web.loginHint`를 함께 전달하면 `loginHint`를 우선합니다.
+
 - `nonce`: ID 토큰 재생 공격을 방지하기 위한 검증 값입니다. 전달한 값이 발급되는 ID 토큰의 `nonce` claim에 포함되어 반환됩니다.
 
 자세한 내용은 [공식 문서](https://developers.kakao.com/docs/latest/ko/kakaologin/utilize#parameter-for-security)를 참고하세요.
@@ -76,6 +90,8 @@ Native SDK의 카카오톡 로그인에는 `prompts`와 `scopes`를 전달할 �
 - `scopes`가 전달된다면 `serviceTerms`와 `prompts`를 전달할 수 없습니다.
 
 Native SDK에서 추가 동의를 받을 때는 `serviceTerms`와 `prompts`를 함께 전달할 수 없습니다.
+
+- Android와 iOS에서는 `loginHint`를 `scopes` 또는 `serviceTerms`와 함께 전달할 수 없습니다. iOS SDK가 이 조합을 제공하지 않으므로 네이티브 플랫폼에서는 호출 전에 에러를 던집니다. 웹의 로그인 힌트는 이 제한을 적용하지 않습니다.
 
 
 :::
