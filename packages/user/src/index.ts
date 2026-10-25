@@ -90,7 +90,12 @@ export interface KakaoUser {
   nameNeedsAgreement?: boolean;
   profileImageNeedsAgreement?: boolean;
   profileNicknameNeedsAgreement?: boolean;
+  legalName?: string | null;
+  legalNameNeedsAgreement?: boolean | null;
+  legalBirthDate?: string | null;
   legalBirthDateNeedsAgreement?: boolean;
+  legalGender?: 'female' | 'male' | null;
+  legalGenderNeedsAgreement?: boolean | null;
   connectedAt?: number;
   synchedAt?: number;
 }
