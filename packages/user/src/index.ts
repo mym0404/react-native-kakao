@@ -173,7 +173,7 @@ export function serviceTerms({
   return Native.serviceTerms(result, tags);
 }
 
-export function shippingAddresses({
+export async function shippingAddresses({
   addressId,
   fromUpdatedAt,
   pageSize,
