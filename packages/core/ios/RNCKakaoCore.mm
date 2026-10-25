@@ -13,8 +13,18 @@
 
 RCT_EXPORT_MODULE()
 
-RCT_EXPORT_METHOD(initializeKakaoSDK : (NSString*)appKey) {
-  [[self manager] initializeKakaoSDK:appKey];
+RCT_EXPORT_METHOD(initializeKakaoSDK : (NSString*)appKey loggingEnabled : (
+    BOOL)loggingEnabled customScheme : (NSString*)customScheme resolve : (RCTPromiseResolveBlock)
+                      resolve reject : (RCTPromiseRejectBlock)reject) {
+  [[self manager] initializeKakaoSDK:appKey
+                      loggingEnabled:loggingEnabled
+                        customScheme:customScheme
+                             resolve:resolve];
+}
+
+RCT_EXPORT_METHOD(getKakaoSDKInfo : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)
+                      reject) {
+  [[self manager] getKakaoSDKInfo:resolve];
 }
 
 RCT_EXPORT_METHOD(getKeyHashAndroid : (RCTPromiseResolveBlock)

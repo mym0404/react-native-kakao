@@ -1,10 +1,12 @@
-import { Image, Pressable } from 'react-native';
+import { Image, Platform, Pressable } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
+import { getKakaoSDKInfo, initializeKakaoSDK, type KakaoSDKInfo } from '@react-native-kakao/core';
 import { login, logout } from '@react-native-kakao/user';
 import { Link } from 'expo-router';
 
 import { Box } from '../component/Box';
 import { Btn } from '../component/Btn';
+import { E2EApiAction } from '../component/E2EApiAction';
 import { StyledScrollView } from '../component/StyledScrollView';
 import { Txt } from '../component/Txt';
 import { px } from '../util/px';
@@ -80,6 +82,56 @@ export default function Page() {
             </Pressable>
           </Link>
         ))}
+        <E2EApiAction
+          id={'sdk-info'}
+          title={'Get SDK Info'}
+          action={async () => {
+            const info = await getKakaoSDKInfo();
+
+            return {
+              version: info.version,
+              isInitialized: info.isInitialized,
+              hasAppKey: info.appKey != null,
+              hasKaHeader: info.kaHeader != null,
+              hasRedirectUri: info.redirectUri != null,
+              loggingEnabled: info.loggingEnabled ?? null,
+            };
+          }}
+        />
+        {Platform.OS !== 'web' ? (
+          <E2EApiAction
+            id={'sdk-options'}
+            title={'Check Native SDK Options'}
+            action={async () => {
+              const before = await getKakaoSDKInfo();
+              const { appKey, redirectUri } = before;
+              if (!appKey || !redirectUri) {
+                throw new Error('Initialize the SDK before checking native options.');
+              }
+
+              const customScheme = 'rnkakao-verification';
+              let configured: KakaoSDKInfo;
+              try {
+                await initializeKakaoSDK(appKey, { customScheme, loggingEnabled: true });
+                configured = await getKakaoSDKInfo();
+              } finally {
+                await initializeKakaoSDK(appKey, {
+                  customScheme: redirectUri.split('://')[0],
+                  loggingEnabled: before.loggingEnabled,
+                });
+              }
+
+              const restored = await getKakaoSDKInfo();
+
+              return {
+                didApplyCustomScheme: configured.redirectUri === `${customScheme}://oauth`,
+                didEnableLogging: configured.loggingEnabled === true,
+                didRestoreScheme: restored.redirectUri === redirectUri,
+                didRestoreLogging: restored.loggingEnabled === before.loggingEnabled,
+              };
+            }}
+          />
+        ) : null}
       </Box>
     </StyledScrollView>
   );
