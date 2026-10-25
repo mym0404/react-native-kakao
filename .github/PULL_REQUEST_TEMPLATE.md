@@ -31,3 +31,8 @@ Fixes #<issue_number_goes_here> 🎯
 
 <!-- Choose one option. An empty changeset is optional when no package release is needed. -->
 <!-- Use major changesets for breaking changes on main. Keep stable backports backward-compatible. -->
+
+## Upstream PRs
+
+<!-- For backports or syncs, list only original merged PRs whose changes are included. -->
+<!-- Example: - #168. Do not link issues or excluded PRs here. -->
