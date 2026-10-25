@@ -15,6 +15,7 @@ declare const Kakao: {
     logout: Function;
     setAccessToken: Function;
     selectShippingAddress: () => Promise<{ address_id: number }>;
+    getAccessToken: () => string | null;
   };
   API: { request: Function };
 };
@@ -28,6 +29,7 @@ function isoToUnix(value?: string | number) {
 }
 
 const KakaoUser: KakaoUserAPI = {
+  hasToken: () => kRunWebAPI(() => Kakao.Auth.getAccessToken() != null),
   getAccessToken: () =>
     kRunWebAPI(async () => {
       const { id, expires_in, app_id }: { id: number; expires_in: number; app_id: number } =
@@ -262,6 +264,7 @@ const KakaoUser: KakaoUserAPI = {
 export const {
   isKakaoTalkLoginAvailable,
   isLogined,
+  hasToken,
   login,
   logout,
   me,
