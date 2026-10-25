@@ -1,5 +1,16 @@
 # Change Log
 
+## 3.1.0-next.0
+
+### Patch Changes
+
+- 4772981: Use `reactApplicationContext.currentActivity` in the Android modules instead of the bare `currentActivity` getter, so they compile on React Native releases where `ReactContextBaseJavaModule` no longer exposes it to Kotlin subclasses.
+- 71700aa: Align web SDK options, response shapes, timestamps, and session errors with native APIs.
+- Updated dependencies [20c253b]
+- Updated dependencies [3260517]
+- Updated dependencies [71700aa]
+  - @react-native-kakao/core@3.1.0-next.0
+
 ## 3.0.0
 
 ### Major Changes

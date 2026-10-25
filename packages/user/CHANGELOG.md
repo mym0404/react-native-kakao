@@ -1,5 +1,25 @@
 # Change Log
 
+## 3.1.0-next.0
+
+### Minor Changes
+
+- 63c6e87: Add result and tag filters to serviceTerms on Android, iOS, and web, and return an empty array for a successful response without terms.
+- 5fe3050: Add shipping address ID and pagination options on Android, iOS, and web.
+- 3260517: Add a shipping address picker that returns the selected address ID on Android, iOS, and web.
+  
+  Add the Expo plugin's shippingAddressHandlerActivity option to handle Android picker callbacks.
+- 57954b3: Add revokeServiceTerms on Android, iOS, and web.
+- 1a58199: Add local stored-token presence checks on Android, iOS, and web.
+
+### Patch Changes
+
+- 71700aa: Align web SDK options, response shapes, timestamps, and session errors with native APIs.
+- Updated dependencies [20c253b]
+- Updated dependencies [3260517]
+- Updated dependencies [71700aa]
+  - @react-native-kakao/core@3.1.0-next.0
+
 ## 3.0.0
 
 ### Major Changes
