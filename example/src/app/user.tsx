@@ -4,6 +4,7 @@ import { formatJson } from '@mj-studio/js-util';
 import { useMount } from '@mj-studio/react-util';
 import {
   getAccessToken,
+  hasToken,
   isKakaoTalkLoginAvailable,
   isLogined,
   login,
@@ -118,6 +119,12 @@ export default function Page() {
         title={'Check Logined'}
         action={isLogined}
         onSuccess={(value) => showMessage({ type: 'success', message: `Logined: ${value}` })}
+      />
+      <E2EApiAction
+        id={'token-presence'}
+        minW={buttonMinWidth}
+        title={'Check Stored Token'}
+        action={hasToken}
       />
       <Btn
         minW={buttonMinWidth}

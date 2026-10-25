@@ -166,6 +166,15 @@ import RNCKakaoCore
     }
   }
 
+  @objc public func hasToken(
+    _ resolve: @escaping RCTPromiseResolveBlock,
+    reject _: @escaping RCTPromiseRejectBlock
+  ) {
+    onMain {
+      resolve(AuthApi.hasToken())
+    }
+  }
+
   @objc public func scopes(
     _ scopes: [String]? = nil,
     resolve: @escaping RCTPromiseResolveBlock,

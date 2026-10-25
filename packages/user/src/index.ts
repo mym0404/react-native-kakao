@@ -148,6 +148,8 @@ export function isLogined() {
   return Native.isLogined();
 }
 
+export const hasToken = Native.hasToken;
+
 export function isKakaoTalkLoginAvailable(): Promise<boolean> {
   return Native.isKakaoTalkLoginAvailable();
 }
@@ -214,6 +216,7 @@ const KakaoUser = {
   logout,
   unlink,
   isLogined,
+  hasToken,
   isKakaoTalkLoginAvailable,
   scopes,
   revokeScopes,
