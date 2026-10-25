@@ -20,7 +20,7 @@ raise 'iOS floor missing' unless specs.all? { |spec| spec.deployment_target(:ios
 dependencies = SPM.instance_variable_get(:@dependencies_by_pod)
 raise 'SDK linked more than once' unless dependencies.keys == [core_name]
 products = dependencies.values.flatten.flat_map { |dependency| dependency[:products] }.uniq.sort
-raise 'Missing transitive product' unless products == %w[Alamofire KakaoSDKAuth KakaoSDKCommon KakaoSDKFriend KakaoSDKFriendCore KakaoSDKNavi KakaoSDKShare KakaoSDKTalk KakaoSDKTemplate KakaoSDKUser].sort
+raise 'Missing transitive product' unless products == %w[Alamofire KakaoPartnershipSDKSocial KakaoSDKAuth KakaoSDKCommon KakaoSDKFriend KakaoSDKFriendCore KakaoSDKNavi KakaoSDKShare KakaoSDKTalk KakaoSDKTemplate KakaoSDKUser].sort
 
 ['~> 2.29', conflicting_version, nil, ['2.29.0', conflicting_version]].each do |version|
   begin

@@ -1,0 +1,74 @@
+---
+sidebar_position: 5
+---
+
+# Select partner friends
+
+Use `selectSinglePartnerFriend()` and `selectMultiplePartnerFriends()` to open the partner friend picker and receive selected users. Selecting friends who have not connected to the app requires Kakao's partnership approval.
+
+[Kakao partner friend picker documentation](https://developers.kakao.com/docs/ko/kakaotalk-social/confidential-api-invite)
+
+## Prerequisites
+
+Enable Kakao Login and obtain the user's `friends` consent. Services that send messages after selection also need `talk_message` consent. These selection functions do not send messages.
+
+The package links Android partnership SDK 1.0.0 and the iOS partnership SDK. The iOS dependency uses a fixed Git revision and requires Kakao iOS SDK 2.29.0 or newer. Web uses the Kakao JavaScript SDK picker.
+
+## Select friends
+
+This example selects one friend who has not connected to the app. Without partnership permission, Kakao may hide these friends or reject the request.
+
+```tsx
+import {
+  selectSinglePartnerFriend,
+  selectMultiplePartnerFriends,
+} from '@react-native-kakao/social';
+
+const friend = await selectSinglePartnerFriend({
+  mode: 'full',
+  options: { friendFilter: 'invitable', displayAllProfile: false },
+});
+
+const selected = await selectMultiplePartnerFriends({
+  mode: 'popup',
+  options: { friendFilter: 'registered', minPickableCount: 1, maxPickableCount: 5 },
+});
+```
+
+Single selection returns `Promise<KakaoTalkFriendProfile | undefined>`. Multiple selection returns `Promise<KakaoTalkFriendSelectResult>`. Both functions accept omitted arguments to use default options. Results use the same shape as the [standard picker](./select-talk-friends), including `maskingProfileNickname` when Kakao provides it. Cancellation and SDK errors reject the Promise.
+
+## Options
+
+`KakaoTalkPartnerFriendSelectOptions` extends the [standard picker options](./select-talk-friends) with these fields.
+
+| Field | Type | Behavior |
+| --- | --- | --- |
+| `friendFilter` | `'none' \| 'registered' \| 'invitable'` | Show all, connected, or unconnected friends. Defaults to `none`. |
+| `countryCodeFilters` | `string[]` | Filter by the country code of the phone number registered with KakaoTalk. The array is forwarded to the SDK. |
+| `usingOsFilter` | `'all' \| 'android' \| 'ios'` | Filter by the OS used when the friend joined KakaoTalk. Defaults to `all`. |
+| `disableSelectOptions` | `KakaoTalkDisableSelectOption[]` | Prevent selection of friends matching the specified reasons. |
+| `displayAllProfile` | `boolean` | Request profile display without consent. Defaults to `false`; available data depends on the app's partnership permission. |
+
+Use these selection restriction reasons. A `custom` restriction requires both a message and a nonempty UUID list.
+
+```tsx
+export type KakaoTalkDisableSelectOption =
+  | { reason: 'custom'; message: string; uuids: string[] }
+  | {
+      reason: 'msgBlocked' | 'registered' | 'unregistered' | 'notFriend';
+      message?: string;
+      uuids?: string[];
+    };
+```
+
+Multiple selection counts must be integers satisfying `1 <= minPickableCount <= maxPickableCount <= 100`. Defaults are 1 and 30. Single selection always selects one user and ignores count options. Invalid multiple selection counts or empty `custom` restrictions reject with `Package-Assertion` before calling the SDK.
+
+## Platform differences
+
+| Option | Android and iOS | Web |
+| --- | --- | --- |
+| Partnership filters and selection restrictions | Forwarded to the partnership SDK. | Forwarded to the JavaScript SDK. |
+| `mode` | Full screen or popup. | Uses the JavaScript SDK popup. |
+| `viewAppearance`, `orientation`, `enableIndex` | Forwarded to the SDK. | Ignored because the JavaScript SDK does not support them. |
+
+The public constructors in Android partnership SDK 1.0.0 and iOS SDK 2.29.0 do not accept a title, so these functions do not expose `title`. Nicknames and thumbnails may be masked, `null`, or absent depending on consent and partnership permission.
