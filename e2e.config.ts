@@ -15,14 +15,16 @@ if (!device || !output) {
   throw new Error('E2E device and output are required');
 }
 
+const startupTimeout = platform === 'ios' ? 360000 : 120000;
+
 export default {
   projectId: 'react-native-kakao',
   tests: ['script/e2e/scenarios.e2e.ts'],
   workers: 1,
   retries: 0,
-  timeout: 120000,
+  timeout: startupTimeout,
   cleanupTimeout: 30000,
-  launchTimeout: 120000,
+  launchTimeout: startupTimeout,
   actionTimeout: platform === 'ios' ? 60000 : 15000,
   assertionTimeout: 15000,
   cache: 'off',

@@ -40,6 +40,11 @@ When `packages/core/expo-config-plugin/*` or app plugin behavior changes:
 - iOS and Android both return expected payload shape.
 - Web fallback behavior remains compatible when applicable.
 
+## React Native version coverage
+
+- The main example uses React Native 0.88 and Expo SDK 58. CI additionally runs `node script/ci-minimum-rn.ts <android|ios>` to build all packed native modules in an isolated React Native 0.76.0 consumer with the New Architecture; this minimum-version check does not launch a device or run E2E.
+- The root TypeScript configuration selects React Native's legacy type exports so published Codegen declarations remain compatible with React Native 0.76, which predates the root `CodegenTypes` namespace. Do not raise the public package minimum when updating the example.
+
 ## E2E runner
 
 - `yarn e2e test [ios|android|both] [--device <device-id>]` runs deterministic TypeScript tests with `e2e`, `@e2e-dev/mobile`, and `agent-device`; no model credentials are needed.
