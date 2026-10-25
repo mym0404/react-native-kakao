@@ -195,8 +195,10 @@ export function selectShippingAddress(): Promise<number> {
   return Native.selectShippingAddress();
 }
 
-export function me(): Promise<KakaoUser> {
-  return Native.me();
+export function me({
+  secureResource = true,
+}: { secureResource?: boolean } = {}): Promise<KakaoUser> {
+  return Native.me(secureResource);
 }
 
 export function getAccessToken(): Promise<KakaoAccessTokenInfo> {
