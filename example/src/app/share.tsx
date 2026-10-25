@@ -32,6 +32,7 @@ import {
   shareFeedTemplate,
   shareListTemplate,
   shareLocationTemplate,
+  shareScrapTemplate,
   shareTextTemplate,
   uploadImage,
 } from '@react-native-kakao/share';
@@ -206,6 +207,42 @@ export default function Page() {
           }}
         />
       ) : null}
+      <Txt>{'Scrap'}</Txt>
+      <E2EApiAction
+        id={'share-scrap'}
+        title={'Share Scrap Template'}
+        action={async () => {
+          await shareScrapTemplate({ requestUrl: webUrl });
+
+          return { started: true };
+        }}
+      />
+      <E2EApiAction
+        id={'share-scrap-custom'}
+        title={'Share Scrap With Template Arguments'}
+        action={async () => {
+          await shareScrapTemplate({
+            requestUrl: webUrl,
+            templateId: 107429,
+            templateArgs: { price: '20000' },
+            serverCallbackArgs: { verification: 'scrap' },
+          });
+
+          return { started: true };
+        }}
+      />
+      <E2EApiAction
+        id={'share-scrap-no-browser'}
+        title={'Share Scrap Without Browser'}
+        action={async () => {
+          await shareScrapTemplate({
+            requestUrl: webUrl,
+            useWebBrowserIfKakaoTalkNotAvailable: false,
+          });
+
+          return { started: true };
+        }}
+      />
       <E2EApiAction
         id={'share-scrap-image'}
         title={'Scrap Image'}
