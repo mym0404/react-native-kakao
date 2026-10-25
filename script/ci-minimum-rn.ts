@@ -68,6 +68,7 @@ try {
   if (platform === 'android') {
     await $({
       cwd: path.join(app, 'android'),
+      stdio: 'inherit',
     })`./gradlew :app:assembleRelease --no-daemon --console=plain -PnewArchEnabled=true -PreactNativeArchitectures=${process.arch === 'arm64' ? 'arm64-v8a' : 'x86_64'}`;
     await fs.access(path.join(app, 'android/app/build/outputs/apk/release/app-release.apk'));
   } else {
@@ -78,7 +79,12 @@ try {
       cwd: path.join(app, 'ios'),
       env: { ...process.env, RCT_NEW_ARCH_ENABLED: '1' },
     })`bundle exec pod install`;
-    await install`xcodebuild -workspace ios/${appName}.xcworkspace -scheme ${appName} -configuration Release -sdk iphonesimulator -destination ${'generic/platform=iOS Simulator'} -derivedDataPath ${path.join(temporary, 'build')} -quiet ARCHS=${process.arch === 'arm64' ? 'arm64' : 'x86_64'} ONLY_ACTIVE_ARCH=YES CODE_SIGNING_ALLOWED=NO`;
+
+    await $({
+      cwd: app,
+      stdio: 'inherit',
+    })`xcodebuild -workspace ios/${appName}.xcworkspace -scheme ${appName} -configuration Release -sdk iphonesimulator -destination ${'generic/platform=iOS Simulator'} -derivedDataPath ${path.join(temporary, 'build')} -quiet ARCHS=${process.arch === 'arm64' ? 'arm64' : 'x86_64'} ONLY_ACTIVE_ARCH=YES CODE_SIGNING_ALLOWED=NO`;
+
     await fs.access(
       path.join(temporary, `build/Build/Products/Release-iphonesimulator/${appName}.app`),
     );
