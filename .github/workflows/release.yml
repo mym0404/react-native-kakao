@@ -190,7 +190,8 @@ jobs:
           if [[ "${RELEASE_BRANCH}" == "main" ]]; then
             release_flags=(--prerelease --latest=false)
           else
-            release_flags=(--latest)
+            # v3 releases are the canonical Latest releases; v2 must not override them.
+            release_flags=(--latest=false)
           fi
           gh release create "${version}" --target "${RELEASE_SHA}" \
             --title "${version}" --generate-notes "${release_flags[@]}"
