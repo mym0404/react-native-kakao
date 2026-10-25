@@ -1,11 +1,7 @@
-import {
-  camelCaseObject,
-  filterNonNullishKeys,
-  is,
-  replaceJsonKeysRecursively,
-} from '@mj-studio/js-util';
+import { camelCaseObject, filterNonNullishKeys } from '@mj-studio/js-util';
 import { kRunWebAPI } from '@react-native-kakao/core';
 
+import type { KakaoTalkFriendProfile } from './spec/NativeKakaoSocial';
 import type { KakaoSocialAPI } from './index';
 
 declare const Kakao: {
@@ -18,11 +14,21 @@ declare const Kakao: {
 
 const KakaoSocial: KakaoSocialAPI = {
   getTalkProfile: () =>
-    kRunWebAPI(() => Kakao.API.request({ url: '/v1/api/talk/profile' })).then((r) =>
-      replaceJsonKeysRecursively(r, {
-        replacer: { profileImageURL: 'profileImageUrl', thumbnailURL: 'thumbnailUrl' },
-      }),
-    ),
+    kRunWebAPI(async () => {
+      const response: {
+        nickName?: string;
+        profileImageURL?: string;
+        thumbnailURL?: string;
+        countryISO?: string;
+      } = await Kakao.API.request({ url: '/v1/api/talk/profile' });
+
+      return {
+        nickname: response.nickName,
+        profileImageUrl: response.profileImageURL,
+        thumbnailUrl: response.thumbnailURL,
+        countryISO: response.countryISO,
+      };
+    }),
   selectSingleFriend: ({ options }) =>
     kRunWebAPI(() => {
       return Kakao.Picker.selectFriend(
@@ -34,7 +40,8 @@ const KakaoSocial: KakaoSocialAPI = {
         }),
       )
         .then(camelCaseObject)
-        .then((r: any) => (is.object(r) && is.array(r?.users) ? r.users[0] : undefined));
+        .then(mapSelectedFriends)
+        .then((result) => result.users[0]);
     }),
   selectMultipleFriends: ({ options }) =>
     kRunWebAPI(() => {
@@ -50,9 +57,7 @@ const KakaoSocial: KakaoSocialAPI = {
         }),
       )
         .then(camelCaseObject)
-        .then((r: any) =>
-          replaceJsonKeysRecursively(r, { replacer: { selectedTotalCount: 'totalCount' } }),
-        );
+        .then(mapSelectedFriends);
     }),
   getFriends: ({ options }) =>
     kRunWebAPI(() => {
@@ -68,9 +73,27 @@ const KakaoSocial: KakaoSocialAPI = {
           : undefined,
       })
         .then(camelCaseObject)
-        .then((r: any) => replaceJsonKeysRecursively(r, { replacer: { elements: 'friends' } }));
+        .then((response) => ({
+          totalCount: response.totalCount,
+          favoriteCount: response.favoriteCount,
+          friends: response.elements ?? [],
+        }));
     }),
 };
+
+function mapSelectedFriends(response: {
+  selectedTotalCount: number;
+  users?: (Omit<KakaoTalkFriendProfile, 'id'> & { id?: string | number | null })[];
+}) {
+  return {
+    totalCount: response.selectedTotalCount,
+    users: (response.users ?? []).map((user) => ({
+      ...user,
+      id: user.id == null ? undefined : Number(user.id),
+    })),
+  };
+}
+
 export const { getFriends, getTalkProfile, selectMultipleFriends, selectSingleFriend } =
   KakaoSocial;
 export default KakaoSocial;

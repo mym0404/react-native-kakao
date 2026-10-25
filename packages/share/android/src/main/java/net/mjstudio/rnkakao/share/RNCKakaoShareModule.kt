@@ -203,7 +203,7 @@ class RNCKakaoShareModule internal constructor(
     serverCallbackArgs: ReadableMap? = null,
     promise: Promise,
   ) {
-    val context = currentActivity
+    val context = reactApplicationContext.currentActivity
     if (context == null) {
       promise.rejectWith(ActivityNotFoundException())
       return
