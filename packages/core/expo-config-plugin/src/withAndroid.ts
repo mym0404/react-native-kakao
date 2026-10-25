@@ -14,6 +14,7 @@ const withAndroid: ConfigPlugin<{
       forwardKakaoLinkIntentFilterToMainActivity,
       followChannelHandlerActivity,
       shippingAddressHandlerActivity,
+      certServiceHandlerActivity,
     },
     nativeAppKey,
   },
@@ -137,6 +138,26 @@ const withAndroid: ConfigPlugin<{
           ],
         },
         activityName: name,
+      });
+    }
+
+    if (certServiceHandlerActivity) {
+      const name = 'com.kakao.sdk.cert.CertServiceHandlerActivity';
+      injectActivity({
+        activityName: name,
+        activity: {
+          '$': { 'android:name': name, 'android:exported': 'true' },
+          'intent-filter': [
+            {
+              action: [{ $: { 'android:name': 'android.intent.action.VIEW' } }],
+              category: [
+                { $: { 'android:name': 'android.intent.category.DEFAULT' } },
+                { $: { 'android:name': 'android.intent.category.BROWSABLE' } },
+              ],
+              data: [{ $: { 'android:host': 'cert', 'android:scheme': `kakao${nativeAppKey}` } }],
+            },
+          ],
+        },
       });
     }
 

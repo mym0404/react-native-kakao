@@ -22,6 +22,7 @@
     "@expo/metro-runtime": "~58.0.15",
     "@mj-studio/js-util": "catalog:",
     "@mj-studio/react-util": "^0.0.20",
+    "@react-native-kakao/cert": "workspace:*",
     "@react-native-kakao/channel": "workspace:*",
     "@react-native-kakao/core": "workspace:*",
     "@react-native-kakao/navi": "workspace:*",

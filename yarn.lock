@@ -6642,6 +6642,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native-kakao/cert@workspace:*, @react-native-kakao/cert@workspace:packages/cert":
+  version: 0.0.0-use.local
+  resolution: "@react-native-kakao/cert@workspace:packages/cert"
+  dependencies:
+    "@mj-studio/js-util": "catalog:"
+    "@react-native-kakao/core": "workspace:*"
+    "@react-native-kakao/user": "workspace:*"
+    "@types/invariant": "catalog:"
+    "@types/react": "catalog:"
+    del-cli: "catalog:"
+    react: "catalog:"
+    react-native: "catalog:"
+    react-native-builder-bob: "catalog:"
+    typescript: "catalog:"
+  peerDependencies:
+    "@react-native-kakao/core": "workspace:*"
+    "@react-native-kakao/user": "workspace:*"
+    react: "*"
+    react-native: ">=0.76.0"
+  languageName: unknown
+  linkType: soft
+
 "@react-native-kakao/channel@workspace:*, @react-native-kakao/channel@workspace:packages/channel":
   version: 0.0.0-use.local
   resolution: "@react-native-kakao/channel@workspace:packages/channel"
@@ -15666,6 +15688,7 @@ __metadata:
     "@expo/metro-runtime": "npm:~58.0.15"
     "@mj-studio/js-util": "catalog:"
     "@mj-studio/react-util": "npm:^0.0.20"
+    "@react-native-kakao/cert": "workspace:*"
     "@react-native-kakao/channel": "workspace:*"
     "@react-native-kakao/core": "workspace:*"
     "@react-native-kakao/navi": "workspace:*"

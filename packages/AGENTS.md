@@ -1,6 +1,6 @@
 # Package-Level Native Module Flow
 
-Use this guide for common work across `packages/{core,share,user,social,channel,navi}`.
+Use this guide for common work across `packages/{core,share,user,social,channel,navi,cert}`.
 This file defines the default implementation order and parity checks.
 
 ## Scope
@@ -75,4 +75,5 @@ Each module should keep this baseline shape:
 - Core-specific plugin/config behavior: `/packages/core/AGENTS.md`
 - Share hotspot and template flow: `/packages/share/AGENTS.md`
 - User hotspot and auth flow: `/packages/user/AGENTS.md`
+- Certification keys, sessions, and callbacks: `/packages/cert/AGENTS.md`
 - Integration gates in example app: `/example/AGENTS.md`
