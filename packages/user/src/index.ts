@@ -30,6 +30,10 @@ export interface KakaoServiceTerms {
   required: boolean;
   revocable: boolean;
 }
+export type KakaoRevokedServiceTerms = {
+  tag: string;
+  agreed: boolean;
+};
 export interface KakaoAppServiceTerms {
   tag: string;
   createdAt: number;
@@ -170,6 +174,10 @@ export function shippingAddresses(): Promise<KakaoShippingAddressResult> {
   return Native.shippingAddresses();
 }
 
+export function revokeServiceTerms(tags: string[]): Promise<KakaoRevokedServiceTerms[]> {
+  return Native.revokeServiceTerms(tags);
+}
+
 export function selectShippingAddress(): Promise<number> {
   return Native.selectShippingAddress();
 }
@@ -210,6 +218,7 @@ const KakaoUser = {
   scopes,
   revokeScopes,
   serviceTerms,
+  revokeServiceTerms,
   shippingAddresses,
   selectShippingAddress,
   me,

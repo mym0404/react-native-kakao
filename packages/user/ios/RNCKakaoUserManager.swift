@@ -278,6 +278,26 @@ import RNCKakaoCore
     }
   }
 
+  @objc public func revokeServiceTerms(
+    _ tags: [String],
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    onMain {
+      UserApi.shared.revokeServiceTerms(tags: tags) { response, error in
+        if let error {
+          RNCKakaoUtil.reject(reject, error)
+        } else if let response {
+          resolve((response.revokedServiceTerms ?? []).map {
+            ["tag": $0.tag, "agreed": $0.agreed]
+          })
+        } else {
+          RNCKakaoUtil.reject(reject, RNCKakaoError.responseNotFound(name: "revokeServiceTerms"))
+        }
+      }
+    }
+  }
+
   @objc public func selectShippingAddress(
     _ resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
