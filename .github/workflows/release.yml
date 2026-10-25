@@ -196,3 +196,12 @@ jobs:
           fi
           gh release create "${version}" --target "${RELEASE_SHA}" \
             --title "${version}" --generate-notes "${release_flags[@]}"
+
+      - name: Normalize GitHub release metadata and upstream credits
+        if: steps.current.outputs.matches == 'true' && steps.publish.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ secrets.CHANGESETS_TOKEN || github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          version=$(jq -r '.version' packages/core/package.json)
+          node script/release-metadata.ts "${version}" "${GITHUB_REF_NAME}"
