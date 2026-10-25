@@ -258,7 +258,7 @@ class RNCKakaoUserModule internal constructor(
             serviceTerms.serviceTerms?.map { term ->
               argMap().apply {
                 putString("tag", term.tag)
-                putD("agreedAt", term.agreedAt?.unix?.toDouble())
+                term.agreedAt?.let { putDouble("agreedAt", it.unix.toDouble()) }
                 putBoolean("agreed", term.agreed)
                 putBoolean("required", term.required)
                 putBoolean("revocable", term.revocable)
