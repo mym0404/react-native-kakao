@@ -40,6 +40,8 @@ export default {
         device,
         session: process.env.KAKAO_E2E_SESSION,
         snapshot: 'full',
+        // Wait for iOS scroll deceleration before tapping newly visible controls.
+        transition: platform === 'ios' ? 2000 : 500,
       }),
       app: {
         appPath: process.env.KAKAO_E2E_APP,
