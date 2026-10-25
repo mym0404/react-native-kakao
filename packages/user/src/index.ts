@@ -208,8 +208,36 @@ export function loginWithKakao({
   );
 }
 
-export function refreshToken(): Promise<KakaoLoginToken> {
-  return Native.refreshToken();
+export function refreshToken({
+  token,
+}: { token?: KakaoLoginToken } = {}): Promise<KakaoLoginToken> {
+  if (token !== undefined) {
+    kAssert(
+      token != null &&
+        is.string(token.accessToken) &&
+        token.accessToken.length > 0 &&
+        is.string(token.refreshToken) &&
+        token.refreshToken.length > 0,
+      '[refreshToken] token must contain non-empty accessToken and refreshToken strings',
+    );
+
+    kAssert(
+      [token.accessTokenExpiresAt, token.refreshTokenExpiresAt].every(
+        (value) => Number.isFinite(value) && !Number.isNaN(new Date(value * 1000).getTime()),
+      ) && [token.accessTokenExpiresIn, token.refreshTokenExpiresIn].every(Number.isFinite),
+      '[refreshToken] token expiry timestamps must be valid Unix seconds and lifetimes must be finite',
+    );
+
+    kAssert(
+      (token.tokenType == null || is.string(token.tokenType)) &&
+        (token.idToken == null || is.string(token.idToken)) &&
+        Array.isArray(token.scopes) &&
+        token.scopes.every((scope) => is.string(scope)),
+      '[refreshToken] tokenType and idToken must be strings when present, and scopes must be strings',
+    );
+  }
+
+  return Native.refreshToken(token);
 }
 
 export function logout() {

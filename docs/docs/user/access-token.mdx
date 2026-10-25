@@ -67,14 +67,20 @@ export interface KakaoAccessTokenInfo {
 getAccessToken();
 ```
 
-## 저장된 토큰 갱신
+## 토큰 갱신
 
-`refreshToken()`은 Android와 iOS SDK에 저장된 리프레시 토큰으로 액세스 토큰을 갱신합니다. SDK가 갱신한 토큰을 저장하고, [`login()`과 같은 `KakaoLoginToken`](./login.mdx#응답)을 반환합니다. 만료 시각은 Unix 시간(초), 남은 유효 시간은 초 단위입니다.
+`refreshToken()`은 Android와 iOS SDK에 저장된 토큰을 갱신해요. `refreshToken({ token })`으로 갱신할 토큰을 직접 지정할 수도 있어요. SDK 저장소가 비어 있거나 다른 토큰이 저장돼 있어도, 지정한 토큰의 리프레시 토큰을 사용해요.
 
 ```tsx
 import { refreshToken } from '@react-native-kakao/user';
 
-const token = await refreshToken();
+const refreshedStoredToken = await refreshToken();
+
+const refreshedExternalToken = await refreshToken({ token: previousToken });
 ```
 
-저장된 리프레시 토큰이 없거나 만료됐다면 카카오 SDK 오류로 거절됩니다. 이 경우 `login()`으로 다시 로그인해야 합니다. 웹의 JavaScript SDK는 토큰 갱신 API를 제공하지 않으므로 `Package-UnsupportedPlatform` 오류를 반환합니다.
+`previousToken`에는 `login()`이나 `issueAccessTokenWithCode()`에서 받은 `KakaoLoginToken` 객체를 전달해요. 리프레시 토큰이 재발급되지 않을 때 기존 만료 정보를 유지해야 하므로, 토큰 문자열만 전달할 수는 없어요. 액세스 토큰이 만료됐어도 리프레시 토큰이 유효하면 갱신할 수 있어요.
+
+SDK는 갱신에 성공한 토큰을 저장하고 같은 `KakaoLoginToken` 형태로 반환해요. 만료 시각은 Unix 초, 남은 유효 시간은 각 만료 시각을 기준으로 계산한 초 단위예요.
+
+사용할 리프레시 토큰이 없거나 만료됐다면 카카오 SDK 오류로 거부돼요. 이 경우 `login()`으로 다시 로그인해요. 웹의 JavaScript SDK는 토큰 갱신 API를 제공하지 않으므로, 토큰 지정 여부와 관계없이 `Package-UnsupportedPlatform` 오류를 반환해요.
