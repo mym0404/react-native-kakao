@@ -163,6 +163,40 @@ import UIKit
           resolve: resolve,
           reject: reject
         )
+      } else if templateType == "scrap" {
+        guard let requestUrl = templateJson["requestUrl"] as? String else {
+          RNCKakaoUtil.reject(
+            reject,
+            RNCKakaoError.unknown("requestUrl is required for scrap messages")
+          )
+          return
+        }
+        let customTemplateId: Int64? = templateId == -1 ? nil : templateId
+        if sendType == "send-me" {
+          self.runSendMe(
+            templateType: templateType,
+            templateId: customTemplateId,
+            templateArgs: templateArgs,
+            resolve: resolve,
+            reject: reject,
+            requestUrl: requestUrl
+          )
+        } else if sendType == "send-friend" {
+          self.runSendFriend(
+            templateType: templateType,
+            templateId: customTemplateId,
+            receiverUuids: receiverUuids,
+            templateArgs: templateArgs,
+            resolve: resolve,
+            reject: reject,
+            requestUrl: requestUrl
+          )
+        } else {
+          RNCKakaoUtil.reject(
+            reject,
+            RNCKakaoError.unknown("Unknown sendType for scrap messages: \(sendType)")
+          )
+        }
       } else {
         self.shareOrSendDefaultTemplate(
           sendType: sendType,
@@ -262,7 +296,8 @@ import UIKit
     defaultTemplate: [String: Any?]? = nil,
     templateArgs: [String: String]? = nil,
     resolve: @escaping RCTPromiseResolveBlock,
-    reject: @escaping RCTPromiseRejectBlock
+    reject: @escaping RCTPromiseRejectBlock,
+    requestUrl: String? = nil
   ) {
     let sendCompletion = { (error: Error?) in
       if let error {
@@ -272,7 +307,14 @@ import UIKit
       }
     }
 
-    if let templateId {
+    if let requestUrl {
+      TalkApi.shared.sendScrapMemo(
+        requestUrl: requestUrl,
+        templateId: templateId,
+        templateArgs: templateArgs,
+        completion: sendCompletion
+      )
+    } else if let templateId {
       TalkApi.shared.sendCustomMemo(
         templateId: templateId,
         templateArgs: templateArgs,
@@ -300,7 +342,8 @@ import UIKit
     receiverUuids: [String],
     templateArgs: [String: String]? = nil,
     resolve: @escaping RCTPromiseResolveBlock,
-    reject: @escaping RCTPromiseRejectBlock
+    reject: @escaping RCTPromiseRejectBlock,
+    requestUrl: String? = nil
   ) {
     let sendCompletion = { (messageSendResult: MessageSendResult?, error: Error?) in
       if let error {
@@ -312,7 +355,15 @@ import UIKit
       }
     }
 
-    if let templateId {
+    if let requestUrl {
+      TalkApi.shared.sendScrapMessage(
+        requestUrl: requestUrl,
+        templateId: templateId,
+        templateArgs: templateArgs,
+        receiverUuids: receiverUuids,
+        completion: sendCompletion
+      )
+    } else if let templateId {
       TalkApi.shared.sendCustomMessage(
         templateId: templateId,
         templateArgs: templateArgs,
