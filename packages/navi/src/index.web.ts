@@ -85,12 +85,17 @@ const KakaoNavi: KakaoNaviAPI = {
       '[navigateTo] viaList length should equal or less then 3.',
     );
 
+    if (!isMobileBrowser()) {
+      return false;
+    }
+
     try {
       Kakao.Navi.start(
         filterNonNullishKeys({
           name: destination.name,
           x: destination.x,
           y: destination.y,
+          rpflag: destination.rpflag,
           coordType: option?.coordType?.toLowerCase(),
           vehicleType: option?.vehicleType ? getVehicleType(option.vehicleType) : undefined,
           rpOption: option?.rpOption ? getRpOption(option.rpOption) : undefined,
@@ -99,11 +104,14 @@ const KakaoNavi: KakaoNaviAPI = {
           sY: option?.startY,
           sAngle: option?.startAngle,
           returnUri: option?.returnUri,
-          viaPoints: viaList?.map((v) => ({
-            name: v.name,
-            x: v.x,
-            y: v.y,
-          })),
+          viaPoints: viaList?.map((v) =>
+            filterNonNullishKeys({
+              name: v.name,
+              x: v.x,
+              y: v.y,
+              rpflag: v.rpflag,
+            }),
+          ),
         }),
       );
 
@@ -113,12 +121,17 @@ const KakaoNavi: KakaoNaviAPI = {
     }
   },
   shareTo: async ({ destination, option }) => {
+    if (!isMobileBrowser()) {
+      return false;
+    }
+
     try {
       Kakao.Navi.share(
         filterNonNullishKeys({
           name: destination.name,
           x: destination.x,
           y: destination.y,
+          rpflag: destination.rpflag,
           coordType: option?.coordType?.toLowerCase(),
         }),
       );
@@ -129,6 +142,13 @@ const KakaoNavi: KakaoNaviAPI = {
     }
   },
 };
+
+function isMobileBrowser() {
+  return (
+    /android|iphone|ipad|ipod/i.test(navigator.userAgent) ||
+    (/macintosh/i.test(navigator.userAgent) && navigator.maxTouchPoints > 1)
+  );
+}
 
 export const { navigateTo, shareTo } = KakaoNavi;
 export default KakaoNavi;
