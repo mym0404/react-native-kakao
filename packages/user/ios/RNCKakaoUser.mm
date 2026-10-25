@@ -67,6 +67,11 @@ RCT_EXPORT_METHOD(me : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejec
   [[self manager] me:resolve reject:reject];
 }
 
+RCT_EXPORT_METHOD(selectShippingAddress : (RCTPromiseResolveBlock)
+                      resolve reject : (RCTPromiseRejectBlock)reject) {
+  [[self manager] selectShippingAddress:resolve reject:reject];
+}
+
 RCT_EXPORT_METHOD(getAccessToken : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)
                       reject) {
   [[self manager] getAccessToken:resolve reject:reject];
