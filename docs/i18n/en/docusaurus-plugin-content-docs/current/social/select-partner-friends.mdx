@@ -35,11 +35,11 @@ const selected = await selectMultiplePartnerFriends({
 });
 ```
 
-Single selection returns `Promise<KakaoTalkFriendProfile | undefined>`. Multiple selection returns `Promise<KakaoTalkFriendSelectResult>`. Both functions accept omitted arguments to use default options. Results use the same shape as the [standard picker](./select-talk-friends), including `maskingProfileNickname` when Kakao provides it. Cancellation and SDK errors reject the Promise.
+Single selection returns `Promise<KakaoTalkFriendProfile | undefined>`. Multiple selection returns `Promise<KakaoTalkFriendSelectResult>`. Both functions accept omitted arguments to use default options. Results use the same shape as the [standard picker](/docs/social/select-talk-friends), including `maskingProfileNickname` when Kakao provides it. Cancellation and SDK errors reject the Promise.
 
 ## Options
 
-`KakaoTalkPartnerFriendSelectOptions` extends the [standard picker options](./select-talk-friends) with these fields.
+`KakaoTalkPartnerFriendSelectOptions` extends the [standard picker options](/docs/social/select-talk-friends) with these fields.
 
 | Field | Type | Behavior |
 | --- | --- | --- |
