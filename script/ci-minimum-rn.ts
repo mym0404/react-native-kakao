@@ -83,7 +83,7 @@ try {
     await $({
       cwd: app,
       stdio: 'inherit',
-    })`xcodebuild -workspace ios/${appName}.xcworkspace -scheme ${appName} -configuration Release -sdk iphonesimulator -destination ${'generic/platform=iOS Simulator'} -derivedDataPath ${path.join(temporary, 'build')} -quiet ARCHS=${process.arch === 'arm64' ? 'arm64' : 'x86_64'} ONLY_ACTIVE_ARCH=YES CODE_SIGNING_ALLOWED=NO`;
+    })`xcodebuild -toolchain com.apple.dt.toolchain.XcodeDefault -workspace ios/${appName}.xcworkspace -scheme ${appName} -configuration Release -sdk iphonesimulator -destination ${'generic/platform=iOS Simulator'} -derivedDataPath ${path.join(temporary, 'build')} -quiet ARCHS=${process.arch === 'arm64' ? 'arm64' : 'x86_64'} ONLY_ACTIVE_ARCH=YES CODE_SIGNING_ALLOWED=NO`;
 
     await fs.access(
       path.join(temporary, `build/Build/Products/Release-iphonesimulator/${appName}.app`),
