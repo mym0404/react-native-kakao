@@ -239,30 +239,36 @@ class RNCKakaoUserModule internal constructor(
   }
 
   @ReactMethod
-  override fun serviceTerms(promise: Promise) =
-    onMain {
-      UserApiClient.instance.serviceTerms { serviceTerms, error ->
-        if (error != null) {
-          promise.rejectWith(error)
-        } else if (serviceTerms?.serviceTerms == null) {
-          promise.rejectWith(RNCKakaoResponseNotFoundException("serviceTerms"))
-        } else {
-          promise.resolve(
-            argArr().pushMapList(
-              serviceTerms.serviceTerms?.map { term ->
-                argMap().apply {
-                  putString("tag", term.tag)
-                  putD("agreedAt", term.agreedAt?.unix?.toDouble())
-                  putBoolean("agreed", term.agreed)
-                  putBoolean("required", term.required)
-                  putBoolean("revocable", term.revocable)
-                }
-              } ?: listOf(),
-            ),
-          )
-        }
+  override fun serviceTerms(
+    result: String?,
+    tags: ReadableArray?,
+    promise: Promise,
+  ) = onMain {
+    UserApiClient.instance.serviceTerms(
+      result = result,
+      tags = tags?.filterIsInstance<String>(),
+    ) { serviceTerms, error ->
+      if (error != null) {
+        promise.rejectWith(error)
+      } else if (serviceTerms == null) {
+        promise.rejectWith(RNCKakaoResponseNotFoundException("serviceTerms"))
+      } else {
+        promise.resolve(
+          argArr().pushMapList(
+            serviceTerms.serviceTerms?.map { term ->
+              argMap().apply {
+                putString("tag", term.tag)
+                term.agreedAt?.let { putDouble("agreedAt", it.unix.toDouble()) }
+                putBoolean("agreed", term.agreed)
+                putBoolean("required", term.required)
+                putBoolean("revocable", term.revocable)
+              }
+            } ?: listOf(),
+          ),
+        )
       }
     }
+  }
 
   @ReactMethod
   override fun shippingAddresses(promise: Promise) =

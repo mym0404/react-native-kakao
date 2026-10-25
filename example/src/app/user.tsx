@@ -23,6 +23,7 @@ import { Txt } from '../component/Txt';
 import { px } from '../util/px';
 
 const buttonMinWidth = px(240);
+const allServiceTermsResult = 'app_service_terms';
 
 export default function Page() {
   const [isKakaoTalkEnable, setKakaoTalkEnable] = useState(false);
@@ -175,6 +176,34 @@ export default function Page() {
               });
             });
         }}
+      />
+      <E2EApiAction
+        id={'service-terms-all'}
+        minW={buttonMinWidth}
+        title={'Get All Service Terms'}
+        action={() => serviceTerms({ result: allServiceTermsResult })}
+      />
+      <E2EApiAction
+        id={'service-terms-by-tag'}
+        minW={buttonMinWidth}
+        title={'Get Service Terms by Tag'}
+        action={async () => {
+          const [term] = await serviceTerms({ result: allServiceTermsResult });
+
+          if (!term) {
+            return { hasRegisteredTerms: false };
+          }
+
+          const terms = await serviceTerms({ result: allServiceTermsResult, tags: [term.tag] });
+
+          return { requestedTag: term.tag, terms };
+        }}
+      />
+      <E2EApiAction
+        id={'service-terms-invalid-tag'}
+        minW={buttonMinWidth}
+        title={'Get Unregistered Service Term'}
+        action={() => serviceTerms({ tags: ['rnc_example_missing_service_term'] })}
       />
       <E2EApiAction
         id={'user-profile'}
