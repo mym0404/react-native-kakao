@@ -10,6 +10,7 @@ import {
   logout,
   me,
   scopes,
+  selectShippingAddress,
   serviceTerms,
   shippingAddresses,
   unlink,
@@ -213,6 +214,16 @@ export default function Page() {
         onSuccess={(value) => {
           setMeResult(value);
           showMessage({ type: 'success', message: 'Success' });
+        }}
+      />
+      <E2EApiAction
+        id={'shipping-address-picker'}
+        minW={buttonMinWidth}
+        title={'Select Shipping Address'}
+        action={async () => {
+          const addressId = await selectShippingAddress();
+
+          return { hasAddressId: Number.isSafeInteger(addressId) && addressId > 0 };
         }}
       />
       <Btn
