@@ -71,46 +71,15 @@ export default function Page() {
               );
           }}
         />
-        <Link testID={'menu-user'} href={'/user'} asChild>
-          <Pressable>
-            <Txt textDecorationLine={'underline'} align={'center'}>
-              {'@react-native-kakao/user'}
-            </Txt>
-          </Pressable>
-        </Link>
-        <Link testID={'menu-share'} href={'/share'} asChild>
-          <Pressable>
-            <Txt textDecorationLine={'underline'} align={'center'}>
-              {'@react-native-kakao/share'}
-            </Txt>
-          </Pressable>
-        </Link>
-        <Link testID={'menu-navi'} href={'/navi'} asChild>
-          <Pressable>
-            <Txt textDecorationLine={'underline'} align={'center'}>
-              {'@react-native-kakao/navi'}
-            </Txt>
-          </Pressable>
-        </Link>
-        <Link testID={'menu-social'} href={'/social'} asChild>
-          <Pressable>
-            <Txt textDecorationLine={'underline'} align={'center'}>
-              {'@react-native-kakao/social'}
-            </Txt>
-          </Pressable>
-        </Link>
-        <Link testID={'menu-channel'} href={'/channel'} asChild>
-          <Pressable>
-            <Txt textDecorationLine={'underline'} align={'center'}>
-              {'@react-native-kakao/channel'}
-            </Txt>
-          </Pressable>
-        </Link>
-        <Link testID={'menu-cert'} href={'/cert'}>
-          <Txt textDecorationLine={'underline'} align={'center'}>
-            {'@react-native-kakao/cert'}
-          </Txt>
-        </Link>
+        {(['user', 'share', 'navi', 'social', 'channel', 'cert'] as const).map((module) => (
+          <Link key={module} testID={`menu-${module}`} href={`/${module}`} asChild>
+            <Pressable>
+              <Txt textDecorationLine={'underline'} align={'center'}>
+                {`@react-native-kakao/${module}`}
+              </Txt>
+            </Pressable>
+          </Link>
+        ))}
       </Box>
     </StyledScrollView>
   );
