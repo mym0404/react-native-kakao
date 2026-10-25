@@ -242,8 +242,24 @@ export type KakaoSharePickerSettings = {
   limit?: number;
 };
 
+export type KakaoDefaultTemplateParams = (
+  | { templateType: 'feed'; template: KakaoFeedTemplate }
+  | { templateType: 'list'; template: KakaoListTemplate }
+  | { templateType: 'location'; template: KakaoLocationTemplate }
+  | { templateType: 'commerce'; template: KakaoCommerceTemplate }
+  | { templateType: 'text'; template: KakaoTextTemplate }
+  | { templateType: 'calendar'; template: KakaoCalendarTemplate }
+) & { serverCallbackArgs?: Readonly<Record<string, string>> };
+
 export interface Spec extends TurboModule {
   isKakaoTalkSharingAvailable(): Promise<boolean>;
+  makeTemplateUrl(
+    templateType: string,
+    templateId: Double,
+    templateJson: UnsafeObject,
+    templateArgs: Readonly<{ [key: string]: string }>,
+    serverCallbackArgs: Readonly<{ [key: string]: string }>,
+  ): Promise<string>;
   uploadImage(imageUri: string, secureResource: boolean): Promise<KakaoImageUploadResult>;
   shareScrapTemplate(
     requestUrl: string,

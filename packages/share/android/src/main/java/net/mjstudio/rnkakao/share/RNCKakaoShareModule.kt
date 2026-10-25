@@ -29,6 +29,8 @@ import net.mjstudio.rnkakao.core.util.toStringMap
 import java.io.File
 import kotlin.concurrent.thread
 
+private const val NO_CUSTOM_TEMPLATE_ID = -1.0
+
 class RNCKakaoShareModule internal constructor(
   context: ReactApplicationContext,
 ) : NativeKakaoShareSpec(context) {
@@ -37,6 +39,44 @@ class RNCKakaoShareModule internal constructor(
     onMain {
       promise.resolve(ShareClient.instance.isKakaoTalkSharingAvailable(reactApplicationContext))
     }
+
+  @ReactMethod
+  override fun makeTemplateUrl(
+    templateType: String,
+    templateId: Double,
+    templateJson: ReadableMap,
+    templateArgs: ReadableMap,
+    serverCallbackArgs: ReadableMap,
+    promise: Promise,
+  ) = onMain {
+    runCatching {
+      val args = templateArgs.toStringMap()
+      val callbacks = serverCallbackArgs.toStringMap()
+      val url =
+        when (templateType) {
+          "custom" -> {
+            WebSharerClient.instance.makeCustomUrl(templateId.toLong(), args, callbacks)
+          }
+
+          "scrap" -> {
+            WebSharerClient.instance.makeScrapUrl(
+              requireNotNull(templateJson.getString("requestUrl")) { "requestUrl is required" },
+              templateId.takeUnless { it == NO_CUSTOM_TEMPLATE_ID }?.toLong(),
+              args,
+              callbacks,
+            )
+          }
+
+          else -> {
+            WebSharerClient.instance.makeDefaultUrl(
+              RNCKakaoShareTemplates.createDefaultTemplate(templateJson, templateType),
+              callbacks,
+            )
+          }
+        }
+      url.toString()
+    }.onSuccess { promise.resolve(it) }.onFailure { promise.rejectWith(it) }
+  }
 
   @ReactMethod
   override fun uploadImage(
@@ -236,7 +276,7 @@ class RNCKakaoShareModule internal constructor(
         promise.rejectWith(RNCKakaoUnknownException("requestUrl is required for scrap messages"))
         return@onMain
       }
-      val customTemplateId = templateId.takeUnless { it == -1.0 }
+      val customTemplateId = templateId.takeUnless { it == NO_CUSTOM_TEMPLATE_ID }
       when (sendType) {
         "send-me" -> {
           runSendToMe(templateType, customTemplateId, templateArgs = templateArgs, promise = promise, requestUrl = requestUrl)
