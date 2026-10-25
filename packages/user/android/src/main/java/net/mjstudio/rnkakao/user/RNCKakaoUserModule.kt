@@ -14,6 +14,7 @@ import com.kakao.sdk.auth.model.Prompt.SELECT_ACCOUNT
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.UserApiClient
+import com.kakao.sdk.user.model.UserShippingAddresses
 import net.mjstudio.rnkakao.core.util.RNCKakaoResponseNotFoundException
 import net.mjstudio.rnkakao.core.util.RNCKakaoUtil
 import net.mjstudio.rnkakao.core.util.argArr
@@ -302,46 +303,59 @@ class RNCKakaoUserModule internal constructor(
   }
 
   @ReactMethod
-  override fun shippingAddresses(promise: Promise) =
-    onMain {
-      UserApiClient.instance.shippingAddresses { addrs, error ->
-        if (error != null) {
-          promise.rejectWith(error)
-        } else if (addrs == null) {
-          promise.rejectWith(RNCKakaoResponseNotFoundException("shippingAddresses"))
-        } else {
-          promise.resolve(
-            argMap().apply {
-              putD("userId", addrs.userId?.toDouble())
-              putB("needsAgreement", addrs.needsAgreement)
-              putArray(
-                "shippingAddresses",
-                argArr().apply {
-                  pushMapList(
-                    addrs.shippingAddresses?.map { addr ->
-                      argMap().apply {
-                        putDouble("id", addr.id.toDouble())
-                        putString("name", addr.name)
-                        putBoolean("isDefault", addr.isDefault)
-                        putD("updatedAt", addr.updatedAt?.unix?.toDouble())
-                        putString("type", addr.type?.name)
-                        putString("baseAddress", addr.baseAddress)
-                        putString("detailAddress", addr.detailAddress)
-                        putString("receiverName", addr.receiverName)
-                        putString("receiverPhoneNumber1", addr.receiverPhoneNumber1)
-                        putString("receiverPhoneNumber2", addr.receiverPhoneNumber2)
-                        putString("zoneNumber", addr.zoneNumber)
-                        putString("zipCode", addr.zipCode)
-                      }
-                    } ?: listOf(),
-                  )
-                },
-              )
-            },
-          )
-        }
+  override fun shippingAddresses(
+    addressId: Double?,
+    fromUpdatedAt: Double?,
+    pageSize: Double?,
+    promise: Promise,
+  ) = onMain {
+    val callback: (UserShippingAddresses?, Throwable?) -> Unit = { addrs, error ->
+      if (error != null) {
+        promise.rejectWith(error)
+      } else if (addrs == null) {
+        promise.rejectWith(RNCKakaoResponseNotFoundException("shippingAddresses"))
+      } else {
+        promise.resolve(
+          argMap().apply {
+            putD("userId", addrs.userId?.toDouble())
+            putB("needsAgreement", addrs.needsAgreement)
+            putArray(
+              "shippingAddresses",
+              argArr().apply {
+                pushMapList(
+                  addrs.shippingAddresses?.map { addr ->
+                    argMap().apply {
+                      putDouble("id", addr.id.toDouble())
+                      putString("name", addr.name)
+                      putBoolean("isDefault", addr.isDefault)
+                      putD("updatedAt", addr.updatedAt?.unix?.toDouble())
+                      putString("type", addr.type?.name)
+                      putString("baseAddress", addr.baseAddress)
+                      putString("detailAddress", addr.detailAddress)
+                      putString("receiverName", addr.receiverName)
+                      putString("receiverPhoneNumber1", addr.receiverPhoneNumber1)
+                      putString("receiverPhoneNumber2", addr.receiverPhoneNumber2)
+                      putString("zoneNumber", addr.zoneNumber)
+                      putString("zipCode", addr.zipCode)
+                    }
+                  } ?: listOf(),
+                )
+              },
+            )
+          },
+        )
       }
     }
+    if (addressId != null) {
+      UserApiClient.instance.shippingAddresses(addressId.toLong(), callback)
+    } else {
+      UserApiClient.instance.shippingAddresses(
+        fromUpdatedAt = fromUpdatedAt?.let { Date((it * 1000).toLong()) },
+        pageSize = pageSize?.toInt(),
+        callback = callback,
+      )
+    }
+  }
 
   @ReactMethod
   override fun selectShippingAddress(promise: Promise) =

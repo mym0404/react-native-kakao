@@ -2,6 +2,7 @@ import { is } from '@mj-studio/js-util';
 import { kAssert } from '@react-native-kakao/core';
 
 import Native from './spec/NativeKakaoUser';
+import { validateShippingAddressOptions } from './validateShippingAddressOptions';
 
 export interface KakaoLoginToken {
   accessToken: string;
@@ -172,8 +173,18 @@ export function serviceTerms({
   return Native.serviceTerms(result, tags);
 }
 
-export function shippingAddresses(): Promise<KakaoShippingAddressResult> {
-  return Native.shippingAddresses();
+export function shippingAddresses({
+  addressId,
+  fromUpdatedAt,
+  pageSize,
+}: {
+  addressId?: number;
+  fromUpdatedAt?: number;
+  pageSize?: number;
+} = {}): Promise<KakaoShippingAddressResult> {
+  validateShippingAddressOptions({ addressId, fromUpdatedAt, pageSize });
+
+  return Native.shippingAddresses(addressId, fromUpdatedAt, pageSize);
 }
 
 export function revokeServiceTerms(tags: string[]): Promise<KakaoRevokedServiceTerms[]> {
