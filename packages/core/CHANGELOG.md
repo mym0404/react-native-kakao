@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 3.1.0-next.0
+
+### Minor Changes
+
+- 3260517: Add a shipping address picker that returns the selected address ID on Android, iOS, and web.
+  
+  Add the Expo plugin's shippingAddressHandlerActivity option to handle Android picker callbacks.
+
+### Patch Changes
+
+- 20c253b: Use the application's Android compile SDK for all Kakao modules to support React Native 0.88 and Expo SDK 58 builds.
+- 71700aa: Align web SDK options, response shapes, timestamps, and session errors with native APIs.
+
 ## 3.0.0
 
 ### Major Changes
