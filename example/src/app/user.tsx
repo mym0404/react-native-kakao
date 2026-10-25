@@ -14,6 +14,7 @@ import {
   logout,
   me,
   refreshToken,
+  revokeScopesWithResult,
   revokeServiceTerms,
   scopes,
   selectShippingAddress,
@@ -233,6 +234,16 @@ export default function Page() {
               }),
             );
         }}
+      />
+      <E2EApiAction
+        id={'filtered-scopes'}
+        title={'Get Profile Nickname Scope'}
+        action={() => scopes(['profile_nickname'])}
+      />
+      <E2EApiAction
+        id={'invalid-revoke-scope-result'}
+        title={'Revoke Unknown Scope With Result'}
+        action={() => revokeScopesWithResult(['rn_kakao_unknown_scope'])}
       />
       <Btn
         minW={buttonMinWidth}

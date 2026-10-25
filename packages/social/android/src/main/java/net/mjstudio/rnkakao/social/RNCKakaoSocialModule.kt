@@ -52,6 +52,7 @@ class RNCKakaoSocialModule internal constructor(
         }
         promise.resolve(
           argMap().apply {
+            putDouble("id", profile.id.toDouble())
             putString("nickname", profile.nickname)
             putString("countryISO", profile.countryISO)
             putString("profileImageUrl", profile.profileImageUrl)
@@ -90,6 +91,7 @@ class RNCKakaoSocialModule internal constructor(
                     putString("uuid", it.uuid)
                     putD("id", it.id?.toDouble())
                     putB("favorite", it.favorite)
+                    putString("maskingProfileNickname", it.maskingProfileNickname)
                     putString("profileNickname", it.profileNickname)
                     putString("profileThumbnailImage", it.profileThumbnailImage)
                   }
@@ -173,6 +175,8 @@ class RNCKakaoSocialModule internal constructor(
           argMap().apply {
             putInt("totalCount", friends.totalCount)
             putI("favoriteCount", friends.favoriteCount)
+            putString("beforeUrl", friends.beforeUrl)
+            putString("afterUrl", friends.afterUrl)
             putArray(
               "friends",
               argArr().pushMapList(

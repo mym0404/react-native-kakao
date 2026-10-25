@@ -19,9 +19,9 @@ export interface KakaoScopeInfo {
   id: string;
   agreed: boolean;
   displayName: string;
-  revocable?: boolean;
+  revocable?: boolean | null;
   using: boolean;
-  delegated?: boolean;
+  delegated?: boolean | null;
   type: string;
 }
 export interface KakaoServiceTerms {
@@ -30,6 +30,7 @@ export interface KakaoServiceTerms {
   agreed: boolean;
   required: boolean;
   revocable: boolean;
+  agreedBy?: 'KAUTH' | 'KAPI' | 'unknown';
 }
 export type KakaoRevokedServiceTerms = {
   tag: string;
@@ -228,7 +229,11 @@ export function scopes(scopes?: string[]): Promise<KakaoScopeInfo[]> {
   return Native.scopes(scopes);
 }
 
-export function revokeScopes(scopes: string[]): Promise<void> {
+export async function revokeScopes(scopes: string[]): Promise<void> {
+  await Native.revokeScopes(scopes);
+}
+
+export function revokeScopesWithResult(scopes: string[]): Promise<KakaoScopeInfo[]> {
   return Native.revokeScopes(scopes);
 }
 
@@ -314,6 +319,7 @@ const KakaoUser = {
   isKakaoTalkLoginAvailable,
   scopes,
   revokeScopes,
+  revokeScopesWithResult,
   serviceTerms,
   revokeServiceTerms,
   shippingAddresses,

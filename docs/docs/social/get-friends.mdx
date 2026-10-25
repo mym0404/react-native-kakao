@@ -3,7 +3,6 @@ sidebar_position: 4
 ---
 
 # 카카오톡 친구 가져오기
-## 카카오톡 친구 가져오기
 
 [공식 문서](https://developers.kakao.com/docs/latest/ko/kakaotalk-social/android#get-friends)
 
@@ -42,12 +41,12 @@ export function getFriends(params: {
  * @property allowedMsg 메시지 수신이 허용되었는지 여부. 앱가입 친구의 경우는 feed msg 에 해당. 앱미가입친구는 invite msg 에 해당
  */
 export interface KakaoTalkFriend {
-  id?: number;
+  id?: number | null;
   uuid: string;
-  profileNickname: string;
-  profileThumbnailImage?: string;
-  favorite?: boolean;
-  allowedMsg?: boolean;
+  profileNickname?: string | null;
+  profileThumbnailImage?: string | null;
+  favorite?: boolean | null;
+  allowedMsg?: boolean | null;
 }
 
 export interface KakaoTalkGetFriendsOptions {
@@ -57,3 +56,7 @@ export interface KakaoTalkGetFriendsOptions {
   friendOrder?: 'nickname' | 'age' | 'favorite';
 }
 ```
+
+응답의 `friends`는 친구 배열이며, `totalCount`는 전체 친구 수입니다. `beforeUrl`과 `afterUrl`은 카카오가 제공한 이전·다음 페이지 URL입니다. 해당 페이지가 없으면 `null`을 반환합니다. 다음 요청의 `offset`과 `limit`을 정할 때 이 URL의 쿼리를 참고할 수 있습니다.
+
+친구의 `profileNickname`은 제공되지 않거나 `null`일 수 있습니다. iOS의 친구 썸네일도 다른 플랫폼과 같은 URL 문자열로 반환합니다.

@@ -3,7 +3,6 @@ sidebar_position: 2
 ---
 
 # 내 카카오톡 프로필 가져오기
-## 내 카카오톡 프로필 가져오기
 
 [공식 문서](https://developers.kakao.com/docs/latest/ko/kakaotalk-social/android#get-profile)
 
@@ -25,34 +24,37 @@ export function getTalkProfile(): Promise<KakaoTalkProfile>
 
 ```tsx
 export interface KakaoTalkProfile {
+  id: number;
   /**
    * 카카오톡 닉네임
    *
    * 필요한 동의항목: 프로필 정보(닉네임/프로필 사진) 또는 닉네임
    */
-  nickname?: string;
+  nickname?: string | null;
   /**
    * 사용자가 카카오톡을 이용 중인 국가
    *
    * @deprecated
    * @link https://devtalk.kakao.com/t/api-change-notice-response-fields-of-the-retrieving-kakao-talk-kakao-story-api/115151
    */
-  countryISO?: string;
+  countryISO?: string | null;
   /**
    * 카카오톡 프로필 이미지 URL
    * 640px * 640px 크기, HTTPS만 지원
    *
    * 필요한 동의항목: 프로필 정보(닉네임/프로필 사진) 또는 프로필 사진
    */
-  profileImageUrl?: string;
+  profileImageUrl?: string | null;
   /**
    * 카카오톡 프로필 썸네일(Thumbnail) 이미지 URL
    * 110px * 110px 크기, HTTPS만 지원
    *
    * 필요한 동의항목: 프로필 정보(닉네임/프로필 사진) 또는 프로필 사진
    */
-  thumbnailUrl?: string;
+  thumbnailUrl?: string | null;
 }
 ```
 
 응답값에 대한 최신 설명은 [공식 문서](https://developers.kakao.com/docs/latest/ko/kakaotalk-social/rest-api#get-profile)를 참고하세요.
+
+`id`는 현재 앱에서 사용하는 사용자 회원번호입니다. Android, iOS, 웹에서 숫자로 반환합니다.
