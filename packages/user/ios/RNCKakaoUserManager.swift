@@ -142,6 +142,27 @@ import RNCKakaoCore
     }
   }
 
+  @objc public func issueAccessTokenWithCode(
+    _ code: String,
+    codeVerifier: String?,
+    redirectUri: String?,
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    onMain { [self] in
+      guard let _ = try? KakaoSDK.shared.appKey() else {
+        RNCKakaoUtil.reject(reject, RNCKakaoError.sdkNotInitialized)
+        return
+      }
+      AuthApi.shared.token(
+        code: code,
+        codeVerifier: codeVerifier,
+        redirectUri: redirectUri ?? KakaoSDK.shared.redirectUri(),
+        completion: tokenCallback(resolve, reject: reject)
+      )
+    }
+  }
+
   @objc public func refreshToken(
     _ resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock

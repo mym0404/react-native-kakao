@@ -1,5 +1,12 @@
 import { camelCaseObject, filterNonNullishKeys, is } from '@mj-studio/js-util';
-import { kFetch, kFetchFormUrlEncoded, kGlobalStorage, kRunWebAPI } from '@react-native-kakao/core';
+import {
+  kAssert,
+  kCreateWebError,
+  kFetch,
+  kFetchFormUrlEncoded,
+  kGlobalStorage,
+  kRunWebAPI,
+} from '@react-native-kakao/core';
 
 import {
   type KakaoLoginToken,
@@ -11,6 +18,7 @@ import {
 import { validateShippingAddressOptions } from './validateShippingAddressOptions';
 
 declare const Kakao: {
+  isInitialized: () => boolean;
   Auth: {
     authorize: Function;
     logout: Function;
@@ -57,7 +65,62 @@ const KakaoUser: KakaoUserAPI = {
         appId: app_id,
       };
     }),
-  issueAccessTokenWithCodeWeb: ({ clientSecret, code, redirectUri }) =>
+  issueAccessTokenWithCode: ({ code, codeVerifier, redirectUri, web }) =>
+    kRunWebAPI(async () => {
+      kAssert(
+        is.string(code) && code.length > 0 && is.string(redirectUri) && redirectUri.length > 0,
+        '[issueAccessTokenWithCode] code and redirectUri are required on web',
+      );
+
+      if (typeof Kakao === 'undefined' || !Kakao.isInitialized()) {
+        kCreateWebError({
+          code: 'Package-SDKNotInitialized',
+          message: 'Initialize the Kakao SDK before exchanging an authorization code.',
+        });
+      }
+
+      const token = await KakaoUser.issueAccessTokenWithCodeWeb({
+        code,
+        codeVerifier,
+        redirectUri: redirectUri!,
+        clientSecret: web?.clientSecret,
+      });
+
+      if (
+        !is.string(token.accessToken) ||
+        !token.accessToken ||
+        !is.string(token.refreshToken) ||
+        !token.refreshToken ||
+        !is.string(token.tokenType) ||
+        (token.idToken != null && !is.string(token.idToken)) ||
+        !Number.isFinite(token.expiresIn) ||
+        token.expiresIn < 0 ||
+        !Number.isFinite(token.refreshTokenExpiresIn) ||
+        token.refreshTokenExpiresIn < 0 ||
+        (token.scope != null && !is.string(token.scope))
+      ) {
+        kCreateWebError({
+          code: 'Package-APIResponseNotFound',
+          message: 'issueAccessTokenWithCode returned invalid token data.',
+        });
+      }
+
+      const issuedAt = Math.floor(Date.now() / 1000);
+      KakaoUser.setAccessTokenWeb(token.accessToken);
+
+      return {
+        accessToken: token.accessToken,
+        refreshToken: token.refreshToken,
+        tokenType: token.tokenType,
+        idToken: token.idToken,
+        accessTokenExpiresIn: token.expiresIn,
+        refreshTokenExpiresIn: token.refreshTokenExpiresIn,
+        accessTokenExpiresAt: issuedAt + token.expiresIn,
+        refreshTokenExpiresAt: issuedAt + token.refreshTokenExpiresIn,
+        scopes: token.scope?.split(' ').filter(Boolean) ?? [],
+      };
+    }),
+  issueAccessTokenWithCodeWeb: ({ clientSecret, code, codeVerifier, redirectUri }) =>
     kRunWebAPI(async () => {
       const res = await kFetchFormUrlEncoded<{
         token_type: string;
@@ -74,6 +137,7 @@ const KakaoUser: KakaoUserAPI = {
           client_id: kGlobalStorage.restApiKey,
           redirect_uri: redirectUri,
           code,
+          code_verifier: codeVerifier,
           client_secret: clientSecret,
         }),
       }).then((r) => r.body);
@@ -327,6 +391,7 @@ const KakaoUser: KakaoUserAPI = {
 export const {
   loginWithKakao,
   refreshToken,
+  issueAccessTokenWithCode,
   isKakaoTalkLoginAvailable,
   isLogined,
   hasToken,

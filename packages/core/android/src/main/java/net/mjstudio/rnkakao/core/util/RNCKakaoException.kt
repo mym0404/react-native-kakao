@@ -24,6 +24,13 @@ class RNCKakaoSdkNotInitializedException : RNCKakaoException("The SDK is not ini
   override val code: String = "Package-SDKNotInitialized"
 }
 
+class RNCKakaoUnsupportedPlatformException(
+  apiName: String,
+  supportedPlatforms: String,
+) : RNCKakaoException("$apiName is supported on $supportedPlatforms.") {
+  override val code: String = "Package-UnsupportedPlatform"
+}
+
 enum class KakaoApp(
   val appName: String,
 ) {

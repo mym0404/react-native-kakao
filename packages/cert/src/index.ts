@@ -34,6 +34,11 @@ export type KakaoCertAccountLoginOptions = KakaoCertLoginBase & {
   android?: { channelPublicIds?: string[]; serviceTerms?: string[] };
 };
 export type KakaoCertTokenInfo = { token: KakaoLoginToken; txId: string };
+export type KakaoCertCodeTokenOptions = {
+  code: string;
+  codeVerifier?: string;
+  redirectUri?: string;
+};
 export type KakaoCertSessionInfo = {
   userId?: number | null;
   sessionStartAt: number;
@@ -85,6 +90,16 @@ export async function certLoginWithKakaoAccount(options: KakaoCertAccountLoginOp
   validateLoginRequest(options);
 
   return Native.certLoginWithKakaoAccount(options);
+}
+
+export async function issueCertTokenWithCode({
+  code,
+  codeVerifier,
+  redirectUri,
+}: KakaoCertCodeTokenOptions): Promise<KakaoCertTokenInfo> {
+  kAssert(typeof code === 'string' && code.length > 0, '[issueCertTokenWithCode] code is required');
+
+  return Native.issueCertTokenWithCode(code, codeVerifier, redirectUri);
 }
 
 export async function getPublicKey({ certType }: { certType: KakaoCertSessionType }) {
@@ -162,6 +177,7 @@ function validateLoginRequest(options: KakaoCertLoginRequest & KakaoCertLoginBas
 const KakaoCert = {
   certLoginWithKakaoTalk,
   certLoginWithKakaoAccount,
+  issueCertTokenWithCode,
   getPublicKey,
   getSessionInfo,
   fetchSessionInfo,

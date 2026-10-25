@@ -15,6 +15,13 @@ export interface KakaoLoginToken {
   refreshTokenExpiresIn: number;
   scopes: string[];
 }
+export type KakaoCodeTokenOptions = {
+  code: string;
+  codeVerifier?: string;
+  redirectUri?: string;
+  web?: { clientSecret?: string };
+};
+
 export interface KakaoScopeInfo {
   id: string;
   agreed: boolean;
@@ -269,6 +276,16 @@ export function me({
   return Native.me(secureResource);
 }
 
+export async function issueAccessTokenWithCode({
+  code,
+  codeVerifier,
+  redirectUri,
+}: KakaoCodeTokenOptions): Promise<KakaoLoginToken> {
+  kAssert(is.string(code) && code.length > 0, '[issueAccessTokenWithCode] code is required');
+
+  return Native.issueAccessTokenWithCode(code, codeVerifier, redirectUri);
+}
+
 export function getAccessToken(): Promise<KakaoAccessTokenInfo> {
   return Native.getAccessToken();
 }
@@ -288,6 +305,7 @@ export async function issueAccessTokenWithCodeWeb(params: {
   redirectUri: string;
   clientSecret?: string;
   code: string;
+  codeVerifier?: string;
 }): Promise<{
   tokenType: string;
   accessToken: string;
@@ -304,6 +322,7 @@ const KakaoUser = {
   login,
   loginWithKakao,
   refreshToken,
+  issueAccessTokenWithCode,
   signup,
   logout,
   unlink,
