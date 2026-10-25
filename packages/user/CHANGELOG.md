@@ -1,5 +1,13 @@
 # Change Log
 
+## 2.4.11
+
+### Patch Changes
+
+- de1cc13: Backport Android activity context fixes and align web API contracts with native; image scraping remains v3-only.
+- Updated dependencies [de1cc13]
+  - @react-native-kakao/core@2.4.11
+
 ## 2.4.10
 
 ### Patch Changes
