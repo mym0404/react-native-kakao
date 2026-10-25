@@ -30,6 +30,7 @@
     "@react-native-kakao/user": "workspace:*",
     "@react-native-styled-system/core": "~2.2.1",
     "expo": "catalog:",
+    "expo-asset": "~58.0.18",
     "expo-constants": "~58.0.13",
     "expo-linking": "~58.0.14",
     "expo-router": "~58.0.26",
