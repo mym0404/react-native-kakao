@@ -24,6 +24,8 @@ Android and iOS support a custom URL scheme and internal SDK logging. Web ignore
 | `loggingEnabled` | `false` | Whether to enable internal Kakao native SDK logging |
 | `android.sdkIdentifier` | Omitted | Wrapper SDK identifier appended unchanged to Android's KA request header; ignored on iOS and web |
 
+In iOS SDK `2.29.0`, Debug builds write console logs independently of this setting. Use [`refreshToken`'s `ios.loggingEnabled`](/docs/user/access-token) to hide a refresh request's logs and response body.
+
 The custom scheme must match the configuration registered with Kakao Developers. Follow the [official multi-app guide](https://developers.kakao.com/docs/en/kakaologin/multi-app) when maintaining an existing multi-app setup. An arbitrary scheme cannot receive a real login callback.
 
 ```tsx

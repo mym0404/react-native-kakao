@@ -24,6 +24,8 @@ Android와 iOS에서 커스텀 URL 스킴과 SDK 내부 로깅을 설정할 수 
 | `loggingEnabled` | `false` | 카카오 네이티브 SDK 내부 로그 사용 여부 |
 | `android.sdkIdentifier` | 생략 | Android KA 요청 헤더 끝에 그대로 추가할 래퍼 SDK 식별자. iOS·웹에서는 사용하지 않음 |
 
+iOS SDK `2.29.0`의 Debug 빌드는 `loggingEnabled`와 별개로 콘솔 로그를 출력합니다. 토큰 갱신 요청의 로그와 응답 본문은 [`refreshToken`의 `ios.loggingEnabled`](/docs/user/access-token)로 숨길 수 있습니다.
+
 커스텀 스킴은 카카오디벨로퍼스에 등록된 설정과 일치해야 합니다. 기존 멀티 앱 설정을 유지하는 경우에는 [공식 멀티 앱 안내](https://developers.kakao.com/docs/ko/kakaologin/multi-app)를 따릅니다. 값을 임의로 정하면 실제 로그인 콜백을 받을 수 없습니다.
 
 ```tsx
