@@ -41,4 +41,4 @@ const onPress = async () => {
 
 This method returns an ID, without retrieving the address details. Kakao's v2 REST shipping address API can retrieve a specific address by `address_id`. The pinned Kakao SDKs do not expose that v2 API.
 
-SDK errors reject the promise. Cancelling the native picker also rejects it. In JavaScript SDK 2.7.1, manually closing the popup can leave its promise pending; the wrapper preserves that SDK behavior.
+SDK errors reject the promise. Cancelling the native picker also rejects it. In JavaScript SDK 2.8.4, used by the example, closing the popup without a response can leave its promise pending; the wrapper preserves that SDK behavior.
