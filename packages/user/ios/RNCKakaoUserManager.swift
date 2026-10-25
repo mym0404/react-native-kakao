@@ -336,6 +336,22 @@ import RNCKakaoCore
     }
   }
 
+  @objc public func updateProfile(
+    _ properties: [String: String],
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    onMain {
+      UserApi.shared.updateProfile(properties: properties) { error in
+        if let error {
+          RNCKakaoUtil.reject(reject, error)
+        } else {
+          resolve(nil)
+        }
+      }
+    }
+  }
+
   @objc public func me(
     _ resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock

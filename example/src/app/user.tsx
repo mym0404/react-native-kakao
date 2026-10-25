@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Platform } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import { formatJson } from '@mj-studio/js-util';
 import { useMount } from '@mj-studio/react-util';
@@ -16,6 +17,7 @@ import {
   serviceTerms,
   shippingAddresses,
   unlink,
+  updateProfile,
 } from '@react-native-kakao/user';
 
 import { Btn } from '../component/Btn';
@@ -27,6 +29,7 @@ import { px } from '../util/px';
 
 const buttonMinWidth = px(240);
 const allServiceTermsResult = 'app_service_terms';
+const profileVerificationKey = 'rn_kakao_verification';
 const testServiceTermTag = 'rnc_example_optional_service_term';
 
 export default function Page() {
@@ -280,6 +283,26 @@ export default function Page() {
           const addressId = await selectShippingAddress();
 
           return { hasAddressId: Number.isSafeInteger(addressId) && addressId > 0 };
+        }}
+      />
+      <E2EApiAction
+        id={'update-profile'}
+        minW={buttonMinWidth}
+        title={'Update Test User Property'}
+        action={async () => {
+          await updateProfile({ properties: { [profileVerificationKey]: Platform.OS } });
+
+          return { didComplete: true };
+        }}
+      />
+      <E2EApiAction
+        id={'clear-profile-property'}
+        minW={buttonMinWidth}
+        title={'Clear Test User Property'}
+        action={async () => {
+          await updateProfile({ properties: { [profileVerificationKey]: '' } });
+
+          return { didComplete: true };
         }}
       />
       <Btn

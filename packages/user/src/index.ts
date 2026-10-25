@@ -203,6 +203,14 @@ export function getAccessToken(): Promise<KakaoAccessTokenInfo> {
   return Native.getAccessToken();
 }
 
+export function updateProfile({
+  properties,
+}: {
+  properties: Record<string, string>;
+}): Promise<void> {
+  return Native.updateProfile(properties);
+}
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function setAccessTokenWeb(token: string) {}
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -236,6 +244,7 @@ const KakaoUser = {
   shippingAddresses,
   selectShippingAddress,
   me,
+  updateProfile,
   getAccessToken,
   setAccessTokenWeb,
   issueAccessTokenWithCodeWeb,

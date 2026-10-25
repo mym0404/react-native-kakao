@@ -1,0 +1,19 @@
+---
+sidebar_position: 109
+---
+
+# Store User Properties
+
+Use `updateProfile({ properties })` to save registered custom property keys with string values. It resolves with no result on success and rejects SDK errors on Android, iOS, and web.
+
+Register keys in Kakao Developers under **Kakao Login > Advanced > User Properties** before calling it. The user must be logged in.
+
+```tsx
+import { updateProfile } from '@react-native-kakao/user';
+
+await updateProfile({ properties: { custom_key: 'value' } });
+```
+
+This stores app-specific user properties. It does not edit the user's Kakao Account profile, nickname, or profile image.
+
+See Kakao's [user-property API](https://developers.kakao.com/docs/en/kakaologin/rest-api#update-profile) for prerequisites and errors.

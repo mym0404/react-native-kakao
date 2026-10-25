@@ -1,5 +1,6 @@
 import type { TurboModule } from 'react-native';
 import { TurboModuleRegistry } from 'react-native';
+import type { UnsafeObject } from 'react-native/Libraries/Types/CodegenTypes';
 
 import type {
   KakaoAccessTokenInfo,
@@ -35,6 +36,7 @@ export interface Spec extends TurboModule {
   ): Promise<KakaoShippingAddressResult>;
   selectShippingAddress(): Promise<number>;
   me(): Promise<KakaoUser>;
+  updateProfile(properties: UnsafeObject): Promise<void>;
   getAccessToken(): Promise<KakaoAccessTokenInfo>;
 }
 

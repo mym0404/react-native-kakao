@@ -5,6 +5,7 @@ import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableArray
+import com.facebook.react.bridge.ReadableMap
 import com.kakao.sdk.auth.AuthApiClient
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.auth.model.Prompt.CERT
@@ -28,6 +29,7 @@ import net.mjstudio.rnkakao.core.util.putD
 import net.mjstudio.rnkakao.core.util.putI
 import net.mjstudio.rnkakao.core.util.putL
 import net.mjstudio.rnkakao.core.util.rejectWith
+import net.mjstudio.rnkakao.core.util.toStringMap
 import net.mjstudio.rnkakao.core.util.unix
 import java.util.Date
 
@@ -376,6 +378,20 @@ class RNCKakaoUserModule internal constructor(
         }
       }
     }
+
+  @ReactMethod
+  override fun updateProfile(
+    properties: ReadableMap,
+    promise: Promise,
+  ) = onMain {
+    UserApiClient.instance.updateProfile(properties.toStringMap()) { error ->
+      if (error != null) {
+        promise.rejectWith(error)
+      } else {
+        promise.resolve(null)
+      }
+    }
+  }
 
   @ReactMethod
   override fun me(promise: Promise) =
