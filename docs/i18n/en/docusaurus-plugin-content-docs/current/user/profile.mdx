@@ -4,9 +4,7 @@ sidebar_position: 103
 
 # Get User Profile
 
-## Get User Profile
-
-You can fetch the profile using `me()`.
+`me()` retrieves the user profile on Android, iOS, and web. Image URLs use HTTPS by default. Pass `secureResource: false` to request HTTP URLs.
 
 The response is as follows:
 
@@ -52,4 +50,16 @@ export type KakaoUser = {
 
 ```tsx
 me()
+```
+
+## Query options
+
+| Option | Type | Behavior |
+| --- | --- | --- |
+| `secureResource` | `boolean` | Whether image URLs use HTTPS. Defaults to `true`; `false` requests HTTP URLs. |
+
+Pass `secureResource: false` only when you need HTTP image URLs. This option changes the returned image URLs; the API request still uses HTTPS.
+
+```tsx
+const user = await me({ secureResource: false });
 ```

@@ -230,9 +230,11 @@ const KakaoUser: KakaoUserAPI = {
     kRunWebAPI(async () => {
       await Kakao.API.request({ url: '/v1/user/update_profile', data: { properties } });
     }),
-  me: () =>
+  me: ({ secureResource = true } = {}) =>
     kRunWebAPI(async () => {
-      const ret = camelCaseObject(await Kakao.API.request({ url: '/v2/user/me' })) as {
+      const ret = camelCaseObject(
+        await Kakao.API.request({ url: '/v2/user/me', data: { secure_resource: secureResource } }),
+      ) as {
         id: number;
         connectedAt?: string;
         synchedAt?: string;
