@@ -1,0 +1,144 @@
+---
+sidebar_position: 1
+---
+
+# 인증·전자서명
+
+`@react-native-kakao/cert`로 카카오톡 인증 로그인과 축약서명을 사용해요. 인증 로그인은 카카오 로그인에 카카오 인증서 전자서명을 더한 기능이에요. 카카오의 이용 승인을 받은 앱과 서버 연동이 필요해요.
+
+| 상품 | 기능 | 플랫폼 |
+| --- | --- | --- |
+| `K2100` | 카카오톡 또는 카카오계정으로 인증 로그인해요. | Android·iOS, 웹 인증 리다이렉트 |
+| `K2220` | 카카오톡으로 인증 로그인한 뒤 세션 동안 축약서명해요. | Android·iOS |
+| `K3220` | 카카오톡에서 서명한 뒤 세션 동안 축약서명해요. | Android·iOS |
+
+정산 ID 발급, 전자서명 준비·검증, 서명자 정보 조회는 이용기관 서버에서 처리해요. 서버용 비밀 키를 앱에 넣지 마세요. 연동 순서는 [K2100](https://developers.kakao.com/docs/ko/kakao-certification/k2100), [K2220](https://developers.kakao.com/docs/ko/kakao-certification/k2220), [K3220](https://developers.kakao.com/docs/ko/kakao-certification/k3220) 공식 문서를 확인해요.
+
+## 설치와 콜백 설정
+
+다음 패키지를 설치하고 [코어 초기화](../core/initialize-sdk)를 완료해요.
+
+```sh
+yarn add @react-native-kakao/core @react-native-kakao/user @react-native-kakao/cert
+```
+
+Expo에서는 코어 플러그인에 인증 콜백을 추가하고 네이티브 프로젝트를 다시 생성해요.
+
+```json
+[
+  "@react-native-kakao/core",
+  {
+    "nativeAppKey": "NATIVE_APP_KEY",
+    "android": {
+      "authCodeHandlerActivity": true,
+      "certServiceHandlerActivity": true
+    },
+    "ios": {
+      "handleKakaoOpenUrl": true,
+      "handleKakaoCertOpenUrl": true
+    }
+  }
+]
+```
+
+Expo를 사용하지 않는 Android 앱은 로그인 콜백 외에 `com.kakao.sdk.cert.CertServiceHandlerActivity`를 `android:exported="true"`로 등록해요. `VIEW` 액션, `DEFAULT`·`BROWSABLE` 카테고리, `kakaoNATIVE_APP_KEY://cert` URI를 받는 인텐트 필터가 필요해요.
+
+iOS는 카카오 로그인 URL Scheme과 기존 로그인 콜백을 유지하고 `LSApplicationQueriesSchemes`에 `kakaotalk`을 추가해요. AppDelegate의 URL 처리 함수에서 인증 콜백도 SDK에 전달해요. Swift에서는 다음 코드를 기존 URL 처리보다 앞에 넣어요. ObjC++ 앱에서는 `<RNCKakaoCert/RNCKakaoCertUtil.h>`를 임포트하고 같은 두 클래스 메서드를 호출해요.
+
+```swift
+import RNCKakaoCert
+
+if RNCKakaoCertUtil.isKakaoTalkSignReturnUrl(url) {
+  return RNCKakaoCertUtil.handleOpen(url)
+}
+```
+
+## 인증 로그인
+
+`K2100`은 서버에서 받은 정산 ID와 서명 원문을 전달해요. 인증 방식에 따라 카카오톡 또는 카카오계정 함수를 선택해요. 카카오톡 설치 여부는 `@react-native-kakao/user`의 `isKakaoTalkLoginAvailable()`로 확인해요.
+
+```tsx
+import { certLoginWithKakaoAccount, certLoginWithKakaoTalk } from '@react-native-kakao/cert';
+
+const result = await certLoginWithKakaoTalk({
+  certType: 'K2100',
+  settleId,
+  signData,
+  identifyItems: ['ci', 'name'],
+});
+
+const accountResult = await certLoginWithKakaoAccount({
+  certType: 'K2100',
+  settleId,
+  signData,
+  loginHint,
+});
+```
+
+두 함수는 `{ token, txId }`를 반환해요. `token`은 [일반 로그인 토큰](../user/login)과 같은 `KakaoLoginToken` 타입이에요. `txId`는 서버의 전자서명 검증에 사용해요. `K2220`은 `certLoginWithKakaoTalk({ certType: 'K2220', txId })`로 서버가 준비한 접수번호를 전달해요. 카카오계정 방식은 `K2100`만 지원해요.
+
+| 옵션 | 동작 |
+| --- | --- |
+| `prompts` | `Login`, `Create`, `SelectAccount`를 전달해요. 인증용 프롬프트는 SDK가 추가해요. |
+| `identifyItems` | `ci`, `name`, `birthday`, `phone_number` 중 필요한 서명자 정보를 지정해요. |
+| `nonce` | OpenID Connect ID 토큰 검증에 사용할 임의 문자열이에요. |
+| `channelPublicIds`, `serviceTerms` | 카카오톡 인증 로그인에서 추가할 채널·약관 목록이에요. |
+| `ios.launchMethod` | 카카오톡 앱 전환 방식으로 `UniversalLink` 또는 `CustomScheme`을 지정해요. 기본값은 `UniversalLink`예요. |
+| `android.requestCode` | 카카오톡 인증 로그인 액티비티의 요청 코드예요. 생략하면 SDK 기본값을 사용해요. |
+| `android.channelPublicIds`, `android.serviceTerms` | 카카오계정 인증 로그인에 전달해요. iOS 계정 방식의 공개 SDK는 이 옵션을 지원하지 않아요. |
+
+고정된 네이티브 SDK가 제공하는 서명자 항목은 위 네 가지예요. 다른 항목은 타입에 포함하지 않아요.
+
+## 키·세션·축약서명
+
+`K2220`과 `K3220`은 SDK가 기기 안에 임시 키 쌍을 보관해요. 다음 예제는 `K2220`의 공개 키를 서버에 보내 전자서명을 준비한 뒤, 인증 로그인과 세션 조회를 이어가는 순서예요. `prepareOnServer()`와 `verifyOnServer()`는 이용기관 서버에 구현할 함수예요.
+
+```tsx
+import {
+  getPublicKey, certLoginWithKakaoTalk, fetchSessionInfo,
+  getSessionInfo, isValidSession, reducedSign, deleteKeyPair,
+} from '@react-native-kakao/cert';
+
+const certType = 'K2220';
+const publicKey = await getPublicKey({ certType });
+if (!publicKey) throw new Error('Public key unavailable');
+const { txId } = await prepareOnServer(publicKey);
+await certLoginWithKakaoTalk({ certType, txId });
+await verifyOnServer(txId);
+const session = await fetchSessionInfo({ certType, txId });
+
+if (await isValidSession({ certType })) {
+  const signature = await reducedSign({ certType, data });
+}
+
+const cachedSession = await getSessionInfo({ certType });
+await deleteKeyPair({ certType });
+```
+
+`getPublicKey()`는 공개 키를 조회하거나 생성하며, SDK가 제공하지 못하면 `undefined`를 반환해요. 개인 키는 JavaScript로 내보내지 않아요. `getSessionInfo()`는 저장된 세션만 읽고, 세션이 없으면 `undefined`를 반환해요. `fetchSessionInfo()`는 서버에서 세션을 받아 SDK에 저장해요. 세션 응답은 `{ userId?, sessionStartAt, sessionEndAt }`이고, 시간 값은 Unix 초예요.
+
+`K3220`은 `isKakaoTalkSignAvailable()`로 서명 가능 여부를 확인하고 `signWithKakaoTalk({ txId, targetAppKey? })`를 호출해요. 응답은 `{ txId, requestedAt?, requestExpiredAt?, signedAt? }`이고 시간 단위는 Unix 초예요. 이후 `fetchSessionInfoByAppKey({ certType: 'K3220', txId, targetAppKey? })`로 세션을 조회해요. 나머지 로컬 키·세션 함수는 `K2220`과 같아요.
+
+세션이 없거나 만료되면 축약서명이 실패해요. `deleteKeyPair()`는 선택한 상품의 키와 세션을 삭제해요. SDK 오류가 발생했을 때 다시 시작할 순서는 공식 문서를 따라요.
+
+iOS에서 `signWithKakaoTalk()` 요청이 진행 중이면 다음 요청은 거부해요. 먼저 시작한 요청의 완료를 기다린 뒤 다시 호출해요.
+
+## 웹 인증 로그인
+
+웹은 `authorizeForCertWeb()`로 `K2100` 인증 로그인 리다이렉트를 시작해요. JavaScript SDK 스크립트와 [웹 코어 초기화](../core/initialize-sdk)가 필요해요.
+
+```tsx
+import { authorizeForCertWeb } from '@react-native-kakao/cert';
+
+await authorizeForCertWeb({
+  redirectUri,
+  settleId,
+  signData,
+  state,
+  identifyItems: ['ci'],
+});
+```
+
+이 함수의 `Promise<void>`는 인증 완료나 토큰 발급을 뜻하지 않아요. 리다이렉트 이후 인가 코드 처리와 전자서명 검증을 구현해야 해요. `prompt`, `scope`, `serviceTerms`, `identifyItems` 배열은 SDK가 받는 쉼표 구분 문자열로 변환해요. `throughTalk`, `throughSyncplugin`, `channelPublicId`, `deviceType`, `loginHint`, `nonce`도 전달할 수 있어요.
+
+웹의 `isKakaoTalkSignAvailable()`는 `false`를 반환해요. 나머지 네이티브 인증·키·세션·축약서명 함수는 `Package-UnsupportedPlatform` 오류로 거부해요. Android·iOS에서 `authorizeForCertWeb()`를 호출해도 같은 오류를 반환해요.

@@ -55,6 +55,7 @@ See the [compatibility table](https://rnkakao.mjstudio.net/en/docs/intro#compati
 | [Social](https://rnkakao.mjstudio.net/docs/social/intro) | [![badge](https://img.shields.io/npm/dm/@react-native-kakao/social.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-kakao/social) | ✅ |
 | [Channel](https://rnkakao.mjstudio.net/docs/channel/intro) | [![badge](https://img.shields.io/npm/dm/@react-native-kakao/channel.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-kakao/channel) | ✅ |
 | [Navi](https://rnkakao.mjstudio.net/docs/navi/intro) | [![badge](https://img.shields.io/npm/dm/@react-native-kakao/navi.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-kakao/navi) | ✅ |
+| [Cert](https://rnkakao.mjstudio.net/docs/cert/intro) | Available with v3 | Pending release |
 
 ## Documentation
 

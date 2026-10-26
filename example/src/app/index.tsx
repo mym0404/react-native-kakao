@@ -106,6 +106,11 @@ export default function Page() {
             </Txt>
           </Pressable>
         </Link>
+        <Link testID={'menu-cert'} href={'/cert'}>
+          <Txt textDecorationLine={'underline'} align={'center'}>
+            {'@react-native-kakao/cert'}
+          </Txt>
+        </Link>
       </Box>
     </StyledScrollView>
   );
