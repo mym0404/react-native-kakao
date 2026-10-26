@@ -19,6 +19,7 @@ export type KakaoUser = {
   id: number;
   hasSignedUp?: boolean | null;
   uuid?: string | null;
+  groupUserToken?: string | null;
   email: string;
   name?: string | null;
   nickname: string;
@@ -86,6 +87,12 @@ Partner apps with prior approval from Kakao can retrieve identity-verified names
 | `legalGender` | Identity-verified legal gender | `female` or `male` |
 
 Each corresponding `NeedsAgreement` flag indicates whether the information can be provided after user consent. `true` requires additional consent; `false` does not guarantee that the value is available. See [partner user information](https://developers.kakao.com/docs/ko/kakaologin/confidential-user-info) for the requirements.
+
+## Group user token
+
+Apps in a Kakao group can compare `groupUserToken` from `me()` to identify the same user within that group. Android, iOS, and web return a string, or `null` when Kakao does not provide the value. Group app configuration requires approval from the Kakao Sync team.
+
+The value can change when the group configuration changes, so do not use it as a permanent user ID. Use an access token to authenticate API requests. See [group apps](https://developers.kakao.com/docs/ko/kakaologin/group-app) for the requirements.
 
 ## Query options
 

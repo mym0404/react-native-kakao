@@ -63,6 +63,7 @@ export interface KakaoUser {
   id: number;
   hasSignedUp?: boolean | null;
   uuid?: string | null;
+  groupUserToken?: string | null;
   email: string;
   name?: string | null;
   nickname: string;
