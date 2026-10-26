@@ -62,15 +62,18 @@ export interface KakaoShippingAddress {
 export interface KakaoUser {
   id: number;
   hasSignedUp?: boolean | null;
+  uuid?: string | null;
   email: string;
   name?: string | null;
   nickname: string;
   profileImageUrl: string;
   thumbnailImageUrl: string;
+  isDefaultImage?: boolean | null;
   phoneNumber?: string | null;
   ageRange?: string | null;
   birthday?: string | null;
   birthdayType?: string | null;
+  isLeapMonth?: boolean | null;
   birthyear?: string | null;
   gender?: string | null;
   isEmailValid: boolean;
