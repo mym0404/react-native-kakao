@@ -12,7 +12,7 @@ sidebar_position: 100
 현재 지원하는 플랫폼인 `Android`와 `iOS`는 에러가 발생하는 조건에 **거의 차이가 없습니다.**
 :::
 
-예를 들어 Native Kakao SDK의 `me` 함수는 Android와 iOS에서 유저 정보를 가져옵니다.
+예를 들어 카카오 네이티브 SDK의 `me` 함수는 Android와 iOS에서 유저 정보를 가져옵니다.
 
 Kakao SDK는 내부적으로 콜백 방식을 사용합니다(이 패키지는 ReactiveX를 쓰지 않습니다).
 
@@ -77,7 +77,7 @@ Kakao SDK의 콜백 함수는 항상 첫 번째 인자로 결과값을, 두 번�
 
 JavaScript의 `catch`에 전달되는 에러 객체는 플랫폼별로 조금 다릅니다.
 
-Native Kakao SDK는 플랫폼별 에러 코드를 사용하며 이 패키지는 모든 에러의 인터페이스를 통합하기보다
+카카오 네이티브 SDK는 플랫폼별 에러 코드를 사용하며 이 패키지는 모든 에러의 인터페이스를 통합하기보다
 SDK가 반환한 유효한 값을 그대로 전달합니다.
 
 대부분의 에러는 `code`로 구별할 수 있으며 대략 다음 구조로 전달됩니다.
@@ -132,8 +132,8 @@ SDK가 반환한 유효한 값을 그대로 전달합니다.
 주요 필드는 `code`와 `message`이며 추가 정보는 `userInfo`에 포함됩니다.
 
 :::warning 경고
-`code`는 Native Kakao SDK의 Enum case 이름을 그대로 사용하므로
-플랫폼별로 case 이름이 다르게 정의되어 있으면 값이 다를 수 있습니다. 대부분은 동일합니다.
+`code`는 카카오 네이티브 SDK의 열거형 케이스 이름을 그대로 사용하므로
+플랫폼별로 케이스 이름이 다르게 정의되어 있으면 값이 다를 수 있습니다. 대부분은 동일합니다.
 :::
 
 ## 에러를 핸들링하는 예시
@@ -158,9 +158,9 @@ SDK가 반환한 유효한 값을 그대로 전달합니다.
    })
 ```
 
-## Package Error References
+## 패키지 에러 코드 {#package-error-references}
 
-Kakao Native SDK의 에러 외에 `react-native-kakao` 자체의 에러 `code`도 있습니다.
+카카오 네이티브 SDK의 에러 외에 `react-native-kakao` 자체의 에러 `code`도 있습니다.
 
 이 패키지의 에러 코드에는 항상 `Package-` 접두사가 붙습니다.
 
@@ -168,7 +168,7 @@ Kakao Native SDK의 에러 외에 `react-native-kakao` 자체의 에러 `code`�
 
 - `Package-Unknown`: 알 수 없는 프로그래밍 에러, `Activity`나 `ViewController` 표시 실패, URL
 열기 실패 등 분류되지 않은 모든 에러입니다. 자세한 정보는 `message`에서 확인할 수 있습니다.
-- `Package-APIResponseNotFound`: Kakao Native SDK의 API 콜백에서 `error`가 없는데도 결과값이 반환되지 않은 경우입니다.
+- `Package-APIResponseNotFound`: 카카오 네이티브 SDK의 API 콜백에서 `error`가 없는데도 결과값이 반환되지 않은 경우입니다.
 - `Package-SDKNotInitialized`: SDK를 초기화하지 않고 Kakao API를 사용하려 할 때 발생합니다. 모든 API가 이 에러를 반환하는 것은 아닙니다.
 초기화 전에 호출하면 앱이 비정상 종료될 수 있는 API에서 종종 이 상태를 미리 검사합니다.
 - `Package-KakaoAppNotAvailable`: 예를 들어 카카오톡 설치가 필요한 API에서 카카오 관련 앱에 접근할 수 없어 실패한 경우입니다.
