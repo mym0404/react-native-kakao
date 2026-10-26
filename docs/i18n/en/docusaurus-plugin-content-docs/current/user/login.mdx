@@ -55,6 +55,12 @@ When `scopes` are provided, login always uses a Kakao account.
 
 -  `useKakaoAccountLogin`: Attempt login with a Kakao account instead of KakaoTalk.
 
+- `android.requestCode`: Pass a KakaoTalk login request code to the Android SDK. It accepts a 32-bit integer from `-2147483648` to `2147483647`. Omitting it preserves the SDK default. Android SDK `2.25.1` currently uses this value only in diagnostic logs; it does not distinguish result callbacks. It does not apply to account login or additional consent, and is ignored on iOS and web.
+
+```tsx
+await login({ android: { requestCode: 20001 } });
+```
+
 - `channelPublicIds`: Pass KakaoTalk channel profile IDs as a `string[]` to select the channels shown on the login consent screen. Android, iOS, and web use the same option. Omit it or pass an empty array for the default login flow.
 
 This feature requires prior approval from Kakao and business channels connected to the app. Kakao displays at most two channels in the supplied order. It cannot request channel consent again from users who are already connected and registered. See [dynamic channel consent](https://developers.kakao.com/docs/ko/kakaologin/dynamic-channel) for the requirements.

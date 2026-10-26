@@ -7,6 +7,7 @@ import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.kakao.sdk.auth.AuthApiClient
+import com.kakao.sdk.auth.AuthCodeClient
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.auth.model.Prompt
 import com.kakao.sdk.auth.model.Prompt.CERT
@@ -54,6 +55,7 @@ class RNCKakaoUserModule internal constructor(
     nonce: String?,
     loginHint: String?,
     channelPublicIds: ReadableArray?,
+    androidRequestCode: Double?,
     promise: Promise,
   ) = onMain {
     val context =
@@ -102,6 +104,7 @@ class RNCKakaoUserModule internal constructor(
 
       UserApiClient.instance.loginWithKakaoTalk(
         context,
+        requestCode = androidRequestCode?.toInt() ?: AuthCodeClient.DEFAULT_REQUEST_CODE,
         nonce = nonce,
         serviceTerms = requestedServiceTerms,
         channelPublicIds = requestedChannelPublicIds,
