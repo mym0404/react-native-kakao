@@ -28,7 +28,7 @@ Omit options to use the SDK's default query. When `addressId` is provided, only 
 
 Fractional values, `NaN`, and infinity are rejected. `addressId` must be a JavaScript safe integer, `fromUpdatedAt` a non-negative safe integer, and `pageSize` an integer between 2 and 2147483647.
 
-The default address comes first, followed by addresses in descending modification order. Pass the previous page's last address `updatedAt` as `fromUpdatedAt` for the next page. The default address is included first regardless of the query time.
+The default address comes first, followed by addresses in descending modification order. Pass the previous page's last address `updatedAt` as `fromUpdatedAt` for the next page. Finish pagination when `shippingAddresses` is empty. A subsequent page can omit the default address.
 
 The response type is `Promise<KakaoShippingAddressResult>`.
 
