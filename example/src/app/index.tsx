@@ -99,38 +99,78 @@ export default function Page() {
           }}
         />
         {Platform.OS !== 'web' ? (
-          <E2EApiAction
-            id={'sdk-options'}
-            title={'Check Native SDK Options'}
-            action={async () => {
-              const before = await getKakaoSDKInfo();
-              const { appKey, redirectUri } = before;
-              if (!appKey || !redirectUri) {
-                throw new Error('Initialize the SDK before checking native options.');
-              }
+          <>
+            <E2EApiAction
+              id={'sdk-options'}
+              title={'Check Native SDK Options'}
+              action={async () => {
+                const before = await getKakaoSDKInfo();
+                const { appKey, redirectUri } = before;
+                if (!appKey || !redirectUri) {
+                  throw new Error('Initialize the SDK before checking native options.');
+                }
 
-              const customScheme = 'rnkakao-verification';
-              let configured: KakaoSDKInfo;
-              try {
-                await initializeKakaoSDK(appKey, { customScheme, loggingEnabled: true });
-                configured = await getKakaoSDKInfo();
-              } finally {
-                await initializeKakaoSDK(appKey, {
-                  customScheme: redirectUri.split('://')[0],
+                const customScheme = 'rnkakao-verification';
+                let configured: KakaoSDKInfo;
+                try {
+                  await initializeKakaoSDK(appKey, { customScheme, loggingEnabled: true });
+                  configured = await getKakaoSDKInfo();
+                } finally {
+                  await initializeKakaoSDK(appKey, {
+                    customScheme: redirectUri.split('://')[0],
+                    loggingEnabled: before.loggingEnabled,
+                  });
+                }
+
+                const restored = await getKakaoSDKInfo();
+
+                return {
+                  didApplyCustomScheme: configured.redirectUri === `${customScheme}://oauth`,
+                  didEnableLogging: configured.loggingEnabled === true,
+                  didRestoreScheme: restored.redirectUri === redirectUri,
+                  didRestoreLogging: restored.loggingEnabled === before.loggingEnabled,
+                };
+              }}
+            />
+            <E2EApiAction
+              id={'sdk-android-identifier'}
+              title={'Check Android SDK Identifier'}
+              action={async () => {
+                const before = await getKakaoSDKInfo();
+                if (!before.appKey || !before.redirectUri) {
+                  throw new Error('Initialize the SDK before checking its identifier.');
+                }
+
+                const sdkIdentifier = ' rnkakao_verification/1';
+                const options = {
+                  customScheme: before.redirectUri.split('://')[0],
                   loggingEnabled: before.loggingEnabled,
-                });
-              }
+                };
+                let configured: KakaoSDKInfo;
+                try {
+                  await initializeKakaoSDK(before.appKey, {
+                    ...options,
+                    android: { sdkIdentifier },
+                  });
+                  configured = await getKakaoSDKInfo();
+                } finally {
+                  await initializeKakaoSDK(before.appKey, options);
+                }
 
-              const restored = await getKakaoSDKInfo();
+                const restored = await getKakaoSDKInfo();
 
-              return {
-                didApplyCustomScheme: configured.redirectUri === `${customScheme}://oauth`,
-                didEnableLogging: configured.loggingEnabled === true,
-                didRestoreScheme: restored.redirectUri === redirectUri,
-                didRestoreLogging: restored.loggingEnabled === before.loggingEnabled,
-              };
-            }}
-          />
+                return {
+                  didApplyAndroidIdentifier:
+                    Platform.OS === 'android' ? configured.kaHeader?.endsWith(sdkIdentifier) : null,
+                  didIgnoreAndroidIdentifier:
+                    Platform.OS === 'ios' ? configured.kaHeader === before.kaHeader : null,
+                  didRemainInitialized: configured.isInitialized,
+                  didPreserveScheme: configured.redirectUri === before.redirectUri,
+                  didRestoreHeader: restored.kaHeader === before.kaHeader,
+                };
+              }}
+            />
+          </>
         ) : null}
       </Box>
     </StyledScrollView>

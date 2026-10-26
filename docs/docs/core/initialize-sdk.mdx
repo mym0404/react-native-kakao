@@ -22,6 +22,7 @@ Android와 iOS에서 커스텀 URL 스킴과 SDK 내부 로깅을 설정할 수 
 | --- | --- | --- |
 | `customScheme` | `kakao{네이티브 앱 키}` | SDK의 인증·공유 콜백에 사용할 URL 스킴. `://`를 제외한 스킴만 전달 |
 | `loggingEnabled` | `false` | 카카오 네이티브 SDK 내부 로그 사용 여부 |
+| `android.sdkIdentifier` | 생략 | Android KA 요청 헤더 끝에 그대로 추가할 래퍼 SDK 식별자. iOS·웹에서는 사용하지 않음 |
 
 커스텀 스킴은 카카오디벨로퍼스에 등록된 설정과 일치해야 합니다. 기존 멀티 앱 설정을 유지하는 경우에는 [공식 멀티 앱 안내](https://developers.kakao.com/docs/ko/kakaologin/multi-app)를 따릅니다. 값을 임의로 정하면 실제 로그인 콜백을 받을 수 없습니다.
 
@@ -47,6 +48,14 @@ Expo에서는 core 플러그인에도 같은 `customScheme`을 설정하고 preb
 ```
 
 Expo를 사용하지 않는다면 AndroidManifest.xml과 iOS Info.plist의 콜백 스킴을 직접 맞춥니다. SDK 초기화 옵션만 바꾸면 운영체제의 URL 등록은 변경되지 않습니다.
+
+Android에서 래퍼 SDK의 참고용 식별자를 추가하려면 `android.sdkIdentifier`를 지정해요. 카카오 SDK는 이 문자열을 KA 헤더 끝에 그대로 붙여요. 기존 헤더 필드와 구분하려면 다음 예시처럼 앞에 공백을 포함해요. 이 옵션은 런타임 초기화에만 사용하므로 Expo 플러그인 설정은 필요하지 않아요.
+
+```tsx
+await initializeKakaoSDK('{{ native app key }}', {
+  android: { sdkIdentifier: ' wrapper/my-sdk' },
+});
+```
 
 ## 웹 초기화
 
