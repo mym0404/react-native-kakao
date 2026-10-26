@@ -33,6 +33,7 @@ import RNCKakaoCore
     useKakaoAccountLogin: Bool,
     scopes: [String],
     nonce: String?,
+    loginHint: String?,
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
@@ -76,12 +77,21 @@ import RNCKakaoCore
             _prompts.append(.SelectAccount)
           }
         }
-        UserApi.shared.loginWithKakaoAccount(
-          prompts: self.emptyArrayToNil(_prompts),
-          serviceTerms: self.emptyArrayToNil(serviceTerms),
-          nonce: nonce,
-          completion: callback
-        )
+        if let loginHint {
+          UserApi.shared.loginWithKakaoAccount(
+            prompts: self.emptyArrayToNil(_prompts),
+            loginHint: loginHint,
+            nonce: nonce,
+            completion: callback
+          )
+        } else {
+          UserApi.shared.loginWithKakaoAccount(
+            prompts: self.emptyArrayToNil(_prompts),
+            serviceTerms: self.emptyArrayToNil(serviceTerms),
+            nonce: nonce,
+            completion: callback
+          )
+        }
       }
 
       if !scopes.isEmpty {
