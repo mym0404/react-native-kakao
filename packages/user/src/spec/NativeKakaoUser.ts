@@ -23,6 +23,17 @@ export interface Spec extends TurboModule {
     loginHint?: string,
     channelPublicIds?: string[],
   ): Promise<KakaoLoginToken>;
+  loginWithKakao(
+    uiMode: string,
+    orientation: string,
+    launchMethod: string,
+    prompts: string[],
+    loginHint?: string,
+    nonce?: string,
+    channelPublicIds?: string[],
+    serviceTerms?: string[],
+  ): Promise<KakaoLoginToken>;
+  refreshToken(): Promise<KakaoLoginToken>;
   signup(properties?: UnsafeObject): Promise<void>;
   logout(): Promise<void>;
   unlink(): Promise<void>;

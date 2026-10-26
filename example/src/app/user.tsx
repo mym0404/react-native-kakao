@@ -8,9 +8,12 @@ import {
   hasToken,
   isKakaoTalkLoginAvailable,
   isLogined,
+  type KakaoLoginToken,
   login,
+  loginWithKakao,
   logout,
   me,
+  refreshToken,
   revokeServiceTerms,
   scopes,
   selectShippingAddress,
@@ -32,6 +35,16 @@ const buttonMinWidth = px(240);
 const allServiceTermsResult = 'app_service_terms';
 const profileVerificationKey = 'rn_kakao_verification';
 const testServiceTermTag = 'rnc_example_optional_service_term';
+
+function getTokenSummary(token: KakaoLoginToken) {
+  return {
+    hasAccessToken: token.accessToken.length > 0,
+    hasRefreshToken: token.refreshToken.length > 0,
+    accessTokenExpiresIn: token.accessTokenExpiresIn,
+    refreshTokenExpiresIn: token.refreshTokenExpiresIn,
+    scopeCount: token.scopes.length,
+  };
+}
 
 async function getProfileImageProtocols(secureResource: boolean) {
   const user = await me({ secureResource });
@@ -107,6 +120,23 @@ export default function Page() {
             );
         }}
       />
+      {Platform.OS === 'web' ? null : (
+        <>
+          {(['auto', 'light', 'dark'] as const).map((uiMode) => (
+            <E2EApiAction
+              key={uiMode}
+              id={`login-chooser-${uiMode}`}
+              title={`Login Chooser (${uiMode})`}
+              action={async () => getTokenSummary(await loginWithKakao({ uiMode }))}
+            />
+          ))}
+          <E2EApiAction
+            id={'refresh-token'}
+            title={'Refresh Stored Token'}
+            action={async () => getTokenSummary(await refreshToken())}
+          />
+        </>
+      )}
       <E2EApiAction
         id={'login-channels'}
         title={'Login With Channel Selection'}
