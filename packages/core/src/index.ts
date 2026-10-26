@@ -6,12 +6,26 @@ import { kFetch, kFetchFormUrlEncoded } from './util/kFetch';
 import kGlobalStorage from './util/kGlobalStorage';
 import { kRunWebAPI } from './util/kRunWebAPI';
 
-export async function initializeKakaoSDK(
-  appKey: string,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  options?: { web?: { javascriptKey: string; restApiKey: string } },
-): Promise<void> {
-  Native.initializeKakaoSDK(appKey);
+export type { KakaoSDKInfo } from './spec/NativeKakaoCore';
+
+export type KakaoSDKOptions = {
+  customScheme?: string;
+  loggingEnabled?: boolean;
+  web?: { javascriptKey: string; restApiKey: string };
+};
+
+export async function initializeKakaoSDK(appKey: string, options?: KakaoSDKOptions): Promise<void> {
+  kAssert(appKey.length > 0, '[initializeKakaoSDK] appKey is missing');
+  kAssert(
+    options?.customScheme == null || /^[A-Za-z][A-Za-z0-9+.-]*$/.test(options.customScheme),
+    '[initializeKakaoSDK] customScheme must be a URL scheme without ://',
+  );
+
+  await Native.initializeKakaoSDK(appKey, options?.loggingEnabled ?? false, options?.customScheme);
+}
+
+export function getKakaoSDKInfo() {
+  return Native.getKakaoSDKInfo();
 }
 
 export function getKeyHashAndroid(): Promise<string | undefined> {
@@ -20,6 +34,7 @@ export function getKeyHashAndroid(): Promise<string | undefined> {
 
 const KakaoCore = {
   initializeKakaoSDK,
+  getKakaoSDKInfo,
   getKeyHashAndroid,
 };
 export default KakaoCore;

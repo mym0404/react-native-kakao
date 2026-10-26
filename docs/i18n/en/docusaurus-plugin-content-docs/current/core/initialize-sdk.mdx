@@ -2,33 +2,82 @@
 sidebar_position: 2
 ---
 
-# Initialize the SDK
+# SDK initialization
 
-## Initialize the SDK
+Call `initializeKakaoSDK(appKey, options)` to initialize Kakao. Its `Promise<void>` resolves after the Android/iOS SDK or web JavaScript SDK finishes initialization. Await it before calling other Kakao APIs.
 
-When the app starts, call `initializeKakaoSDK` in a file such as `index.js` or `App.tsx` before using any Kakao SDK.
+Pass the native app key inside your app's asynchronous initialization function.
 
-```tsx title='index.js'
+```tsx
 import { initializeKakaoSDK } from '@react-native-kakao/core';
 
-initializeKakaoSDK('{{ native app key }}');
+await initializeKakaoSDK('{{ native app key }}');
 ```
 
-:::info
-You must call this function before calling any Kakao API.
-:::
+## Native options
 
-## Web Platform
+Android and iOS support a custom URL scheme and internal SDK logging. Web ignores these two options.
 
-If your app supports Web, you must also pass the JavaScript key and REST API key in the `web` option.
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `customScheme` | `kakao{native app key}` | URL scheme for SDK authentication and share callbacks, without `://` |
+| `loggingEnabled` | `false` | Whether to enable internal Kakao native SDK logging |
 
-```ts
-import { initializeKakaoSDK } from '@react-native-kakao/core';
+The custom scheme must match the configuration registered with Kakao Developers. Follow the [official multi-app guide](https://developers.kakao.com/docs/en/kakaologin/multi-app) when maintaining an existing multi-app setup. An arbitrary scheme cannot receive a real login callback.
 
-Core.initializeKakaoSDK('{{ native app key }}', {
+```tsx
+await initializeKakaoSDK('{{ native app key }}', {
+  customScheme: '{{ registered custom scheme }}',
+  loggingEnabled: false,
+});
+```
+
+With Expo, set the same `customScheme` in the core plugin and run prebuild again. The plugin applies it to enabled Android authentication, channel, shipping, certification, and share callbacks, and to the iOS URL type.
+
+```json
+[
+  "@react-native-kakao/core",
+  {
+    "nativeAppKey": "{{ native app key }}",
+    "customScheme": "{{ registered custom scheme }}",
+    "android": { "authCodeHandlerActivity": true },
+    "ios": { "handleKakaoOpenUrl": true }
+  }
+]
+```
+
+Without Expo, update the callback schemes in AndroidManifest.xml and iOS Info.plist yourself. Changing the SDK initialization option alone does not change the OS URL registration.
+
+## Web initialization
+
+Load the JavaScript SDK script first, then provide both the JavaScript key and REST API key under `web`. See [Web setup](/docs/install-web) for script installation.
+
+```tsx
+await initializeKakaoSDK('{{ native app key }}', {
   web: {
     javascriptKey: '{{ javascript key }}',
     restApiKey: '{{ rest api key }}',
   },
 });
 ```
+
+## SDK information
+
+Use `getKakaoSDKInfo()` to inspect the actual SDK version and initialization state. An overridden SDK version is reported as installed.
+
+```tsx
+import { getKakaoSDKInfo } from '@react-native-kakao/core';
+
+const { version, isInitialized } = await getKakaoSDKInfo();
+```
+
+| Field | Platforms | Meaning |
+| --- | --- | --- |
+| `version` | Android, iOS, web | Current Kakao SDK version |
+| `isInitialized` | Android, iOS, web | Whether the SDK has been initialized |
+| `appKey` | Android, iOS | Native app key used during initialization; omitted before initialization |
+| `kaHeader` | Android, iOS | SDK KA request header; omitted before initialization |
+| `redirectUri` | Android, iOS | `{scheme}://oauth` for the current scheme; omitted before initialization |
+| `loggingEnabled` | Android, iOS | Whether internal SDK logging is enabled |
+
+Web responses contain only `version` and `isInitialized`.
