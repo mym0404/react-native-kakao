@@ -16,6 +16,7 @@ import {
   selectShippingAddress,
   serviceTerms,
   shippingAddresses,
+  signup,
   unlink,
   updateProfile,
 } from '@react-native-kakao/user';
@@ -283,6 +284,20 @@ export default function Page() {
         id={'user-http-profile-images'}
         title={'Get HTTP Profile Images'}
         action={() => getProfileImageProtocols(false)}
+      />
+      <E2EApiAction
+        id={'user-signup'}
+        title={'Manual Signup'}
+        action={async () => {
+          await signup();
+
+          return { connected: true };
+        }}
+      />
+      <E2EApiAction
+        id={'user-connection-state'}
+        title={'Get Connection State'}
+        action={async () => ({ hasSignedUp: (await me()).hasSignedUp ?? null })}
       />
       <E2EApiAction
         id={'user-profile'}
