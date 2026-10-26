@@ -33,7 +33,8 @@ JS wrapper methods (`shareFeedTemplate`, `sendFeedTemplateToMe`, etc.) map into:
 - Keep receiver UUID and callback arg handling consistent across platforms.
 - Keep template object conversion behavior aligned (including iOS execution-param conversion helper).
 - Keep return shape parity:
-  - send-friend APIs return successful receiver uuid list shape consistently.
+  - send-friend APIs return successful receiver UUID lists by default.
+  - `includeFailureInfo: true` returns `{ successfulReceiverUuids, failureInfos }` on all platforms; missing SDK lists become empty arrays.
 
 ## Adding a new share API safely
 

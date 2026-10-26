@@ -37,6 +37,8 @@ Obtain recipient UUIDs from [the friend picker](/docs/social/select-talk-friends
 
 The function returns `Promise<string[]>` containing successful recipient UUIDs. As with other friend message functions, unsuccessful recipients are omitted; compare the returned list with `receiverUuids` when checking partial delivery.
 
+Pass `includeFailureInfo: true` to return successful UUIDs and recipient failures together. See [message results](/docs/share/message-results) for the response shape.
+
 ## Custom Template
 
 Both functions accept an optional `templateId` and string-valued `templateArgs`. Without `templateId`, Kakao uses the default scrap template.
