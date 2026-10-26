@@ -73,10 +73,12 @@ const KakaoUser: KakaoUserAPI = {
     kRunWebAPI(() => {
       const { loginHint, nonce, prompt, redirectUri, scope, state, throughTalk, serviceTerms } =
         params?.web ?? {};
+      const channelPublicIds = params?.channelPublicIds;
 
       return Kakao.Auth.authorize(
         filterNonNullishKeys({
           loginHint: params?.loginHint ?? loginHint,
+          channelPublicId: channelPublicIds?.length ? channelPublicIds.join(',') : undefined,
           nonce: params?.nonce ?? nonce,
           prompt: (
             prompt ??
