@@ -226,6 +226,10 @@ const KakaoUser: KakaoUserAPI = {
         throw error;
       }
     }),
+  updateProfile: ({ properties }) =>
+    kRunWebAPI(async () => {
+      await Kakao.API.request({ url: '/v1/user/update_profile', data: { properties } });
+    }),
   me: () =>
     kRunWebAPI(async () => {
       const ret = camelCaseObject(await Kakao.API.request({ url: '/v2/user/me' })) as {
@@ -284,6 +288,7 @@ export const {
   login,
   logout,
   me,
+  updateProfile,
   revokeScopes,
   scopes,
   serviceTerms,
