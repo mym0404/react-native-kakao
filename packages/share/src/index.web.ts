@@ -3,7 +3,7 @@ import {
   replaceJsonValuesRecursively,
   snakeCaseObject,
 } from '@mj-studio/js-util';
-import { kRunWebAPI } from '@react-native-kakao/core';
+import { kCreateWebError, kRunWebAPI } from '@react-native-kakao/core';
 
 import type {
   KakaoFriendMessageResult,
@@ -151,6 +151,9 @@ function serializeExecutionParams(template: object) {
 
 const KakaoShare: KakaoShareAPI = {
   isKakaoTalkSharingAvailable: async () => false,
+  makeDefaultTemplateUrl: unsupportedUrlBuilder,
+  makeCustomTemplateUrl: unsupportedUrlBuilder,
+  makeScrapTemplateUrl: unsupportedUrlBuilder,
   uploadImage: ({ imageUri, secureResource = true }) =>
     kRunWebAPI(async () => {
       const response = await fetch(imageUri);
@@ -345,8 +348,19 @@ const KakaoShare: KakaoShareAPI = {
       objectType: 'calendar',
     }),
 };
+
+async function unsupportedUrlBuilder(): Promise<never> {
+  kCreateWebError({
+    code: 'Package-UnsupportedPlatform',
+    message: 'The Kakao JavaScript SDK does not provide sharing URL builders.',
+  });
+}
+
 export const {
   isKakaoTalkSharingAvailable,
+  makeDefaultTemplateUrl,
+  makeCustomTemplateUrl,
+  makeScrapTemplateUrl,
   uploadImage,
   shareScrapTemplate,
   sendScrapTemplateToMe,
