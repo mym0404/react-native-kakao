@@ -166,6 +166,33 @@ const KakaoShare: KakaoShareAPI = {
         filterNonNullishKeys({ requestUrl, templateId, templateArgs, serverCallbackArgs }),
       ),
     ),
+  sendScrapTemplateToMe: async ({ requestUrl, templateId, templateArgs }) => {
+    await kRunWebAPI(() =>
+      Kakao.API.request({
+        url: '/v2/api/talk/memo/scrap/send',
+        data: filterNonNullishKeys({
+          request_url: requestUrl,
+          template_id: templateId,
+          template_args: templateArgs,
+        }),
+      }),
+    );
+  },
+  sendScrapTemplateToFriends: async ({ requestUrl, templateId, templateArgs, receiverUuids }) => {
+    const response: { successful_receiver_uuids?: string[] } = await kRunWebAPI(() =>
+      Kakao.API.request({
+        url: '/v1/api/talk/friends/message/scrap/send',
+        data: filterNonNullishKeys({
+          request_url: requestUrl,
+          template_id: templateId,
+          template_args: templateArgs,
+          receiver_uuids: receiverUuids,
+        }),
+      }),
+    );
+
+    return response.successful_receiver_uuids ?? [];
+  },
   scrapImage: ({ imageUrl, secureResource = true }) =>
     kRunWebAPI(async () => {
       const { infos } = await Kakao.Share.scrapImage({ imageUrl });
@@ -245,6 +272,8 @@ const KakaoShare: KakaoShareAPI = {
 export const {
   uploadImage,
   shareScrapTemplate,
+  sendScrapTemplateToMe,
+  sendScrapTemplateToFriends,
   scrapImage,
   sendCalendarTemplateToFriends,
   sendCalendarTemplateToMe,

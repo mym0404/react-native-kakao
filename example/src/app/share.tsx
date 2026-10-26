@@ -24,6 +24,8 @@ import {
   sendListTemplateToMe,
   sendLocationTemplateToFriends,
   sendLocationTemplateToMe,
+  sendScrapTemplateToFriends,
+  sendScrapTemplateToMe,
   sendTextTemplateToFriends,
   sendTextTemplateToMe,
   shareCalendarTemplate,
@@ -47,6 +49,15 @@ import { Txt } from '../component/Txt';
 const webUrl = 'https://rnkakao.mjstudio.net';
 const uploadImageUri =
   'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAEUlEQVR4nGP4f4bhPwgzwBgAZhILKbl4g2kAAAAASUVORK5CYII=';
+
+const scrapRequestUrl = 'https://rnkakao.mjstudio.net';
+const kakaoLinkTemplateId = 107429;
+const kakaoTalkMessageTemplateId = 107430;
+const scrapTemplateArgs = { price: '20000' };
+const scrapFriendPickerParams = {
+  mode: 'full' as const,
+  options: { showMyProfile: true },
+};
 
 const scrapImageUrl =
   'https://developers.kakao.com/assets/img/about/logos/kakaolink/kakaolink_btn_medium.png';
@@ -243,6 +254,65 @@ export default function Page() {
           return { started: true };
         }}
       />
+      <Txt>{'Scrap Messages'}</Txt>
+      <E2EApiAction
+        id={'send-scrap-me'}
+        title={'Send Scrap Template To Me'}
+        action={async () => {
+          await sendScrapTemplateToMe({ requestUrl: scrapRequestUrl });
+
+          return { didSend: true };
+        }}
+      />
+      <E2EApiAction
+        id={'send-scrap-custom-me'}
+        title={'Send Custom Scrap Template To Me'}
+        action={async () => {
+          await sendScrapTemplateToMe({
+            requestUrl: scrapRequestUrl,
+            templateId: kakaoLinkTemplateId,
+            templateArgs: scrapTemplateArgs,
+          });
+
+          return { didSend: true };
+        }}
+      />
+      <E2EApiAction
+        id={'send-scrap-friends'}
+        title={'Send Scrap Template To Selected Friends'}
+        action={async () => {
+          const { users } = await selectMultipleFriends(scrapFriendPickerParams);
+          if (users.length === 0) {
+            return { successfulCount: 0 };
+          }
+
+          const successfulUuids = await sendScrapTemplateToFriends({
+            requestUrl: scrapRequestUrl,
+            receiverUuids: users.map(({ uuid }) => uuid),
+          });
+
+          return { successfulCount: successfulUuids.length };
+        }}
+      />
+      <E2EApiAction
+        id={'send-scrap-custom-friends'}
+        title={'Send Custom Scrap Template To Selected Friends'}
+        action={async () => {
+          const { users } = await selectMultipleFriends(scrapFriendPickerParams);
+          if (users.length === 0) {
+            return { successfulCount: 0 };
+          }
+
+          const successfulUuids = await sendScrapTemplateToFriends({
+            requestUrl: scrapRequestUrl,
+            templateId: kakaoTalkMessageTemplateId,
+            templateArgs: scrapTemplateArgs,
+            receiverUuids: users.map(({ uuid }) => uuid),
+          });
+
+          return { successfulCount: successfulUuids.length };
+        }}
+      />
       <E2EApiAction
         id={'share-scrap-image'}
         title={'Scrap Image'}
@@ -258,7 +328,7 @@ export default function Page() {
         title={'Share Custom Template'}
         onPress={() => {
           shareCustomTemplate({
-            templateId: 107429,
+            templateId: kakaoLinkTemplateId,
             templateArgs: {
               price: '20000',
             },
@@ -270,7 +340,7 @@ export default function Page() {
         title={'Send Custom Template To Me'}
         onPress={() => {
           sendCustomTemplateToMe({
-            templateId: 107430,
+            templateId: kakaoTalkMessageTemplateId,
             templateArgs: {
               price: '20000',
             },
@@ -284,7 +354,7 @@ export default function Page() {
         onPress={async () => {
           const { users } = await selectMultipleFriends({ mode: 'popup' });
           const ret = await sendCustomTemplateToFriends({
-            templateId: 107430,
+            templateId: kakaoTalkMessageTemplateId,
             templateArgs: {
               price: '20000',
             },
