@@ -164,7 +164,8 @@ import RNCKakaoCore
   }
 
   @objc public func refreshToken(
-    _ resolve: @escaping RCTPromiseResolveBlock,
+    _ token: [String: Any]?,
+    resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
     onMain { [self] in
@@ -172,7 +173,35 @@ import RNCKakaoCore
         RNCKakaoUtil.reject(reject, RNCKakaoError.sdkNotInitialized)
         return
       }
-      AuthApi.shared.refreshToken(completion: tokenCallback(resolve, reject: reject))
+      var oldToken: OAuthToken?
+      if let token {
+        guard let accessToken = token["accessToken"] as? String,
+              let refreshToken = token["refreshToken"] as? String,
+              let accessTokenExpiresAt = token["accessTokenExpiresAt"] as? Double,
+              let refreshTokenExpiresAt = token["refreshTokenExpiresAt"] as? Double,
+              let scopes = token["scopes"] as? [String]
+        else {
+          RNCKakaoUtil.reject(reject, SdkError(reason: .BadParameter))
+          return
+        }
+        let now = Date().timeIntervalSince1970
+        oldToken = OAuthToken(
+          accessToken: accessToken,
+          expiresIn: accessTokenExpiresAt - now,
+          expiredAt: Date(timeIntervalSince1970: accessTokenExpiresAt),
+          tokenType: token["tokenType"] as? String ?? "bearer",
+          refreshToken: refreshToken,
+          refreshTokenExpiresIn: refreshTokenExpiresAt - now,
+          refreshTokenExpiredAt: Date(timeIntervalSince1970: refreshTokenExpiresAt),
+          scope: scopes.isEmpty ? nil : scopes.joined(separator: " "),
+          scopes: scopes,
+          idToken: token["idToken"] as? String
+        )
+      }
+      AuthApi.shared.refreshToken(
+        token: oldToken,
+        completion: tokenCallback(resolve, reject: reject)
+      )
     }
   }
 
@@ -525,6 +554,7 @@ import RNCKakaoCore
       if let error {
         RNCKakaoUtil.reject(reject, error)
       } else if let token {
+        let now = Date()
         resolve([
           "accessToken": token.accessToken,
           "refreshToken": token.refreshToken,
@@ -532,8 +562,8 @@ import RNCKakaoCore
           "idToken": token.idToken as Any,
           "accessTokenExpiresAt": token.expiredAt.timeIntervalSince1970,
           "refreshTokenExpiresAt": token.refreshTokenExpiredAt.timeIntervalSince1970,
-          "accessTokenExpiresIn": token.expiresIn,
-          "refreshTokenExpiresIn": token.refreshTokenExpiresIn,
+          "accessTokenExpiresIn": Int(token.expiredAt.timeIntervalSince(now)),
+          "refreshTokenExpiresIn": Int(token.refreshTokenExpiredAt.timeIntervalSince(now)),
           "scopes": token.scopes ?? []
         ])
       } else {

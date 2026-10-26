@@ -40,6 +40,8 @@ import net.mjstudio.rnkakao.core.util.toStringMap
 import net.mjstudio.rnkakao.core.util.unix
 import java.util.Date
 
+private const val MILLISECONDS_PER_SECOND = 1000.0
+
 class RNCKakaoUserModule internal constructor(
   context: ReactApplicationContext,
 ) : NativeKakaoUserSpec(context) {
@@ -149,14 +151,31 @@ class RNCKakaoUserModule internal constructor(
   }
 
   @ReactMethod
-  override fun refreshToken(promise: Promise) =
-    onMain {
-      try {
+  override fun refreshToken(
+    token: ReadableMap?,
+    promise: Promise,
+  ) = onMain {
+    try {
+      val oldToken =
+        token?.let {
+          OAuthToken(
+            accessToken = requireNotNull(it.getString("accessToken")),
+            accessTokenExpiresAt = Date((it.getDouble("accessTokenExpiresAt") * MILLISECONDS_PER_SECOND).toLong()),
+            refreshToken = requireNotNull(it.getString("refreshToken")),
+            refreshTokenExpiresAt = Date((it.getDouble("refreshTokenExpiresAt") * MILLISECONDS_PER_SECOND).toLong()),
+            idToken = it.getString("idToken"),
+            scopes = it.getArray("scopes")?.filterIsInstance<String>(),
+          )
+        }
+      if (oldToken == null) {
         AuthApiClient.instance.refreshToken(callback = tokenCallback(promise))
-      } catch (error: ClientError) {
-        promise.rejectWith(error)
+      } else {
+        AuthApiClient.instance.refreshToken(oldToken = oldToken, callback = tokenCallback(promise))
       }
+    } catch (error: Exception) {
+      promise.rejectWith(error)
     }
+  }
 
   @ReactMethod
   override fun isKakaoTalkLoginAvailable(promise: Promise) =
