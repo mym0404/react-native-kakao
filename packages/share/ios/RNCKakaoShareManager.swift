@@ -11,6 +11,12 @@ import UIKit
 @objc public class RNCKakaoShareManager: NSObject {
   @objc public static let shared = RNCKakaoShareManager()
 
+  @objc public func isKakaoTalkSharingAvailable(_ resolve: @escaping RCTPromiseResolveBlock) {
+    onMain {
+      resolve(ShareApi.isKakaoTalkSharingAvailable())
+    }
+  }
+
   @objc public func uploadImage(
     _ imageUri: String,
     secureResource: Bool,

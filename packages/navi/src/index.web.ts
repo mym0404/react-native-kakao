@@ -79,6 +79,7 @@ function getRpOption(v: KakaoNaviOption['rpOption']): number {
 }
 
 const KakaoNavi: KakaoNaviAPI = {
+  isKakaoNaviInstalled: async () => false,
   navigateTo: async ({ viaList, destination, option }) => {
     kAssert(
       viaList ? viaList.length <= 3 : true,
@@ -150,5 +151,5 @@ function isMobileBrowser() {
   );
 }
 
-export const { navigateTo, shareTo } = KakaoNavi;
+export const { isKakaoNaviInstalled, navigateTo, shareTo } = KakaoNavi;
 export default KakaoNavi;

@@ -144,6 +144,7 @@ function serializeExecutionParams(template: object) {
 }
 
 const KakaoShare: KakaoShareAPI = {
+  isKakaoTalkSharingAvailable: async () => false,
   uploadImage: ({ imageUri, secureResource = true }) =>
     kRunWebAPI(async () => {
       const response = await fetch(imageUri);
@@ -322,6 +323,7 @@ const KakaoShare: KakaoShareAPI = {
     }),
 };
 export const {
+  isKakaoTalkSharingAvailable,
   uploadImage,
   shareScrapTemplate,
   sendScrapTemplateToMe,
