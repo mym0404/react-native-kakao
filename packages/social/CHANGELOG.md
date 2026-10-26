@@ -1,5 +1,23 @@
 # Change Log
 
+## 3.1.0-next.1
+
+### Minor Changes
+
+- d5c5fb8: Add single and multiple partnership friend pickers with native partnership SDK dependencies, web option parity, and shared selection validation.
+- 5838d20: Add the native friend picker enableIndex option and document its web limitation.
+
+### Patch Changes
+
+- 61c270a: Remove unused React Native module dependencies so Channel, Social, and Share can each be installed with Core alone. Declare Share's Android Talk SDK dependency directly.
+- Updated dependencies [d5c5fb8]
+- Updated dependencies [3027207]
+- Updated dependencies [dfd32ca]
+- Updated dependencies [2b223bf]
+- Updated dependencies [67cd4e2]
+- Updated dependencies [d81f9b7]
+  - @react-native-kakao/core@3.1.0-next.1
+
 ## 3.1.0-next.0
 
 ### Patch Changes
