@@ -398,6 +398,22 @@ export default function Page() {
         }}
       />
       <E2EApiAction
+        id={'user-profile-enum-shapes'}
+        title={'Get Profile Enum Shapes'}
+        action={async () => {
+          const { ageRange, gender, birthdayType } = await me();
+
+          return {
+            hasAgeRange: ageRange != null,
+            isAgeRangeFormatValid: ageRange == null || /^\d{1,2}~\d{0,2}$/.test(ageRange),
+            hasGender: gender != null,
+            isGenderValid: gender == null || ['female', 'male'].includes(gender),
+            hasBirthdayType: birthdayType != null,
+            isBirthdayTypeValid: birthdayType == null || ['SOLAR', 'LUNAR'].includes(birthdayType),
+          };
+        }}
+      />
+      <E2EApiAction
         id={'user-legal-identity'}
         title={'Get Legal Identity Availability'}
         action={async () => {
