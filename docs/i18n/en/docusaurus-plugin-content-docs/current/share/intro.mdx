@@ -29,20 +29,22 @@ The image above shows browser sharing when KakaoTalk is not installed. If KakaoT
 <Tabs>
   <TabItem value="npm" label="NPM" default>
     ```shell
-    npm install --save @react-native-kakao/share @react-native-kakao/social
+    npm install --save @react-native-kakao/core @react-native-kakao/share
     ```
   </TabItem>
   <TabItem value="yarn" label="Yarn">
     ```shell
-    yarn add @react-native-kakao/{share,social}
+    yarn add @react-native-kakao/core @react-native-kakao/share
     ```
   </TabItem>
   <TabItem value="expo" label="Expo">
     ```shell
-    npx expo install @react-native-kakao/share @react-native-kakao/social
+    npx expo install @react-native-kakao/core @react-native-kakao/share
     ```
   </TabItem>
 </Tabs>
+
+Install `share` with `core`. Add the [`user` package](/docs/user/intro) to handle Kakao Login, or the [`social` package](/docs/social/intro) to select friends for messaging.
 
 ## Configure the Console
 

@@ -5,11 +5,19 @@ require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../packages/core/ios/kakao-sdk'
 
 PodTargetProbe = Struct.new(:pod_name, :label, :dependent_targets) do
+  def product_module_name
+    pod_name
+  end
+
   def configuration_build_dir
     "${PODS_CONFIGURATION_BUILD_DIR}/#{label}"
   end
 end
-AggregateProbe = Struct.new(:pod_targets, :user_targets, :user_project)
+AggregateProbe = Struct.new(:pod_targets, :user_targets, :user_project) do
+  def xcconfigs
+    {}
+  end
+end
 InstallerProbe = Struct.new(:pods_project, :aggregate_targets, :pod_targets)
 
 deployment_target = min_ios_version_supported
@@ -55,7 +63,11 @@ Dir.mktmpdir('kakao-spm-test') do |directory|
   raise 'Duplicate products' unless core.package_product_dependencies.map(&:product_name).sort == products
   raise 'Dependency registry changed' unless SPM.instance_variable_get(:@dependencies_by_pod).equal?(dependencies)
   raise 'Dependent linked SDK twice' unless social.package_product_dependencies.empty?
-  raise 'Core framework path missing' unless social.build_configurations.all? { |config| config.build_settings['FRAMEWORK_SEARCH_PATHS'].include?("\"#{core_pod.configuration_build_dir}\"") }
+  raise 'Core framework path missing' unless social.build_configurations.all? do |config|
+    core_config = core.build_configurations.find { |item| item.name == config.name }
+    core_build_dir = core_config.build_settings.fetch('CONFIGURATION_BUILD_DIR', core_pod.configuration_build_dir)
+    config.build_settings['FRAMEWORK_SEARCH_PATHS'].include?("\"#{core_build_dir}\"")
+  end
   phases = target.shell_script_build_phases.select { |phase| phase.name == '[RNCKakao] Copy Friend Resources' }
   raise 'Resource phase duplicated' unless phases.length == 1
 
@@ -97,7 +109,11 @@ Dir.mktmpdir('kakao-spm-test') do |directory|
     social_target = pods.targets.find { |item| item.name == scoped_social.label }
     raise 'Scoped Core products missing or duplicated' unless core_target.package_product_dependencies.map(&:product_name).sort == products
     raise 'Scoped SDK linked twice' unless social_target.package_product_dependencies.empty?
-    raise 'Wrong scoped Core path' unless social_target.build_configurations.all? { |config| config.build_settings['FRAMEWORK_SEARCH_PATHS'] == ['$(inherited)', "\"#{scoped_core.configuration_build_dir}\""] }
+    raise 'Wrong scoped Core path' unless social_target.build_configurations.all? do |config|
+      core_config = core_target.build_configurations.find { |item| item.name == config.name }
+      core_build_dir = core_config.build_settings.fetch('CONFIGURATION_BUILD_DIR', scoped_core.configuration_build_dir)
+      config.build_settings['FRAMEWORK_SEARCH_PATHS'] == ['$(inherited)', "\"#{core_build_dir}\""]
+    end
   end
   raise 'Scoped registry leaked' unless SPM.instance_variable_get(:@dependencies_by_pod).equal?(dependencies)
 
