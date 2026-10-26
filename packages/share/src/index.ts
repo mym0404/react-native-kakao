@@ -10,6 +10,8 @@ import type {
   KakaoLocationTemplate,
   KakaoMessageSendResult,
   KakaoSharePickerSettings,
+  KakaoShareTemplateDiagnostics,
+  KakaoShareTemplateDiagnosticsParams,
   KakaoTemplateButton,
   KakaoTemplateCommerce,
   KakaoTemplateContent,
@@ -35,6 +37,8 @@ export type {
   KakaoLocationTemplate,
   KakaoMessageSendResult,
   KakaoSharePickerSettings,
+  KakaoShareTemplateDiagnostics,
+  KakaoShareTemplateDiagnosticsParams,
   KakaoListTemplate,
   KakaoFeedTemplate,
   KakaoCommerceTemplate,
@@ -101,6 +105,26 @@ const TemplateTypes = {
   calendar: 'calendar',
 };
 const DefaultScrapTemplateId = -1;
+
+export async function getShareTemplateDiagnostics(
+  params: KakaoShareTemplateDiagnosticsParams,
+): Promise<KakaoShareTemplateDiagnostics> {
+  const template =
+    'template' in params
+      ? params.template
+      : 'requestUrl' in params
+        ? { requestUrl: params.requestUrl }
+        : {};
+
+  return Native.getTemplateDiagnostics(
+    params.templateType,
+    'templateId' in params ? params.templateId ?? DefaultScrapTemplateId : DefaultScrapTemplateId,
+    swapMobileExecutionParamsFieldValueIntoStringInIOS(template),
+    'templateArgs' in params ? params.templateArgs ?? {} : {},
+    params.serverCallbackArgs ?? {},
+    validateSharePickerSettings(params.pickerSettings),
+  );
+}
 
 export async function makeDefaultTemplateUrl({
   templateType,
@@ -677,6 +701,7 @@ export function scrapImage({
 
 const KakaoShare = {
   isKakaoTalkSharingAvailable,
+  getShareTemplateDiagnostics,
   makeDefaultTemplateUrl,
   makeCustomTemplateUrl,
   makeScrapTemplateUrl,
