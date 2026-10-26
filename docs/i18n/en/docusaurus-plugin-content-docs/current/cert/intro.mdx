@@ -89,6 +89,24 @@ Both methods return `{ token, txId }`. The token uses the same `KakaoLoginToken`
 
 The pinned native SDKs expose only the four signer-information items listed above. Other items are excluded from the type.
 
+## Exchange a certification authorization code
+
+On iOS, `issueCertTokenWithCode()` exchanges a certification authorization code from a separate flow for `{ token, txId }` and stores the tokens in the SDK. It requires a certification code for an approved app. The result uses the same `KakaoCertTokenInfo` as certification login.
+
+```tsx
+import { issueCertTokenWithCode } from '@react-native-kakao/cert';
+
+const result = await issueCertTokenWithCode({
+  code: certificationAuthorizationCode,
+  codeVerifier,
+  redirectUri,
+});
+```
+
+`codeVerifier` is the PKCE verification value from that authorization request; pass the same value if PKCE was used. Omitting `redirectUri` uses the initialized iOS SDK's default URI. An explicit URI must match the authorization request. Android and web reject this API with `Package-UnsupportedPlatform`.
+
+For web, exchange certification authorization codes through REST on your service server. Use the returned `tx_id` to verify the signature on the server. Follow the [official K2100 guide](https://developers.kakao.com/docs/ko/kakao-certification/k2100) for the integration sequence.
+
 ## Keys, sessions, and abbreviated signatures
 
 For `K2220` and `K3220`, the SDK stores a temporary key pair on the device. This example sends the `K2220` public key to your server, completes certification login, and retrieves the session. Implement `prepareOnServer()` and `verifyOnServer()` on your own server.

@@ -8,6 +8,7 @@ import {
   hasToken,
   isKakaoTalkLoginAvailable,
   isLogined,
+  issueAccessTokenWithCode,
   type KakaoLoginToken,
   login,
   loginWithKakao,
@@ -137,6 +138,19 @@ export default function Page() {
           />
         </>
       )}
+      <E2EApiAction
+        id={'token-code-exchange'}
+        title={'Exchange Invalid Authorization Code'}
+        minW={buttonMinWidth}
+        action={async () =>
+          getTokenSummary(
+            await issueAccessTokenWithCode({
+              code: 'not-an-authorization-code',
+              redirectUri: Platform.OS === 'web' ? 'http://localhost' : undefined,
+            }),
+          )
+        }
+      />
       <E2EApiAction
         id={'login-channels'}
         title={'Login With Channel Selection'}

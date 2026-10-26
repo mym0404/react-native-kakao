@@ -56,6 +56,16 @@ RCT_EXPORT_METHOD(loginWithKakao : (NSString*)uiMode orientation : (NSString*)
                           reject:reject];
 }
 
+RCT_EXPORT_METHOD(issueAccessTokenWithCode : (NSString*)code codeVerifier : (
+    NSString*)codeVerifier redirectUri : (NSString*)redirectUri resolve : (RCTPromiseResolveBlock)
+                      resolve reject : (RCTPromiseRejectBlock)reject) {
+  [[self manager] issueAccessTokenWithCode:code
+                              codeVerifier:codeVerifier
+                               redirectUri:redirectUri
+                                   resolve:resolve
+                                    reject:reject];
+}
+
 RCT_EXPORT_METHOD(refreshToken : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)
                       reject) {
   [[self manager] refreshToken:resolve reject:reject];
