@@ -35,11 +35,11 @@ const selected = await selectMultiplePartnerFriends({
 });
 ```
 
-단일 선택은 `Promise<KakaoTalkFriendProfile | undefined>`, 다중 선택은 `Promise<KakaoTalkFriendSelectResult>`를 반환해요. 두 함수의 인자를 생략하면 기본 옵션으로 열려요. 응답은 [일반 친구 피커](./select-talk-friends)와 같고, 카카오가 제공한 `maskingProfileNickname`도 반환해요. 취소와 SDK 오류는 `Promise`를 거부해요.
+단일 선택은 `Promise<KakaoTalkFriendProfile | undefined>`, 다중 선택은 `Promise<KakaoTalkFriendSelectResult>`를 반환해요. 두 함수의 인자를 생략하면 기본 옵션으로 열려요. 응답은 [일반 친구 피커](/docs/social/select-talk-friends)와 같고, 카카오가 제공한 `maskingProfileNickname`도 반환해요. 취소와 SDK 오류는 `Promise`를 거부해요.
 
 ## 옵션
 
-`KakaoTalkPartnerFriendSelectOptions`는 [일반 피커 옵션](./select-talk-friends)에 다음 필드를 추가해요.
+`KakaoTalkPartnerFriendSelectOptions`는 [일반 피커 옵션](/docs/social/select-talk-friends)에 다음 필드를 추가해요.
 
 | 필드 | 타입 | 동작 |
 | --- | --- | --- |
