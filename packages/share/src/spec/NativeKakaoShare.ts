@@ -237,6 +237,11 @@ export type KakaoMessageSendResult = {
   }[];
 };
 
+export type KakaoSharePickerSettings = {
+  type?: 'default' | 'friend' | 'chat';
+  limit?: number;
+};
+
 export interface Spec extends TurboModule {
   isKakaoTalkSharingAvailable(): Promise<boolean>;
   uploadImage(imageUri: string, secureResource: boolean): Promise<KakaoImageUploadResult>;
@@ -246,6 +251,7 @@ export interface Spec extends TurboModule {
     templateId?: Double,
     templateArgs?: Readonly<{ [key: string]: string }>,
     serverCallbackArgs?: Readonly<{ [key: string]: string }>,
+    pickerSettings?: UnsafeObject,
   ): Promise<void>;
 
   scrapImage(imageUrl: string, secureResource: boolean): Promise<KakaoImageUploadResult>;
@@ -263,6 +269,7 @@ export interface Spec extends TurboModule {
     useWebBrowserIfKakaoTalkNotAvailable: boolean,
     templateArgs: Readonly<{ [key: string]: string }>,
     serverCallbackArgs: Readonly<{ [key: string]: string }>,
+    pickerSettings?: UnsafeObject,
   ): Promise<any>;
 }
 

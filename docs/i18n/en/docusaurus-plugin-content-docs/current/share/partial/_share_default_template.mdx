@@ -13,6 +13,7 @@ export function share${props.name[0].toUpperCase() + props.name.slice(1)}Templat
   template: Kakao${props.name[0].toUpperCase() + props.name.slice(1)}Template;
   useWebBrowserIfKakaoTalkNotAvailable?: boolean;
   serverCallbackArgs?: Record<string, string>;
+  pickerSettings?: KakaoSharePickerSettings;
 })
 `.trim()}
 </CodeBlock>
@@ -20,6 +21,8 @@ export function share${props.name[0].toUpperCase() + props.name.slice(1)}Templat
 -    `template`: The template object.
 -    `useWebBrowserIfKakaoTalkNotAvailable`: Specifies whether to use a web browser for sharing when KakaoTalk is not available. The default value is `true`.
 -    `serverCallbackArgs`: Server callback arguments. Each value must be passed as a string.
+
+- `pickerSettings`: [Share target selection settings](/docs/share/intro#share-picker-settings).
 
 :::info
 Refer to [Component Types](/docs/share/component-types) for detailed component types.

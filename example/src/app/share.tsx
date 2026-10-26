@@ -220,6 +220,18 @@ export default function Page() {
         title={'Is Kakao Talk Sharing Available'}
         action={isKakaoTalkSharingAvailable}
       />
+      <E2EApiAction
+        id={'share-picker-settings'}
+        title={'Share Text with Chat Picker (Limit 2)'}
+        action={() =>
+          shareTextTemplate({ template: text, pickerSettings: { type: 'chat', limit: 2 } })
+        }
+      />
+      <E2EApiAction
+        id={'share-picker-invalid-limit'}
+        title={'Reject Invalid Share Picker Limit'}
+        action={() => shareTextTemplate({ template: text, pickerSettings: { limit: 0 } })}
+      />
       <TextInput
         accessibilityLabel={'Image URI'}
         testID={'share-upload-image-uri'}

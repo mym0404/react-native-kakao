@@ -93,6 +93,7 @@ import UIKit
     templateId: NSNumber?,
     templateArgs: [String: String]?,
     serverCallbackArgs: [String: String]?,
+    pickerSettings: [String: Any]?,
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
@@ -103,6 +104,7 @@ import UIKit
         useWebBrowserIfKakaoTalkNotAvailable: useWebBrowserIfKakaoTalkNotAvailable,
         templateArgs: templateArgs,
         serverCallbackArgs: serverCallbackArgs,
+        pickerSettings: pickerSettings,
         requestUrl: requestUrl,
         resolve: resolve,
         reject: reject
@@ -153,6 +155,7 @@ import UIKit
     useWebBrowserIfKakaoTalkNotAvailable: Bool,
     templateArgs: [String: String]?,
     serverCallbackArgs: [String: String]?,
+    pickerSettings: [String: Any]?,
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
@@ -166,6 +169,7 @@ import UIKit
           useWebBrowserIfKakaoTalkNotAvailable: useWebBrowserIfKakaoTalkNotAvailable,
           templateArgs: templateArgs,
           serverCallbackArgs: serverCallbackArgs,
+          pickerSettings: pickerSettings,
           resolve: resolve,
           reject: reject
         )
@@ -211,6 +215,7 @@ import UIKit
           receiverUuids: receiverUuids,
           useWebBrowserIfKakaoTalkNotAvailable: useWebBrowserIfKakaoTalkNotAvailable,
           serverCallbackArgs: serverCallbackArgs,
+          pickerSettings: pickerSettings,
           resolve: resolve,
           reject: reject
         )
@@ -226,6 +231,7 @@ import UIKit
     useWebBrowserIfKakaoTalkNotAvailable: Bool,
     templateArgs: [String: String]?,
     serverCallbackArgs: [String: String]?,
+    pickerSettings: [String: Any]?,
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
@@ -236,6 +242,7 @@ import UIKit
         useWebBrowserIfKakaoTalkNotAvailable: useWebBrowserIfKakaoTalkNotAvailable,
         templateArgs: templateArgs,
         serverCallbackArgs: serverCallbackArgs,
+        pickerSettings: pickerSettings,
         resolve: resolve,
         reject: reject
       )
@@ -268,6 +275,7 @@ import UIKit
     receiverUuids: [String],
     useWebBrowserIfKakaoTalkNotAvailable: Bool,
     serverCallbackArgs: [String: String]?,
+    pickerSettings: [String: Any]?,
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
@@ -278,6 +286,7 @@ import UIKit
         useWebBrowserIfKakaoTalkNotAvailable: useWebBrowserIfKakaoTalkNotAvailable,
         templateArgs: serverCallbackArgs,
         serverCallbackArgs: serverCallbackArgs,
+        pickerSettings: pickerSettings,
         resolve: resolve,
         reject: reject
       )
@@ -411,6 +420,7 @@ import UIKit
     useWebBrowserIfKakaoTalkNotAvailable: Bool,
     templateArgs: [String: String]? = nil,
     serverCallbackArgs: [String: String]?,
+    pickerSettings: [String: Any]?,
     requestUrl: String? = nil,
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
@@ -436,17 +446,23 @@ import UIKit
     }
 
     if ShareApi.isKakaoTalkSharingAvailable() {
+      let shareType = (pickerSettings?["type"] as? String).flatMap(ShareType.init(rawValue:))
+      let limit = (pickerSettings?["limit"] as? NSNumber)?.intValue
       if let requestUrl {
         ShareApi.shared.shareScrap(
           requestUrl: requestUrl,
           templateId: templateId,
           templateArgs: templateArgs,
+          shareType: shareType,
+          limit: limit,
           serverCallbackArgs: serverCallbackArgs,
           completion: shareCompletion
         )
       } else if let templateId {
         ShareApi.shared.shareCustom(
           templateId: templateId,
+          shareType: shareType,
+          limit: limit,
           templateArgs: templateArgs,
           serverCallbackArgs: serverCallbackArgs,
           completion: shareCompletion
@@ -456,6 +472,8 @@ import UIKit
           let templatable = try generateTemplatable(templateType, &defaultTemplate)
           ShareApi.shared.shareDefault(
             templatable: templatable,
+            shareType: shareType,
+            limit: limit,
             serverCallbackArgs: serverCallbackArgs,
             completion: shareCompletion
           )

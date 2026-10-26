@@ -19,6 +19,7 @@ await shareScrapTemplate({ requestUrl: 'https://developers.kakao.com' });
 | `templateArgs` | `Record<string, string>` | `{}` | 사용자 정의 템플릿 인자입니다. 키를 그대로 전달합니다. |
 | `serverCallbackArgs` | `Record<string, string>` | `{}` | 설정한 공유 서버 콜백에 전달할 인자입니다. |
 | `useWebBrowserIfKakaoTalkNotAvailable` | `boolean` | `true` | Android·iOS에서 카카오톡을 사용할 수 없으면 브라우저로 공유합니다. 웹에서는 JavaScript SDK의 공유 흐름을 사용합니다. |
+| `pickerSettings` | `KakaoSharePickerSettings` | 생략 | [공유 대상 선택 화면 설정](/docs/share/intro#share-picker-settings)입니다. |
 
 `Promise<void>`를 반환합니다. 네이티브 공유 화면을 열거나 웹 SDK가 공유 흐름을 시작하면 완료합니다. 완료됐다는 것만으로 사용자가 수신자를 선택했거나 메시지가 전달됐는지는 알 수 없습니다. 네이티브에서 카카오톡을 사용할 수 없고 브라우저 공유도 비활성화했다면 `Package-KakaoAppNotAvailable` 오류로 거부합니다.
 
