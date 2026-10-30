@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 3.1.0-next.1
+
+### Minor Changes
+
+- d117308: Add local image uploads on Android, iOS, and web with image metadata and secure URL options.
+- 483fd00: Add URL scrap messages to My Chatroom and friends on Android, iOS, and web.
+- bf027c0: Add URL-scraped message sharing with custom template arguments and native browser fallback on Android, iOS, and web.
+- ff35f20: Expose native URL builders for default, custom, and scraped-page sharing without launching a sharing interface. Report unsupported URL building explicitly on web.
+  
+  Encode Android template execution-parameter keys and values before the SDK serializes them, preserving special characters across sharing URLs, sharing, and message sending.
+- 1efca29: Expose Kakao Talk sharing availability and Kakao Navi installation checks on Android and iOS, with explicit false results on web.
+- ceafbcf: Add optional friend message results with successful recipients and failure details on Android, iOS, and web.
+- 314d493: Expose validated share target picker settings across native and web share templates.
+- 18df9b3: Expose native sharing template warnings and argument diagnostics without opening a sharing interface. Normalize missing diagnostic maps to empty objects and reject the unsupported API explicitly on web.
+
+### Patch Changes
+
+- 61c270a: Remove unused React Native module dependencies so Channel, Social, and Share can each be installed with Core alone. Declare Share's Android Talk SDK dependency directly.
+- Updated dependencies [d5c5fb8]
+- Updated dependencies [3027207]
+- Updated dependencies [dfd32ca]
+- Updated dependencies [2b223bf]
+- Updated dependencies [67cd4e2]
+- Updated dependencies [d81f9b7]
+  - @react-native-kakao/core@3.1.0-next.1
+
 ## 3.1.0-next.0
 
 ### Minor Changes

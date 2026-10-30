@@ -1,5 +1,35 @@
 # Change Log
 
+## 3.1.0-next.1
+
+### Minor Changes
+
+- 250d066: Expose group user tokens consistently on Android, iOS, and web.
+- 3d92882: Expose the iOS token refresh request logging option without changing global SDK logging or Android behavior.
+- f1fd1e2: Add manual signup and profile connection state on Android, iOS, and web.
+- f6e0207: Add a shared loginHint option for Kakao Account login on Android, iOS, and web.
+- a8a2e24: Expose partner legal identity fields and consent flags on Android, iOS, and web.
+- d81f9b7: Expose iOS authorization-code and certification-code token exchange with PKCE options, normalized web token issuance, and explicit unsupported-platform errors.
+- 7fe7820: Add native login method selection and explicit refresh of stored OAuth tokens.
+- 524be2c: Expose profile image defaults, leap-month flags, and the user's KakaoTalk UUID on Android, iOS, and web.
+- e25e428: Allow explicit native tokens when refreshing and normalize remaining token lifetimes across native responses.
+- 97a99b5: Add updateProfile to store registered custom user properties on Android, iOS, and web.
+- b6ff8a9: Add channel selection to login on Android, iOS, and web.
+- bd1bb64: Add the secureResource profile image URL option on Android, iOS, and web.
+- 87e8aa7: Allow a custom Android KakaoTalk login request code while preserving the SDK default when omitted. Accept the SDK's full 32-bit request code range for regular and certification login.
+
+### Patch Changes
+
+- dfd32ca: Upgrade all Kakao Android SDK modules to 2.25.1 and preserve web shipping-address queries with JavaScript SDK 2.8.4.
+- da4db1c: Return canonical profile enum strings on Android and preserve birthday type strings on iOS.
+- Updated dependencies [d5c5fb8]
+- Updated dependencies [3027207]
+- Updated dependencies [dfd32ca]
+- Updated dependencies [2b223bf]
+- Updated dependencies [67cd4e2]
+- Updated dependencies [d81f9b7]
+  - @react-native-kakao/core@3.1.0-next.1
+
 ## 3.1.0-next.0
 
 ### Minor Changes
