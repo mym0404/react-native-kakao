@@ -181,6 +181,8 @@ jobs:
 
       - name: Verify example menus and signed-out APIs on Android
         uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
+        env:
+          KAKAO_E2E_SKIP_MAP: '1'
         with:
           api-level: '37.1'
           target: google_apis_playstore_ps16k
@@ -384,6 +386,9 @@ jobs:
 
       - name: Build all published modules on the minimum React Native version
         run: node script/ci-minimum-rn.ts ${{ matrix.platform }}
+
+      - name: Build published Expo modules on Expo 52 and React Native 0.76.0
+        run: node script/ci-minimum-expo.ts ${{ matrix.platform }}
 
   ci-result:
     needs: [changes, lint, build-android, build-ios, build-minimum]

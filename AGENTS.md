@@ -41,6 +41,7 @@ Read in this order:
    - `packages/core/AGENTS.md`
    - `packages/share/AGENTS.md`
    - `packages/user/AGENTS.md`
+   - `packages/map/AGENTS.md`
 4. `example/AGENTS.md` (integration verification gates)
 
 ## Development toolchain
@@ -57,6 +58,8 @@ Read in this order:
 - Documentation and tooling-only changes do not require a changeset.
 
 ## Global non-negotiables
+
+The TurboModule, Codegen, ObjC++ bridge, and native registration rules below apply to the service modules. `@react-native-kakao/map` is an independent Expo Module implemented in Swift and Kotlin; its public contract is TypeScript types and its registration source is `expo-module.config.json`. Follow `packages/map/AGENTS.md` for its Android/iOS parity and explicit web limitation.
 
 - Define the API in TypeScript spec first, then implement Android + iOS + web parity.
 - Support React Native 0.76.0 or newer with the New Architecture enabled.

@@ -1,0 +1,143 @@
+---
+sidebar_position: 1
+---
+
+# Kakao Map
+
+`@react-native-kakao/map` displays native Kakao Maps and controls the camera on Android and iOS using Expo Modules. It does not depend on Core.
+
+## Installation and app registration
+
+Requires Expo 52+, React Native 0.76+, and the New Architecture. The package uses Android SDK 2.15.2 and iOS SDK 2.12.19. Build your native app; Expo Go does not include this module. For a bare React Native app, first [install Expo Modules](https://docs.expo.dev/bare/installing-expo-modules/).
+
+In the [Kakao developer console](https://developers.kakao.com/console/app), find your native app key and enable Kakao Maps. Register the Android package name and signing key hashes, and the iOS bundle ID. See the [Android setup](https://apis.map.kakao.com/android_v2/docs/getting-started/) and [iOS registration](https://apis.map.kakao.com/ios_v2/docs/getting-started/basics/02_auth/) requirements.
+
+```sh
+npx expo install @react-native-kakao/map expo-build-properties
+```
+
+Add Kakao's Maven repository to `app.json` so the Android app can resolve the SDK. Merge this into your existing `expo-build-properties` configuration if present.
+
+```json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "extraMavenRepos": ["https://devrepo.kakao.com/nexus/repository/kakaomap-releases/"]
+          }
+        }
+      ]
+    ]
+  }
+}
+```
+
+On Expo 52, if Kotlin 1.9.24 conflicts with Compose Compiler 1.5.15, add `"kotlinVersion": "1.9.25"` to the Android configuration above. Do not force this version on newer Expo SDKs.
+
+```sh
+npx expo prebuild
+npx expo run:android
+# Or
+npx expo run:ios
+```
+
+Expo autolinking registers the native module. No separate map config plugin or Core initialization is required. If you manage native projects directly, add the repository URL to the shared Android Maven repositories and run `pod install` on iOS.
+
+## Display a map
+
+Wait for SDK initialization before mounting a map. The initialization Promise confirms that the SDK received the key; `onMapReady` confirms authentication and view readiness. Repeated initialization with the same key is allowed. A different key is rejected.
+
+```tsx
+import { useEffect, useRef, useState } from 'react';
+import { Text } from 'react-native';
+import { initializeKakaoMapSDK, KakaoMapView, type KakaoMapViewRef } from '@react-native-kakao/map';
+
+export function MapScreen() {
+  const map = useRef<KakaoMapViewRef>(null);
+  const [initialized, setInitialized] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    let active = true;
+    initializeKakaoMapSDK('YOUR_NATIVE_APP_KEY').then(
+      () => {
+        if (active) setInitialized(true);
+      },
+      (error: Error) => {
+        if (active) setError(error.message);
+      },
+    );
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  if (error) return <Text>{error}</Text>;
+  if (!initialized) return null;
+  return (
+    <KakaoMapView
+      ref={map}
+      style={{ flex: 1 }}
+      initialCamera={{ latitude: 37.402001, longitude: 127.108678, zoomLevel: 15 }}
+      onMapReady={() => console.log('Map ready')}
+      onError={({ code, message }) => setError(`${code}: ${message}`)}
+    />
+  );
+}
+```
+
+The parent layout must give the map a width and height. Keep the Kakao logo unobstructed.
+
+## Camera and events
+
+A camera requires `latitude`, `longitude`, and integer `zoomLevel`. Optional `tilt` and `rotation` are in degrees and default to zero. The SDK and map state determine the available zoom and tilt range. `rotation` is the counterclockwise camera angle from north; at 90 degrees, north points toward the right of the screen. `getCamera()` returns all five fields as applied by the SDK. On iOS, the center coordinate is calculated by converting the screen center to geographic coordinates, so it may differ slightly from the requested coordinate.
+
+On first render, `camera` takes priority over `initialCamera`. Changes to `initialCamera` after the first props update are ignored. `camera` moves the map only when its field values change. Passing a new object with the same values or removing the prop does not move the map. A same-value rerender therefore preserves the position after a gesture or ref command. Before readiness, only the latest `camera` is retained.
+
+Call ref methods after the map is ready. The Promise below resolves when the command is dispatched. Use `onCameraIdle` to observe the end of movement.
+
+```tsx
+await map.current?.moveCamera(
+  { latitude: 37.5665, longitude: 126.978, zoomLevel: 16, tilt: 30, rotation: 90 },
+  { duration: 500 },
+);
+const position = await map.current?.getCamera();
+```
+
+`duration` is an integer from 0 to 2,147,483,647 milliseconds. Omit it or pass zero for an immediate move. `tilt` accepts 0–90 degrees, and returned `rotation` values are normalized to [0, 360).
+
+| Event               | Payload                                                                               |
+| ------------------- | ------------------------------------------------------------------------------------- |
+| `onMapReady`        | Authentication and view readiness. No arguments                                       |
+| `onError`           | `{ code, message }`                                                                   |
+| `onCameraMoveStart` | `{ reason: 'gesture' \| 'developer' }`                                                |
+| `onCameraIdle`      | `{ reason, camera }` with the actual stopped camera                                   |
+| `onMapClick`        | `{ latitude, longitude, x, y }`. Logical pixels relative to the map's top-left corner |
+
+There is no continuous camera-change event. Rendering pauses when the app becomes inactive or the view detaches, resumes on return, and releases engine resources when unmounted.
+
+## Errors and platform support
+
+Ref commands reject before readiness instead of being queued. Handle Promise `code` and `message` fields and `onError` events.
+
+| Code                                 | Meaning                               |
+| ------------------------------------ | ------------------------------------- |
+| `ERR_KAKAO_MAP_NOT_INITIALIZED`      | SDK has not been initialized          |
+| `ERR_KAKAO_MAP_NOT_READY`            | Command called before map readiness   |
+| `ERR_KAKAO_MAP_CAMERA_TIMEOUT` | Android camera query did not respond within three seconds |
+| `ERR_KAKAO_MAP_VIEW_DESTROYED`       | Access to an unmounted map            |
+| `ERR_KAKAO_MAP_ALREADY_INITIALIZED`  | Reinitialization with a different key |
+| `ERR_KAKAO_MAP_INVALID_ARGUMENT`     | Empty key, invalid camera, or duration      |
+| `ERR_KAKAO_MAP_VIEW_CREATION`        | Native map creation failed            |
+| `ERR_KAKAO_MAP_UNSUPPORTED_PLATFORM` | Map feature used on web               |
+
+SDK errors preserve their original code and message. Authentication failures are delivered through `onError`, not the initialization Promise. No automatic retry is performed: fix the app registration or network issue and remount the view to retry. Restart the app process if the native app key must change.
+
+On Android, `getCamera()` waits for the renderer’s asynchronous response so it can read an in-progress movement. It rejects with `ERR_KAKAO_MAP_CAMERA_TIMEOUT` if no response arrives within three seconds, or `ERR_KAKAO_MAP_VIEW_DESTROYED` if the view is destroyed first.
+
+Web imports are safe, but initialization and rendering maps are unsupported. The Android SDK has no x86_64 binary; use an ARM emulator or device. Marker and shape APIs are not provided.
+
+The SDK does not guarantee simultaneous rendering by multiple map engines. Display one map at a time; see [Kakao’s guidance on multiple engines](https://devtalk.kakao.com/t/v2-ios/131530/11).

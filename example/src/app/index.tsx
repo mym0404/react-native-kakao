@@ -1,4 +1,4 @@
-import { Image, Pressable } from 'react-native';
+import { Image, Platform, Pressable } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import { login, logout } from '@react-native-kakao/user';
 import { Link } from 'expo-router';
@@ -71,6 +71,13 @@ export default function Page() {
               );
           }}
         />
+        {Platform.OS !== 'web' ? (
+          <Link testID={'menu-map'} href={'/map'} asChild>
+            <Pressable>
+              <Txt textDecorationLine={'underline'}>{'@react-native-kakao/map'}</Txt>
+            </Pressable>
+          </Link>
+        ) : null}
         <Link testID={'menu-user'} href={'/user'} asChild>
           <Pressable>
             <Txt textDecorationLine={'underline'} align={'center'}>
