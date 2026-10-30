@@ -65,6 +65,14 @@ login()
 await login({ android: { requestCode: 20001 } });
 ```
 
+- `ios.launchMethod`: iOS에서 카카오톡으로 전환할 방식을 `UniversalLink` 또는 `CustomScheme`으로 지정합니다. 기본값은 `UniversalLink`입니다. 카카오톡을 사용할 수 없거나 카카오계정 로그인을 요청한 경우에는 적용하지 않으며, Android와 웹에서도 사용하지 않습니다.
+
+```tsx
+await login({ ios: { launchMethod: 'CustomScheme' } });
+```
+
+이 옵션은 카카오톡을 여는 방식입니다. 앱으로 돌아오는 콜백 URL을 바꾸려면 [SDK 초기화의 `customScheme`](/docs/core/initialize-sdk)을 설정합니다.
+
 - `channelPublicIds`: 로그인 동의 화면에 보여줄 카카오톡 채널 프로필 ID를 `string[]`으로 지정합니다. Android·iOS·웹에서 같은 옵션을 사용하며, 생략하거나 빈 배열을 전달하면 기본 로그인으로 동작합니다.
 
 카카오와 사용 협의를 마친 제휴 앱에서만 사용할 수 있습니다. 앱에 연결된 비즈니스 채널을 지정해야 하며, 전달한 순서대로 최대 2개를 표시합니다. 이미 앱에 연결하고 가입한 사용자에게 채널 추가 동의를 다시 요청하는 용도로는 사용할 수 없습니다. 자세한 조건은 [채널 선택해 동의 요청](https://developers.kakao.com/docs/ko/kakaologin/dynamic-channel)을 참고하세요.

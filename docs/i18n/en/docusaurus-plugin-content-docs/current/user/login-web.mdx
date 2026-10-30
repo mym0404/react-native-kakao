@@ -7,8 +7,10 @@ sidebar_position: 102
 Web login requires extra steps because it redirects the user to another page using a redirect URI.
 
 :::tip
-All APIs except for login can be used similarly to those in [Kakao Login](/docs/user/login).
+Supported web APIs use the same response fields and types as native. `loginWithKakao` and `refreshToken` are not supported on web.
 :::
+
+`setAccessTokenWeb` and `issueAccessTokenWithCodeWeb` are web-only functions. On Android and iOS, `setAccessTokenWeb` throws synchronously and `issueAccessTokenWithCodeWeb` rejects its Promise with `Package-UnsupportedPlatform`. Use `login` or `loginWithKakao` for native login; the native SDK stores the tokens.
 
 ## Logging In
 
