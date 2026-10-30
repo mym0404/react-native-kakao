@@ -215,12 +215,12 @@ export function refreshToken(): Promise<KakaoLoginToken> {
   return Native.refreshToken();
 }
 
-export function logout() {
-  return Native.logout();
+export async function logout() {
+  await Native.logout();
 }
 
-export function unlink() {
-  return Native.unlink();
+export async function unlink() {
+  await Native.unlink();
 }
 
 export function isLogined() {
@@ -288,12 +288,12 @@ export function getAccessToken(): Promise<KakaoAccessTokenInfo> {
   return Native.getAccessToken();
 }
 
-export function updateProfile({
+export async function updateProfile({
   properties,
 }: {
   properties: Record<string, string>;
 }): Promise<void> {
-  return Native.updateProfile(properties);
+  await Native.updateProfile(properties);
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -220,6 +220,13 @@ export default function Page() {
         title={'Is Kakao Talk Sharing Available'}
         action={isKakaoTalkSharingAvailable}
       />
+      <E2EApiAction
+        id={'share-void-result'}
+        title={'Share Text Return Shape'}
+        action={async () => ({
+          hasReturnValue: (await shareTextTemplate({ template: text })) !== undefined,
+        })}
+      />
       <TextInput
         accessibilityLabel={'Image URI'}
         testID={'share-upload-image-uri'}
