@@ -19,11 +19,13 @@ import type {
 } from './types';
 import type { AdvancedCameraOperationEvent } from './types-camera';
 import type { LabelAnimationEvent, LabelClickEvent, LabelRuntimeState } from './types-labels';
+import type { RouteAnimationStopEvent, RouteCounts, RouteProgressEvent } from './types-routes';
 import type { ShapeAnimationStopEvent, ShapeCounts } from './types-shapes';
 
 export type { MapImageSource } from './types-assets';
 export type * from './types-labels';
 export type * from './types-shapes';
+export type * from './types-routes';
 export type * from './types-camera';
 
 export type {
@@ -70,6 +72,9 @@ const NativeView = requireNativeView<
     | 'onLabelsChanged'
     | 'onShapeAnimationStop'
     | 'onShapesChanged'
+    | 'onRoutesChanged'
+    | 'onRouteProgress'
+    | 'onRouteAnimationStop'
     | 'onCameraOperation'
   > & {
     ref: Ref<NativeMapRef>;
@@ -93,6 +98,9 @@ const NativeView = requireNativeView<
     onLabelsChanged?: (event: NativeSyntheticEvent<LabelRuntimeState>) => void;
     onShapeAnimationStop?: (event: NativeSyntheticEvent<ShapeAnimationStopEvent>) => void;
     onShapesChanged?: (event: NativeSyntheticEvent<ShapeCounts>) => void;
+    onRoutesChanged?: (event: NativeSyntheticEvent<RouteCounts>) => void;
+    onRouteProgress?: (event: NativeSyntheticEvent<RouteProgressEvent>) => void;
+    onRouteAnimationStop?: (event: NativeSyntheticEvent<RouteAnimationStopEvent>) => void;
     onCameraOperation?: (event: NativeSyntheticEvent<AdvancedCameraOperationEvent>) => void;
   }
 >(moduleName);
@@ -135,6 +143,9 @@ export const KakaoMapView = forwardRef<KakaoMapViewRef, KakaoMapViewProps>(funct
     onLabelsChanged,
     onShapeAnimationStop,
     onShapesChanged,
+    onRoutesChanged,
+    onRouteProgress,
+    onRouteAnimationStop,
     onCameraOperation,
     ...props
   },
@@ -180,6 +191,12 @@ export const KakaoMapView = forwardRef<KakaoMapViewRef, KakaoMapViewProps>(funct
       async executeShapeCommand(command) {
         return getView().executeShapeCommand(command);
       },
+      async applyRoutes(scene) {
+        return getView().applyRoutes(scene);
+      },
+      async executeRouteCommand(command) {
+        return getView().executeRouteCommand(command);
+      },
       async executeCameraCommand(command) {
         return getView().executeCameraCommand(command);
       },
@@ -211,6 +228,9 @@ export const KakaoMapView = forwardRef<KakaoMapViewRef, KakaoMapViewProps>(funct
       onLabelsChanged={(event) => onLabelsChanged?.(event.nativeEvent)}
       onShapeAnimationStop={(event) => onShapeAnimationStop?.(event.nativeEvent)}
       onShapesChanged={(event) => onShapesChanged?.(event.nativeEvent)}
+      onRoutesChanged={(event) => onRoutesChanged?.(event.nativeEvent)}
+      onRouteProgress={(event) => onRouteProgress?.(event.nativeEvent)}
+      onRouteAnimationStop={(event) => onRouteAnimationStop?.(event.nativeEvent)}
       onCameraOperation={(event) => onCameraOperation?.(event.nativeEvent)}
     />
   );

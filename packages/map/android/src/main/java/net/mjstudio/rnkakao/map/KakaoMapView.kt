@@ -29,6 +29,7 @@ private const val CAMERA_REQUEST_TIMEOUT_MILLIS = 3_000L
 private const val CAMERA_TIMEOUT = "ERR_KAKAO_MAP_CAMERA_TIMEOUT"
 private const val CAMERA_SUPERSEDED = "ERR_KAKAO_MAP_CAMERA_SUPERSEDED"
 private const val SHAPE_INVALID_ARGUMENT = "ERR_KAKAO_MAP_SHAPE_INVALID_ARGUMENT"
+private const val ROUTE_INVALID_ARGUMENT = "ERR_KAKAO_MAP_ROUTE_INVALID_ARGUMENT"
 private const val VIEW_DESTROYED = "ERR_KAKAO_MAP_VIEW_DESTROYED"
 private const val VIEW_DESTROYED_MESSAGE = "The map view was destroyed."
 
@@ -59,12 +60,19 @@ class KakaoMapView(
   private val onLabelsChanged by EventDispatcher()
   private val onShapeAnimationStop by EventDispatcher()
   private val onShapesChanged by EventDispatcher()
+  private val onRoutesChanged by EventDispatcher()
+  private val onRouteProgress by EventDispatcher()
+  private val onRouteAnimationStop by EventDispatcher()
   private var labels: MapLabels? = null
   private var shapes: MapShapes? = null
+  private var routes: MapRoutes? = null
   private var cameraCommands: MapCameraCommands? = null
   private var imageLoader: MapImageLoader? = null
   private var pendingLabels: MapLabelSceneRecord? = null
   private var pendingShapes: Map<String, Any?>? = null
+  private var pendingRoutes: Map<String, Any?>? = null
+  private var hasUsedRoutes = false
+  private var routeGeneration = 0L
   private var labelGeneration = 0L
   private var mapView: MapView? = null
   private var map: KakaoMap? = null
@@ -113,6 +121,7 @@ class KakaoMapView(
       pendingOptions = null
     }
     applyPendingShapesIfReady()
+    applyPendingRoutesIfReady()
     applyPendingLabelsIfReady()
   }
 
@@ -133,6 +142,17 @@ class KakaoMapView(
       pendingShapes = normalizeShapeObject(scene ?: emptyMap<String, Any?>(), "shapes")
     } catch (error: Exception) {
       pendingShapes = null
+      if (!isDestroyed) reportError(error)
+    }
+  }
+
+  fun queueRoutes(scene: Map<String, Any?>?) {
+    if (scene == null && !hasUsedRoutes) return
+    hasUsedRoutes = true
+    try {
+      pendingRoutes = normalizeShapeObject(scene ?: emptyMap<String, Any?>(), "routes", ROUTE_INVALID_ARGUMENT)
+    } catch (error: Exception) {
+      pendingRoutes = null
       if (!isDestroyed) reportError(error)
     }
   }
@@ -292,6 +312,7 @@ class KakaoMapView(
           (camera ?: initialCamera)?.let { applyCameraProp(it) }
           lastCameraValues = camera?.values()
           applyPendingShapesIfReady()
+          applyPendingRoutesIfReady()
           applyPendingLabelsIfReady()
           onMapReady(emptyMap<String, Any>())
           if (!isAttachedToWindow || reactContext?.lifecycleState != LifecycleState.RESUMED) view.pause()
@@ -521,7 +542,78 @@ class KakaoMapView(
     return manager
   }
 
+  fun applyRoutes(
+    scene: Map<String, Any?>,
+    promise: Promise,
+  ) {
+    pendingRoutes = null
+    hasUsedRoutes = true
+    val generation = ++routeGeneration
+    val viewReference = WeakReference(this)
+    requireRoutes().apply(normalizeShapeObject(scene, "scene", ROUTE_INVALID_ARGUMENT)) { result ->
+      result.fold(
+        onSuccess = { counts ->
+          viewReference.get()?.let { view ->
+            if (!view.isDestroyed && generation == view.routeGeneration) view.onRoutesChanged(counts)
+          }
+          promise.resolve(counts)
+        },
+        onFailure = { error ->
+          if (error is CodedException) {
+            promise.reject(error)
+          } else {
+            promise.reject("ERR_KAKAO_MAP_ROUTE", error.message, error)
+          }
+        },
+      )
+    }
+  }
+
+  fun executeRouteCommand(command: Map<String, Any?>): Map<String, Any?> =
+    requireRoutes().command(normalizeShapeObject(command, "command", ROUTE_INVALID_ARGUMENT))
+
+  private fun requireRoutes(): MapRoutes {
+    val readyMap = requireMap()
+    routes?.let { return it }
+    val viewReference = WeakReference(this)
+    val manager =
+      MapRoutes(readyMap, resources.displayMetrics.density, requireImageLoader()) { event, payload ->
+        viewReference.get()?.let { view ->
+          if (!view.isDestroyed) {
+            when (event) {
+              "onRouteProgress" -> view.onRouteProgress(payload)
+              "onRouteAnimationStop" -> view.onRouteAnimationStop(payload)
+            }
+          }
+        }
+      }
+    routes = manager
+    return manager
+  }
+
   private fun requireImageLoader(): MapImageLoader = imageLoader ?: MapImageLoader(appContext).also { imageLoader = it }
+
+  private fun applyPendingRoutesIfReady() {
+    if (map == null) return
+    val scene = pendingRoutes ?: return
+    pendingRoutes = null
+    val generation = ++routeGeneration
+    val viewReference = WeakReference(this)
+    try {
+      requireRoutes().apply(scene) { result ->
+        viewReference.get()?.let { view ->
+          if (!view.isDestroyed && generation == view.routeGeneration) {
+            result.fold(
+              onSuccess = { view.onRoutesChanged(it) },
+              onFailure = { view.reportError(it as? Exception ?: Exception(it)) },
+            )
+          }
+        }
+      }
+    } catch (error: Exception) {
+      reportError(error)
+    }
+  }
 
   private fun applyPendingLabelsIfReady() {
     if (map == null) return
@@ -561,12 +653,20 @@ class KakaoMapView(
 
   private fun releaseMapObjects() {
     labelGeneration++
+    routeGeneration++
     cameraCommands?.dispose()
     cameraCommands = null
     val manager = labels
     labels = null
     try {
       manager?.dispose()
+    } catch (error: Exception) {
+      if (!isDestroyed) reportError(error)
+    }
+    val routeManager = routes
+    routes = null
+    try {
+      routeManager?.dispose()
     } catch (error: Exception) {
       if (!isDestroyed) reportError(error)
     }
@@ -1048,6 +1148,7 @@ class KakaoMapView(
     map = null
     queuedOptions = null
     pendingShapes = null
+    pendingRoutes = null
     activeOverlays.clear()
     activeCustomOverlays.clear()
     val view = mapView

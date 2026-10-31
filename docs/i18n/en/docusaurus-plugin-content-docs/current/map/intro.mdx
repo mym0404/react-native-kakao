@@ -355,9 +355,11 @@ When the platform supports actual completion callbacks, a command with `operatio
 
 `getState` returns actual camera height, zoom, tilt, and rotation. Angles use degrees; animation durations use integer milliseconds; `fit.padding` and `canShow.rect` use logical units. `height` is in the native map coordinate system and is not converted as screen dp or points.
 
-## Shapes
+## Shapes and routes
 
-`ShapeScene` is a complete scene snapshot. Ref commands mutate IDs in the current scene or query actual state and counts. Call `applyShapes({})` to clear the scene.
+`ShapeScene` and `RouteScene` are complete scene snapshots. Ref commands mutate IDs in the current scene or query actual state and counts. Call `applyShapes({})` or `applyRoutes({})` to clear a scene.
+
+### Shapes
 
 Shapes reference styles and layers. This example displays a circle with a 30-meter ground radius around its center coordinate.
 
@@ -397,6 +399,49 @@ Use `getCapabilities` to check position, orientation, z-order, layer-pass, wave-
 
 For `shareShapeTransform` with a model polygon, shared movement and unlinking were verified, but shared rotation has a rendering limitation. Animating the source label to 90 degrees produced a viewport-filling polygon on the ARM Android emulator with SDK 2.15.2 and the iOS Simulator with SDK 2.12.19. Android reproduced the failure with direct SDK calls outside the module; its immediate rotation setter instead failed to propagate rotation to the polygon. Do not rely on model-polygon shared rotation with these SDK versions.
 
+### Routes
+
+A route scene defines styles, layers, and routes together. `setProgress` changes displayed progress, while `getState` and `getCounts` query current native objects.
+
+```tsx
+await map.current?.applyRoutes({
+  styleSets: [
+    {
+      id: 'route-style',
+      styles: [{ levels: [{ level: 0, width: 8, color: '#2563EBFF' }] }],
+    },
+  ],
+  layers: [{ id: 'routes' }],
+  routes: [
+    {
+      id: 'route-1',
+      layerId: 'routes',
+      styleSetId: 'route-style',
+      segments: [
+        {
+          coordinates: [
+            { latitude: 37.402001, longitude: 127.108678 },
+            { latitude: 37.404, longitude: 127.112 },
+          ],
+        },
+      ],
+    },
+  ],
+});
+
+await map.current?.executeRouteCommand({
+  type: 'setProgress',
+  id: 'route-1',
+  progress: 0.5,
+  mode: 'fill',
+  duration: 400,
+});
+```
+
+Route widths, strokes, and pattern distances use logical units; durations use integer milliseconds. `onRouteProgress` is not an actual SDK progress measurement. It reports completion of the latest requested `setProgress` transition and always has `source: 'requested'`. A zero duration emits once immediately after native dispatch. The iOS SDK has no actual progress getter, so `getProgress` is unsupported there; `getRequestedProgress` returns the last requested value with an explicit source.
+
+Native route animators on both platforms accept only a repeat count of `1`. The Android SDK keeps unique shape/route style and animator registrations until the map engine ends. The module reuses an identical definition, but continuously creating distinct definitions can grow the registry for that engine lifetime.
+
 ## Errors and platform support
 
 Ref commands reject before readiness instead of being queued. Handle Promise `code` and `message` fields and `onError` events.
@@ -418,6 +463,9 @@ Ref commands reject before readiness instead of being queued. Handle Promise `co
 | `ERR_KAKAO_MAP_SHAPE_INVALID_ARGUMENT`       | Invalid shape scene, geometry, or style input                       |
 | `ERR_KAKAO_MAP_SHAPE_NOT_FOUND`              | A referenced shape or animation ID is missing                       |
 | `ERR_KAKAO_MAP_SHAPE_UNSUPPORTED`            | The SDK does not support the requested shape feature                |
+| `ERR_KAKAO_MAP_ROUTE_INVALID_ARGUMENT`       | Invalid route scene, segment, or progress input                     |
+| `ERR_KAKAO_MAP_ROUTE_NOT_FOUND`              | A referenced route or animation ID is missing                       |
+| `ERR_KAKAO_MAP_ROUTE_UNSUPPORTED`            | The SDK does not support the requested route feature                |
 | `ERR_KAKAO_MAP_UNSUPPORTED_PLATFORM_FEATURE` | Native feature absent from the current platform SDK     |
 
 SDK errors preserve their original code and message. Authentication failures are delivered through `onError`, not the initialization Promise. No automatic retry is performed: fix the app registration or network issue and remount the view to retry. Restart the app process if the native app key must change.

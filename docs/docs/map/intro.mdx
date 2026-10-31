@@ -355,9 +355,11 @@ await map.current?.executeCameraCommand({
 
 `getState`는 높이·확대 단계·기울기·회전을 포함한 실제 카메라 상태를 반환해요. 각도는 도, 애니메이션 시간은 정수 밀리초, `fit.padding`과 `canShow.rect`는 논리 단위예요. `height`는 네이티브 지도 좌표계의 카메라 높이이므로 화면 dp나 points로 변환하지 않아요.
 
-## 도형
+## 도형과 경로
 
-`ShapeScene`은 완전한 장면 스냅샷이에요. ref 명령으로 현재 장면의 ID를 변경하거나 실제 상태와 개수를 조회해요. `applyShapes({})`를 호출하면 장면을 비워요.
+`ShapeScene`과 `RouteScene`은 전체 장면 스냅샷이에요. ref 명령은 현재 장면의 ID를 변경하거나 실제 상태·개수를 조회해요. 장면을 비우려면 각각 `applyShapes({})`, `applyRoutes({})`를 호출해요.
+
+### 도형
 
 도형은 스타일, 레이어, 도형 순서로 참조해요. 다음 예시는 기준 좌표를 중심으로 지상 반지름 30미터인 원을 표시해요.
 
@@ -397,6 +399,49 @@ const state = await map.current?.executeShapeCommand({ type: 'getState', id: 'ci
 
 모델 polygon에 연결한 `shareShapeTransform`은 위치 공유와 해제만 성공적으로 검증됐고, 공유 회전에는 렌더링 문제가 있어요. Android SDK 2.15.2의 ARM 에뮬레이터와 iOS SDK 2.12.19의 Simulator에서 소스 라벨을 90도로 애니메이션 회전하면 도형이 뷰포트 전체를 덮는 현상이 재현됐어요. Android에서는 모듈을 거치지 않는 SDK 직접 호출에서도 재현됐으며, 즉시 회전 setter를 사용하면 도형의 회전 자체가 전달되지 않았어요. 이 SDK 조합에서 모델 polygon의 공유 회전에 의존하지 마세요.
 
+### 경로
+
+경로도 스타일·레이어·경로를 한 장면에 정의해요. `setProgress`는 표시 진행률을 바꾸고, `getState`와 `getCounts`는 현재 네이티브 객체를 조회해요.
+
+```tsx
+await map.current?.applyRoutes({
+  styleSets: [
+    {
+      id: 'route-style',
+      styles: [{ levels: [{ level: 0, width: 8, color: '#2563EBFF' }] }],
+    },
+  ],
+  layers: [{ id: 'routes' }],
+  routes: [
+    {
+      id: 'route-1',
+      layerId: 'routes',
+      styleSetId: 'route-style',
+      segments: [
+        {
+          coordinates: [
+            { latitude: 37.402001, longitude: 127.108678 },
+            { latitude: 37.404, longitude: 127.112 },
+          ],
+        },
+      ],
+    },
+  ],
+});
+
+await map.current?.executeRouteCommand({
+  type: 'setProgress',
+  id: 'route-1',
+  progress: 0.5,
+  mode: 'fill',
+  duration: 400,
+});
+```
+
+경로 폭·테두리·패턴 간격은 논리 단위이고 시간은 정수 밀리초예요. `onRouteProgress`는 실제 SDK 진행률 측정값이 아니라 최신 `setProgress` 요청 전환의 완료 알림이에요. 전달 값의 `source`는 항상 `'requested'`예요. `duration: 0`이면 네이티브 명령 전달 직후 한 번 발생해요. iOS SDK는 실제 progress getter를 제공하지 않으므로 `getProgress`를 지원하지 않지만, `getRequestedProgress`로 마지막 요청값을 구분해서 조회할 수 있어요.
+
+두 플랫폼의 네이티브 경로 애니메이터는 반복 횟수 `1`만 지원해요. Android SDK는 고유한 도형·경로 스타일과 애니메이터 등록을 지도 엔진이 끝날 때까지 유지해요. 같은 정의는 모듈이 재사용하지만, 계속 새로운 정의를 만들면 엔진 수명 동안 등록 수가 늘 수 있어요.
+
 ## 오류와 플랫폼 범위
 
 ref 명령은 지도 준비 전에 대기하지 않고 거절돼요. Promise 오류의 `code`, `message`와 `onError`를 처리해요.
@@ -418,6 +463,9 @@ ref 명령은 지도 준비 전에 대기하지 않고 거절돼요. Promise 오
 | `ERR_KAKAO_MAP_SHAPE_INVALID_ARGUMENT`       | 잘못된 도형 장면·geometry·style 입력                |
 | `ERR_KAKAO_MAP_SHAPE_NOT_FOUND`              | 참조한 도형 또는 애니메이션 ID가 없음               |
 | `ERR_KAKAO_MAP_SHAPE_UNSUPPORTED`            | 현재 SDK가 해당 도형 기능을 지원하지 않음           |
+| `ERR_KAKAO_MAP_ROUTE_INVALID_ARGUMENT`       | 잘못된 경로 장면·segment·progress 입력              |
+| `ERR_KAKAO_MAP_ROUTE_NOT_FOUND`              | 참조한 경로 또는 애니메이션 ID가 없음               |
+| `ERR_KAKAO_MAP_ROUTE_UNSUPPORTED`            | 현재 SDK가 해당 경로 기능을 지원하지 않음           |
 | `ERR_KAKAO_MAP_UNSUPPORTED_PLATFORM_FEATURE` | 현재 플랫폼 SDK에 없는 네이티브 기능                                  |
 
 SDK 오류는 SDK의 코드와 메시지를 유지해요. 지도 인증 오류는 초기화 Promise가 아니라 `onError`로 전달돼요. 인증 실패 후 자동 재시도는 하지 않아요. 키·앱 등록 설정이나 네트워크 문제를 해결한 다음 뷰를 다시 마운트해요. 앱 키 자체를 변경해야 한다면 앱 프로세스를 다시 시작해요.
