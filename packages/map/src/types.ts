@@ -5,6 +5,7 @@ import type {
   AdvancedCameraCommandResult,
   AdvancedCameraOperationEvent,
 } from './types-camera';
+import type { DimScreenEvent, DimScreenOptions, DimScreenStatus } from './types-dim';
 import type {
   AnimatedImageAction,
   MapGuiEvent,
@@ -167,6 +168,7 @@ export type KakaoMapViewProps = ViewProps & {
   onRouteProgress?: (event: RouteProgressEvent) => void;
   onRouteAnimationStop?: (event: RouteAnimationStopEvent) => void;
   onGuiEvent?: (event: MapGuiEvent) => void;
+  onDimScreenEvent?: (event: DimScreenEvent) => void;
   onCameraOperation?: (event: AdvancedCameraOperationEvent) => void;
 };
 
@@ -208,6 +210,11 @@ export type KakaoMapViewRef = {
     action: AnimatedImageAction,
   ) => Promise<void>;
   getGuiStatus: () => Promise<MapGuiStatus>;
+  applyDimScreen: (options: DimScreenOptions) => Promise<void>;
+  setDimHighlightVisible: (id: string, visible: boolean) => Promise<void>;
+  startDimAnimation: (id: string) => Promise<void>;
+  stopDimAnimation: (id: string) => Promise<void>;
+  getDimScreenStatus: () => Promise<DimScreenStatus>;
   /** Android only: resolves with the SDK's asynchronous POI state response. */
   executeCameraCommand: (command: AdvancedCameraCommand) => Promise<AdvancedCameraCommandResult>;
 };

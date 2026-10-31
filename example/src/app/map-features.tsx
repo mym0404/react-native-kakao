@@ -5,6 +5,8 @@ import {
   type AdvancedCameraCapabilities,
   type AdvancedCameraCommand,
   type CameraUpdate,
+  type DimScreenOptions,
+  type DimScreenStatus,
   initializeKakaoMapSDK,
   KakaoMapView,
   type KakaoMapViewRef,
@@ -24,6 +26,7 @@ import {
 } from '@react-native-kakao/map';
 
 import { CAMERA_FIXTURES } from '../map/camera-fixtures';
+import { dimFixtureScenes } from '../map/dim-fixtures';
 import { guiFixtureScenes } from '../map/gui-fixtures';
 import {
   androidCompetitionExceptionsLabelCapabilityFixture,
@@ -78,6 +81,7 @@ const sections = [
   'route-motion',
   'gui',
   'gui-motion',
+  'dim',
 ] as const;
 
 const overlays: MapOverlay[] = ['roadviewLine', 'hillShading', 'bicycleRoad', 'hybrid'];
@@ -114,6 +118,7 @@ export default function MapFeaturesPage() {
 
   const [routeCapabilities, setRouteCapabilities] = useState<RouteCapabilities>();
   const [guiCapabilities, setGuiCapabilities] = useState<MapGuiCapabilities>();
+  const [dimStatus, setDimStatus] = useState<DimScreenStatus>();
   const [result, setResult] = useState('Waiting for map');
   const [event, setEvent] = useState('No event');
   useEffect(() => {
@@ -717,6 +722,71 @@ export default function MapFeaturesPage() {
         );
       }
     }
+  } else if (section === 'dim') {
+    actions.push(
+      {
+        id: 'dim-read-status',
+        run: () =>
+          execute(async () => {
+            const value = await requireMap().getDimScreenStatus();
+            setDimStatus(value);
+
+            return value;
+          }),
+      },
+      {
+        id: 'dim-dispatch-apply-geographic',
+        run: () => applyDimScreen(dimFixtureScenes.geographicWithHole),
+      },
+      {
+        id: 'dim-dispatch-hide-highlight',
+        run: () =>
+          execute(() => requireMap().setDimHighlightVisible('fixture-geographic-highlight', false)),
+      },
+      {
+        id: 'dim-dispatch-show-highlight',
+        run: () =>
+          execute(() => requireMap().setDimHighlightVisible('fixture-geographic-highlight', true)),
+      },
+      {
+        id: 'dim-dispatch-clear',
+        run: () => applyDimScreen(dimFixtureScenes.disabled),
+      },
+    );
+
+    if (dimStatus?.capabilities.modelHighlights) {
+      actions.push({
+        id: 'dim-dispatch-apply-model',
+        run: () => applyDimScreen(dimFixtureScenes.modelPolygon),
+      });
+    }
+
+    if (dimStatus?.capabilities.modelOrientation) {
+      actions.push({
+        id: 'dim-dispatch-apply-oriented-model',
+        run: () => applyDimScreen(dimFixtureScenes.iosModelOrientation),
+      });
+    }
+
+    if (dimStatus?.capabilities.coversRoute) {
+      actions.push({
+        id: 'dim-dispatch-apply-route-cover',
+        run: () => applyDimScreen(dimFixtureScenes.androidRouteCover),
+      });
+    }
+
+    if (dimStatus?.capabilities.animations) {
+      actions.push(
+        {
+          id: 'dim-dispatch-animation-start',
+          run: () => execute(() => requireMap().startDimAnimation('fixture-dim-wave')),
+        },
+        {
+          id: 'dim-dispatch-animation-stop',
+          run: () => execute(() => requireMap().stopDimAnimation('fixture-dim-wave')),
+        },
+      );
+    }
   } else {
     actions.push(
       {
@@ -958,6 +1028,7 @@ export default function MapFeaturesPage() {
           onRouteProgress={(value) => recordEvent({ type: 'route-progress', ...value })}
           onRouteAnimationStop={(value) => recordEvent({ type: 'route-animation-stop', ...value })}
           onGuiEvent={(value) => recordEvent({ type: 'gui', event: value })}
+          onDimScreenEvent={(value) => recordEvent({ type: 'dim', event: value })}
         />
       ) : null}
     </View>
@@ -1079,6 +1150,18 @@ export default function MapFeaturesPage() {
       await requireMap().applyGui(scene);
 
       return 'GUI scene submitted';
+    });
+  }
+
+  function applyDimScreen(value: DimScreenOptions) {
+    execute(async () => {
+      await requireMap().moveCamera({
+        ...regularLabelFixture.coordinate,
+        zoomLevel: 17,
+      });
+      await requireMap().applyDimScreen(value);
+
+      return 'Dim-screen options submitted';
     });
   }
 

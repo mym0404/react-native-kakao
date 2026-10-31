@@ -26,11 +26,13 @@ final class KakaoMapView: ExpoView, MapControllerDelegate, KakaoMapEventDelegate
   let onRouteProgress = EventDispatcher()
   let onRouteAnimationStop = EventDispatcher()
   let onGuiEvent = EventDispatcher()
+  let onDimScreenEvent = EventDispatcher()
   let onCameraOperation = EventDispatcher()
   private var labels: MapLabels?
   private var shapes: MapShapes?
   private var routes: MapRoutes?
   private var gui: MapGui?
+  private var dimScreen: MapDimScreen?
   private var cameraCommands: MapCameraCommands?
   private var imageLoader: MapImageLoader?
   private var pendingLabels: MapLabelSceneRecord?
@@ -485,6 +487,19 @@ final class KakaoMapView: ExpoView, MapControllerDelegate, KakaoMapEventDelegate
     return manager
   }
 
+  func requireDimScreen() throws -> MapDimScreen {
+    let map = try requireMap()
+    if let dimScreen {
+      return dimScreen
+    }
+    let manager = MapDimScreen(map: map) { [weak self] payload in
+      guard let self, !isDestroyed else { return }
+      onDimScreenEvent(payload)
+    }
+    dimScreen = manager
+    return manager
+  }
+
   private func requireImageLoader() -> MapImageLoader {
     if let imageLoader {
       return imageLoader
@@ -581,6 +596,8 @@ final class KakaoMapView: ExpoView, MapControllerDelegate, KakaoMapEventDelegate
     labels = nil
     gui?.dispose()
     gui = nil
+    dimScreen?.dispose()
+    dimScreen = nil
     routes?.dispose()
     routes = nil
     shapes?.dispose()
