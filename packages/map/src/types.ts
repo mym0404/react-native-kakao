@@ -5,6 +5,14 @@ import type {
   AdvancedCameraCommandResult,
   AdvancedCameraOperationEvent,
 } from './types-camera';
+import type {
+  LabelAnimationEvent,
+  LabelCapabilities,
+  LabelClickEvent,
+  LabelCommand,
+  LabelRuntimeState,
+  LabelScene,
+} from './types-labels';
 
 export type Coordinate = {
   latitude: number;
@@ -106,6 +114,7 @@ export type KakaoMapViewProps = ViewProps & {
   camera?: CameraOptions;
   /** Applies the supplied fields; omitted fields retain their current SDK values. */
   options?: MapOptions;
+  labels?: LabelScene;
   onMapReady?: () => void;
   onError?: (error: KakaoMapError) => void;
   onCameraMoveStart?: (event: CameraMoveEvent) => void;
@@ -124,6 +133,9 @@ export type KakaoMapViewProps = ViewProps & {
   onMapTypeChanged?: (event: { viewInfoName: string }) => void;
   onPaddingChanged?: (event: MapPadding) => void;
   onViewportChanged?: (event: MapViewport) => void;
+  onLabelClick?: (event: LabelClickEvent) => void;
+  onLabelAnimationStopped?: (event: LabelAnimationEvent) => void;
+  onLabelsChanged?: (event: LabelRuntimeState) => void;
   onCameraOperation?: (event: AdvancedCameraOperationEvent) => void;
 };
 
@@ -137,6 +149,9 @@ export type KakaoMapViewRef = {
   /** Android only: iOS SDK does not expose this projection. */
   coordinateToScreen: (coordinate: Coordinate) => Promise<ScreenPoint>;
   clearCache: () => Promise<void>;
+  runLabelCommand: (command: LabelCommand) => Promise<void>;
+  getLabelCapabilities: () => Promise<LabelCapabilities>;
+  getLabelState: () => Promise<LabelRuntimeState>;
   /** Android only: resolves with the SDK's asynchronous POI state response. */
   executeCameraCommand: (command: AdvancedCameraCommand) => Promise<AdvancedCameraCommandResult>;
 };

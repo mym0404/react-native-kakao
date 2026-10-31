@@ -186,6 +186,150 @@ await map.current?.clearCache();
 
 `getMapInfo()` returns map type, zoom limits, margins, viewport size, language, and capabilities. Screen points must be inside the map area. The iOS SDK does not expose geographic-to-screen projection: `capabilities.coordinateToScreen` is `false`, and `coordinateToScreen()` rejects with `ERR_KAKAO_MAP_UNSUPPORTED_PLATFORM_FEATURE`. `clearCache()` clears SDK map caches; required tiles are fetched again.
 
+## Labels and markers
+
+The `labels` prop manages markers, LOD labels for dense datasets, and text along a path as one `LabelScene`. Define styles and layers first, then reference their IDs from each label.
+
+### Display a text label
+
+You can start with one text style and one regular label, without an image. Enable `clickable` on both the layer and the label to receive click events.
+
+```tsx
+import { KakaoMapView, type LabelScene } from '@react-native-kakao/map';
+
+const placeLabels = {
+  styles: [
+    {
+      id: 'place-text',
+      levels: [
+        {
+          level: 0,
+          textLines: [
+            {
+              fontSize: 14,
+              color: '#111827FF',
+              strokeColor: '#FFFFFFFF',
+              strokeWidth: 2,
+            },
+          ],
+        },
+      ],
+    },
+  ],
+  layers: [{ id: 'places', zOrder: 1000, clickable: true }],
+  labels: [
+    {
+      id: 'seoul-city-hall',
+      layerId: 'places',
+      styleId: 'place-text',
+      coordinate: { latitude: 37.5665, longitude: 126.978 },
+      text: [{ value: 'Seoul City Hall', styleIndex: 0 }],
+      clickable: true,
+    },
+  ],
+} satisfies LabelScene;
+
+<KakaoMapView
+  labels={placeLabels}
+  onLabelClick={({ id, layerId, kind, coordinate }) => {
+    console.log(id, layerId, kind, coordinate);
+  }}
+/>;
+```
+
+Each style's `levels` define its appearance by map zoom level. Use `layers` and `labels` for regular labels, `lodLayers` and `lodLabels` for dense datasets, and `pathTextStyles` and `pathLabels` for text along a path. IDs must be non-empty and unique within each kind, and every style and layer reference must exist in the same scene.
+
+### Icon URIs and display units
+
+Resolve a React Native static asset to a URI before passing it as a `MapImageSource`. You can also use `file:`, `http:`, and `https:` URIs.
+
+```tsx
+import { Image } from 'react-native';
+import type { LabelStyle } from '@react-native-kakao/map';
+
+const pin = Image.resolveAssetSource(require('./pin.png'));
+
+const pinStyle = {
+  id: 'place-pin',
+  levels: [
+    {
+      level: 0,
+      image: { uri: pin.uri, width: 32, height: 40 },
+      anchor: { x: 0.5, y: 1 },
+    },
+  ],
+} satisfies LabelStyle;
+```
+
+Image and font sizes, stroke widths, padding, and badge and pixel offsets use logical units: dp on Android and points on iOS. The SDK documentation does not specify units for `movePath.cornerRadius` or `movePath.jumpThreshold`, so the wrapper passes these two raw numbers through without applying the screen/image/style logical-unit conversion. Angles use degrees, and durations use integer milliseconds. Colors use `#RRGGBB` or `#RRGGBBAA`. If an image cannot be downloaded or decoded, the scene is not applied and `ERR_KAKAO_MAP_IMAGE_LOAD` is reported.
+
+Font sizes, strokes, and character spacing are rounded to the nearest native pixel after scaling where the SDK requires integers. `lineSpacing` is a line-height multiplier: `1` means 100%, `2` means 200%, and the default is `1`.
+
+Android character spacing must resolve to at least `-2` native pixels. Smaller values reject because the [SDK text style](https://apis.map.kakao.com/android_v2/reference/com/kakao/vectormap/label/LabelTextStyle.html) would ignore them.
+
+Label layers default to `zOrder: 1000` on both platforms. A greater value draws above lower layers of the same label kind. Use only these user ranges to avoid conflicts with SDK-owned map layers.
+
+| `zOrder` range | Purpose             |
+| -------------- | ------------------- |
+| `1000–1999`    | User labels         |
+| `3000–3999`    | User labels         |
+| `5000` or more | User labels         |
+| Other ranges   | Reserved by the SDK |
+
+### Snapshot replacement and runtime commands
+
+A `LabelScene` is a complete snapshot, not a partial patch. Applying a new `labels` value removes existing animations, tracking, layers, labels, and badges before installing the new scene. Pass an empty scene with `labels={{}}`, or remove a previously used `labels` prop, to clear all user labels. If a newer scene arrives while images are loading, the previous apply is cancelled and only the latest snapshot is applied. Superseded scenes do not emit cancellation errors; input and image failures for the current scene reach `onError`.
+
+After the map is ready, use `runLabelCommand()` to modify a label in the current scene. Commands do not replace the scene and reference existing stable IDs.
+
+```tsx
+await map.current?.runLabelCommand({
+  type: 'move',
+  id: 'seoul-city-hall',
+  coordinate: { latitude: 37.5657, longitude: 126.9769 },
+  duration: 400,
+});
+await map.current?.runLabelCommand({
+  type: 'show',
+  id: 'seoul-city-hall',
+  visible: false,
+});
+
+const capabilities = await map.current?.getLabelCapabilities();
+const state = await map.current?.getLabelState();
+```
+
+`LabelCommand` covers visibility, point and path movement, rotation, scale, position and transform sharing, badge visibility, animation start and stop, and camera tracking. Unsupported commands reject with `ERR_KAKAO_MAP_LABEL_UNSUPPORTED` instead of simulating behavior. Check `getLabelCapabilities()` before using platform-dependent features.
+
+| Event                     | Payload                                                                            |
+| ------------------------- | ---------------------------------------------------------------------------------- |
+| `onLabelClick`            | `{ id, layerId, kind, coordinate }`; `kind` is `label` or `lodLabel`               |
+| `onLabelAnimationStopped` | `{ id, finished }`; `true` for natural completion and `false` for an explicit stop |
+| `onLabelsChanged`         | `LabelRuntimeState` after a scene is applied                                       |
+
+`getLabelState()` returns IDs, kinds, and visibility for labels that still exist in the native SDK, plus animation definition IDs available in the current scene. `onLabelsChanged` reads state immediately after submitting the scene to the SDK; it does not signal rendering completion. SDK visibility may change on a later frame, so query again when you need a later state.
+
+On iOS, `tracking.source: 'native'` means the current tracking state was read from the SDK. The Android SDK has no tracking-state getter, so it returns the state requested through this module with `source: 'managed'`. Do not interpret managed state as a value read back from the SDK. An animation whose targets were removed by `removeAtStop` cannot restart until the scene is applied again.
+
+The main platform differences are also available as capability flags.
+
+| Feature                                | Android         | iOS                                |
+| -------------------------------------- | --------------- | ---------------------------------- |
+| Path text implementation               | `polylineLabel` | `waveText`                         |
+| Path text `rank`                       | Unsupported     | Supported                          |
+| Update or remove registered path style | Supported       | Unsupported                        |
+| LOD label `autoMove`                   | Unsupported     | Supported                          |
+| Auto-move duration                     | Supported       | Unsupported                        |
+| Direct scale command                   | Supported       | Unsupported; use a scale animation |
+| Competition exception layers           | Supported       | Unsupported                        |
+| Tracking-state source                  | Module-managed  | Native SDK                         |
+
+Neither platform supports moving an LOD label. Use `repeatCount: 1` for every effect except `drop`. iOS cannot update or remove a registered path-style definition, so use a new style ID. Treat `getLabelCapabilities()` as the source of truth for the installed native SDK.
+
+The `coordinate` of a regular label is the current position read from the SDK on both platforms. The iOS SDK does not expose a current-coordinate getter for LOD labels, so state entries with `kind: 'lodLabel'` may omit `coordinate`.
+
+On iOS, labels can move independently with the `move` command after position or transform sharing is disabled.
+
 ## Advanced camera commands
 
 `executeCameraCommand()` covers height-based movement, relative transforms, fitting, visibility checks, and reference-point locks beyond the basic camera API. Query capabilities first and use only supported fields.
@@ -225,6 +369,10 @@ Ref commands reject before readiness instead of being queued. Handle Promise `co
 | `ERR_KAKAO_MAP_INVALID_ARGUMENT`             | Empty key, invalid camera, or duration                              |
 | `ERR_KAKAO_MAP_VIEW_CREATION`                | Native map creation failed                                          |
 | `ERR_KAKAO_MAP_UNSUPPORTED_PLATFORM`         | Map feature used on web                                             |
+| `ERR_KAKAO_MAP_LABEL_INVALID_ARGUMENT`       | Duplicate IDs or invalid coordinates, styles, or animations         |
+| `ERR_KAKAO_MAP_LABEL_NOT_FOUND`              | A referenced label, layer, style, badge, or animation ID is missing |
+| `ERR_KAKAO_MAP_LABEL_UNSUPPORTED`            | The native SDK does not support the requested label feature         |
+| `ERR_KAKAO_MAP_IMAGE_LOAD`                   | A label image could not be downloaded or decoded                    |
 | `ERR_KAKAO_MAP_UNSUPPORTED_PLATFORM_FEATURE` | Native feature absent from the current platform SDK     |
 
 SDK errors preserve their original code and message. Authentication failures are delivered through `onError`, not the initialization Promise. No automatic retry is performed: fix the app registration or network issue and remount the view to retry. Restart the app process if the native app key must change.

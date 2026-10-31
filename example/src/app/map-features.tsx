@@ -8,12 +8,29 @@ import {
   initializeKakaoMapSDK,
   KakaoMapView,
   type KakaoMapViewRef,
+  type LabelCapabilities,
+  type LabelCommand,
+  type LabelScene,
   type MapGesture,
   type MapOptions,
   type MapOverlay,
 } from '@react-native-kakao/map';
 
 import { CAMERA_FIXTURES } from '../map/camera-fixtures';
+import {
+  androidCompetitionExceptionsLabelCapabilityFixture,
+  androidNoneTransformLabelCapabilityFixture,
+  iosLodAutoMoveLabelCapabilityFixture,
+  iosPathRankLabelCapabilityFixture,
+  labelErrorFixtureScenes,
+  labelFixtureActions,
+  labelFixtureScenes,
+  labelUnknownIdCommand,
+  regularLabelFixture,
+  sharingLabelIds,
+  sharingTargetDestination,
+  updatedPathTextFixtureScene,
+} from '../map/label-fixtures';
 import { kakaoNativeAppKey } from '../util/kakaoNativeAppKey';
 
 const pangyo = { latitude: 37.402001, longitude: 127.108678, zoomLevel: 17 };
@@ -26,6 +43,11 @@ const sections = [
   'gestures',
   'layout',
   'queries',
+  'labels',
+  'label-motion',
+  'label-animations',
+  'label-limits',
+  'label-errors',
 ] as const;
 
 const overlays: MapOverlay[] = ['roadviewLine', 'hillShading', 'bicycleRoad', 'hybrid'];
@@ -52,6 +74,9 @@ export default function MapFeaturesPage() {
   const [supportedLanguages, setSupportedLanguages] = useState<string[]>([]);
   const [section, setSection] = useState<(typeof sections)[number]>('camera');
   const [options, setOptions] = useState<MapOptions>({});
+  const [labels, setLabels] = useState<LabelScene>();
+  const [labelCapabilities, setLabelCapabilities] = useState<LabelCapabilities>();
+
   const [advancedCameraCapabilities, setAdvancedCameraCapabilities] =
     useState<AdvancedCameraCapabilities>();
   const [result, setResult] = useState('Waiting for map');
@@ -312,6 +337,150 @@ export default function MapFeaturesPage() {
           }),
       },
     );
+  } else {
+    actions.push(
+      {
+        id: 'label-capabilities',
+        run: () =>
+          execute(async () => {
+            const value = await requireMap().getLabelCapabilities();
+            setLabelCapabilities(value);
+
+            return value;
+          }),
+      },
+      {
+        id: 'label-state',
+        run: () => execute(() => requireMap().getLabelState()),
+      },
+      { id: 'clear-labels', run: () => setLabels({}) },
+    );
+
+    if (section === 'labels') {
+      actions.push(
+        ...Object.entries(labelFixtureScenes).map(([id, scene]) => ({
+          id: `labels-${id}`,
+          run: () => applyLabels(scene),
+        })),
+      );
+    } else if (section === 'label-motion') {
+      actions.push(
+        {
+          id: 'load-regular',
+          run: () => applyLabels(labelFixtureScenes.regular),
+        },
+        {
+          id: 'load-sharing',
+          run: () => applyLabels(labelFixtureScenes.sharingAndTracking),
+        },
+        ...Object.entries(sharingLabelIds).map(([owner, id]) => ({
+          id: `sharing-focus-${owner}`,
+          run: () =>
+            execute(async () => {
+              const label = await getSharingLabel(id);
+              await requireMap().moveCamera({
+                ...label.coordinate,
+                zoomLevel: 17,
+                rotation: 0,
+                tilt: 0,
+              });
+            }),
+        })),
+        {
+          id: 'sharing-move-path-from-current',
+          run: () =>
+            execute(async () => {
+              const target = await getSharingLabel(sharingLabelIds.target);
+              await requireMap().runLabelCommand({
+                type: 'movePath',
+                id: target.id,
+                points: [target.coordinate, sharingTargetDestination],
+                duration: 400,
+                rotate: false,
+                cornerRadius: 0,
+                jumpThreshold: 0,
+              });
+            }),
+        },
+        ...Object.entries(labelFixtureActions)
+          .filter(([group]) => group !== 'animations')
+          .flatMap(([group, commands]) =>
+            commands.filter(isSupportedLabelCommand).map((command, index) => ({
+              id: `${group}-${command.type}-${index}`,
+              run: () => execute(() => requireMap().runLabelCommand(portableLabelCommand(command))),
+            })),
+          ),
+      );
+    } else if (section === 'label-limits') {
+      const fixtures = [
+        ...(labelCapabilities?.pathTextStyleDefinitionUpdate
+          ? [
+              {
+                requiredCapability: 'pathTextStyleDefinitionUpdate',
+                scene: updatedPathTextFixtureScene,
+              },
+            ]
+          : []),
+        ...(labelCapabilities?.pathTextRank ? [iosPathRankLabelCapabilityFixture] : []),
+        ...(labelCapabilities?.lodAutoMove ? [iosLodAutoMoveLabelCapabilityFixture] : []),
+        ...(labelCapabilities?.supportedTransforms.includes('none')
+          ? [androidNoneTransformLabelCapabilityFixture]
+          : []),
+        ...(labelCapabilities?.competitionExceptions
+          ? [androidCompetitionExceptionsLabelCapabilityFixture]
+          : []),
+      ];
+
+      actions.push(
+        ...fixtures.map((fixture) => ({
+          id: `label-limit-${fixture.requiredCapability}`,
+          run: () => applyLabels(fixture.scene),
+        })),
+        ...(labelCapabilities?.lodAutoMove
+          ? [
+              {
+                id: 'label-lod-auto-move',
+                run: () =>
+                  execute(() =>
+                    requireMap().runLabelCommand(iosLodAutoMoveLabelCapabilityFixture.command),
+                  ),
+              },
+            ]
+          : []),
+      );
+    } else if (section === 'label-errors') {
+      actions.push(
+        {
+          id: 'error-control',
+          run: () => applyLabels(labelFixtureScenes.pixelBox),
+        },
+        ...Object.entries(labelErrorFixtureScenes).map(([id, scene]) => ({
+          id: `label-error-${id}`,
+          run: () => setLabels(scene),
+        })),
+        {
+          id: 'label-error-unknown-id',
+          run: () => execute(() => requireMap().runLabelCommand(labelUnknownIdCommand)),
+        },
+      );
+    } else {
+      actions.push(
+        {
+          id: 'load-animations',
+          run: () => applyLabels(labelFixtureScenes.animations),
+        },
+        ...labelFixtureActions.animations.flatMap((command) =>
+          command.type === 'startAnimation' || command.type === 'stopAnimation'
+            ? [
+                {
+                  id: `${command.type}-${command.id}`,
+                  run: () => execute(() => requireMap().runLabelCommand(command)),
+                },
+              ]
+            : [],
+        ),
+      );
+    }
   }
 
   return (
@@ -359,6 +528,7 @@ export default function MapFeaturesPage() {
           style={styles.map}
           initialCamera={pangyo}
           options={options}
+          labels={labels}
           onMapReady={() => {
             setReady(true);
             requireMap()
@@ -383,6 +553,11 @@ export default function MapFeaturesPage() {
           onMapTypeChanged={(value) => recordEvent({ type: 'map-type', ...value })}
           onPaddingChanged={(value) => recordEvent({ type: 'padding', ...value })}
           onViewportChanged={(value) => recordEvent({ type: 'viewport', ...value })}
+          onLabelsChanged={(value) => recordEvent({ type: 'labels-changed', ...value })}
+          onLabelClick={(value) => recordEvent({ type: 'label-click', ...value })}
+          onLabelAnimationStopped={(value) =>
+            recordEvent({ type: 'label-animation-stopped', ...value })
+          }
         />
       ) : null}
     </View>
@@ -445,6 +620,40 @@ export default function MapFeaturesPage() {
     const id = ++sequence.current;
     eventHistory.current = [{ sequence: id, ...value }, ...eventHistory.current].slice(0, 20);
     setEvent(`${id}|${JSON.stringify(eventHistory.current)}`);
+  }
+
+  async function getSharingLabel(id: string) {
+    const state = await requireMap().getLabelState();
+    const label = state.labels.find((item) => item.id === id);
+    if (label?.kind !== 'label') {
+      throw new Error('Load the sharing fixture first.');
+    }
+
+    return label;
+  }
+
+  function applyLabels(scene: LabelScene) {
+    execute(async () => {
+      await requireMap().moveCamera({
+        ...regularLabelFixture.coordinate,
+        zoomLevel: 17,
+      });
+      setLabels(scene);
+
+      return 'Label scene submitted';
+    });
+  }
+
+  function isSupportedLabelCommand(command: LabelCommand) {
+    return command.type !== 'scale' || labelCapabilities?.labelScaleCommand === true;
+  }
+
+  function portableLabelCommand(command: LabelCommand) {
+    if (command.type === 'show' && labelCapabilities?.autoMoveDuration !== true) {
+      return { ...command, duration: undefined };
+    }
+
+    return command;
   }
 
   async function execute(action: () => Promise<unknown>) {
