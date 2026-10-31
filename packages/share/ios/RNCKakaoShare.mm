@@ -13,6 +13,63 @@
 
 RCT_EXPORT_MODULE()
 
+RCT_EXPORT_METHOD(isKakaoTalkSharingAvailable : (RCTPromiseResolveBlock)
+                      resolve reject : (RCTPromiseRejectBlock)reject) {
+  [[self manager] isKakaoTalkSharingAvailable:resolve];
+}
+
+RCT_EXPORT_METHOD(makeTemplateUrl : (NSString*)templateType templateId : (
+    double)templateId templateJson : (NSDictionary*)templateJson templateArgs : (NSDictionary*)
+                      templateArgs serverCallbackArgs : (NSDictionary*)
+                          serverCallbackArgs resolve : (RCTPromiseResolveBlock)
+                              resolve reject : (RCTPromiseRejectBlock)reject) {
+  [[self manager] makeTemplateUrl:templateType
+                       templateId:templateId
+                     templateJson:templateJson
+                     templateArgs:templateArgs
+               serverCallbackArgs:serverCallbackArgs
+                          resolve:resolve
+                           reject:reject];
+}
+
+RCT_EXPORT_METHOD(uploadImage : (NSString*)imageUri secureResource : (BOOL)
+                      secureResource resolve : (RCTPromiseResolveBlock)
+                          resolve reject : (RCTPromiseRejectBlock)reject) {
+  [[self manager] uploadImage:imageUri secureResource:secureResource resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(getTemplateDiagnostics : (NSString*)templateType templateId : (
+    double)templateId templateJson : (NSDictionary*)templateJson templateArgs : (NSDictionary*)
+                      templateArgs serverCallbackArgs : (NSDictionary*)
+                          serverCallbackArgs pickerSettings : (NSDictionary*)
+                              pickerSettings resolve : (RCTPromiseResolveBlock)
+                                  resolve reject : (RCTPromiseRejectBlock)reject) {
+  [[self manager] getTemplateDiagnostics:templateType
+                              templateId:templateId
+                            templateJson:templateJson
+                            templateArgs:templateArgs
+                      serverCallbackArgs:serverCallbackArgs
+                          pickerSettings:pickerSettings
+                                 resolve:resolve
+                                  reject:reject];
+}
+
+RCT_EXPORT_METHOD(
+    shareScrapTemplate : (NSString*)requestUrl useWebBrowserIfKakaoTalkNotAvailable : (BOOL)
+        useWebBrowserIfKakaoTalkNotAvailable templateId : (NSNumber*)templateId templateArgs : (
+            NSDictionary*)templateArgs serverCallbackArgs : (NSDictionary*)
+            serverCallbackArgs pickerSettings : (NSDictionary*)pickerSettings resolve : (
+                RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
+  [[self manager] shareScrapTemplate:requestUrl
+      useWebBrowserIfKakaoTalkNotAvailable:useWebBrowserIfKakaoTalkNotAvailable
+                                templateId:templateId
+                              templateArgs:templateArgs
+                        serverCallbackArgs:serverCallbackArgs
+                            pickerSettings:pickerSettings
+                                   resolve:resolve
+                                    reject:reject];
+}
+
 RCT_EXPORT_METHOD(scrapImage : (NSString*)imageUrl secureResource : (BOOL)secureResource resolve : (
     RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
   [[self manager] scrapImage:imageUrl secureResource:secureResource resolve:resolve reject:reject];
@@ -26,11 +83,12 @@ RCT_EXPORT_METHOD(scrapImage : (NSString*)imageUrl secureResource : (BOOL)secure
 // RNC_KAKAO_SHARE_EXPORT_DEFAULT_TEMPLATE(shareCalendarTemplate, calendar)
 
 RCT_EXPORT_METHOD(
-    shareOrSendMeOrSendFriendOrWhatever : (NSString*)sendType templateType : (NSString*)
-        templateType templateId : (double)templateId templateJson : (NSDictionary*)templateJson
-            receiverUuids : (NSArray*)receiverUuids useWebBrowserIfKakaoTalkNotAvailable : (BOOL)
-                useWebBrowserIfKakaoTalkNotAvailable templateArgs : (NSDictionary*)
-                    templateArgs serverCallbackArgs : (NSDictionary*)serverCallbackArgs resolve : (
+    shareOrSendMeOrSendFriendOrWhatever : (NSString*)sendType templateType : (NSString*)templateType
+        templateId : (double)templateId templateJson : (NSDictionary*)templateJson receiverUuids : (
+            NSArray*)receiverUuids useWebBrowserIfKakaoTalkNotAvailable : (BOOL)
+            useWebBrowserIfKakaoTalkNotAvailable templateArgs : (NSDictionary*)
+                templateArgs serverCallbackArgs : (NSDictionary*)
+                    serverCallbackArgs pickerSettings : (NSDictionary*)pickerSettings resolve : (
                         RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
   [[self manager] shareOrSendMeOrSendFriendOrWhatever:sendType
                                          templateType:templateType
@@ -40,6 +98,7 @@ RCT_EXPORT_METHOD(
                  useWebBrowserIfKakaoTalkNotAvailable:useWebBrowserIfKakaoTalkNotAvailable
                                          templateArgs:templateArgs
                                    serverCallbackArgs:serverCallbackArgs
+                                       pickerSettings:pickerSettings
                                               resolve:resolve
                                                reject:reject];
 }

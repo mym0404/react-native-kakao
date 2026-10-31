@@ -1,0 +1,55 @@
+---
+sidebar_position: 33
+---
+
+# Build sharing URLs
+
+`makeDefaultTemplateUrl`, `makeCustomTemplateUrl`, and `makeScrapTemplateUrl` build browser sharing URLs with the Android and iOS SDKs. Initialize the SDK first. Neither a KakaoTalk installation nor login is required. All three return `Promise<string>` without opening a browser or sharing interface.
+
+## Usage
+
+For a default template, pass `templateType` and its corresponding `template` object.
+
+```tsx
+import {
+  makeDefaultTemplateUrl,
+  makeCustomTemplateUrl,
+  makeScrapTemplateUrl,
+} from '@react-native-kakao/share';
+
+const defaultUrl = await makeDefaultTemplateUrl({
+  templateType: 'text',
+  template: {
+    text: 'Content to share',
+    link: { webUrl: 'https://example.com' },
+  },
+  serverCallbackArgs: { reference: 'example' },
+});
+
+const customUrl = await makeCustomTemplateUrl({
+  templateId: 12345,
+  templateArgs: { title: 'Title to share' },
+});
+
+const scrapUrl = await makeScrapTemplateUrl({
+  requestUrl: 'https://example.com/article',
+});
+```
+
+| Function | Parameters |
+| --- | --- |
+| `makeDefaultTemplateUrl` | `templateType`: `feed`, `list`, `location`, `commerce`, `text`, or `calendar`. `template`: the matching template object |
+| `makeCustomTemplateUrl` | `templateId`: an ID registered in the developer console. Optional `templateArgs`: string substitutions |
+| `makeScrapTemplateUrl` | `requestUrl`: the page to scrape. Optional `templateId`: a custom template ID; omitting it uses the default scrap template. Optional `templateArgs`: string substitutions |
+
+All three accept optional `serverCallbackArgs`, a string map forwarded to the KakaoTalk sharing callback. They use the existing sharing functions' template formats and app execution parameters.
+
+The SDK URL builders do not support `pickerSettings`. Browser sharing uses the default recipient selection interface.
+
+## URL generation and sharing results
+
+Building a URL does not validate the template with Kakao's server or send a message. Sharing through the URL requires valid app configuration and templates, and may require Kakao login. A generated URL does not confirm template validity or message delivery. See [sharing setup](/docs/share/intro) for domain and template configuration.
+
+## Web support
+
+The Kakao JavaScript SDK has no URL builder, so all three functions reject with `Package-UnsupportedPlatform` on web. Use the existing `share*Template` functions to open web sharing.

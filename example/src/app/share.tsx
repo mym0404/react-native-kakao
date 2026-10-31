@@ -1,7 +1,12 @@
+import { useState } from 'react';
+import { Platform, TextInput } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import {
+  getShareTemplateDiagnostics,
+  isKakaoTalkSharingAvailable,
   type KakaoCalendarTemplate,
   type KakaoCommerceTemplate,
+  type KakaoDefaultTemplateParams,
   type KakaoFeedTemplate,
   type KakaoListTemplate,
   type KakaoLocationTemplate,
@@ -9,6 +14,9 @@ import {
   type KakaoTemplateLink,
   type KakaoTemplateSocial,
   type KakaoTextTemplate,
+  makeCustomTemplateUrl,
+  makeDefaultTemplateUrl,
+  makeScrapTemplateUrl,
   scrapImage,
   sendCalendarTemplateToFriends,
   sendCalendarTemplateToMe,
@@ -22,6 +30,8 @@ import {
   sendListTemplateToMe,
   sendLocationTemplateToFriends,
   sendLocationTemplateToMe,
+  sendScrapTemplateToFriends,
+  sendScrapTemplateToMe,
   sendTextTemplateToFriends,
   sendTextTemplateToMe,
   shareCalendarTemplate,
@@ -30,9 +40,12 @@ import {
   shareFeedTemplate,
   shareListTemplate,
   shareLocationTemplate,
+  shareScrapTemplate,
   shareTextTemplate,
+  uploadImage,
 } from '@react-native-kakao/share';
 import { selectMultipleFriends } from '@react-native-kakao/social';
+import { Asset } from 'expo-asset';
 
 import { Btn } from '../component/Btn';
 import { E2EApiAction } from '../component/E2EApiAction';
@@ -40,6 +53,18 @@ import { StyledScrollView } from '../component/StyledScrollView';
 import { Txt } from '../component/Txt';
 
 const webUrl = 'https://rnkakao.mjstudio.net';
+const uploadImageUri =
+  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAEUlEQVR4nGP4f4bhPwgzwBgAZhILKbl4g2kAAAAASUVORK5CYII=';
+
+const scrapRequestUrl = 'https://rnkakao.mjstudio.net';
+const kakaoLinkTemplateId = 107429;
+const kakaoTalkMessageTemplateId = 107430;
+const scrapTemplateArgs = { price: '20000' };
+const scrapFriendPickerParams = {
+  mode: 'full' as const,
+  options: { showMyProfile: true },
+};
+
 const scrapImageUrl =
   'https://developers.kakao.com/assets/img/about/logos/kakaolink/kakaolink_btn_medium.png';
 
@@ -152,12 +177,353 @@ const calendar: KakaoCalendarTemplate = {
   ],
 };
 
+const urlVerificationText = 'URL & 한글';
+const urlExecutionParams = { source: urlVerificationText, special: 'a=b&c?d#e%f', empty: '' };
+const urlLink = {
+  ...link,
+  androidExecutionParams: urlExecutionParams,
+  iosExecutionParams: urlExecutionParams,
+};
+const urlContent = { ...content, link: urlLink };
+const urlServerCallbackArgs = { verification: urlVerificationText, empty: '' };
+const defaultTemplateUrlCases: KakaoDefaultTemplateParams[] = [
+  { templateType: 'feed', template: { ...feed, content: urlContent } },
+  {
+    templateType: 'list',
+    template: { ...list, headerLink: urlLink, contents: [urlContent, content2] },
+  },
+  { templateType: 'location', template: { ...location, content: urlContent } },
+  { templateType: 'commerce', template: { ...commerce, content: urlContent } },
+  { templateType: 'text', template: { ...text, text: urlVerificationText, link: urlLink } },
+  { templateType: 'calendar', template: { ...calendar, content: urlContent } },
+];
+
+async function sendDetailedMessage(templateType: 'text' | 'custom' | 'scrap') {
+  const selected = await selectMultipleFriends(scrapFriendPickerParams);
+  const params = {
+    receiverUuids: selected.users.map(({ uuid }) => uuid),
+    includeFailureInfo: true as const,
+  };
+
+  if (params.receiverUuids.length === 0) {
+    return { selectedCount: 0 };
+  }
+
+  const result =
+    templateType === 'text'
+      ? await sendTextTemplateToFriends({
+          ...params,
+          template: {
+            text: 'RNCExample message result verification',
+            link: { webUrl: scrapRequestUrl, mobileWebUrl: scrapRequestUrl },
+          },
+        })
+      : templateType === 'custom'
+        ? await sendCustomTemplateToFriends({ ...params, templateId: kakaoTalkMessageTemplateId })
+        : await sendScrapTemplateToFriends({ ...params, requestUrl: scrapRequestUrl });
+
+  return {
+    selectedCount: params.receiverUuids.length,
+    successfulCount: result.successfulReceiverUuids.length,
+    failureCount: result.failureInfos.reduce(
+      (count, failure) => count + failure.receiverUuids.length,
+      0,
+    ),
+    failureCodes: result.failureInfos.map((failure) => failure.code),
+  };
+}
+
 export default function Page() {
+  const [imageUri, setImageUri] = useState(uploadImageUri);
+
   return (
     <StyledScrollView
       flex={1}
       contentContainerSx={{ pt: 12, pb: 48, alignItems: 'center', px: 4, gap: 4 }}
     >
+      <E2EApiAction
+        id={'share-availability'}
+        title={'Is Kakao Talk Sharing Available'}
+        action={isKakaoTalkSharingAvailable}
+      />
+      {defaultTemplateUrlCases.map((params) => (
+        <E2EApiAction
+          key={params.templateType}
+          id={`share-url-${params.templateType}`}
+          title={`Build ${params.templateType} sharing URL`}
+          action={() =>
+            makeDefaultTemplateUrl({ ...params, serverCallbackArgs: urlServerCallbackArgs })
+          }
+        />
+      ))}
+      <E2EApiAction
+        id={'share-url-custom'}
+        title={'Build custom sharing URL'}
+        action={() =>
+          makeCustomTemplateUrl({
+            templateId: kakaoLinkTemplateId,
+            templateArgs: { ...scrapTemplateArgs, verification: urlVerificationText },
+            serverCallbackArgs: urlServerCallbackArgs,
+          })
+        }
+      />
+      <E2EApiAction
+        id={'share-url-scrap'}
+        title={'Build scrap sharing URL'}
+        action={() =>
+          makeScrapTemplateUrl({
+            requestUrl: `${scrapRequestUrl}/?source=${encodeURIComponent(urlVerificationText)}`,
+            serverCallbackArgs: urlServerCallbackArgs,
+          })
+        }
+      />
+      <E2EApiAction
+        id={'share-url-scrap-custom'}
+        title={'Build custom scrap sharing URL'}
+        action={() =>
+          makeScrapTemplateUrl({
+            requestUrl: scrapRequestUrl,
+            templateId: kakaoLinkTemplateId,
+            templateArgs: scrapTemplateArgs,
+            serverCallbackArgs: urlServerCallbackArgs,
+          })
+        }
+      />
+      {defaultTemplateUrlCases.map((params) => (
+        <E2EApiAction
+          key={`diagnostics-${params.templateType}`}
+          id={`share-diagnostics-${params.templateType}`}
+          title={`Inspect ${params.templateType} template`}
+          action={() => getShareTemplateDiagnostics(params)}
+        />
+      ))}
+      <E2EApiAction
+        id={'share-diagnostics-custom'}
+        title={'Inspect custom template'}
+        action={() =>
+          getShareTemplateDiagnostics({
+            templateType: 'custom',
+            templateId: kakaoLinkTemplateId,
+            templateArgs: scrapTemplateArgs,
+            serverCallbackArgs: urlServerCallbackArgs,
+            pickerSettings: { type: 'chat', limit: 2 },
+          })
+        }
+      />
+      <E2EApiAction
+        id={'share-diagnostics-scrap'}
+        title={'Inspect scrap template'}
+        action={() =>
+          getShareTemplateDiagnostics({ templateType: 'scrap', requestUrl: scrapRequestUrl })
+        }
+      />
+      <E2EApiAction
+        id={'share-diagnostics-scrap-custom'}
+        title={'Inspect custom scrap template'}
+        action={() =>
+          getShareTemplateDiagnostics({
+            templateType: 'scrap',
+            requestUrl: scrapRequestUrl,
+            templateId: kakaoLinkTemplateId,
+            templateArgs: scrapTemplateArgs,
+          })
+        }
+      />
+      <E2EApiAction
+        id={'share-diagnostics-invalid-template'}
+        title={'Inspect invalid template ID'}
+        action={() => getShareTemplateDiagnostics({ templateType: 'custom', templateId: -1 })}
+      />
+      <E2EApiAction
+        id={'share-diagnostics-invalid-picker'}
+        title={'Reject invalid diagnostic picker limit'}
+        action={() =>
+          getShareTemplateDiagnostics({
+            templateType: 'text',
+            template: text,
+            pickerSettings: { limit: 0 },
+          })
+        }
+      />
+      <E2EApiAction
+        id={'share-diagnostics-warning'}
+        title={'Inspect unregistered link warning'}
+        action={() =>
+          getShareTemplateDiagnostics({
+            templateType: 'text',
+            template: { text: 'Diagnostic only', link: { webUrl: 'https://example.invalid' } },
+          })
+        }
+      />
+      <E2EApiAction
+        id={'share-diagnostics-missing-args'}
+        title={'Inspect missing custom arguments'}
+        action={() =>
+          getShareTemplateDiagnostics({ templateType: 'custom', templateId: kakaoLinkTemplateId })
+        }
+      />
+      <E2EApiAction
+        id={'share-picker-settings'}
+        title={'Share Text with Chat Picker (Limit 2)'}
+        action={() =>
+          shareTextTemplate({ template: text, pickerSettings: { type: 'chat', limit: 2 } })
+        }
+      />
+      <E2EApiAction
+        id={'share-picker-invalid-limit'}
+        title={'Reject Invalid Share Picker Limit'}
+        action={() => shareTextTemplate({ template: text, pickerSettings: { limit: 0 } })}
+      />
+      <TextInput
+        accessibilityLabel={'Image URI'}
+        testID={'share-upload-image-uri'}
+        value={imageUri}
+        onChangeText={setImageUri}
+        style={{ width: '100%', borderWidth: 1, padding: 8 }}
+      />
+      <E2EApiAction
+        id={'share-upload-image'}
+        title={'Upload Image'}
+        action={() => uploadImage({ imageUri })}
+      />
+      <E2EApiAction
+        id={'share-upload-image-http'}
+        title={'Upload Image (HTTP)'}
+        action={() => uploadImage({ imageUri, secureResource: false })}
+      />
+      <E2EApiAction
+        id={'share-upload-image-invalid'}
+        title={'Upload Invalid Image'}
+        action={() => uploadImage({ imageUri: 'file:///missing-kakao-image.png' })}
+      />
+      {Platform.OS !== 'web' ? (
+        <E2EApiAction
+          id={'share-upload-image-file'}
+          title={'Upload Local File'}
+          action={async () => {
+            const image = Asset.fromURI(scrapImageUrl);
+            await image.downloadAsync();
+            if (!image.localUri) {
+              throw new Error('Image download did not create a local file');
+            }
+
+            setImageUri(image.localUri);
+
+            return uploadImage({ imageUri: image.localUri });
+          }}
+        />
+      ) : null}
+      <Txt>{'Scrap'}</Txt>
+      <E2EApiAction
+        id={'share-scrap'}
+        title={'Share Scrap Template'}
+        action={async () => {
+          await shareScrapTemplate({ requestUrl: webUrl });
+
+          return { started: true };
+        }}
+      />
+      <E2EApiAction
+        id={'share-scrap-custom'}
+        title={'Share Scrap With Template Arguments'}
+        action={async () => {
+          await shareScrapTemplate({
+            requestUrl: webUrl,
+            templateId: 107429,
+            templateArgs: { price: '20000' },
+            serverCallbackArgs: { verification: 'scrap' },
+          });
+
+          return { started: true };
+        }}
+      />
+      <E2EApiAction
+        id={'share-scrap-no-browser'}
+        title={'Share Scrap Without Browser'}
+        action={async () => {
+          await shareScrapTemplate({
+            requestUrl: webUrl,
+            useWebBrowserIfKakaoTalkNotAvailable: false,
+          });
+
+          return { started: true };
+        }}
+      />
+      <Txt>{'Message Results'}</Txt>
+      <E2EApiAction
+        id={'send-text-with-result'}
+        title={'Send Text With Detailed Result'}
+        action={() => sendDetailedMessage('text')}
+      />
+      <E2EApiAction
+        id={'send-custom-with-result'}
+        title={'Send Custom With Detailed Result'}
+        action={() => sendDetailedMessage('custom')}
+      />
+      <E2EApiAction
+        id={'send-scrap-with-result'}
+        title={'Send Scrap With Detailed Result'}
+        action={() => sendDetailedMessage('scrap')}
+      />
+      <Txt>{'Scrap Messages'}</Txt>
+      <E2EApiAction
+        id={'send-scrap-me'}
+        title={'Send Scrap Template To Me'}
+        action={async () => {
+          await sendScrapTemplateToMe({ requestUrl: scrapRequestUrl });
+
+          return { didSend: true };
+        }}
+      />
+      <E2EApiAction
+        id={'send-scrap-custom-me'}
+        title={'Send Custom Scrap Template To Me'}
+        action={async () => {
+          await sendScrapTemplateToMe({
+            requestUrl: scrapRequestUrl,
+            templateId: kakaoLinkTemplateId,
+            templateArgs: scrapTemplateArgs,
+          });
+
+          return { didSend: true };
+        }}
+      />
+      <E2EApiAction
+        id={'send-scrap-friends'}
+        title={'Send Scrap Template To Selected Friends'}
+        action={async () => {
+          const { users } = await selectMultipleFriends(scrapFriendPickerParams);
+          if (users.length === 0) {
+            return { successfulCount: 0 };
+          }
+
+          const successfulUuids = await sendScrapTemplateToFriends({
+            requestUrl: scrapRequestUrl,
+            receiverUuids: users.map(({ uuid }) => uuid),
+          });
+
+          return { successfulCount: successfulUuids.length };
+        }}
+      />
+      <E2EApiAction
+        id={'send-scrap-custom-friends'}
+        title={'Send Custom Scrap Template To Selected Friends'}
+        action={async () => {
+          const { users } = await selectMultipleFriends(scrapFriendPickerParams);
+          if (users.length === 0) {
+            return { successfulCount: 0 };
+          }
+
+          const successfulUuids = await sendScrapTemplateToFriends({
+            requestUrl: scrapRequestUrl,
+            templateId: kakaoTalkMessageTemplateId,
+            templateArgs: scrapTemplateArgs,
+            receiverUuids: users.map(({ uuid }) => uuid),
+          });
+
+          return { successfulCount: successfulUuids.length };
+        }}
+      />
       <E2EApiAction
         id={'share-scrap-image'}
         title={'Scrap Image'}
@@ -173,7 +539,7 @@ export default function Page() {
         title={'Share Custom Template'}
         onPress={() => {
           shareCustomTemplate({
-            templateId: 107429,
+            templateId: kakaoLinkTemplateId,
             templateArgs: {
               price: '20000',
             },
@@ -185,7 +551,7 @@ export default function Page() {
         title={'Send Custom Template To Me'}
         onPress={() => {
           sendCustomTemplateToMe({
-            templateId: 107430,
+            templateId: kakaoTalkMessageTemplateId,
             templateArgs: {
               price: '20000',
             },
@@ -199,7 +565,7 @@ export default function Page() {
         onPress={async () => {
           const { users } = await selectMultipleFriends({ mode: 'popup' });
           const ret = await sendCustomTemplateToFriends({
-            templateId: 107430,
+            templateId: kakaoTalkMessageTemplateId,
             templateArgs: {
               price: '20000',
             },

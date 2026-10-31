@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 3.1.0-next.1
+
+### Minor Changes
+
+- 3027207: Add native custom-scheme and logging options, await SDK initialization, and expose SDK information with matching Expo callback configuration.
+- 2b223bf: Expose the Android SDK identifier initialization option while keeping iOS and web initialization unchanged.
+- 67cd4e2: Add Kakao certification login, device-local signing keys and sessions, abbreviated signatures, web certification authorization, and opt-in native callback configuration.
+
+### Patch Changes
+
+- d5c5fb8: Add single and multiple partnership friend pickers with native partnership SDK dependencies, web option parity, and shared selection validation.
+- dfd32ca: Upgrade all Kakao Android SDK modules to 2.25.1 and preserve web shipping-address queries with JavaScript SDK 2.8.4.
+- d81f9b7: Expose iOS authorization-code and certification-code token exchange with PKCE options, normalized web token issuance, and explicit unsupported-platform errors.
+
+## 3.1.0-next.0
+
+### Minor Changes
+
+- 3260517: Add a shipping address picker that returns the selected address ID on Android, iOS, and web.
+  
+  Add the Expo plugin's shippingAddressHandlerActivity option to handle Android picker callbacks.
+
+### Patch Changes
+
+- 20c253b: Use the application's Android compile SDK for all Kakao modules to support React Native 0.88 and Expo SDK 58 builds.
+- 71700aa: Align web SDK options, response shapes, timestamps, and session errors with native APIs.
+
 ## 3.0.0
 
 ### Major Changes

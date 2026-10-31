@@ -4,9 +4,7 @@ sidebar_position: 103
 
 # 프로필 불러오기
 
-## 프로필 불러오기
-
-`me()`로 프로필을 불러올 수 있습니다.
+`me()`는 Android·iOS·웹에서 사용자 프로필을 조회합니다. 이미지 URL은 기본으로 HTTPS를 사용하며, `secureResource: false`를 전달하면 HTTP URL을 요청합니다.
 
 응답은 다음과 같습니다.
 
@@ -20,15 +18,20 @@ Promise<KakaoUser>
 export type KakaoUser = {
   id: number;
   properties: Record<string, string>;
+  hasSignedUp?: boolean | null;
+  uuid?: string | null;
+  groupUserToken?: string | null;
   email?: string | null;
   name?: string | null;
   nickname?: string | null;
   profileImageUrl?: string | null;
   thumbnailImageUrl?: string | null;
+  isDefaultImage?: boolean | null;
   phoneNumber?: string | null;
   ageRange?: string | null;
   birthday?: string | null;
   birthdayType?: string | null;
+  isLeapMonth?: boolean | null;
   birthyear?: string | null;
   gender?: string | null;
   isEmailValid?: boolean | null;
@@ -45,7 +48,12 @@ export type KakaoUser = {
   nameNeedsAgreement?: boolean | null;
   profileImageNeedsAgreement?: boolean | null;
   profileNicknameNeedsAgreement?: boolean | null;
+  legalName?: string | null;
+  legalNameNeedsAgreement?: boolean | null;
+  legalBirthDate?: string | null;
   legalBirthDateNeedsAgreement?: boolean | null;
+  legalGender?: 'female' | 'male' | null;
+  legalGenderNeedsAgreement?: boolean | null;
   connectedAt?: number | null;
   synchedAt?: number | null;
 };
@@ -56,3 +64,63 @@ export type KakaoUser = {
 ```tsx
 me()
 ```
+
+## 연령대·성별·생일 유형
+
+`me()`는 플랫폼에 관계없이 카카오 응답의 문자열 값을 반환합니다. 정보 제공에는 앱의 동의항목 설정과 사용자 동의가 필요합니다.
+
+| 필드 | 제공되는 값 |
+| --- | --- |
+| `ageRange` | `0~9`, `10~14`, `15~19`, `20~29`, `30~39`, `40~49`, `50~59`, `60~69`, `70~79`, `80~89`, `90~` |
+| `gender` | `female` 또는 `male` |
+| `birthdayType` | 양력은 `SOLAR`, 음력은 `LUNAR` |
+
+Android SDK가 값을 알 수 없다고 반환하면 `null`로 전달합니다. 필드가 제공되지 않았는지 확인할 때는 `user.ageRange == null`처럼 `null`과 `undefined`를 함께 확인합니다. `birthdayType`은 생일 날짜인 `birthday`와 별개의 값입니다.
+
+## 프로필 부가 정보
+
+다음 필드는 Android·iOS·웹에서 같은 이름으로 반환합니다. 카카오가 값을 제공하지 않으면 `null`이며, `false`는 값이 없다는 뜻이 아닙니다.
+
+| 필드 | 의미 | 제공 조건 |
+| --- | --- | --- |
+| `isDefaultImage` | `true`이면 기본 프로필 사진이고, `false`이면 사용자가 등록한 사진입니다. | 프로필 사진 동의항목에 동의한 경우 |
+| `isLeapMonth` | 생일이 윤달에 속하는지 나타냅니다. | 생일 동의항목에 동의한 경우 |
+| `uuid` | 카카오톡 친구 정보에서 사용하는 본인의 고유 ID입니다. 회원번호인 `id`와 다른 값입니다. | 앱에 카카오톡 친구 목록 또는 메시지 권한이 있는 경우 |
+
+예를 들어 `user.isDefaultImage === false`이면 사용자가 등록한 사진으로 판단할 수 있습니다. `null`만으로 기본 사진 여부를 판단할 수는 없습니다. 자세한 제공 조건은 [사용자 정보 조회 응답](https://developers.kakao.com/docs/ko/kakaologin/rest-api#req-user-info-response)을 참고하세요.
+
+## 본인인증 정보
+
+카카오와 사용 협의를 마친 제휴 앱은 `me()`로 본인인증을 거친 이름·생년월일·성별을 조회할 수 있습니다. 앱의 사용 권한과 사용자 동의가 필요하며, 카카오가 제공하지 않은 값은 `null`입니다. 이 정보만으로 본인인증을 대체해서는 안 됩니다.
+
+| 필드 | 의미 | 형식 |
+| --- | --- | --- |
+| `legalName` | 본인인증을 거친 실명 | 문자열 |
+| `legalBirthDate` | 본인인증을 거친 법정 생년월일 | `yyyyMMdd` |
+| `legalGender` | 본인인증을 거친 법정 성별 | `female` 또는 `male` |
+
+각 필드의 `NeedsAgreement` 값은 사용자 동의를 받아 해당 정보를 제공할 수 있는지 나타냅니다. `true`이면 추가 동의가 필요하고, `false`여도 실제 정보가 반환된다는 뜻은 아닙니다. 자세한 조건은 [제휴사 전용 사용자 정보 조회](https://developers.kakao.com/docs/ko/kakaologin/confidential-user-info)를 참고하세요.
+
+## 그룹 사용자 토큰
+
+그룹 앱에 속한 앱은 `me()` 응답의 `groupUserToken`으로 그룹 안에서 같은 사용자인지 비교할 수 있습니다. Android·iOS·웹에서 문자열로 반환하며, 카카오가 값을 제공하지 않으면 `null`입니다. 그룹 앱을 구성하려면 카카오싱크 운영 담당자에게 설정을 요청해야 합니다.
+
+그룹 구성이 바뀌면 토큰 값도 바뀔 수 있으므로, 회원을 구분하는 고정 ID로 사용하지 않습니다. API 인증에는 액세스 토큰을 사용합니다. 자세한 조건은 [그룹 앱](https://developers.kakao.com/docs/ko/kakaologin/group-app)을 참고하세요.
+
+## 조회 옵션
+
+| 옵션 | 타입 | 동작 |
+| --- | --- | --- |
+| `secureResource` | `boolean` | 이미지 URL의 HTTPS 사용 여부입니다. 기본값은 `true`이며, `false`이면 HTTP URL을 요청합니다. |
+
+이미지 URL이 HTTP여야 하는 경우에만 `secureResource: false`를 전달합니다. 이 옵션은 반환할 이미지 URL의 형식만 바꾸며, API 요청은 HTTPS를 사용합니다.
+
+```tsx
+const user = await me({ secureResource: false });
+```
+
+## 수동 연결 상태
+
+`hasSignedUp`은 수동 연결 앱에서 사용자의 연결 완료 여부를 나타냅니다. `false`는 연결 대기, `true`는 연결 완료이며, 카카오가 값을 제공하지 않으면 `null`입니다. 자동 연결 앱에서 값이 없다고 해서 로그아웃 상태인 것은 아닙니다.
+
+연결 대기 사용자는 [수동 연결](./signup.mdx)로 앱에 연결할 수 있습니다.

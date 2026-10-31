@@ -8,11 +8,27 @@ sidebar_position: 108
 
 [공식 문서](https://developers.kakao.com/docs/latest/ko/kakaologin/ios#shipping-address-get)
 
-`shippingAddresses()`로 사용자의 배송지 정보를 불러올 수 있습니다.
+`shippingAddresses()`로 사용자의 배송지를 불러옵니다. Android, iOS, 웹에서 배송지 ID를 지정하거나 조회 시각과 페이지 크기로 목록을 나눠 조회할 수 있습니다.
 
 :::warning
 사용자에게 `shipping_address` 권한 동의를 받은 비즈니스 앱에서만 사용할 수 있습니다.
 :::
+
+`shippingAddresses()`는 배송지 조회 v1 API를 사용합니다. 웹에서는 JavaScript SDK 2.8.4가 v1 요청을 제공하지 않으므로 현재 액세스 토큰으로 REST API를 직접 호출합니다. Android·iOS와 같은 조회 옵션과 응답 형식을 사용합니다. 카카오는 2027년 4월 6일에 v1 지원을 종료할 예정이므로 [공식 안내](https://devtalk.kakao.com/t/151885)를 확인하세요.
+
+### 조회 옵션
+
+옵션을 생략하면 SDK의 기본 조회를 사용합니다. `addressId`를 지정하면 해당 배송지만 조회하며 `fromUpdatedAt`과 `pageSize`는 적용하지 않습니다.
+
+| 옵션 | 타입 | 의미 |
+| --- | --- | --- |
+| `addressId` | `number` | 조회할 배송지 ID인 정수 |
+| `fromUpdatedAt` | `number` | 이전 페이지 마지막 배송지의 `updatedAt`. 1970년 1월 1일부터 지난 초를 나타내는 정수이며, `0`은 처음부터 조회 |
+| `pageSize` | `number` | 페이지당 배송지 수인 정수. 기본값 `10`, 최소값 `2` |
+
+소수, `NaN`, 무한대는 거절합니다. `addressId`는 JavaScript 안전 정수, `fromUpdatedAt`은 0 이상의 안전 정수여야 하며, `pageSize`는 2 이상 2147483647 이하의 정수여야 합니다.
+
+기본 배송지가 먼저 나오고, 나머지는 최근 수정한 순서로 나옵니다. 다음 페이지를 조회할 때는 이전 페이지 마지막 배송지의 `updatedAt`을 `fromUpdatedAt`에 전달하세요. 조회 조건에 맞는 배송지가 더 없으면 `shippingAddresses`는 빈 배열입니다. 기본 배송지도 후속 페이지에서 제외될 수 있습니다.
 
 응답은 다음과 같습니다.
 
@@ -49,4 +65,24 @@ export type KakaoShippingAddress = {
 
 ```tsx
 shippingAddresses()
+```
+
+배송지 ID를 지정해 한 건을 조회합니다.
+
+```tsx
+await shippingAddresses({ addressId: 123 });
+```
+
+목록의 첫 페이지를 조회하고, 마지막 배송지의 수정 시각으로 다음 페이지를 요청합니다.
+
+```tsx
+const firstPage = await shippingAddresses({ fromUpdatedAt: 0, pageSize: 2 });
+const lastAddress = firstPage.shippingAddresses.at(-1);
+
+if (lastAddress?.updatedAt != null) {
+  const nextPage = await shippingAddresses({
+    fromUpdatedAt: lastAddress.updatedAt,
+    pageSize: 2,
+  });
+}
 ```

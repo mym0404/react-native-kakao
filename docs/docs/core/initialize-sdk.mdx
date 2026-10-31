@@ -2,33 +2,93 @@
 sidebar_position: 2
 ---
 
-# SDK 초기화하기
+# SDK 초기화
 
-## SDK 초기화하기
+`initializeKakaoSDK(appKey, options)`로 카카오 SDK를 초기화합니다. 반환하는 `Promise<void>`가 완료되면 Android·iOS SDK 또는 웹 JavaScript SDK의 초기화가 끝난 상태입니다. 다른 카카오 API는 초기화를 기다린 뒤 호출합니다.
 
-앱이 실행되면 Kakao SDK를 사용하기 전에 `index.js`나 `App.tsx` 등에서 `initializeKakaoSDK` 함수를 호출합니다.
+앱의 비동기 초기화 함수 안에서 네이티브 앱 키를 전달합니다.
 
-```tsx title='index.js'
+```tsx
 import { initializeKakaoSDK } from '@react-native-kakao/core';
 
-initializeKakaoSDK('{{ native app key }}');
+await initializeKakaoSDK('{{ native app key }}');
 ```
 
-:::info
-모든 카카오 API를 호출하기 전에 반드시 이 함수를 먼저 호출해야 합니다.
-:::
+## 네이티브 옵션
 
-## Web 플랫폼
+Android와 iOS에서 커스텀 URL 스킴과 SDK 내부 로깅을 설정할 수 있습니다. 웹에서는 이 두 옵션을 적용하지 않습니다.
 
-Web을 지원한다면 `web` 옵션에 JavaScript 키와 REST API 키를 함께 전달해야 합니다.
+| 옵션 | 기본값 | 의미 |
+| --- | --- | --- |
+| `customScheme` | `kakao{네이티브 앱 키}` | SDK의 인증·공유 콜백에 사용할 URL 스킴. `://`를 제외한 스킴만 전달 |
+| `loggingEnabled` | `false` | 카카오 네이티브 SDK 내부 로그 사용 여부 |
+| `android.sdkIdentifier` | 생략 | Android KA 요청 헤더 끝에 그대로 추가할 래퍼 SDK 식별자. iOS·웹에서는 사용하지 않음 |
 
-```ts
-import { initializeKakaoSDK } from '@react-native-kakao/core';
+iOS SDK `2.29.0`의 Debug 빌드는 `loggingEnabled`와 별개로 콘솔 로그를 출력합니다. 토큰 갱신 요청의 로그와 응답 본문은 [`refreshToken`의 `ios.loggingEnabled`](/docs/user/access-token)로 숨길 수 있습니다.
 
-Core.initializeKakaoSDK('{{ native app key }}', {
+커스텀 스킴은 카카오디벨로퍼스에 등록된 설정과 일치해야 합니다. 기존 멀티 앱 설정을 유지하는 경우에는 [공식 멀티 앱 안내](https://developers.kakao.com/docs/ko/kakaologin/multi-app)를 따릅니다. 값을 임의로 정하면 실제 로그인 콜백을 받을 수 없습니다.
+
+```tsx
+await initializeKakaoSDK('{{ native app key }}', {
+  customScheme: '{{ registered custom scheme }}',
+  loggingEnabled: false,
+});
+```
+
+Expo에서는 core 플러그인에도 같은 `customScheme`을 설정하고 prebuild를 다시 실행합니다. 플러그인은 활성화한 Android 인증·채널·배송지·인증서·공유 콜백과 iOS URL 타입에 이 스킴을 사용합니다.
+
+```json
+[
+  "@react-native-kakao/core",
+  {
+    "nativeAppKey": "{{ native app key }}",
+    "customScheme": "{{ registered custom scheme }}",
+    "android": { "authCodeHandlerActivity": true },
+    "ios": { "handleKakaoOpenUrl": true }
+  }
+]
+```
+
+Expo를 사용하지 않는다면 AndroidManifest.xml과 iOS Info.plist의 콜백 스킴을 직접 맞춥니다. SDK 초기화 옵션만 바꾸면 운영체제의 URL 등록은 변경되지 않습니다.
+
+Android에서 래퍼 SDK의 참고용 식별자를 추가하려면 `android.sdkIdentifier`를 지정해요. 카카오 SDK는 이 문자열을 KA 헤더 끝에 그대로 붙여요. 기존 헤더 필드와 구분하려면 다음 예시처럼 앞에 공백을 포함해요. 이 옵션은 런타임 초기화에만 사용하므로 Expo 플러그인 설정은 필요하지 않아요.
+
+```tsx
+await initializeKakaoSDK('{{ native app key }}', {
+  android: { sdkIdentifier: ' wrapper/my-sdk' },
+});
+```
+
+## 웹 초기화
+
+웹에서는 JavaScript SDK 스크립트를 먼저 로드하고 `web`에 JavaScript 키와 REST API 키를 함께 전달합니다. 스크립트 설치 방법은 [웹 설정](/docs/install-web)을 참고합니다.
+
+```tsx
+await initializeKakaoSDK('{{ native app key }}', {
   web: {
     javascriptKey: '{{ javascript key }}',
     restApiKey: '{{ rest api key }}',
   },
 });
 ```
+
+## SDK 정보 조회
+
+`getKakaoSDKInfo()`로 실제 연결된 SDK 버전과 초기화 상태를 확인합니다. SDK 버전을 별도로 덮어썼다면 설치된 버전이 반환됩니다.
+
+```tsx
+import { getKakaoSDKInfo } from '@react-native-kakao/core';
+
+const { version, isInitialized } = await getKakaoSDKInfo();
+```
+
+| 필드 | 지원 플랫폼 | 의미 |
+| --- | --- | --- |
+| `version` | Android·iOS·웹 | 현재 Kakao SDK 버전 |
+| `isInitialized` | Android·iOS·웹 | SDK 초기화 여부 |
+| `appKey` | Android·iOS | 초기화에 사용한 네이티브 앱 키. 초기화 전에는 생략 |
+| `kaHeader` | Android·iOS | SDK가 사용하는 KA 요청 헤더. 초기화 전에는 생략 |
+| `redirectUri` | Android·iOS | 현재 스킴을 사용하는 `{스킴}://oauth`. 초기화 전에는 생략 |
+| `loggingEnabled` | Android·iOS | SDK 내부 로깅 사용 여부 |
+
+웹 응답에는 `version`과 `isInitialized`만 포함됩니다.

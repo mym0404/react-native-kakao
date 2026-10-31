@@ -28,7 +28,6 @@ Pod::Spec.new do |s|
   end
 
   s.dependency          'RNCKakaoCore'
-  s.dependency          'RNCKakaoSocial'
 
   # Kakao dependencies
   RNCKakaoSPM.dependency(s, sdk_version, %w[KakaoSDKCommon KakaoSDKAuth KakaoSDKUser KakaoSDKTemplate KakaoSDKTalk KakaoSDKShare])

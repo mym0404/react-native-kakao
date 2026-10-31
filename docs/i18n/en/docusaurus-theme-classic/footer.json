@@ -1,22 +1,18 @@
 {
-  "link.title.Documentation": {
+  "link.title.문서": {
     "message": "Documentation",
-    "description": "The title of the footer links column with title=Documentation in the footer"
+    "description": "The title of the footer links column with title=문서 in the footer"
   },
-  "link.title.More": {
+  "link.title.더 보기": {
     "message": "More",
-    "description": "The title of the footer links column with title=More in the footer"
+    "description": "The title of the footer links column with title=더 보기 in the footer"
   },
-  "link.item.label.Documentation": {
+  "link.item.label.문서": {
     "message": "Documentation",
-    "description": "The label of footer link with label=Documentation linking to /docs/intro"
+    "description": "The label of footer link with label=문서 linking to /docs/intro"
   },
   "link.item.label.GitHub": {
     "message": "GitHub",
     "description": "The label of footer link with label=GitHub linking to https://github.com/mym0404/react-native-kakao"
-  },
-  "copyright": {
-    "message": "Copyright © 2024 MJ Studio.",
-    "description": "The footer copyright"
   }
 }

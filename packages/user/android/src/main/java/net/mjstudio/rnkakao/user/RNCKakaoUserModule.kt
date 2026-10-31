@@ -5,8 +5,11 @@ import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableArray
+import com.facebook.react.bridge.ReadableMap
 import com.kakao.sdk.auth.AuthApiClient
+import com.kakao.sdk.auth.AuthCodeClient
 import com.kakao.sdk.auth.model.OAuthToken
+import com.kakao.sdk.auth.model.Prompt
 import com.kakao.sdk.auth.model.Prompt.CERT
 import com.kakao.sdk.auth.model.Prompt.CREATE
 import com.kakao.sdk.auth.model.Prompt.LOGIN
@@ -14,7 +17,14 @@ import com.kakao.sdk.auth.model.Prompt.SELECT_ACCOUNT
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.UserApiClient
+import com.kakao.sdk.user.model.AccountLoginParams
+import com.kakao.sdk.user.model.AgeRange
+import com.kakao.sdk.user.model.BirthdayType
+import com.kakao.sdk.user.model.Gender
+import com.kakao.sdk.user.model.LoginUiMode
+import com.kakao.sdk.user.model.UserShippingAddresses
 import net.mjstudio.rnkakao.core.util.RNCKakaoResponseNotFoundException
+import net.mjstudio.rnkakao.core.util.RNCKakaoUnsupportedPlatformException
 import net.mjstudio.rnkakao.core.util.RNCKakaoUtil
 import net.mjstudio.rnkakao.core.util.argArr
 import net.mjstudio.rnkakao.core.util.argMap
@@ -27,8 +37,11 @@ import net.mjstudio.rnkakao.core.util.putD
 import net.mjstudio.rnkakao.core.util.putI
 import net.mjstudio.rnkakao.core.util.putL
 import net.mjstudio.rnkakao.core.util.rejectWith
+import net.mjstudio.rnkakao.core.util.toStringMap
 import net.mjstudio.rnkakao.core.util.unix
 import java.util.Date
+
+private const val MILLISECONDS_PER_SECOND = 1000.0
 
 class RNCKakaoUserModule internal constructor(
   context: ReactApplicationContext,
@@ -40,6 +53,9 @@ class RNCKakaoUserModule internal constructor(
     useKakaoAccountLogin: Boolean,
     scopes: ReadableArray?,
     nonce: String?,
+    loginHint: String?,
+    channelPublicIds: ReadableArray?,
+    androidRequestCode: Double?,
     promise: Promise,
   ) = onMain {
     val context =
@@ -47,63 +63,18 @@ class RNCKakaoUserModule internal constructor(
         promise.rejectWith(ActivityNotFoundException())
         return@onMain
       }
-    val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
-      if (error != null) {
-        promise.rejectWith(error)
-      } else if (token == null) {
-        promise.rejectWith(RNCKakaoResponseNotFoundException("token"))
-      } else {
-        promise.resolve(
-          argMap().apply {
-            putString("accessToken", token.accessToken)
-            putString("refreshToken", token.refreshToken)
-            putString("tokenType", null)
-            putString("idToken", token.idToken)
-            putDouble(
-              "accessTokenExpiresAt",
-              token.accessTokenExpiresAt.unix.toDouble(),
-            )
-            putDouble(
-              "refreshTokenExpiresAt",
-              token.refreshTokenExpiresAt.unix.toDouble(),
-            )
-            putDouble(
-              "accessTokenExpiresIn",
-              RNCKakaoUtil.diffSec(token.accessTokenExpiresAt, Date()).toDouble(),
-            )
-            putDouble(
-              "refreshTokenExpiresIn",
-              RNCKakaoUtil.diffSec(token.refreshTokenExpiresAt, Date()).toDouble(),
-            )
-            putArray(
-              "scopes",
-              argArr().apply {
-                pushStringList(token.scopes ?: listOf())
-              },
-            )
-          },
-        )
-      }
-    }
+    val callback = tokenCallback(promise)
     val requestedServiceTerms = serviceTerms?.filterIsInstance<String>()?.ifEmpty { null }
-    val requestedPrompts =
-      prompts
-        ?.filterIsInstance<String>()
-        ?.mapNotNull {
-          when (it) {
-            "Login" -> LOGIN
-            "Create" -> CREATE
-            "Cert" -> CERT
-            "SelectAccount" -> SELECT_ACCOUNT
-            else -> null
-          }
-        }?.ifEmpty { null }
+    val requestedChannelPublicIds = channelPublicIds?.filterIsInstance<String>()?.ifEmpty { null }
+    val requestedPrompts = loginPrompts(prompts)
     val accountLogin = {
       UserApiClient.instance.loginWithKakaoAccount(
         context,
         prompts = requestedPrompts,
+        loginHint = loginHint,
         nonce = nonce,
         serviceTerms = requestedServiceTerms,
+        channelPublicIds = requestedChannelPublicIds,
         callback = callback,
       )
     }
@@ -133,8 +104,10 @@ class RNCKakaoUserModule internal constructor(
 
       UserApiClient.instance.loginWithKakaoTalk(
         context,
+        requestCode = androidRequestCode?.toInt() ?: AuthCodeClient.DEFAULT_REQUEST_CODE,
         nonce = nonce,
         serviceTerms = requestedServiceTerms,
+        channelPublicIds = requestedChannelPublicIds,
         callback = talkCallback,
       )
     } else {
@@ -143,10 +116,90 @@ class RNCKakaoUserModule internal constructor(
   }
 
   @ReactMethod
+  override fun loginWithKakao(
+    uiMode: String,
+    orientation: String,
+    launchMethod: String,
+    prompts: ReadableArray,
+    loginHint: String?,
+    nonce: String?,
+    channelPublicIds: ReadableArray?,
+    serviceTerms: ReadableArray?,
+    promise: Promise,
+  ) = onMain {
+    val context =
+      reactApplicationContext.currentActivity ?: run {
+        promise.rejectWith(ActivityNotFoundException())
+        return@onMain
+      }
+    UserApiClient.instance.loginWithKakao(
+      context,
+      uiMode = LoginUiMode.entries.firstOrNull { it.name.equals(uiMode, ignoreCase = true) } ?: LoginUiMode.AUTO,
+      accountParams = AccountLoginParams(prompts = loginPrompts(prompts), loginHint = loginHint),
+      nonce = nonce,
+      channelPublicIds = channelPublicIds?.filterIsInstance<String>()?.ifEmpty { null },
+      serviceTerms = serviceTerms?.filterIsInstance<String>()?.ifEmpty { null },
+      callback = tokenCallback(promise),
+    )
+  }
+
+  @ReactMethod
+  override fun issueAccessTokenWithCode(
+    code: String,
+    codeVerifier: String?,
+    redirectUri: String?,
+    promise: Promise,
+  ) {
+    promise.rejectWith(RNCKakaoUnsupportedPlatformException("issueAccessTokenWithCode", "iOS and web"))
+  }
+
+  @ReactMethod
+  override fun refreshToken(
+    token: ReadableMap?,
+    iosLoggingEnabled: Boolean?,
+    promise: Promise,
+  ) = onMain {
+    try {
+      val oldToken =
+        token?.let {
+          OAuthToken(
+            accessToken = requireNotNull(it.getString("accessToken")),
+            accessTokenExpiresAt = Date((it.getDouble("accessTokenExpiresAt") * MILLISECONDS_PER_SECOND).toLong()),
+            refreshToken = requireNotNull(it.getString("refreshToken")),
+            refreshTokenExpiresAt = Date((it.getDouble("refreshTokenExpiresAt") * MILLISECONDS_PER_SECOND).toLong()),
+            idToken = it.getString("idToken"),
+            scopes = it.getArray("scopes")?.filterIsInstance<String>(),
+          )
+        }
+      if (oldToken == null) {
+        AuthApiClient.instance.refreshToken(callback = tokenCallback(promise))
+      } else {
+        AuthApiClient.instance.refreshToken(oldToken = oldToken, callback = tokenCallback(promise))
+      }
+    } catch (error: Exception) {
+      promise.rejectWith(error)
+    }
+  }
+
+  @ReactMethod
   override fun isKakaoTalkLoginAvailable(promise: Promise) =
     onMain {
       promise.resolve(UserApiClient.instance.isKakaoTalkLoginAvailable(reactApplicationContext))
     }
+
+  @ReactMethod
+  override fun signup(
+    properties: ReadableMap?,
+    promise: Promise,
+  ) = onMain {
+    UserApiClient.instance.signup(properties?.toStringMap()) { error ->
+      if (error != null) {
+        promise.rejectWith(error)
+      } else {
+        promise.resolve(null)
+      }
+    }
+  }
 
   @ReactMethod
   override fun logout(promise: Promise) =
@@ -186,6 +239,12 @@ class RNCKakaoUserModule internal constructor(
       } else {
         promise.resolve(false)
       }
+    }
+
+  @ReactMethod
+  override fun hasToken(promise: Promise) =
+    onMain {
+      promise.resolve(AuthApiClient.instance.hasToken())
     }
 
   @ReactMethod
@@ -239,79 +298,161 @@ class RNCKakaoUserModule internal constructor(
   }
 
   @ReactMethod
-  override fun serviceTerms(promise: Promise) =
+  override fun serviceTerms(
+    result: String?,
+    tags: ReadableArray?,
+    promise: Promise,
+  ) = onMain {
+    UserApiClient.instance.serviceTerms(
+      result = result,
+      tags = tags?.filterIsInstance<String>(),
+    ) { serviceTerms, error ->
+      if (error != null) {
+        promise.rejectWith(error)
+      } else if (serviceTerms == null) {
+        promise.rejectWith(RNCKakaoResponseNotFoundException("serviceTerms"))
+      } else {
+        promise.resolve(
+          argArr().pushMapList(
+            serviceTerms.serviceTerms?.map { term ->
+              argMap().apply {
+                putString("tag", term.tag)
+                term.agreedAt?.let { putDouble("agreedAt", it.unix.toDouble()) }
+                putBoolean("agreed", term.agreed)
+                putBoolean("required", term.required)
+                putBoolean("revocable", term.revocable)
+              }
+            } ?: listOf(),
+          ),
+        )
+      }
+    }
+  }
+
+  @ReactMethod
+  override fun revokeServiceTerms(
+    tags: ReadableArray,
+    promise: Promise,
+  ) = onMain {
+    UserApiClient.instance.revokeServiceTerms(tags.filterIsInstance<String>()) { response, error ->
+      if (error != null) {
+        promise.rejectWith(error)
+      } else if (response == null) {
+        promise.rejectWith(RNCKakaoResponseNotFoundException("revokeServiceTerms"))
+      } else {
+        promise.resolve(
+          argArr().pushMapList(
+            response.revokedServiceTerms?.map { term ->
+              argMap().apply {
+                putString("tag", term.tag)
+                putBoolean("agreed", term.agreed)
+              }
+            } ?: listOf(),
+          ),
+        )
+      }
+    }
+  }
+
+  @ReactMethod
+  override fun shippingAddresses(
+    addressId: Double?,
+    fromUpdatedAt: Double?,
+    pageSize: Double?,
+    promise: Promise,
+  ) = onMain {
+    val callback: (UserShippingAddresses?, Throwable?) -> Unit = { addrs, error ->
+      if (error != null) {
+        promise.rejectWith(error)
+      } else if (addrs == null) {
+        promise.rejectWith(RNCKakaoResponseNotFoundException("shippingAddresses"))
+      } else {
+        promise.resolve(
+          argMap().apply {
+            putD("userId", addrs.userId?.toDouble())
+            putB("needsAgreement", addrs.needsAgreement)
+            putArray(
+              "shippingAddresses",
+              argArr().apply {
+                pushMapList(
+                  addrs.shippingAddresses?.map { addr ->
+                    argMap().apply {
+                      putDouble("id", addr.id.toDouble())
+                      putString("name", addr.name)
+                      putBoolean("isDefault", addr.isDefault)
+                      putD("updatedAt", addr.updatedAt?.unix?.toDouble())
+                      putString("type", addr.type?.name)
+                      putString("baseAddress", addr.baseAddress)
+                      putString("detailAddress", addr.detailAddress)
+                      putString("receiverName", addr.receiverName)
+                      putString("receiverPhoneNumber1", addr.receiverPhoneNumber1)
+                      putString("receiverPhoneNumber2", addr.receiverPhoneNumber2)
+                      putString("zoneNumber", addr.zoneNumber)
+                      putString("zipCode", addr.zipCode)
+                    }
+                  } ?: listOf(),
+                )
+              },
+            )
+          },
+        )
+      }
+    }
+    if (addressId != null) {
+      UserApiClient.instance.shippingAddresses(addressId.toLong(), callback)
+    } else {
+      UserApiClient.instance.shippingAddresses(
+        fromUpdatedAt = fromUpdatedAt?.let { Date((it * 1000).toLong()) },
+        pageSize = pageSize?.toInt(),
+        callback = callback,
+      )
+    }
+  }
+
+  @ReactMethod
+  override fun selectShippingAddress(promise: Promise) =
     onMain {
-      UserApiClient.instance.serviceTerms { serviceTerms, error ->
+      val context =
+        reactApplicationContext.currentActivity ?: run {
+          promise.rejectWith(ActivityNotFoundException())
+          return@onMain
+        }
+
+      UserApiClient.instance.selectShippingAddress(context) { addressId, error ->
         if (error != null) {
           promise.rejectWith(error)
-        } else if (serviceTerms?.serviceTerms == null) {
-          promise.rejectWith(RNCKakaoResponseNotFoundException("serviceTerms"))
+        } else if (addressId == null) {
+          promise.rejectWith(RNCKakaoResponseNotFoundException("addressId"))
         } else {
-          promise.resolve(
-            argArr().pushMapList(
-              serviceTerms.serviceTerms?.map { term ->
-                argMap().apply {
-                  putString("tag", term.tag)
-                  putD("agreedAt", term.agreedAt?.unix?.toDouble())
-                  putBoolean("agreed", term.agreed)
-                  putBoolean("required", term.required)
-                  putBoolean("revocable", term.revocable)
-                }
-              } ?: listOf(),
-            ),
-          )
+          promise.resolve(addressId.toDouble())
         }
       }
     }
 
   @ReactMethod
-  override fun shippingAddresses(promise: Promise) =
-    onMain {
-      UserApiClient.instance.shippingAddresses { addrs, error ->
-        if (error != null) {
-          promise.rejectWith(error)
-        } else if (addrs == null) {
-          promise.rejectWith(RNCKakaoResponseNotFoundException("shippingAddresses"))
-        } else {
-          promise.resolve(
-            argMap().apply {
-              putD("userId", addrs.userId?.toDouble())
-              putB("needsAgreement", addrs.needsAgreement)
-              putArray(
-                "shippingAddresses",
-                argArr().apply {
-                  pushMapList(
-                    addrs.shippingAddresses?.map { addr ->
-                      argMap().apply {
-                        putDouble("id", addr.id.toDouble())
-                        putString("name", addr.name)
-                        putBoolean("isDefault", addr.isDefault)
-                        putD("updatedAt", addr.updatedAt?.unix?.toDouble())
-                        putString("type", addr.type?.name)
-                        putString("baseAddress", addr.baseAddress)
-                        putString("detailAddress", addr.detailAddress)
-                        putString("receiverName", addr.receiverName)
-                        putString("receiverPhoneNumber1", addr.receiverPhoneNumber1)
-                        putString("receiverPhoneNumber2", addr.receiverPhoneNumber2)
-                        putString("zoneNumber", addr.zoneNumber)
-                        putString("zipCode", addr.zipCode)
-                      }
-                    } ?: listOf(),
-                  )
-                },
-              )
-            },
-          )
-        }
+  override fun updateProfile(
+    properties: ReadableMap,
+    promise: Promise,
+  ) = onMain {
+    UserApiClient.instance.updateProfile(properties.toStringMap()) { error ->
+      if (error != null) {
+        promise.rejectWith(error)
+      } else {
+        promise.resolve(null)
       }
     }
+  }
 
   @ReactMethod
   override fun me(
     propertyKeys: ReadableArray?,
+    secureResource: Boolean?,
     promise: Promise,
   ) = onMain {
-    UserApiClient.instance.me(propertyKeys?.filterIsInstance<String>()) { user, error ->
+    UserApiClient.instance.me(
+      propertyKeys = propertyKeys?.toArrayList()?.filterIsInstance<String>(),
+      secureResource = secureResource ?: true,
+    ) { user, error ->
       if (error != null) {
         promise.rejectWith(error)
       } else if (user == null) {
@@ -326,6 +467,9 @@ class RNCKakaoUserModule internal constructor(
                 user.properties?.forEach { (key, value) -> putString(key, value) }
               },
             )
+            putB("hasSignedUp", user.hasSignedUp)
+            putString("uuid", user.uuid)
+            putString("groupUserToken", user.groupUserToken)
             putL("connectedAt", user.connectedAt?.unix)
             putL("synchedAt", user.synchedAt?.unix)
             putString("name", user.kakaoAccount?.name)
@@ -334,12 +478,14 @@ class RNCKakaoUserModule internal constructor(
             putString("nickname", user.kakaoAccount?.profile?.nickname)
             putString("profileImageUrl", user.kakaoAccount?.profile?.profileImageUrl)
             putString("thumbnailImageUrl", user.kakaoAccount?.profile?.thumbnailImageUrl)
+            putB("isDefaultImage", user.kakaoAccount?.profile?.isDefaultImage)
             putString("phoneNumber", user.kakaoAccount?.phoneNumber)
-            putString("ageRange", user.kakaoAccount?.ageRange?.name)
+            putString("ageRange", user.kakaoAccount?.ageRange.toBridgeValue())
             putString("birthday", user.kakaoAccount?.birthday)
-            putString("birthdayType", user.kakaoAccount?.birthdayType?.name)
+            putString("birthdayType", user.kakaoAccount?.birthdayType.toBridgeValue())
+            putB("isLeapMonth", user.kakaoAccount?.isLeapMonth)
             putString("birthyear", user.kakaoAccount?.birthyear)
-            putString("gender", user.kakaoAccount?.gender?.name)
+            putString("gender", user.kakaoAccount?.gender.toBridgeValue())
             putB("isEmailValid", user.kakaoAccount?.isEmailValid)
             putB("isEmailVerified", user.kakaoAccount?.isEmailVerified)
             putB("isKorean", user.kakaoAccount?.isKorean)
@@ -391,6 +537,11 @@ class RNCKakaoUserModule internal constructor(
               "legalBirthDateNeedsAgreement",
               user.kakaoAccount?.legalBirthDateNeedsAgreement,
             )
+            putString("legalName", user.kakaoAccount?.legalName)
+            putB("legalNameNeedsAgreement", user.kakaoAccount?.legalNameNeedsAgreement)
+            putString("legalBirthDate", user.kakaoAccount?.legalBirthDate)
+            putString("legalGender", user.kakaoAccount?.legalGender.toBridgeValue())
+            putB("legalGenderNeedsAgreement", user.kakaoAccount?.legalGenderNeedsAgreement)
           },
         )
       }
@@ -416,4 +567,87 @@ class RNCKakaoUserModule internal constructor(
         }
       }
     }
+
+  private fun tokenCallback(promise: Promise): (OAuthToken?, Throwable?) -> Unit =
+    { token, error ->
+      if (error != null) {
+        promise.rejectWith(error)
+      } else if (token == null) {
+        promise.rejectWith(RNCKakaoResponseNotFoundException("token"))
+      } else {
+        promise.resolve(
+          argMap().apply {
+            putString("accessToken", token.accessToken)
+            putString("refreshToken", token.refreshToken)
+            putString("tokenType", null)
+            putString("idToken", token.idToken)
+            putDouble(
+              "accessTokenExpiresAt",
+              token.accessTokenExpiresAt.unix.toDouble(),
+            )
+            putDouble(
+              "refreshTokenExpiresAt",
+              token.refreshTokenExpiresAt.unix.toDouble(),
+            )
+            putDouble(
+              "accessTokenExpiresIn",
+              RNCKakaoUtil.diffSec(token.accessTokenExpiresAt, Date()).toDouble(),
+            )
+            putDouble(
+              "refreshTokenExpiresIn",
+              RNCKakaoUtil.diffSec(token.refreshTokenExpiresAt, Date()).toDouble(),
+            )
+            putArray(
+              "scopes",
+              argArr().apply {
+                pushStringList(token.scopes ?: listOf())
+              },
+            )
+          },
+        )
+      }
+    }
+
+  private fun loginPrompts(prompts: ReadableArray?): List<Prompt>? =
+    prompts
+      ?.filterIsInstance<String>()
+      ?.mapNotNull {
+        when (it) {
+          "Login" -> LOGIN
+          "Create" -> CREATE
+          "Cert" -> CERT
+          "SelectAccount" -> SELECT_ACCOUNT
+          else -> null
+        }
+      }?.ifEmpty { null }
 }
+
+private fun AgeRange?.toBridgeValue(): String? =
+  when (this) {
+    AgeRange.AGE_0_9 -> "0~9"
+    AgeRange.AGE_10_14 -> "10~14"
+    AgeRange.AGE_15_19 -> "15~19"
+    AgeRange.AGE_20_29 -> "20~29"
+    AgeRange.AGE_30_39 -> "30~39"
+    AgeRange.AGE_40_49 -> "40~49"
+    AgeRange.AGE_50_59 -> "50~59"
+    AgeRange.AGE_60_69 -> "60~69"
+    AgeRange.AGE_70_79 -> "70~79"
+    AgeRange.AGE_80_89 -> "80~89"
+    AgeRange.AGE_90_ABOVE -> "90~"
+    AgeRange.UNKNOWN, null -> null
+  }
+
+private fun Gender?.toBridgeValue(): String? =
+  when (this) {
+    Gender.FEMALE -> "female"
+    Gender.MALE -> "male"
+    Gender.UNKNOWN, null -> null
+  }
+
+private fun BirthdayType?.toBridgeValue(): String? =
+  when (this) {
+    BirthdayType.SOLAR -> "SOLAR"
+    BirthdayType.LUNAR -> "LUNAR"
+    BirthdayType.UNKNOWN, null -> null
+  }

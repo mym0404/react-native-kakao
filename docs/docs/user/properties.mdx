@@ -1,8 +1,11 @@
 ---
+sidebar_position: 109
 sidebar_label: 사용자 프로퍼티
 ---
 
 # 사용자 프로퍼티
+
+## 조회
 
 카카오 로그인 후 `me()`로 Android, iOS, 웹에서 사용자 프로퍼티를 조회할 수 있습니다. `properties` 객체는 앱에 등록한 사용자 정의 키를 포함해 카카오 응답의 키를 그대로 유지합니다. 응답에 프로퍼티가 없으면 빈 객체를 반환합니다.
 
@@ -21,3 +24,19 @@ const selected = await me({ propertyKeys: ['properties.nickname'] });
 조회할 수 있는 키와 값은 앱의 사용자 프로퍼티 설정, 사용자 동의 여부, 카카오가 반환하는 데이터에 따라 달라집니다. `properties`의 타입은 `Record<string, string>`이지만 특정 키가 항상 존재하는 것은 아닙니다. `me()`는 사용자 정보를 조회하며 프로필을 수정하거나 추가 동의를 요청하지 않습니다.
 
 지원하는 필터와 프로퍼티는 카카오의 [사용자 정보 조회 문서](https://developers.kakao.com/docs/en/kakaologin/rest-api#req-user-info)에서 확인할 수 있습니다.
+
+## 저장
+
+`updateProfile({ properties })`로 앱에 등록된 사용자 정의 프로퍼티에 문자열 값을 저장할 수 있습니다. Android, iOS, 웹에서 성공하면 반환값 없이 완료하며 SDK 오류가 발생하면 `Promise`를 거부합니다.
+
+호출하기 전에 카카오디벨로퍼스의 **카카오 로그인 > 고급 > 사용자 프로퍼티**에서 키를 등록해야 합니다. 사용자는 로그인한 상태여야 합니다.
+
+```tsx
+import { updateProfile } from '@react-native-kakao/user';
+
+await updateProfile({ properties: { custom_key: 'value' } });
+```
+
+이 API는 앱별 사용자 프로퍼티를 저장합니다. 사용자의 카카오계정 프로필, 닉네임, 프로필 이미지는 수정하지 않습니다.
+
+필요한 설정과 오류는 카카오의 [사용자 프로퍼티 저장 문서](https://developers.kakao.com/docs/en/kakaologin/rest-api#update-profile)에서 확인할 수 있습니다.

@@ -1,0 +1,74 @@
+---
+sidebar_position: 5
+---
+
+# 제휴 친구 선택하기
+
+`selectSinglePartnerFriend()`와 `selectMultiplePartnerFriends()`로 제휴 친구 피커를 열고 선택한 친구 정보를 받아요. 서비스에 연결되지 않은 친구를 선택하려면 카카오의 제휴 승인을 받아야 해요.
+
+[카카오 제휴 친구 피커 문서](https://developers.kakao.com/docs/ko/kakaotalk-social/confidential-api-invite)
+
+## 준비하기
+
+카카오 로그인을 활성화하고 사용자가 `friends` 동의 항목에 동의해야 해요. 선택 후 메시지도 보낼 서비스는 `talk_message` 동의가 필요해요. 친구 선택 함수는 메시지를 발송하지 않아요.
+
+패키지가 Android 제휴 SDK 1.0.0과 iOS 제휴 SDK를 연결해요. iOS 제휴 SDK는 고정된 Git 리비전을 사용하며 Kakao iOS SDK 2.29.0 이상이 필요해요. 웹은 Kakao JavaScript SDK의 친구 피커를 사용해요.
+
+## 친구 선택하기
+
+다음 예제는 서비스에 연결되지 않은 친구를 한 명 선택해요. 제휴 권한이 없는 앱에서는 해당 친구가 표시되지 않거나 카카오가 요청을 거부할 수 있어요.
+
+```tsx
+import {
+  selectSinglePartnerFriend,
+  selectMultiplePartnerFriends,
+} from '@react-native-kakao/social';
+
+const friend = await selectSinglePartnerFriend({
+  mode: 'full',
+  options: { friendFilter: 'invitable', displayAllProfile: false },
+});
+
+const selected = await selectMultiplePartnerFriends({
+  mode: 'popup',
+  options: { friendFilter: 'registered', minPickableCount: 1, maxPickableCount: 5 },
+});
+```
+
+단일 선택은 `Promise<KakaoTalkFriendProfile | undefined>`, 다중 선택은 `Promise<KakaoTalkFriendSelectResult>`를 반환해요. 두 함수의 인자를 생략하면 기본 옵션으로 열려요. 응답은 [일반 친구 피커](/docs/social/select-talk-friends)와 같고, 카카오가 제공한 `maskingProfileNickname`도 반환해요. 취소와 SDK 오류는 `Promise`를 거부해요.
+
+## 옵션
+
+`KakaoTalkPartnerFriendSelectOptions`는 [일반 피커 옵션](/docs/social/select-talk-friends)에 다음 필드를 추가해요.
+
+| 필드 | 타입 | 동작 |
+| --- | --- | --- |
+| `friendFilter` | `'none' \| 'registered' \| 'invitable'` | 전체, 앱 연결 친구, 앱 미연결 친구로 필터링해요. 기본값은 `none`이에요. |
+| `countryCodeFilters` | `string[]` | 카카오톡에 등록된 전화번호의 국가 코드로 필터링해요. 배열을 SDK에 전달해요. |
+| `usingOsFilter` | `'all' \| 'android' \| 'ios'` | 친구가 카카오톡에 가입할 때 사용한 OS로 필터링해요. 기본값은 `all`이에요. |
+| `disableSelectOptions` | `KakaoTalkDisableSelectOption[]` | 지정한 사유에 해당하는 친구를 선택할 수 없게 해요. |
+| `displayAllProfile` | `boolean` | 미동의 사용자 프로필 표시를 요청해요. 기본값은 `false`이며, 제공 범위는 앱의 제휴 권한에 따라 달라져요. |
+
+선택 제한 사유는 다음 타입으로 지정해요. `custom`은 안내 메시지와 비어 있지 않은 UUID 목록이 모두 필요해요.
+
+```tsx
+export type KakaoTalkDisableSelectOption =
+  | { reason: 'custom'; message: string; uuids: string[] }
+  | {
+      reason: 'msgBlocked' | 'registered' | 'unregistered' | 'notFriend';
+      message?: string;
+      uuids?: string[];
+    };
+```
+
+다중 선택 수는 정수로 `1 <= minPickableCount <= maxPickableCount <= 100`이어야 해요. 기본값은 최소 1명, 최대 30명이에요. 단일 선택은 항상 한 명이며 선택 수 옵션을 무시해요. 잘못된 다중 선택 수나 비어 있는 `custom` 제한은 SDK를 호출하기 전에 `Package-Assertion` 오류로 거부해요.
+
+## 플랫폼 차이
+
+| 항목 | Android·iOS | 웹 |
+| --- | --- | --- |
+| 제휴 필터·선택 제한 | 제휴 SDK에 전달해요. | JavaScript SDK에 전달해요. |
+| `mode` | 전체 화면 또는 팝업을 선택해요. | JavaScript SDK의 팝업을 사용해요. |
+| `viewAppearance`, `orientation`, `enableIndex` | SDK에 전달해요. | JavaScript SDK가 지원하지 않아 무시해요. |
+
+현재 Android 제휴 SDK 1.0.0과 iOS SDK 2.29.0의 공개 생성자에는 제목 설정 인자가 없어 `title` 옵션을 노출하지 않아요. 친구 닉네임과 썸네일은 동의·제휴 권한에 따라 마스킹되거나 `null` 또는 미제공 상태일 수 있어요.

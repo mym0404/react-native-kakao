@@ -7,7 +7,7 @@ A package API change is not complete until example verification passes.
 
 ## Why this matters
 
-- Expo Autolinking resolves the six Kakao workspace packages declared in `example/package.json`.
+- Expo Autolinking resolves the seven Kakao workspace packages declared in `example/package.json`.
 - Prebuild-generated Android/iOS projects reflect real integration behavior.
 - The app uses the New Architecture required by Expo.
 
@@ -40,12 +40,17 @@ When `packages/core/expo-config-plugin/*` or app plugin behavior changes:
 - iOS and Android both return expected payload shape.
 - Web fallback behavior remains compatible when applicable.
 
+## React Native version coverage
+
+- The main example uses React Native 0.88 and Expo SDK 58. CI additionally runs `node script/ci-minimum-rn.ts <android|ios>` to build all packed native modules in an isolated React Native 0.76.0 consumer with the New Architecture; this minimum-version check does not launch a device or run E2E.
+- The root TypeScript configuration selects React Native's legacy type exports so published Codegen declarations remain compatible with React Native 0.76, which predates the root `CodegenTypes` namespace. Do not raise the public package minimum when updating the example.
+
 ## E2E runner
 
 - `yarn e2e test [ios|android|both] [--device <device-id>]` runs deterministic TypeScript tests with `e2e`, `@e2e-dev/mobile`, and `agent-device`; no model credentials are needed.
 - Omitting the platform runs iOS and Android in parallel. Omitting `--device` selects the first mobile device returned by agent-device for each platform and boots it if needed. Use `--device` or `--app` with a single platform; `--output` for both platforms creates separate `ios/` and `android/` result directories.
 - Use a dedicated signed-out simulator or emulator without KakaoTalk or Kakao Navi. Tests do not clear user data or the simulator keychain.
-- The suite covers six menu screens, KakaoTalk availability, signed-out state, user/social token errors, channel URL generation, and navigation when Kakao Navi is absent. Login, message delivery, and external app actions are excluded.
+- The suite covers seven menu screens, KakaoTalk availability, signed-out state, user/social token errors, channel URL generation, and navigation when Kakao Navi is absent. Login, message delivery, certification signatures, and external app actions are excluded.
 - `--app` selects the Release binary and `--output` selects a new result directory. Recordings and explicit screenshots are disabled.
 - The SDK manages agent-device startup and test session cleanup. Passing requires every discovered test to pass. Each output directory is single-use.
 - Evidence includes `summary.json`, `index.html`, `junit.xml`, and SDK reports under `sdk/`. CI updates platform results in a dedicated block in the PR body and preserves the rest of the description.

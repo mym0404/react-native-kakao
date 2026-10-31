@@ -147,7 +147,7 @@ module RNCKakaoSPM
     end
   end
 
-  def self.dependency(spec, versions, products, resources: [])
+  def self.dependency(spec, versions, products, resources: [], partnership_revision: nil)
     unless respond_to?(:spm_dependency, true)
       raise Pod::Informative, 'React Native Kakao requires React Native 0.76 or newer with Swift Package Manager integration available.'
     end
@@ -160,6 +160,9 @@ module RNCKakaoSPM
       raise Pod::Informative, "Kakao iOS SDK versions must match across all installed modules. Received #{([@version] + versions).compact.uniq.join(', ')} for #{spec.name}."
     end
     @version = versions.first
+    if partnership_revision && (!partnership_revision.match?(/\A[0-9a-f]{40}\z/) || Gem::Version.new(@version) < Gem::Version.new('2.29.0'))
+      raise Pod::Informative, 'The Kakao partnership SDK requires an exact Git revision and Kakao iOS SDK 2.29.0 or newer.'
+    end
     resources.each { |resource| RESOURCE_BUNDLES.fetch(resource) }
     @resources_by_pod ||= {}
     @resources_by_pod[spec.name] = resources
@@ -183,5 +186,13 @@ module RNCKakaoSPM
       requirement: { kind: 'upToNextMajorVersion', minimumVersion: '5.9.0' },
       products: ['Alamofire']
     )
+    if partnership_revision
+      spm_dependency(
+        core,
+        url: 'https://github.com/kakao/kakao-partnership-ios-sdk.git',
+        requirement: { kind: 'revision', revision: partnership_revision },
+        products: ['KakaoPartnershipSDKSocial']
+      )
+    end
   end
 end

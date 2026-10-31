@@ -29,6 +29,21 @@ API를 사용하려면 카카오 로그인을 완료하고 관련 동의 항목�
 
 `mode='popup'`으로 설정한 팝업 피커입니다.
 
+### 친구 목록 색인
+
+Android와 iOS에서는 `enableIndex`로 친구 목록의 색인을 켜거나 끌 수 있습니다. 기본값은 `true`입니다. `false`로 설정하면 색인을 사용하지 않습니다.
+
+웹 JavaScript SDK는 이 옵션을 지원하지 않습니다. 웹에서는 `enableIndex`를 무시하고 SDK의 기본 친구 선택 화면을 엽니다.
+
+```tsx
+import { selectMultipleFriends } from '@react-native-kakao/social';
+
+const result = await selectMultipleFriends({
+  mode: 'full',
+  options: { enableIndex: false },
+});
+```
+
 ## 공통 타입들
 
 친구 피커를 설정하는 옵션 객체와 친구 객체는 다음과 같이 정의됩니다.
@@ -41,6 +56,7 @@ export interface KakaoTalkFriendSelectOptions {
   orientation?: 'auto' | 'landscape' | 'portrait';
   /** 친구 검색 기능 사용 여부 */
   enableSearch?: boolean;
+  enableIndex?: boolean;
   /** 내 프로필 표시 여부 */
   showMyProfile?: boolean;
   /** 즐겨찾기 친구 표시 여부 */
@@ -63,6 +79,7 @@ export interface KakaoTalkFriendProfile {
   id?: number;
   /** 즐겨찾기 추가 여부, 채팅방 피커에서는 미제공 */
   favorite?: boolean;
+  maskingProfileNickname?: string | null;
   /** 프로필 닉네임, 프로필 닉네임 동의 항목에 동의하지 않은 친구나 앱과 연결되지 않는 친구의 경우,
    * 닉네임을 마스킹 처리하여 제공(닉네임 원본을 받으려면 권한 및 displayAllProfile 설정 필요) */
   profileNickname?: string;

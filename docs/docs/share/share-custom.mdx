@@ -9,7 +9,7 @@ sidebar_position: 5
 
 `[도구] > [메시지 템플릿]`에서 직접 구성한 사용자 정의 템플릿을 사용하여 카카오톡으로 메시지를 공유하는 기능입니다.
 
-## Usage
+## 사용법 {#usage}
 
 `shareCustomTemplate()` 함수를 이용해 메시지를 보낼 수 있습니다.
 
@@ -21,6 +21,7 @@ export function shareCustomTemplate(params: {
   useWebBrowserIfKakaoTalkNotAvailable?: boolean;
   templateArgs?: Record<string, string>;
   serverCallbackArgs?: Record<string, string>;
+  pickerSettings?: KakaoSharePickerSettings;
 });
 ```
 
@@ -30,8 +31,10 @@ export function shareCustomTemplate(params: {
 - `templateArgs`: 템플릿 인자입니다. 모든 값은 문자열로 전달해야 합니다.
 - `serverCallbackArgs`: 서버 콜백 인자입니다. 모든 값은 문자열로 전달해야 합니다.
 
+- `pickerSettings`: [공유 대상 선택 화면 설정](/docs/share/intro#share-picker-settings)입니다.
+
 :::info
 자세한 컴포넌트 타입은 [컴포넌트 타입들](/docs/share/component-types)을 참고하세요.
 
-사용 중 문제가 생기면 [Troubleshooting](/docs/share/troubleshooting)을 참고하세요.
+사용 중 문제가 생기면 [문제 해결](/docs/share/troubleshooting)을 참고하세요.
 :::

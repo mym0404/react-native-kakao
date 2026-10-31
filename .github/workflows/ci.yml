@@ -59,6 +59,15 @@ jobs:
           yarn t
           yarn test
 
+      - name: Build web example
+        run: yarn example exec expo export --platform web --output-dir ../build/web
+      - name: Verify original PR metadata for backports
+        env:
+          GH_REPO: ${{ github.repository }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: node script/release-metadata.ts verify-backport
+
 #      - name: Cache Gradle
 #        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
 #        with:
@@ -198,6 +207,8 @@ jobs:
     if: needs.changes.outputs.ios == 'true'
     runs-on: macos-latest
     timeout-minutes: 45
+    env:
+      E2E_IOS_APP: build/e2e/ios-build/Build/Products/Release-iphonesimulator/KakaoExample.app
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -206,7 +217,7 @@ jobs:
         id: ios-e2e-release-cache
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
-          path: build/e2e/ios-build/Build/Products/Release-iphonesimulator/KakaoExample.app
+          path: ${{ env.E2E_IOS_APP }}
           key: ${{ runner.os }}-e2e-ios-release-${{ runner.arch }}-xcode26.4-v2-${{ hashFiles('mise.toml', '.yarnrc.yml', 'yarn.lock', '.yarn/patches/**', 'package.json', 'tsconfig.json', 'packages/*/package.json', 'packages/*/tsconfig.json', 'packages/*/tsconfig.build.json', 'packages/*/*.podspec', 'packages/*/src/**', 'packages/*/ios/**', 'packages/core/expo-config-plugin/**', 'packages/core/app.plugin.js', 'example/package.json', 'example/app.json', 'example/src/**', 'example/assets/**', 'example/tsconfig.json', 'example/Gemfile', 'example/Gemfile.lock', 'script/e2e/e2e-build.ts', 'script/e2e/e2e-log.ts') }}
 
       - uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0
@@ -287,22 +298,34 @@ jobs:
         if: steps.ios-e2e-release-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
-          path: build/e2e/ios-build/Build/Products/Release-iphonesimulator/KakaoExample.app
+          path: ${{ env.E2E_IOS_APP }}
           key: ${{ steps.ios-e2e-release-cache.outputs.cache-primary-key }}
 
       - name: Boot E2E Simulator
         run: |
+          echo "AGENT_DEVICE_STATE_DIR=$RUNNER_TEMP/kakao-e2e-agent" >> "$GITHUB_ENV"
+          echo 'AGENT_DEVICE_XCUITEST_ARCHS=arm64' >> "$GITHUB_ENV"
           simulator_version=$(xcrun --sdk iphonesimulator --show-sdk-version)
           device_id=$(xcrun simctl create "Kakao E2E" "iPhone 17 Pro" "com.apple.CoreSimulator.SimRuntime.iOS-${simulator_version//./-}")
           echo "E2E_IOS_DEVICE=$device_id" >> "$GITHUB_ENV"
           xcrun simctl boot "$device_id"
           xcrun simctl bootstatus "$device_id" -b
 
+      - name: Install iOS app before E2E
+        timeout-minutes: 5
+        run: xcrun simctl install "$E2E_IOS_DEVICE" "$E2E_IOS_APP"
+
+      - name: Prepare iOS automation before E2E
+        run: |
+          preparation_session=kakao-ci-prepare
+          startup_timeout_ms=600000
+          trap 'yarn agent-device close --session "$preparation_session" || true' EXIT
+          yarn agent-device prepare ios-runner --platform ios --udid "$E2E_IOS_DEVICE" --session "$preparation_session" --timeout "$startup_timeout_ms"
+          app_id=$(node -p "require('./example/app.json').expo.ios.bundleIdentifier")
+          yarn agent-device open "$app_id" --platform ios --udid "$E2E_IOS_DEVICE" --session "$preparation_session" --timeout "$startup_timeout_ms"
+
       - name: Verify example menus and signed-out APIs on iOS
-        env:
-          AGENT_DEVICE_STATE_DIR: ${{ runner.temp }}/kakao-e2e-agent
-          AGENT_DEVICE_XCUITEST_ARCHS: arm64
-        run: yarn e2e test ios --device "$E2E_IOS_DEVICE" --output build/e2e/ios
+        run: yarn e2e test ios --device "$E2E_IOS_DEVICE" --app "$E2E_IOS_APP" --output build/e2e/ios
 
       - name: Upload iOS E2E evidence
         if: always()
@@ -333,8 +356,40 @@ jobs:
           xcrun simctl shutdown "$E2E_IOS_DEVICE" || true
           xcrun simctl delete "$E2E_IOS_DEVICE"
 
+  build-minimum:
+    name: build-minimum (${{ matrix.platform }}, RN 0.76.0)
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: android
+            runner: ubuntu-latest
+          - platform: ios
+            runner: macos-latest
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install JDK
+        if: matrix.platform == 'android'
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: zulu
+          java-version: '17'
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Build packages
+        run: yarn build
+
+      - name: Build all published modules on the minimum React Native version
+        run: node script/ci-minimum-rn.ts ${{ matrix.platform }}
+
   ci-result:
-    needs: [changes, lint, build-android, build-ios]
+    needs: [changes, lint, build-android, build-ios, build-minimum]
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -347,12 +402,13 @@ jobs:
           IOS_CHANGED: ${{ needs.changes.outputs.ios }}
           ANDROID_RESULT: ${{ needs.build-android.result }}
           IOS_RESULT: ${{ needs.build-ios.result }}
+          MINIMUM_RESULT: ${{ needs.build-minimum.result }}
         run: |
           echo "changes=$CHANGES_RESULT lint=$LINT_RESULT"
           echo "android=$ANDROID_CHANGED:$ANDROID_RESULT ios=$IOS_CHANGED:$IOS_RESULT"
-          for result in "$CHANGES_RESULT" "$LINT_RESULT"; do
+          for result in "$CHANGES_RESULT" "$LINT_RESULT" "$MINIMUM_RESULT"; do
             if [[ "$result" != 'success' ]]; then
-              echo '::error::Change detection and lint must both succeed.'
+              echo '::error::Change detection, lint, and minimum-version builds must succeed.'
               exit 1
             fi
           done

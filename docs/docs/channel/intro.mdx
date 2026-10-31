@@ -30,17 +30,19 @@ import TabItem from '@theme/TabItem';
 <Tabs>
   <TabItem value="npm" label="NPM" default>
     ```shell
-    npm install --save @react-native-kakao/channel
+    npm install --save @react-native-kakao/core @react-native-kakao/channel
     ```
   </TabItem>
   <TabItem value="yarn" label="Yarn">
     ```shell
-    yarn add @react-native-kakao/channel
+    yarn add @react-native-kakao/core @react-native-kakao/channel
     ```
   </TabItem>
   <TabItem value="expo" label="Expo">
     ```shell
-    npx expo install @react-native-kakao/channel
+    npx expo install @react-native-kakao/core @react-native-kakao/channel
     ```
   </TabItem>
 </Tabs>
+
+`channel`은 `core`와 함께 설치합니다. 앱에서 카카오 로그인이나 추가 동의를 처리하려면 [`user` 패키지](/docs/user/intro)도 설치합니다.

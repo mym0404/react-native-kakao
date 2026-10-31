@@ -41,6 +41,7 @@ Read in this order:
    - `packages/core/AGENTS.md`
    - `packages/share/AGENTS.md`
    - `packages/user/AGENTS.md`
+   - `packages/cert/AGENTS.md`
 4. `example/AGENTS.md` (integration verification gates)
 
 ## Development toolchain
@@ -145,7 +146,7 @@ Add a package-local guide when either condition is true:
 - The package has package-specific bridge rules that are not generic.
 - Contributors repeatedly miss the same package-specific parity or integration checks.
 
-Current hotspots are already covered by local guides (`core`, `share`, `user`).
+Current hotspots are covered by local guides (`core`, `share`, `user`, `cert`).
 
 ## References
 

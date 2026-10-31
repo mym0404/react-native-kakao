@@ -45,6 +45,7 @@ export interface KakaoTalkFriendProfile {
   id?: number;
   /** 즐겨찾기 추가 여부, 채팅방 피커에서는 미제공 */
   favorite?: boolean;
+  maskingProfileNickname?: string | null;
   /** 프로필 닉네임, 프로필 닉네임 동의 항목에 동의하지 않은 친구나 앱과 연결되지 않는 친구의 경우,
    * 닉네임을 마스킹 처리하여 제공(닉네임 원본을 받으려면 권한 및 displayAllProfile 설정 필요) */
   profileNickname?: string;
@@ -61,6 +62,8 @@ export interface KakaoTalkFriendSelectOptions {
   orientation?: 'auto' | 'landscape' | 'portrait';
   /** 친구 검색 기능 사용 여부 */
   enableSearch?: boolean;
+  /** Enable the friend list index on Android and iOS. Defaults to true; ignored on web. */
+  enableIndex?: boolean;
   /** 내 프로필 표시 여부 */
   showMyProfile?: boolean;
   /** 즐겨찾기 친구 표시 여부 */
@@ -103,9 +106,30 @@ export interface KakaoTalkGetFriendsOptions {
   friendOrder?: 'nickname' | 'age' | 'favorite';
 }
 
+export type KakaoTalkDisableSelectOption =
+  | { reason: 'custom'; message: string; uuids: string[] }
+  | {
+      reason: 'msgBlocked' | 'registered' | 'unregistered' | 'notFriend';
+      message?: string;
+      uuids?: string[];
+    };
+
+export type KakaoTalkPartnerFriendSelectOptions = KakaoTalkFriendSelectOptions & {
+  friendFilter?: 'none' | 'registered' | 'invitable';
+  countryCodeFilters?: string[];
+  usingOsFilter?: 'all' | 'android' | 'ios';
+  disableSelectOptions?: KakaoTalkDisableSelectOption[];
+  displayAllProfile?: boolean;
+};
+
 export interface Spec extends TurboModule {
   getProfile(): Promise<KakaoTalkProfile>;
   selectFriends(
+    multiple: boolean,
+    mode: string,
+    options: UnsafeObject,
+  ): Promise<KakaoTalkFriendSelectResult>;
+  selectPartnerFriends(
     multiple: boolean,
     mode: string,
     options: UnsafeObject,

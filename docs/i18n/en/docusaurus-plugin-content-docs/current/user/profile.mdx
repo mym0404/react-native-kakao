@@ -4,9 +4,7 @@ sidebar_position: 103
 
 # Get User Profile
 
-## Get User Profile
-
-You can fetch the profile using `me()`.
+`me()` retrieves the user profile on Android, iOS, and web. Image URLs use HTTPS by default. Pass `secureResource: false` to request HTTP URLs.
 
 The response is as follows:
 
@@ -20,15 +18,20 @@ The `KakaoUser` type is defined as:
 export type KakaoUser = {
   id: number;
   properties: Record<string, string>;
+  hasSignedUp?: boolean | null;
+  uuid?: string | null;
+  groupUserToken?: string | null;
   email?: string | null;
   name?: string | null;
   nickname?: string | null;
   profileImageUrl?: string | null;
   thumbnailImageUrl?: string | null;
+  isDefaultImage?: boolean | null;
   phoneNumber?: string | null;
   ageRange?: string | null;
   birthday?: string | null;
   birthdayType?: string | null;
+  isLeapMonth?: boolean | null;
   birthyear?: string | null;
   gender?: string | null;
   isEmailValid?: boolean | null;
@@ -45,7 +48,12 @@ export type KakaoUser = {
   nameNeedsAgreement?: boolean | null;
   profileImageNeedsAgreement?: boolean | null;
   profileNicknameNeedsAgreement?: boolean | null;
+  legalName?: string | null;
+  legalNameNeedsAgreement?: boolean | null;
+  legalBirthDate?: string | null;
   legalBirthDateNeedsAgreement?: boolean | null;
+  legalGender?: 'female' | 'male' | null;
+  legalGenderNeedsAgreement?: boolean | null;
   connectedAt?: number | null;
   synchedAt?: number | null;
 };
@@ -56,3 +64,63 @@ export type KakaoUser = {
 ```tsx
 me()
 ```
+
+## Age range, gender, and birthday type
+
+`me()` returns Kakao's string values across platforms. Availability requires the app's consent-item configuration and user consent.
+
+| Field | Provided values |
+| --- | --- |
+| `ageRange` | `0~9`, `10~14`, `15~19`, `20~29`, `30~39`, `40~49`, `50~59`, `60~69`, `70~79`, `80~89`, `90~` |
+| `gender` | `female` or `male` |
+| `birthdayType` | `SOLAR` for solar birthdays or `LUNAR` for lunar birthdays |
+
+Android SDK unknown values map to `null`. Check both `null` and `undefined` for unavailable fields, for example with `user.ageRange == null`. `birthdayType` is distinct from the birthday date in `birthday`.
+
+## Profile metadata
+
+These fields use the same names on Android, iOS, and web. Values that Kakao does not provide are `null`; `false` remains a value rather than an absence marker.
+
+| Field | Meaning | Availability |
+| --- | --- | --- |
+| `isDefaultImage` | `true` means the default profile image; `false` means an image registered by the user. | The user has consented to the profile image scope. |
+| `isLeapMonth` | Whether the birthday falls in a leap month. | The user has consented to the birthday scope. |
+| `uuid` | The user's own ID in KakaoTalk friend information, distinct from the service user ID in `id`. | The app has KakaoTalk friends or messaging permission. |
+
+For example, `user.isDefaultImage === false` identifies an image registered by the user. `null` does not establish whether the image is a default. See the [user information response](https://developers.kakao.com/docs/en/kakaologin/rest-api#req-user-info-response) for availability conditions.
+
+## Legal identity information
+
+Partner apps with prior approval from Kakao can retrieve identity-verified names, birth dates, and genders with `me()`. App permission and user consent are required. Values that Kakao does not provide are `null`. This information must not replace identity verification.
+
+| Field | Meaning | Format |
+| --- | --- | --- |
+| `legalName` | Identity-verified legal name | String |
+| `legalBirthDate` | Identity-verified legal birth date | `yyyyMMdd` |
+| `legalGender` | Identity-verified legal gender | `female` or `male` |
+
+Each corresponding `NeedsAgreement` flag indicates whether the information can be provided after user consent. `true` requires additional consent; `false` does not guarantee that the value is available. See [partner user information](https://developers.kakao.com/docs/ko/kakaologin/confidential-user-info) for the requirements.
+
+## Group user token
+
+Apps in a Kakao group can compare `groupUserToken` from `me()` to identify the same user within that group. Android, iOS, and web return a string, or `null` when Kakao does not provide the value. Group app configuration requires approval from the Kakao Sync team.
+
+The value can change when the group configuration changes, so do not use it as a permanent user ID. Use an access token to authenticate API requests. See [group apps](https://developers.kakao.com/docs/ko/kakaologin/group-app) for the requirements.
+
+## Query options
+
+| Option | Type | Behavior |
+| --- | --- | --- |
+| `secureResource` | `boolean` | Whether image URLs use HTTPS. Defaults to `true`; `false` requests HTTP URLs. |
+
+Pass `secureResource: false` only when you need HTTP image URLs. This option changes the returned image URLs; the API request still uses HTTPS.
+
+```tsx
+const user = await me({ secureResource: false });
+```
+
+## Manual connection state
+
+`hasSignedUp` reports whether a user has completed connection to a manual connection app. `false` means pending, `true` means connected, and `null` means Kakao omitted the field. An omitted value in an automatic connection app does not mean the user is signed out.
+
+Connect a pending user with [manual signup](./signup.mdx).

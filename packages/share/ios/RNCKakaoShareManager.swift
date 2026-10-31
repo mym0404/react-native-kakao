@@ -6,9 +6,191 @@ import KakaoSDKTemplate
 import React
 import RNCKakaoCore
 import SafariServices
+import UIKit
+
+private let noCustomTemplateId: Int64 = -1
 
 @objc public class RNCKakaoShareManager: NSObject {
   @objc public static let shared = RNCKakaoShareManager()
+
+  @objc public func makeTemplateUrl(
+    _ templateType: String,
+    templateId: Int64,
+    templateJson: [String: Any],
+    templateArgs: [String: String]?,
+    serverCallbackArgs: [String: String]?,
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    onMain {
+      do {
+        let url: URL?
+        if templateType == "custom" {
+          url = ShareApi.shared.makeCustomUrl(
+            templateId: templateId, templateArgs: templateArgs,
+            serverCallbackArgs: serverCallbackArgs
+          )
+        } else if templateType == "scrap" {
+          guard let requestUrl = templateJson["requestUrl"] as? String else {
+            throw RNCKakaoError.unknown("requestUrl is required")
+          }
+          url = ShareApi.shared.makeScrapUrl(
+            requestUrl: requestUrl,
+            templateId: templateId == noCustomTemplateId ? nil : templateId,
+            templateArgs: templateArgs,
+            serverCallbackArgs: serverCallbackArgs
+          )
+        } else {
+          var template: [String: Any?] = templateJson
+          let templatable = try self.generateTemplatable(templateType, &template)
+          url = ShareApi.shared.makeDefaultUrl(
+            templatable: templatable, serverCallbackArgs: serverCallbackArgs
+          )
+        }
+        guard let url else {
+          throw RNCKakaoError.unknown("Failed to create sharing URL")
+        }
+        resolve(url.absoluteString)
+      } catch {
+        RNCKakaoUtil.reject(reject, error)
+      }
+    }
+  }
+
+  @objc public func isKakaoTalkSharingAvailable(_ resolve: @escaping RCTPromiseResolveBlock) {
+    onMain {
+      resolve(ShareApi.isKakaoTalkSharingAvailable())
+    }
+  }
+
+  @objc public func getTemplateDiagnostics(
+    _ templateType: String,
+    templateId: Int64,
+    templateJson: [String: Any],
+    templateArgs: [String: String]?,
+    serverCallbackArgs: [String: String]?,
+    pickerSettings: [String: Any]?,
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    onMain {
+      let requestUrl = templateType == "scrap" ? templateJson["requestUrl"] as? String : nil
+      guard templateType != "scrap" || requestUrl != nil else {
+        RNCKakaoUtil.reject(reject, RNCKakaoError.unknown("requestUrl is required"))
+        return
+      }
+      let customTemplateId: Int64? =
+        templateType == "custom" || templateId != noCustomTemplateId ? templateId : nil
+      self.runShare(
+        templateType: templateType,
+        templateId: customTemplateId,
+        defaultTemplate: templateJson,
+        useWebBrowserIfKakaoTalkNotAvailable: false,
+        templateArgs: templateArgs,
+        serverCallbackArgs: serverCallbackArgs,
+        pickerSettings: pickerSettings,
+        requestUrl: requestUrl,
+        resolve: resolve,
+        reject: reject,
+        diagnosticsOnly: true
+      )
+    }
+  }
+
+  @objc public func uploadImage(
+    _ imageUri: String,
+    secureResource: Bool,
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    DispatchQueue.global(qos: .userInitiated).async {
+      do {
+        let maxImageBytes = 5 * 1024 * 1024
+        let imageSizeError = "Image must be no larger than 5 MB"
+        let data: Data
+        if imageUri.hasPrefix("data:image/") {
+          let parts = imageUri.split(separator: ",", maxSplits: 1, omittingEmptySubsequences: false)
+          guard parts.count == 2, parts[0].hasSuffix(";base64") else {
+            throw RNCKakaoError.unknown("Expected a base64 image data URI")
+          }
+          guard parts[1].utf8.count <= ((maxImageBytes + 2) / 3) * 4 else {
+            throw RNCKakaoError.unknown(imageSizeError)
+          }
+          guard let decoded = Data(base64Encoded: String(parts[1])) else {
+            throw RNCKakaoError.unknown("Expected a base64 image data URI")
+          }
+          data = decoded
+        } else {
+          let url = imageUri.hasPrefix("/") ? URL(fileURLWithPath: imageUri) : URL(string: imageUri)
+          guard let url, url.isFileURL else {
+            throw RNCKakaoError.unknown("Expected a local file or base64 image data URI")
+          }
+          let file = try FileHandle(forReadingFrom: url)
+          defer { try? file.close() }
+          data = try file.read(upToCount: maxImageBytes + 1) ?? Data()
+        }
+        guard data.count <= maxImageBytes else {
+          throw RNCKakaoError.unknown(imageSizeError)
+        }
+        guard let image = UIImage(data: data) else {
+          throw RNCKakaoError.unknown("Image file cannot be decoded")
+        }
+        onMain {
+          ShareApi.shared
+            .imageUpload(image: image, secureResource: secureResource) { result, error in
+              if let error {
+                RNCKakaoUtil.reject(reject, error)
+              } else if let result {
+                let original = result.infos.original
+                resolve([
+                  "infos": [
+                    "original": [
+                      "url": original.url.absoluteString,
+                      "contentType": original.contentType,
+                      "length": original.length,
+                      "width": original.width,
+                      "height": original.height
+                    ]
+                  ]
+                ])
+              } else {
+                RNCKakaoUtil.reject(
+                  reject,
+                  RNCKakaoError.responseNotFound(name: "imageUploadResult")
+                )
+              }
+            }
+        }
+      } catch {
+        RNCKakaoUtil.reject(reject, error)
+      }
+    }
+  }
+
+  @objc public func shareScrapTemplate(
+    _ requestUrl: String,
+    useWebBrowserIfKakaoTalkNotAvailable: Bool,
+    templateId: NSNumber?,
+    templateArgs: [String: String]?,
+    serverCallbackArgs: [String: String]?,
+    pickerSettings: [String: Any]?,
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    onMain {
+      self.runShare(
+        templateType: "scrap",
+        templateId: templateId?.int64Value,
+        useWebBrowserIfKakaoTalkNotAvailable: useWebBrowserIfKakaoTalkNotAvailable,
+        templateArgs: templateArgs,
+        serverCallbackArgs: serverCallbackArgs,
+        pickerSettings: pickerSettings,
+        requestUrl: requestUrl,
+        resolve: resolve,
+        reject: reject
+      )
+    }
+  }
 
   @objc public func scrapImage(
     _ imageUrl: String,
@@ -53,6 +235,7 @@ import SafariServices
     useWebBrowserIfKakaoTalkNotAvailable: Bool,
     templateArgs: [String: String]?,
     serverCallbackArgs: [String: String]?,
+    pickerSettings: [String: Any]?,
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
@@ -66,9 +249,44 @@ import SafariServices
           useWebBrowserIfKakaoTalkNotAvailable: useWebBrowserIfKakaoTalkNotAvailable,
           templateArgs: templateArgs,
           serverCallbackArgs: serverCallbackArgs,
+          pickerSettings: pickerSettings,
           resolve: resolve,
           reject: reject
         )
+      } else if templateType == "scrap" {
+        guard let requestUrl = templateJson["requestUrl"] as? String else {
+          RNCKakaoUtil.reject(
+            reject,
+            RNCKakaoError.unknown("requestUrl is required for scrap messages")
+          )
+          return
+        }
+        let customTemplateId: Int64? = templateId == noCustomTemplateId ? nil : templateId
+        if sendType == "send-me" {
+          self.runSendMe(
+            templateType: templateType,
+            templateId: customTemplateId,
+            templateArgs: templateArgs,
+            resolve: resolve,
+            reject: reject,
+            requestUrl: requestUrl
+          )
+        } else if sendType == "send-friend" {
+          self.runSendFriend(
+            templateType: templateType,
+            templateId: customTemplateId,
+            receiverUuids: receiverUuids,
+            templateArgs: templateArgs,
+            resolve: resolve,
+            reject: reject,
+            requestUrl: requestUrl
+          )
+        } else {
+          RNCKakaoUtil.reject(
+            reject,
+            RNCKakaoError.unknown("Unknown sendType for scrap messages: \(sendType)")
+          )
+        }
       } else {
         self.shareOrSendDefaultTemplate(
           sendType: sendType,
@@ -77,6 +295,7 @@ import SafariServices
           receiverUuids: receiverUuids,
           useWebBrowserIfKakaoTalkNotAvailable: useWebBrowserIfKakaoTalkNotAvailable,
           serverCallbackArgs: serverCallbackArgs,
+          pickerSettings: pickerSettings,
           resolve: resolve,
           reject: reject
         )
@@ -92,6 +311,7 @@ import SafariServices
     useWebBrowserIfKakaoTalkNotAvailable: Bool,
     templateArgs: [String: String]?,
     serverCallbackArgs: [String: String]?,
+    pickerSettings: [String: Any]?,
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
@@ -102,6 +322,7 @@ import SafariServices
         useWebBrowserIfKakaoTalkNotAvailable: useWebBrowserIfKakaoTalkNotAvailable,
         templateArgs: templateArgs,
         serverCallbackArgs: serverCallbackArgs,
+        pickerSettings: pickerSettings,
         resolve: resolve,
         reject: reject
       )
@@ -134,6 +355,7 @@ import SafariServices
     receiverUuids: [String],
     useWebBrowserIfKakaoTalkNotAvailable: Bool,
     serverCallbackArgs: [String: String]?,
+    pickerSettings: [String: Any]?,
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
@@ -144,6 +366,7 @@ import SafariServices
         useWebBrowserIfKakaoTalkNotAvailable: useWebBrowserIfKakaoTalkNotAvailable,
         templateArgs: serverCallbackArgs,
         serverCallbackArgs: serverCallbackArgs,
+        pickerSettings: pickerSettings,
         resolve: resolve,
         reject: reject
       )
@@ -168,7 +391,8 @@ import SafariServices
     defaultTemplate: [String: Any?]? = nil,
     templateArgs: [String: String]? = nil,
     resolve: @escaping RCTPromiseResolveBlock,
-    reject: @escaping RCTPromiseRejectBlock
+    reject: @escaping RCTPromiseRejectBlock,
+    requestUrl: String? = nil
   ) {
     let sendCompletion = { (error: Error?) in
       if let error {
@@ -178,7 +402,14 @@ import SafariServices
       }
     }
 
-    if let templateId {
+    if let requestUrl {
+      TalkApi.shared.sendScrapMemo(
+        requestUrl: requestUrl,
+        templateId: templateId,
+        templateArgs: templateArgs,
+        completion: sendCompletion
+      )
+    } else if let templateId {
       TalkApi.shared.sendCustomMemo(
         templateId: templateId,
         templateArgs: templateArgs,
@@ -206,19 +437,37 @@ import SafariServices
     receiverUuids: [String],
     templateArgs: [String: String]? = nil,
     resolve: @escaping RCTPromiseResolveBlock,
-    reject: @escaping RCTPromiseRejectBlock
+    reject: @escaping RCTPromiseRejectBlock,
+    requestUrl: String? = nil
   ) {
     let sendCompletion = { (messageSendResult: MessageSendResult?, error: Error?) in
       if let error {
         RNCKakaoUtil.reject(reject, error)
       } else if let messageSendResult {
-        resolve(messageSendResult.successfulReceiverUuids ?? [])
+        resolve([
+          "successfulReceiverUuids": messageSendResult.successfulReceiverUuids ?? [],
+          "failureInfos": messageSendResult.failureInfos?.map { failure in
+            [
+              "code": failure.code,
+              "msg": failure.msg,
+              "receiverUuids": failure.receiverUuids
+            ]
+          } ?? []
+        ])
       } else {
         RNCKakaoUtil.reject(reject, RNCKakaoError.unknown("messageSendResult"))
       }
     }
 
-    if let templateId {
+    if let requestUrl {
+      TalkApi.shared.sendScrapMessage(
+        requestUrl: requestUrl,
+        templateId: templateId,
+        templateArgs: templateArgs,
+        receiverUuids: receiverUuids,
+        completion: sendCompletion
+      )
+    } else if let templateId {
       TalkApi.shared.sendCustomMessage(
         templateId: templateId,
         templateArgs: templateArgs,
@@ -251,16 +500,27 @@ import SafariServices
     useWebBrowserIfKakaoTalkNotAvailable: Bool,
     templateArgs: [String: String]? = nil,
     serverCallbackArgs: [String: String]?,
+    pickerSettings: [String: Any]?,
+    requestUrl: String? = nil,
     resolve: @escaping RCTPromiseResolveBlock,
-    reject: @escaping RCTPromiseRejectBlock
+    reject: @escaping RCTPromiseRejectBlock,
+    diagnosticsOnly: Bool = false
   ) {
+    let result: Any? = requestUrl == nil ? 42 : nil
     let shareCompletion = { (sharingResult: SharingResult?, error: Error?) in
       if let error {
         RNCKakaoUtil.reject(reject, error)
       } else if let sharingResult {
+        if diagnosticsOnly {
+          resolve([
+            "warningMsg": sharingResult.warningMsg ?? [:],
+            "argumentMsg": sharingResult.argumentMsg ?? [:]
+          ])
+          return
+        }
         UIApplication.shared.open(sharingResult.url, options: [:]) { success in
           if success {
-            resolve(42)
+            resolve(result)
           } else {
             RNCKakaoUtil.reject(
               reject,
@@ -273,10 +533,24 @@ import SafariServices
       }
     }
 
-    if ShareApi.isKakaoTalkSharingAvailable() {
-      if let templateId {
+    if diagnosticsOnly || ShareApi.isKakaoTalkSharingAvailable() {
+      let shareType = (pickerSettings?["type"] as? String).flatMap(ShareType.init(rawValue:))
+      let limit = (pickerSettings?["limit"] as? NSNumber)?.intValue
+      if let requestUrl {
+        ShareApi.shared.shareScrap(
+          requestUrl: requestUrl,
+          templateId: templateId,
+          templateArgs: templateArgs,
+          shareType: shareType,
+          limit: limit,
+          serverCallbackArgs: serverCallbackArgs,
+          completion: shareCompletion
+        )
+      } else if let templateId {
         ShareApi.shared.shareCustom(
           templateId: templateId,
+          shareType: shareType,
+          limit: limit,
           templateArgs: templateArgs,
           serverCallbackArgs: serverCallbackArgs,
           completion: shareCompletion
@@ -286,6 +560,8 @@ import SafariServices
           let templatable = try generateTemplatable(templateType, &defaultTemplate)
           ShareApi.shared.shareDefault(
             templatable: templatable,
+            shareType: shareType,
+            limit: limit,
             serverCallbackArgs: serverCallbackArgs,
             completion: shareCompletion
           )
@@ -299,25 +575,24 @@ import SafariServices
         )
       }
     } else if useWebBrowserIfKakaoTalkNotAvailable {
-      if let templateId {
+      if let requestUrl {
+        if let url = ShareApi.shared.makeScrapUrl(
+          requestUrl: requestUrl,
+          templateId: templateId,
+          templateArgs: templateArgs,
+          serverCallbackArgs: serverCallbackArgs
+        ) {
+          presentShareUrl(url)
+        } else {
+          RNCKakaoUtil.reject(reject, RNCKakaoError.unknown("makeScrapUrl failed"))
+        }
+      } else if let templateId {
         if let url = ShareApi.shared.makeCustomUrl(
           templateId: templateId,
           templateArgs: templateArgs,
           serverCallbackArgs: serverCallbackArgs
         ) {
-          let safariViewController = SFSafariViewController(url: url)
-          safariViewController.modalTransitionStyle = .crossDissolve
-          safariViewController.modalPresentationStyle = .overCurrentContext
-          RNCKakaoUtil.presentViewController(safariViewController) { success in
-            if success {
-              resolve(42)
-            } else {
-              RNCKakaoUtil.reject(
-                reject,
-                RNCKakaoError.unknown("SFSafariViewController open failed")
-              )
-            }
-          }
+          presentShareUrl(url)
         } else {
           RNCKakaoUtil.reject(reject, RNCKakaoError.unknown("makeCustomUrl failed"))
         }
@@ -329,19 +604,7 @@ import SafariServices
             templatable: templatable,
             serverCallbackArgs: serverCallbackArgs
           ) {
-            let safariViewController = SFSafariViewController(url: url)
-            safariViewController.modalTransitionStyle = .crossDissolve
-            safariViewController.modalPresentationStyle = .overCurrentContext
-            RNCKakaoUtil.presentViewController(safariViewController) { success in
-              if success {
-                resolve(42)
-              } else {
-                RNCKakaoUtil.reject(
-                  reject,
-                  RNCKakaoError.unknown("SFSafariViewController open failed")
-                )
-              }
-            }
+            presentShareUrl(url)
           } else {
             RNCKakaoUtil.reject(reject, RNCKakaoError.unknown("makeDefaultUrl failed"))
           }
@@ -356,6 +619,22 @@ import SafariServices
       }
     } else {
       RNCKakaoUtil.reject(reject, RNCKakaoError.kakaoAppNotAvailable(app: .talk))
+    }
+
+    func presentShareUrl(_ url: URL) {
+      let safariViewController = SFSafariViewController(url: url)
+      safariViewController.modalTransitionStyle = .crossDissolve
+      safariViewController.modalPresentationStyle = .overCurrentContext
+      RNCKakaoUtil.presentViewController(safariViewController) { success in
+        if success {
+          resolve(result)
+        } else {
+          RNCKakaoUtil.reject(
+            reject,
+            RNCKakaoError.unknown("SFSafariViewController open failed")
+          )
+        }
+      }
     }
   }
 

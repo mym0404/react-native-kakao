@@ -25,7 +25,8 @@
     "web": {
       "bundler": "metro",
       "favicon": "./assets/favicon.png",
-      "backgroundColor": "#000000"
+      "backgroundColor": "#000000",
+      "output": "single"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -44,8 +45,7 @@
             "minSdkVersion": 26
           },
           "ios": {
-            "ccacheEnabled": true,
-            "enableSceneSupport": true
+            "ccacheEnabled": true
           }
         }
       ],
@@ -56,11 +56,14 @@
           "android": {
             "authCodeHandlerActivity": true,
             "followChannelHandlerActivity": true,
-            "forwardKakaoLinkIntentFilterToMainActivity": true
+            "shippingAddressHandlerActivity": true,
+            "forwardKakaoLinkIntentFilterToMainActivity": true,
+            "certServiceHandlerActivity": true
           },
           "ios": {
             "handleKakaoOpenUrl": true,
-            "naviApplicationQuerySchemes": true
+            "naviApplicationQuerySchemes": true,
+            "handleKakaoCertOpenUrl": true
           }
         }
       ],
