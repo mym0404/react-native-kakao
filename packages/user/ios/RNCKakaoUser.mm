@@ -129,9 +129,9 @@ RCT_EXPORT_METHOD(updateProfile : (NSDictionary*)properties resolve : (RCTPromis
   [[self manager] updateProfile:properties resolve:resolve reject:reject];
 }
 
-RCT_EXPORT_METHOD(me : (NSNumber*)secureResource resolve : (RCTPromiseResolveBlock)
-                      resolve reject : (RCTPromiseRejectBlock)reject) {
-  [[self manager] me:secureResource resolve:resolve reject:reject];
+RCT_EXPORT_METHOD(me : (NSArray*)propertyKeys secureResource : (NSNumber*)secureResource resolve : (
+    RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
+  [[self manager] me:propertyKeys secureResource:secureResource resolve:resolve reject:reject];
 }
 
 RCT_EXPORT_METHOD(selectShippingAddress : (RCTPromiseResolveBlock)

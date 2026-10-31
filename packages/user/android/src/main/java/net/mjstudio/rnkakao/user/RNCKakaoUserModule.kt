@@ -445,10 +445,14 @@ class RNCKakaoUserModule internal constructor(
 
   @ReactMethod
   override fun me(
+    propertyKeys: ReadableArray?,
     secureResource: Boolean?,
     promise: Promise,
   ) = onMain {
-    UserApiClient.instance.me(secureResource = secureResource ?: true) { user, error ->
+    UserApiClient.instance.me(
+      propertyKeys?.filterIsInstance<String>(),
+      secureResource = secureResource ?: true,
+    ) { user, error ->
       if (error != null) {
         promise.rejectWith(error)
       } else if (user == null) {
@@ -457,6 +461,12 @@ class RNCKakaoUserModule internal constructor(
         promise.resolve(
           argMap().apply {
             putD("id", user.id?.toDouble())
+            putMap(
+              "properties",
+              argMap().apply {
+                user.properties?.forEach { (key, value) -> putString(key, value) }
+              },
+            )
             putB("hasSignedUp", user.hasSignedUp)
             putString("uuid", user.uuid)
             putString("groupUserToken", user.groupUserToken)

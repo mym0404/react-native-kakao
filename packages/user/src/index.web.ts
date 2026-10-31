@@ -318,11 +318,17 @@ const KakaoUser: KakaoUserAPI = {
     kRunWebAPI(async () => {
       await Kakao.API.request({ url: '/v1/user/update_profile', data: { properties } });
     }),
-  me: ({ secureResource = true } = {}) =>
+  me: ({ propertyKeys, secureResource = true } = {}) =>
     kRunWebAPI(async () => {
-      const ret = camelCaseObject(
-        await Kakao.API.request({ url: '/v2/user/me', data: { secure_resource: secureResource } }),
-      ) as {
+      const response: { properties?: Record<string, string> } = await Kakao.API.request({
+        url: '/v2/user/me',
+        data: filterNonNullishKeys({
+          property_keys: propertyKeys,
+          secure_resource: secureResource,
+        }),
+      });
+
+      const ret = camelCaseObject(response) as {
         id: number;
         hasSignedUp?: boolean | null;
         forPartner?: { uuid?: string };
@@ -346,6 +352,7 @@ const KakaoUser: KakaoUserAPI = {
 
       return {
         id: ret.id,
+        properties: response.properties ?? {},
         hasSignedUp: ret.hasSignedUp ?? null,
         uuid: ret.forPartner?.uuid ?? null,
         groupUserToken: ret.groupUserToken ?? null,

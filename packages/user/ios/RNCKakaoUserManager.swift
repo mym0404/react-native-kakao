@@ -463,17 +463,22 @@ import RNCKakaoCore
   }
 
   @objc public func me(
-    _ secureResource: NSNumber?,
+    _ propertyKeys: [String]?,
+    secureResource: NSNumber?,
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
     onMain {
-      UserApi.shared.me(secureResource: secureResource?.boolValue ?? true) { user, error in
+      UserApi.shared.me(
+        propertyKeys: propertyKeys,
+        secureResource: secureResource?.boolValue ?? true
+      ) { user, error in
         if let error {
           RNCKakaoUtil.reject(reject, error)
         } else if let user {
           resolve([
             "id": user.id as Any,
+            "properties": user.properties ?? [:],
             "uuid": user.uuid as Any,
             "groupUserToken": user.groupUserToken as Any,
             "hasSignedUp": user.hasSignedUp as Any,

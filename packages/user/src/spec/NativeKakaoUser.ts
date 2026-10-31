@@ -55,7 +55,7 @@ export interface Spec extends TurboModule {
     pageSize?: number,
   ): Promise<KakaoShippingAddressResult>;
   selectShippingAddress(): Promise<number>;
-  me(secureResource?: boolean): Promise<KakaoUser>;
+  me(propertyKeys?: string[], secureResource?: boolean): Promise<KakaoUser>;
   updateProfile(properties: UnsafeObject): Promise<void>;
   getAccessToken(): Promise<KakaoAccessTokenInfo>;
 }

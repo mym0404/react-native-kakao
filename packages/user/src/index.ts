@@ -71,14 +71,15 @@ export interface KakaoShippingAddress {
 }
 export interface KakaoUser {
   id: number;
+  properties: Record<string, string>;
   hasSignedUp?: boolean | null;
   uuid?: string | null;
   groupUserToken?: string | null;
-  email: string;
+  email?: string | null;
   name?: string | null;
-  nickname: string;
-  profileImageUrl: string;
-  thumbnailImageUrl: string;
+  nickname?: string | null;
+  profileImageUrl?: string | null;
+  thumbnailImageUrl?: string | null;
   isDefaultImage?: boolean | null;
   phoneNumber?: string | null;
   ageRange?: string | null;
@@ -87,28 +88,28 @@ export interface KakaoUser {
   isLeapMonth?: boolean | null;
   birthyear?: string | null;
   gender?: string | null;
-  isEmailValid: boolean;
-  isEmailVerified: boolean;
-  isKorean?: boolean;
-  ageRangeNeedsAgreement?: boolean;
-  birthdayNeedsAgreement?: boolean;
-  birthyearNeedsAgreement?: boolean;
-  emailNeedsAgreement?: boolean;
-  genderNeedsAgreement?: boolean;
-  isKoreanNeedsAgreement?: boolean;
-  phoneNumberNeedsAgreement?: boolean;
-  profileNeedsAgreement?: boolean;
-  nameNeedsAgreement?: boolean;
-  profileImageNeedsAgreement?: boolean;
-  profileNicknameNeedsAgreement?: boolean;
+  isEmailValid?: boolean | null;
+  isEmailVerified?: boolean | null;
+  isKorean?: boolean | null;
+  ageRangeNeedsAgreement?: boolean | null;
+  birthdayNeedsAgreement?: boolean | null;
+  birthyearNeedsAgreement?: boolean | null;
+  emailNeedsAgreement?: boolean | null;
+  genderNeedsAgreement?: boolean | null;
+  isKoreanNeedsAgreement?: boolean | null;
+  phoneNumberNeedsAgreement?: boolean | null;
+  profileNeedsAgreement?: boolean | null;
+  nameNeedsAgreement?: boolean | null;
+  profileImageNeedsAgreement?: boolean | null;
+  profileNicknameNeedsAgreement?: boolean | null;
   legalName?: string | null;
   legalNameNeedsAgreement?: boolean | null;
   legalBirthDate?: string | null;
-  legalBirthDateNeedsAgreement?: boolean;
+  legalBirthDateNeedsAgreement?: boolean | null;
   legalGender?: 'female' | 'male' | null;
   legalGenderNeedsAgreement?: boolean | null;
-  connectedAt?: number;
-  synchedAt?: number;
+  connectedAt?: number | null;
+  synchedAt?: number | null;
 }
 export interface KakaoAccessTokenInfo {
   id?: number;
@@ -323,9 +324,10 @@ export function selectShippingAddress(): Promise<number> {
 }
 
 export function me({
+  propertyKeys,
   secureResource = true,
-}: { secureResource?: boolean } = {}): Promise<KakaoUser> {
-  return Native.me(secureResource);
+}: { propertyKeys?: string[]; secureResource?: boolean } = {}): Promise<KakaoUser> {
+  return Native.me(propertyKeys, secureResource);
 }
 
 export async function issueAccessTokenWithCode({
