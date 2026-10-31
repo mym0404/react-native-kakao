@@ -30,6 +30,7 @@ export type * from './types-shapes';
 export type * from './types-routes';
 export type * from './types-gui';
 export type * from './types-dim';
+export type * from './types-utilities';
 export type * from './types-camera';
 
 export type {
@@ -262,6 +263,12 @@ export const KakaoMapView = forwardRef<KakaoMapViewRef, KakaoMapViewProps>(funct
       },
       async getDimScreenStatus() {
         return getView().getDimScreenStatus();
+      },
+      async executeUtilityCommand(command) {
+        return getView().executeUtilityCommand(command);
+      },
+      async requestPoiState() {
+        return getView().requestPoiState();
       },
       async executeCameraCommand(command) {
         return getView().executeCameraCommand(command);

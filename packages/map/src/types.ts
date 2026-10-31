@@ -37,6 +37,7 @@ import type {
   ShapeCounts,
   ShapeScene,
 } from './types-shapes';
+import type { MapPoiStateResult, MapUtilityCommand, MapUtilityResult } from './types-utilities';
 
 export type Coordinate = {
   latitude: number;
@@ -215,6 +216,8 @@ export type KakaoMapViewRef = {
   startDimAnimation: (id: string) => Promise<void>;
   stopDimAnimation: (id: string) => Promise<void>;
   getDimScreenStatus: () => Promise<DimScreenStatus>;
+  executeUtilityCommand: (command: MapUtilityCommand) => Promise<MapUtilityResult>;
   /** Android only: resolves with the SDK's asynchronous POI state response. */
+  requestPoiState: () => Promise<MapPoiStateResult>;
   executeCameraCommand: (command: AdvancedCameraCommand) => Promise<AdvancedCameraCommandResult>;
 };

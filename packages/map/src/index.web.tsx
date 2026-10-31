@@ -8,6 +8,7 @@ export type * from './types-shapes';
 export type * from './types-routes';
 export type * from './types-gui';
 export type * from './types-dim';
+export type * from './types-utilities';
 export type * from './types-camera';
 
 export type {
