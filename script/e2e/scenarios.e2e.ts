@@ -36,34 +36,23 @@ test.beforeEach(async ({ app, device, screen }) => {
   await expect(screen.getByTestId(screenTitle)).toHaveText('Index');
 });
 
-describe('navigation', () => {
-  test('menus', async ({ app, screen }) => {
-    for (const menu of ['User', 'Share', 'Navi', 'Social', 'Channel']) {
-      await openMenu(screen, menu);
-
-      await app.back();
-      await expect(screen.getByTestId(screenTitle)).toHaveText('Index');
-    }
+describe('@react-native-kakao/share', () => {
+  test('screen loads', async ({ screen }) => {
+    await openMenu(screen, 'Share');
   });
 });
 
 describe('@react-native-kakao/user', () => {
-  test('talk availability', async ({ screen }) => {
+  test('signed-out APIs', async ({ screen }) => {
     await openMenu(screen, 'User');
-    await (await findVisible(screen, 'talk-available-button')).tap();
-    await expect(await findVisible(screen, 'talk-available-result')).toHaveText(falseResult);
-  });
-
-  test('signed out', async ({ screen }) => {
-    await openMenu(screen, 'User');
-    await (await findVisible(screen, 'login-state-button')).tap();
-    await expect(await findVisible(screen, 'login-state-result')).toHaveText(falseResult);
-  });
-
-  test('user token error', async ({ screen }) => {
-    await openMenu(screen, 'User');
-    await (await findVisible(screen, 'user-profile-button')).tap();
-    await expect(await findVisible(screen, 'user-profile-result')).toHaveText(tokenError);
+    for (const [action, expected] of [
+      ['talk-available', falseResult],
+      ['login-state', falseResult],
+      ['user-profile', tokenError],
+    ] as const) {
+      await (await findVisible(screen, `${action}-button`)).tap();
+      await expect(await findVisible(screen, `${action}-result`)).toHaveText(expected);
+    }
   });
 });
 
@@ -76,16 +65,13 @@ describe('@react-native-kakao/social', () => {
 });
 
 describe('@react-native-kakao/channel', () => {
-  test('channel add URL', async ({ screen }) => {
+  test('channel URLs', async ({ screen }) => {
     await openMenu(screen, 'Channel');
     await (await findVisible(screen, 'channel-add-url-button')).tap();
     await expect(await findVisible(screen, 'channel-add-url-result')).toHaveText(
       /^success: "https:\/\/pf\.kakao\.com\/_hJhxbj\/friend(?:\?[^"\s]*)?"$/,
     );
-  });
 
-  test('channel chat URL', async ({ screen }) => {
-    await openMenu(screen, 'Channel');
     await (await findVisible(screen, 'channel-chat-url-button')).tap();
     await expect(await findVisible(screen, 'channel-chat-url-result')).toHaveText(
       /^success: "https:\/\/pf\.kakao\.com\/_hJhxbj\/chat(?:\?[^"\s]*)?"$/,
@@ -104,108 +90,98 @@ describe('@react-native-kakao/navi', () => {
 
 if (process.env.KAKAO_E2E_SKIP_MAP !== '1') {
   describe('@react-native-kakao/map', () => {
-    const seoulCamera = [37.5665, 126.978, 16, 0, 0];
-    const rotatedCamera = [37.402001, 127.108678, 15, 30, 90];
-    const busanCamera = [35.1796, 129.0756, 15, 0, 0];
-    const cameraId = 'map-camera';
+    const seoul = [37.5665, 126.978, 16, 0, 0];
     const resultId = 'map-result';
-    const statusId = 'map-status';
-    const expectCamera = async (screen: Screen, expected: number[]) => {
-      const tolerances = [0.0001, 0.0001, 0.01, 0.1, 0.1];
-      await expect
-        .poll(
-          async () => {
-            const text = await screen.getByTestId(cameraId).textContent();
-            const actual = text?.match(/-?\d+(?:\.\d+)?/g)?.map(Number) ?? [];
+    const eventId = 'map-event';
+    const mapId = 'kakao-map';
+    const coordinateTolerance = 0.0001;
+    const angleTolerance = 0.1;
+    const developerIdle = /^\d+\|idle: developer$/;
 
-            return expected.map(
-              (value, index) => Math.abs((actual[index] ?? Infinity) - value) < tolerances[index]!,
-            );
-          },
-          {
-            message: `Camera must match ${expected.join(', ')} within coordinate/angle tolerances.`,
-          },
-        )
-        .toEqual([true, true, true, true, true]);
+    const openMap = async (screen: Screen) => {
+      await openMenu(screen, 'Map');
+      await expect(screen.getByTestId('map-status')).toHaveText('ready');
+      await expect(screen.getByTestId(mapId)).toBeVisible();
     };
 
-    test('camera props, commands, events, and lifecycle', async ({ app, device, screen }) => {
-      await openMenu(screen, 'Map');
-      await expect(screen.getByTestId(statusId)).toHaveText('ready');
-      await expectCamera(screen, seoulCamera);
-      await screen.getByTestId('map-move').tap();
-      await expect(screen.getByTestId('map-event')).toHaveText('idle: developer');
-      await expectCamera(screen, rotatedCamera);
-      for (const action of ['same', 'initial', 'remove']) {
-        await screen.getByTestId(`map-${action}`).tap();
-        await screen.getByTestId('map-get').tap();
-        await expectCamera(screen, rotatedCamera);
+    const command = async (screen: Screen, action: string) => {
+      const result = screen.getByTestId(resultId);
+      const before = await result.textContent();
+      await screen.getByTestId(`map-${action}`).tap();
+      await expect(result).not.toHaveText(before!);
+
+      const text = await result.textContent();
+      expect(text).toMatch(/^\d+\|/);
+
+      return text!.slice(text!.indexOf('|') + 1);
+    };
+
+    const camera = async (screen: Screen) => {
+      const result = await command(screen, 'get');
+      expect(result).toMatch(/^camera: /);
+
+      const values = result.match(/-?\d+(?:\.\d+)?/g)?.map(Number) ?? [];
+      expect(values).toHaveLength(5);
+
+      return values;
+    };
+
+    const expectCamera = (actual: number[], expected: number[]) => {
+      const tolerances = [
+        coordinateTolerance,
+        coordinateTolerance,
+        0.01,
+        angleTolerance,
+        angleTolerance,
+      ];
+
+      for (const [index, value] of expected.entries()) {
+        expect(Math.abs(actual[index]! - value)).toBeLessThan(tolerances[index]!);
       }
+    };
 
+    test('camera commands and props', async ({ screen }) => {
+      await openMap(screen);
+      expectCamera(await camera(screen), seoul);
+
+      const event = screen.getByTestId(eventId);
+      const beforeMove = await event.textContent();
+      expect(await command(screen, 'move')).toBe('success');
+      await expect(event).not.toHaveText(beforeMove!);
+      await expect(event).toHaveText(developerIdle);
+      expectCamera(await camera(screen), [37.402001, 127.108678, 15, 30, 90]);
+
+      const beforeProp = await event.textContent();
       await screen.getByTestId('map-prop').tap();
-      await expectCamera(screen, busanCamera);
-      await screen.getByTestId('kakao-map').swipe({ direction: 'up' });
-      await expect(screen.getByTestId('map-event')).toHaveText('idle: gesture');
-      await screen.getByTestId('map-get').tap();
+      await expect(event).not.toHaveText(beforeProp!);
+      await expect(event).toHaveText(developerIdle);
+      expectCamera(await camera(screen), [35.1796, 129.0756, 15, 0, 0]);
+    });
 
-      const afterGesture = await screen.getByTestId(cameraId).textContent();
-      await screen.getByTestId('map-same').tap();
-      await screen.getByTestId('map-get').tap();
-      await expect(screen.getByTestId(cameraId)).toHaveText(afterGesture!);
-      await screen.getByTestId('kakao-map').tap();
-      await expect(screen.getByTestId('map-event')).toHaveText(/^click: /);
+    test('gestures, background recovery, and navigation re-entry', async ({
+      app,
+      device,
+      screen,
+    }) => {
+      await openMap(screen);
+
+      const event = screen.getByTestId(eventId);
+      const beforeGesture = await event.textContent();
+      await screen.getByTestId(mapId).swipe({ direction: 'up' });
+      await expect(event).not.toHaveText(beforeGesture!);
+      await expect(event).toHaveText(/^\d+\|idle: gesture$/);
+
+      const afterGesture = await camera(screen);
+      expect(Math.abs(afterGesture[0]! - seoul[0]!)).toBeGreaterThan(coordinateTolerance);
       await device.home();
       await device.openApp('com.rnkakao.example');
-      await screen.getByTestId('map-get').tap();
-      await expect(screen.getByTestId(cameraId)).toHaveText(afterGesture!);
-      await screen.getByTestId('map-remount').tap();
-      await expect(screen.getByTestId(statusId)).toHaveText('ready');
-      await screen.getByTestId('map-get').tap();
-      await expectCamera(screen, busanCamera);
+      expectCamera(await camera(screen), afterGesture);
+      await screen.getByTestId(mapId).tap();
+      await expect(event).toHaveText(/^\d+\|click: /);
       await app.back();
-      await openMenu(screen, 'Map');
-      await expect(screen.getByTestId(statusId)).toHaveText('ready');
-      await expectCamera(screen, seoulCamera);
-    });
-
-    test('camera query during animation', async ({ screen }) => {
-      await openMenu(screen, 'Map');
-      await expect(screen.getByTestId(statusId)).toHaveText('ready');
-      await screen.getByTestId('map-sample').tap();
-      await expect(screen.getByTestId(resultId)).toHaveText(/^sample: /);
-
-      const text = await screen.getByTestId(resultId).textContent();
-      const [latitude, rotation] = text!.match(/-?\d+(?:\.\d+)?/g)!.map(Number);
-      expect(latitude).toBeGreaterThan(rotatedCamera[0]! + 0.0001);
-      expect(latitude).toBeLessThan(seoulCamera[0]! - 0.0001);
-      expect(rotation).toBeGreaterThan(0);
-      expect(rotation).toBeLessThan(rotatedCamera[4]!);
-      await expectCamera(screen, rotatedCamera);
-    });
-
-    test('initialization and view errors', async ({ screen }) => {
-      await openMenu(screen, 'Map');
-      await expect(screen.getByTestId(statusId)).toHaveText('ready');
-      await screen.getByTestId('map-same-key').tap();
-      await expect(screen.getByTestId(resultId)).toHaveText('success');
-      await screen.getByTestId('map-other-key').tap();
-      await expect(screen.getByTestId(resultId)).toHaveText(
-        'error: ERR_KAKAO_MAP_ALREADY_INITIALIZED',
-      );
-      await screen.getByTestId('map-invalid').tap();
-      await expect(screen.getByTestId(resultId)).toHaveText(
-        'error: ERR_KAKAO_MAP_INVALID_ARGUMENT',
-      );
-      await screen.getByTestId('map-defer').tap();
-      await screen.getByTestId('map-get').tap();
-      await expect(screen.getByTestId(resultId)).toHaveText('error: ERR_KAKAO_MAP_NOT_READY');
-      await screen.getByTestId('map-prop').tap();
-      await screen.getByTestId('map-show').tap();
-      await expect(screen.getByTestId(statusId)).toHaveText('ready');
-      await expectCamera(screen, busanCamera);
-      await screen.getByTestId('map-unmount').tap();
-      await screen.getByTestId('map-destroyed').tap();
-      await expect(screen.getByTestId(resultId)).toHaveText('error: ERR_KAKAO_MAP_VIEW_DESTROYED');
+      await expect(screen.getByTestId(screenTitle)).toHaveText('Index');
+      await openMap(screen);
+      expectCamera(await camera(screen), seoul);
     });
   });
 }

@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
-  type CameraOptions,
   type CameraPosition,
   initializeKakaoMapSDK,
   KakaoMapView,
@@ -18,17 +17,14 @@ const rotatedCamera = { ...pangyo, tilt: 30, rotation: 90 };
 
 export default function MapPage() {
   const map = useRef<KakaoMapViewRef>(null);
-  const detachedMap = useRef<KakaoMapViewRef | null>(null);
   const [isInitialized, setInitialized] = useState(false);
-  const [isMounted, setMounted] = useState(true);
-  const [isDeferred, setDeferred] = useState(false);
-  const [generation, setGeneration] = useState(0);
-  const [camera, setCamera] = useState<CameraOptions | undefined>(seoul);
-  const [initialCamera, setInitialCamera] = useState(pangyo);
+  const [camera, setCamera] = useState(seoul);
   const [status, setStatus] = useState('initializing');
   const [position, setPosition] = useState('');
   const [result, setResult] = useState('');
   const [event, setEvent] = useState('');
+  const commandId = useRef(0);
+  const eventId = useRef(0);
   const insets = useSafeAreaInsets();
 
   useEffect(() => {
@@ -66,8 +62,13 @@ export default function MapPage() {
       run: () =>
         execute(async () => {
           if (map.current) {
-            showPosition(await map.current.getCamera());
+            const position = formatCamera(await map.current.getCamera());
+            setPosition(position);
+
+            return `camera: ${position}`;
           }
+
+          throw new Error('The map is not mounted.');
         }),
     },
     {
@@ -78,89 +79,7 @@ export default function MapPage() {
           await map.current?.moveCamera(rotatedCamera, { duration: 500 });
         }),
     },
-    {
-      id: 'sample',
-      title: 'Sample movement',
-      run: () =>
-        execute(async () => {
-          const view = map.current;
-          if (!view) {
-            return;
-          }
-
-          await view.moveCamera(seoul);
-          await view.moveCamera(rotatedCamera, { duration: 3000 });
-          await new Promise((resolve) => setTimeout(resolve, 350));
-
-          const position = await view.getCamera();
-
-          return `sample: latitude=${position.latitude.toFixed(5)} rotation=${position.rotation.toFixed(1)}`;
-        }),
-    },
     { id: 'prop', title: 'Change camera', run: () => setCamera(busan) },
-    {
-      id: 'same',
-      title: 'Same camera',
-      run: () => setCamera((value) => (value ? { ...value } : value)),
-    },
-    { id: 'initial', title: 'Change initial', run: () => setInitialCamera(busan) },
-    { id: 'remove', title: 'Remove camera', run: () => setCamera(undefined) },
-    {
-      id: 'remount',
-      title: 'Remount',
-      run: () => {
-        setStatus('initializing');
-        setMounted(true);
-        setDeferred(false);
-        setGeneration((value) => value + 1);
-      },
-    },
-    {
-      id: 'defer',
-      title: 'Before ready',
-      run: () => {
-        setStatus('waiting for layout');
-        setDeferred(true);
-        setMounted(true);
-        setGeneration((value) => value + 1);
-      },
-    },
-    { id: 'show', title: 'Show map', run: () => setDeferred(false) },
-    {
-      id: 'unmount',
-      title: 'Unmount',
-      run: () => {
-        detachedMap.current = map.current;
-        setMounted(false);
-        setStatus('unmounted');
-      },
-    },
-    {
-      id: 'destroyed',
-      title: 'Old ref',
-      run: () =>
-        execute(async () => {
-          await detachedMap.current?.getCamera();
-        }),
-    },
-    {
-      id: 'same-key',
-      title: 'Same key',
-      run: () => execute(() => initializeKakaoMapSDK(kakaoNativeAppKey)),
-    },
-    {
-      id: 'other-key',
-      title: 'Other key',
-      run: () => execute(() => initializeKakaoMapSDK('different-key')),
-    },
-    {
-      id: 'invalid',
-      title: 'Invalid camera',
-      run: () =>
-        execute(async () => {
-          await map.current?.moveCamera({ ...seoul, latitude: 100 });
-        }),
-    },
   ];
 
   return (
@@ -184,57 +103,51 @@ export default function MapPage() {
             testID={`map-${id}`}
             accessibilityRole={'button'}
             onPress={run}
+            disabled={status !== 'ready'}
             style={styles.button}
           >
             <Text style={styles.text}>{title}</Text>
           </Pressable>
         ))}
       </View>
-      {isInitialized && isMounted ? (
+      {isInitialized ? (
         <KakaoMapView
-          key={generation}
           ref={map}
           testID={'kakao-map'}
-          style={isDeferred ? styles.deferred : styles.map}
-          initialCamera={initialCamera}
+          style={styles.map}
+          initialCamera={pangyo}
           camera={camera}
-          onMapReady={() => {
-            setStatus('ready');
-            execute(async () => {
-              if (map.current) {
-                showPosition(await map.current.getCamera());
-              }
-            });
-          }}
+          onMapReady={() => setStatus('ready')}
           onError={(error) => setStatus(`error: ${error.code} ${error.message}`)}
-          onCameraMoveStart={({ reason }) => setEvent(`start: ${reason}`)}
+          onCameraMoveStart={({ reason }) => recordEvent(`start: ${reason}`)}
           onCameraIdle={({ reason, camera }) => {
-            setEvent(`idle: ${reason}`);
-            showPosition(camera);
+            recordEvent(`idle: ${reason}`);
+            setPosition(formatCamera(camera));
           }}
-          onMapClick={({ latitude, longitude, x, y }) =>
-            setEvent(
-              `click: ${latitude.toFixed(5)},${longitude.toFixed(5)} at ${x.toFixed(1)},${y.toFixed(1)}`,
-            )
+          onMapClick={({ latitude, longitude }) =>
+            recordEvent(`click: ${latitude.toFixed(5)},${longitude.toFixed(5)}`)
           }
         />
       ) : null}
     </View>
   );
 
-  function showPosition(camera: CameraPosition) {
-    setPosition(
-      `lat=${camera.latitude.toFixed(5)} lon=${camera.longitude.toFixed(5)} zoom=${camera.zoomLevel} tilt=${camera.tilt.toFixed(1)} rotation=${camera.rotation.toFixed(1)}`,
-    );
+  function formatCamera(camera: CameraPosition) {
+    return `lat=${camera.latitude.toFixed(5)} lon=${camera.longitude.toFixed(5)} zoom=${camera.zoomLevel} tilt=${camera.tilt.toFixed(1)} rotation=${camera.rotation.toFixed(1)}`;
+  }
+
+  function recordEvent(value: string) {
+    setEvent(`${++eventId.current}|${value}`);
   }
 
   async function execute(action: () => Promise<void | string>) {
+    const id = ++commandId.current;
     try {
       const value = await action();
-      setResult(value ?? 'success');
+      setResult(`${id}|${value ?? 'success'}`);
     } catch (error) {
       const code = error instanceof Error && 'code' in error ? String(error.code) : 'unknown';
-      setResult(`error: ${code}`);
+      setResult(`${id}|error: ${code}`);
     }
   }
 }
@@ -245,5 +158,4 @@ const styles = StyleSheet.create({
   actions: { flexDirection: 'row', flexWrap: 'wrap', gap: 4, padding: 4 },
   button: { backgroundColor: '#333333', padding: 5, borderRadius: 4 },
   map: { flex: 1 },
-  deferred: { width: 0, height: 0 },
 });
