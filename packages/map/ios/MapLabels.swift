@@ -218,6 +218,7 @@ final class MapLabels {
   private let imageLoader: MapImageLoader
   private let emitClick: ([String: Any]) -> Void
   private let emitAnimationStopped: ([String: Any]) -> Void
+  private let resolveShape: (String) -> (any KakaoMapsSDK.Shape)?
   private var labels: [String: Poi] = [:]
   private var labelsWithReleasedSharing: Set<String> = []
   private var lodLabels: [String: LodPoi] = [:]
@@ -243,7 +244,8 @@ final class MapLabels {
     map: KakaoMap,
     imageLoader: MapImageLoader,
     emitClick: @escaping ([String: Any]) -> Void,
-    emitAnimationStopped: @escaping ([String: Any]) -> Void
+    emitAnimationStopped: @escaping ([String: Any]) -> Void,
+    resolveShape: @escaping (String) -> (any KakaoMapsSDK.Shape)?
   ) {
     self.map = map
     manager = map.getLabelManager()
@@ -251,6 +253,7 @@ final class MapLabels {
     self.imageLoader = imageLoader
     self.emitClick = emitClick
     self.emitAnimationStopped = emitAnimationStopped
+    self.resolveShape = resolveShape
   }
 
   func apply(
@@ -356,6 +359,13 @@ final class MapLabels {
       try share(command, transform: false)
     case "shareTransform":
       try share(command, transform: true)
+    case "shareShapeTransform":
+      let isEnabled = try command.enabled.required("enabled")
+      let source = try label(command.sourceId.required("sourceId"))
+      let targetID = try command.targetId.required("targetId")
+      guard let target = resolveShape(targetID) else { throw notFound("shape", targetID) }
+      isEnabled ? source.shareTransformWithShape(target) : source
+        .removeShareTransformWithShape(target)
     case "setBadgeVisibility":
       try setBadgeVisibility(command)
     case "startAnimation":
@@ -390,6 +400,8 @@ final class MapLabels {
       "lodAutoMove": true,
       "autoMoveDuration": false,
       "labelScaleCommand": false,
+      "sharedShapeTransform": true,
+      "sharedShapeTarget": "shape",
       "competitionExceptions": false,
       "supportedTransforms": [
         "absoluteRotation", "default", "absoluteRotationKeepUpright",

@@ -41,6 +41,8 @@ public class KakaoMapModule: Module {
         "onLabelClick",
         "onLabelAnimationStopped",
         "onLabelsChanged",
+        "onShapeAnimationStop",
+        "onShapesChanged",
         "onCameraOperation"
       )
       Prop("initialCamera") { (view: KakaoMapView, camera: CameraOptions?) in
@@ -52,6 +54,9 @@ public class KakaoMapModule: Module {
       }
       Prop("labels") { (view: KakaoMapView, scene: MapLabelSceneRecord?) in
         view.queueLabels(scene)
+      }
+      Prop("shapes") { (view: KakaoMapView, scene: [String: Any]?) in
+        view.queueShapes(scene)
       }
       OnViewDidUpdateProps { (view: KakaoMapView) in view.updateProps() }
       AsyncFunction("moveCamera") { (view: KakaoMapView, camera: CameraOptions, duration: Double) in
@@ -83,6 +88,12 @@ public class KakaoMapModule: Module {
         try view.getLabelCapabilities()
       }
       AsyncFunction("getLabelState") { (view: KakaoMapView) in try view.getLabelState() }
+      AsyncFunction("applyShapes") { (view: KakaoMapView, scene: [String: Any]) in
+        try view.applyShapes(scene)
+      }
+      AsyncFunction("executeShapeCommand") { (view: KakaoMapView, command: [String: Any]) in
+        try view.executeShapeCommand(command)
+      }
       AsyncFunction("executeCameraCommand") { (view: KakaoMapView, command: [String: Any]) in
         try view.executeCameraCommand(command)
       }

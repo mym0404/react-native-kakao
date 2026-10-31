@@ -13,10 +13,13 @@ import type {
   PathTextStyle,
 } from '@react-native-kakao/map';
 
+import { modelPolygonFixtureId } from './shape-fixtures';
+
 export const sharingLabelIds = {
   source: 'fixture-share-source',
   target: 'fixture-share-target',
 } as const;
+
 const PANGYO = { latitude: 37.3947, longitude: 127.1112 } as const;
 const PANGYO_EAST = { latitude: 37.3947, longitude: 127.1132 } as const;
 const PANGYO_NORTH = { latitude: 37.3962, longitude: 127.1112 } as const;
@@ -35,11 +38,13 @@ const solidBluePngUri =
 
 const bundledIcon =
   Platform.OS === 'web' ? { uri: '' } : Image.resolveAssetSource(require('../../assets/icon.png'));
+
 export const labelFixtureImage: MapImageSource = {
   uri: bundledIcon.uri,
   width: 36,
   height: 36,
 };
+
 export const labelFixtureStyles = {
   simpleText: {
     id: 'fixture-simple-text',
@@ -67,11 +72,7 @@ export const labelFixtureStyles = {
     levels: [
       {
         level: 0,
-        image: {
-          ...labelFixtureImage,
-          width: tracerImageSize,
-          height: tracerImageSize,
-        },
+        image: { ...labelFixtureImage, width: tracerImageSize, height: tracerImageSize },
         anchor: { x: 0.5, y: 1 },
       },
     ],
@@ -139,18 +140,8 @@ export const labelFixtureStyles = {
         },
         textLayout: 'bottom',
         textLines: [
-          {
-            fontSize: 15,
-            color: '#111827FF',
-            strokeColor: '#FFFFFFFF',
-            strokeWidth: 2,
-          },
-          {
-            fontSize: 12,
-            color: '#2563EBFF',
-            strokeColor: '#FFFFFFFF',
-            strokeWidth: 1,
-          },
+          { fontSize: 15, color: '#111827FF', strokeColor: '#FFFFFFFF', strokeWidth: 2 },
+          { fontSize: 12, color: '#2563EBFF', strokeColor: '#FFFFFFFF', strokeWidth: 1 },
         ],
         badges: [
           {
@@ -168,18 +159,8 @@ export const labelFixtureStyles = {
         padding: 8,
         textLayout: 'right',
         textLines: [
-          {
-            fontSize: 18,
-            color: '#111827FF',
-            strokeColor: '#FFFFFFFF',
-            strokeWidth: 2,
-          },
-          {
-            fontSize: 13,
-            color: '#DC2626FF',
-            strokeColor: '#FFFFFFFF',
-            strokeWidth: 1,
-          },
+          { fontSize: 18, color: '#111827FF', strokeColor: '#FFFFFFFF', strokeWidth: 2 },
+          { fontSize: 13, color: '#DC2626FF', strokeColor: '#FFFFFFFF', strokeWidth: 1 },
         ],
       },
     ],
@@ -192,14 +173,7 @@ export const labelFixtureStyles = {
         image: { uri: solidRedPngUri, width: 48, height: 48 },
         anchor: { x: 0.5, y: 0.5 },
         textLayout: 'bottom',
-        textLines: [
-          {
-            fontSize: 14,
-            color: '#B91C1CFF',
-            strokeColor: '#FFFFFFFF',
-            strokeWidth: 1,
-          },
-        ],
+        textLines: [{ fontSize: 14, color: '#B91C1CFF', strokeColor: '#FFFFFFFF', strokeWidth: 1 }],
       },
     ],
   },
@@ -211,41 +185,26 @@ export const labelFixtureStyles = {
         image: { uri: solidBluePngUri, width: 48, height: 48 },
         anchor: { x: 0.5, y: 0.5 },
         textLayout: 'top',
-        textLines: [
-          {
-            fontSize: 14,
-            color: '#1D4ED8FF',
-            strokeColor: '#FFFFFFFF',
-            strokeWidth: 1,
-          },
-        ],
+        textLines: [{ fontSize: 14, color: '#1D4ED8FF', strokeColor: '#FFFFFFFF', strokeWidth: 1 }],
       },
     ],
   },
 } satisfies Record<string, LabelStyle>;
+
 export const pathTextFixtureStyle = {
   id: 'fixture-path-text',
   levels: [
     {
       level: 0,
-      text: {
-        fontSize: 14,
-        color: '#0F766EFF',
-        strokeColor: '#FFFFFFFF',
-        strokeWidth: 2,
-      },
+      text: { fontSize: 14, color: '#0F766EFF', strokeColor: '#FFFFFFFF', strokeWidth: 2 },
     },
     {
       level: 16,
-      text: {
-        fontSize: 18,
-        color: '#115E59FF',
-        strokeColor: '#FFFFFFFF',
-        strokeWidth: 2,
-      },
+      text: { fontSize: 18, color: '#115E59FF', strokeColor: '#FFFFFFFF', strokeWidth: 2 },
     },
   ],
 } satisfies PathTextStyle;
+
 export const labelTextLayoutFixtures = (['center', 'top', 'bottom', 'left', 'right'] as const).map(
   (textLayout): LabelStyle => ({
     id: `fixture-text-layout-${textLayout}`,
@@ -261,6 +220,7 @@ export const labelTextLayoutFixtures = (['center', 'top', 'bottom', 'left', 'rig
     ],
   }),
 );
+
 export const labelLayerFixture = {
   id: 'fixture-label-layer',
   visible: true,
@@ -270,11 +230,13 @@ export const labelLayerFixture = {
   competitionUnit: 'iconAndText',
   ordering: 'leftBottom',
 } satisfies LabelLayer;
+
 const textLayoutLabelLayerFixture = {
   ...labelLayerFixture,
   id: 'fixture-text-layout-layer',
   zOrder: foregroundLabelZOrder,
 } satisfies LabelLayer;
+
 export const simpleTextLabelLayerFixture = {
   id: 'fixture-simple-text-layer',
   visible: true,
@@ -284,15 +246,18 @@ export const simpleTextLabelLayerFixture = {
   competitionUnit: 'iconAndText',
   ordering: 'rank',
 } satisfies LabelLayer;
+
 export const iconOnlyLabelLayerFixture = {
   ...simpleTextLabelLayerFixture,
   id: 'fixture-icon-only-layer',
 } satisfies LabelLayer;
+
 export const pixelBoxLabelLayerFixture = {
   ...iconOnlyLabelLayerFixture,
   id: 'fixture-pixel-box-layer',
   zOrder: foregroundLabelZOrder,
 } satisfies LabelLayer;
+
 export const lodLabelLayerFixture = {
   id: 'fixture-lod-layer',
   visible: true,
@@ -303,6 +268,7 @@ export const lodLabelLayerFixture = {
   ordering: 'rank',
   radius: 28,
 } satisfies LodLabelLayer;
+
 export const labelCompetitionFixtures = (
   ['none', 'all', 'upper', 'upperLower', 'upperSame', 'same', 'sameLower', 'lower'] as const
 ).map(
@@ -313,6 +279,7 @@ export const labelCompetitionFixtures = (
     ordering: 'rank',
   }),
 );
+
 export const regularLabelFixture = {
   id: 'fixture-regular-label',
   layerId: labelLayerFixture.id,
@@ -339,6 +306,7 @@ export const regularLabelFixture = {
     },
   ],
 } satisfies MapLabel;
+
 export const lodLabelFixture = {
   id: 'fixture-lod-label',
   layerId: lodLabelLayerFixture.id,
@@ -356,6 +324,7 @@ export const lodLabelFixture = {
     },
   ],
 } satisfies LodMapLabel;
+
 export const pathLabelFixture = {
   id: 'fixture-path-label',
   layerId: labelLayerFixture.id,
@@ -365,6 +334,7 @@ export const pathLabelFixture = {
   rank: 0,
   visible: true,
 } satisfies PathMapLabel;
+
 const animationLabel = (id: string, coordinate: MapLabel['coordinate']): MapLabel => ({
   id,
   layerId: labelLayerFixture.id,
@@ -372,18 +342,13 @@ const animationLabel = (id: string, coordinate: MapLabel['coordinate']): MapLabe
   coordinate,
   visible: true,
 });
+
 export const labelAnimationFixtures = [
   {
     id: 'fixture-drop-animation',
     labelIds: ['fixture-drop-label'],
     effect: 'drop',
-    keyframes: [
-      {
-        duration: 500,
-        interpolation: 'cubicOut',
-        translation: { x: 0, y: 40 },
-      },
-    ],
+    keyframes: [{ duration: 500, interpolation: 'cubicOut', translation: { x: 0, y: 40 } }],
     repeatCount: 2,
   },
   {
@@ -433,6 +398,7 @@ export const labelAnimationFixtures = [
     removeAtStop: true,
   },
 ] satisfies LabelAnimation[];
+
 export const labelTransformFixtures = (
   [
     'absoluteRotation',
@@ -445,14 +411,12 @@ export const labelTransformFixtures = (
   (transform, index): MapLabel => ({
     ...regularLabelFixture,
     id: `fixture-transform-${transform}`,
-    coordinate: {
-      latitude: PANGYO.latitude + index * 0.0002,
-      longitude: PANGYO.longitude,
-    },
+    coordinate: { latitude: PANGYO.latitude + index * 0.0002, longitude: PANGYO.longitude },
     orientation: 45,
     transform,
   }),
 );
+
 export const labelTextLayoutFixtureScene = {
   styles: labelTextLayoutFixtures,
   layers: [textLayoutLabelLayerFixture],
@@ -471,24 +435,17 @@ export const labelTextLayoutFixtureScene = {
     };
   }),
 } satisfies LabelScene;
+
 export const labelTransformFixtureScene = {
   styles: [labelFixtureStyles.iconTextBadgePerLevel],
   layers: [labelLayerFixture],
   labels: labelTransformFixtures,
 } satisfies LabelScene;
+
 export const labelCompetitionFixtureScenes = Object.fromEntries(
   labelCompetitionFixtures.map((layer): [string, LabelScene] => {
-    const redLayer = {
-      ...layer,
-      id: `${layer.id}-red`,
-      zOrder: 2200,
-    } satisfies LabelLayer;
-
-    const blueLayer = {
-      ...layer,
-      id: `${layer.id}-blue`,
-      zOrder: 2201,
-    } satisfies LabelLayer;
+    const redLayer = { ...layer, id: `${layer.id}-red`, zOrder: 2200 } satisfies LabelLayer;
+    const blueLayer = { ...layer, id: `${layer.id}-blue`, zOrder: 2201 } satisfies LabelLayer;
 
     return [
       `competition-${layer.competition}`,
@@ -521,7 +478,9 @@ export const labelCompetitionFixtureScenes = Object.fromEntries(
     ];
   }),
 );
+
 export const sharingTargetDestination = PANGYO_EAST;
+
 const sharingSourceStyle: LabelStyle = {
   ...labelFixtureStyles.collisionRed,
   id: 'fixture-sharing-source-style',
@@ -539,6 +498,7 @@ const sharingTargetStyle: LabelStyle = {
     image: { ...level.image, height: 16 },
   })),
 };
+
 export const labelFixtureScenes = {
   simpleText: {
     styles: [labelFixtureStyles.simpleText],
@@ -607,10 +567,7 @@ export const labelFixtureScenes = {
       animationLabel('fixture-alpha-label', PANGYO),
       animationLabel('fixture-scale-label', PANGYO_EAST),
       animationLabel('fixture-scale-alpha-label', PANGYO_NORTH),
-      animationLabel('fixture-transform-label', {
-        latitude: 37.3932,
-        longitude: 127.1112,
-      }),
+      animationLabel('fixture-transform-label', { latitude: 37.3932, longitude: 127.1112 }),
     ],
     animations: labelAnimationFixtures,
   },
@@ -642,6 +599,7 @@ export const labelFixtureScenes = {
     ],
   },
 } satisfies Record<string, LabelScene>;
+
 export const simpleTextLabelTracerFixture = {
   addScene: labelFixtureScenes.simpleText,
   expectedStateCore: {
@@ -664,24 +622,14 @@ export const simpleTextLabelTracerFixture = {
     ios: { active: false, source: 'native' },
   },
 } as const;
+
 export const labelFixtureActions = {
   visibilityAndAutoMove: [
     { type: 'show', id: regularLabelFixture.id, visible: false },
-    {
-      type: 'show',
-      id: regularLabelFixture.id,
-      visible: true,
-      autoMove: true,
-      duration: 400,
-    },
+    { type: 'show', id: regularLabelFixture.id, visible: true, autoMove: true, duration: 400 },
   ],
   motion: [
-    {
-      type: 'move',
-      id: regularLabelFixture.id,
-      coordinate: PANGYO_EAST,
-      duration: 400,
-    },
+    { type: 'move', id: regularLabelFixture.id, coordinate: PANGYO_EAST, duration: 400 },
     {
       type: 'movePath',
       id: regularLabelFixture.id,
@@ -692,18 +640,8 @@ export const labelFixtureActions = {
       rotate: true,
       baseRotation: 0,
     },
-    {
-      type: 'rotate',
-      id: regularLabelFixture.id,
-      rotation: 180,
-      duration: 400,
-    },
-    {
-      type: 'scale',
-      id: regularLabelFixture.id,
-      scale: { x: 1.4, y: 0.8 },
-      duration: 400,
-    },
+    { type: 'rotate', id: regularLabelFixture.id, rotation: 180, duration: 400 },
+    { type: 'scale', id: regularLabelFixture.id, scale: { x: 1.4, y: 0.8 }, duration: 400 },
   ],
   badges: [
     {
@@ -731,6 +669,12 @@ export const labelFixtureActions = {
       type: 'shareTransform',
       sourceId: sharingLabelIds.source,
       targetId: sharingLabelIds.target,
+      enabled: true,
+    },
+    {
+      type: 'shareShapeTransform',
+      sourceId: sharingLabelIds.source,
+      targetId: modelPolygonFixtureId,
       enabled: true,
     },
     {
@@ -808,6 +752,12 @@ export const labelFixtureActions = {
       cornerRadius: 0,
       jumpThreshold: 0,
     },
+    {
+      type: 'shareShapeTransform',
+      sourceId: sharingLabelIds.source,
+      targetId: modelPolygonFixtureId,
+      enabled: false,
+    },
   ],
   animations: labelAnimationFixtures.flatMap<LabelCommand>(({ id }) => [
     { type: 'startAnimation', id },
@@ -818,6 +768,7 @@ export const labelFixtureActions = {
     { type: 'stopTracking' },
   ],
 } satisfies Record<string, LabelCommand[]>;
+
 export const labelPlatformDifferenceFixtures = {
   androidCompetitionExceptions: {
     ...labelLayerFixture,
@@ -842,6 +793,7 @@ export const labelPlatformDifferenceFixtures = {
     autoMove: true,
   } satisfies LabelCommand,
 } as const;
+
 export const iosPathRankLabelCapabilityFixture = {
   platform: 'ios',
   requiredCapability: 'pathTextRank',
@@ -849,16 +801,12 @@ export const iosPathRankLabelCapabilityFixture = {
     pathTextStyles: [pathTextFixtureStyle],
     layers: [labelLayerFixture],
     pathLabels: [
-      {
-        ...pathLabelFixture,
-        id: 'fixture-path-rank-zero',
-        text: 'RANK 0',
-        rank: 0,
-      },
+      { ...pathLabelFixture, id: 'fixture-path-rank-zero', text: 'RANK 0', rank: 0 },
       labelPlatformDifferenceFixtures.iosPathRank,
     ],
   } satisfies LabelScene,
 } as const;
+
 export const iosLodAutoMoveLabelCapabilityFixture = {
   platform: 'ios',
   requiredCapability: 'lodAutoMove',
@@ -869,6 +817,7 @@ export const iosLodAutoMoveLabelCapabilityFixture = {
   } satisfies LabelScene,
   command: labelPlatformDifferenceFixtures.iosLodAutoMove,
 } as const;
+
 export const androidNoneTransformLabelCapabilityFixture = {
   platform: 'android',
   requiredCapability: 'supportedTransforms:none',
@@ -878,6 +827,7 @@ export const androidNoneTransformLabelCapabilityFixture = {
     labels: [labelPlatformDifferenceFixtures.androidNoneTransform],
   } satisfies LabelScene,
 } as const;
+
 export const androidCompetitionExceptionsLabelCapabilityFixture = {
   platform: 'android',
   requiredCapability: 'competitionExceptions',
@@ -885,10 +835,7 @@ export const androidCompetitionExceptionsLabelCapabilityFixture = {
     styles: [labelFixtureStyles.collisionRed, labelFixtureStyles.collisionBlue],
     layers: [
       { ...labelLayerFixture, competition: 'all', zOrder: 2300 },
-      {
-        ...labelPlatformDifferenceFixtures.androidCompetitionExceptions,
-        zOrder: 2301,
-      },
+      { ...labelPlatformDifferenceFixtures.androidCompetitionExceptions, zOrder: 2301 },
     ],
     labels: [
       {
@@ -912,12 +859,14 @@ export const androidCompetitionExceptionsLabelCapabilityFixture = {
     ],
   } satisfies LabelScene,
 } as const;
+
 export const labelPlatformCapabilityFixtures = {
   iosPathRank: iosPathRankLabelCapabilityFixture,
   iosLodAutoMove: iosLodAutoMoveLabelCapabilityFixture,
   androidNoneTransform: androidNoneTransformLabelCapabilityFixture,
   androidCompetitionExceptions: androidCompetitionExceptionsLabelCapabilityFixture,
 } as const;
+
 export const labelErrorFixtureScenes = {
   badUriScheme: {
     styles: [
@@ -926,11 +875,7 @@ export const labelErrorFixtureScenes = {
         levels: [
           {
             level: 0,
-            image: {
-              uri: 'ftp://invalid.example/label.png',
-              width: 24,
-              height: 24,
-            },
+            image: { uri: 'ftp://invalid.example/label.png', width: 24, height: 24 },
           },
         ],
       },
@@ -970,6 +915,7 @@ export const labelErrorFixtureScenes = {
     ],
   },
 } satisfies Record<string, LabelScene>;
+
 export const updatedPathTextFixtureScene: LabelScene = {
   pathTextStyles: [
     {
@@ -983,21 +929,17 @@ export const updatedPathTextFixtureScene: LabelScene = {
   layers: [labelLayerFixture],
   pathLabels: [pathLabelFixture],
 };
+
 export const labelUnknownIdCommand = {
   type: 'show',
   id: 'fixture-error-unknown-label',
   visible: true,
 } satisfies LabelCommand;
+
 const fontFixtureFamily = 'KakaoMapFontFixture';
 const fontFixtureTextStyle: LabelStyle = {
   id: 'fixture-font-default-style',
-  levels: [
-    {
-      level: 0,
-      textLayout: 'center',
-      textLines: [{ fontSize: 32, color: '#FF00FFFF' }],
-    },
-  ],
+  levels: [{ level: 0, textLayout: 'center', textLines: [{ fontSize: 32, color: '#FF00FFFF' }] }],
 };
 
 const fontFixtureScene = {
@@ -1013,6 +955,7 @@ const fontFixtureScene = {
     },
   ],
 } satisfies LabelScene;
+
 export const androidFontFixture = {
   resourceName: process.env.EXPO_PUBLIC_KAKAO_MAP_FONT_RESOURCE,
   family: fontFixtureFamily,
@@ -1024,10 +967,7 @@ export const androidFontFixture = {
         ...fontFixtureTextStyle,
         levels: fontFixtureTextStyle.levels.map((level) => ({
           ...level,
-          textLines: level.textLines?.map((line) => ({
-            ...line,
-            fontFamily: fontFixtureFamily,
-          })),
+          textLines: level.textLines?.map((line) => ({ ...line, fontFamily: fontFixtureFamily })),
         })),
       },
     ],

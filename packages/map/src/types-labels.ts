@@ -160,6 +160,7 @@ export type LabelCommand =
   | { type: 'scale'; id: string; scale: ScreenPoint; duration?: number }
   | { type: 'sharePosition'; sourceId: string; targetId: string; enabled: boolean }
   | { type: 'shareTransform'; sourceId: string; targetId: string; enabled: boolean }
+  | { type: 'shareShapeTransform'; sourceId: string; targetId: string; enabled: boolean }
   | { type: 'setBadgeVisibility'; id: string; badgeId: string; visible: boolean; style?: boolean }
   | { type: 'startAnimation'; id: string }
   | { type: 'stopAnimation'; id: string }
@@ -185,6 +186,8 @@ export type LabelCapabilities = {
   lodAutoMove: boolean;
   autoMoveDuration: boolean;
   labelScaleCommand: boolean;
+  sharedShapeTransform: boolean;
+  sharedShapeTarget: 'polygon' | 'shape';
   competitionExceptions: boolean;
   supportedTransforms: LabelTransform[];
   keyframeRepeatCount: false;
