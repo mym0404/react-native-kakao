@@ -450,7 +450,7 @@ class RNCKakaoUserModule internal constructor(
     promise: Promise,
   ) = onMain {
     UserApiClient.instance.me(
-      propertyKeys = propertyKeys?.toArrayList()?.filterIsInstance<String>(),
+      propertyKeys?.filterIsInstance<String>(),
       secureResource = secureResource ?: true,
     ) { user, error ->
       if (error != null) {
