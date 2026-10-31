@@ -73,14 +73,15 @@ export interface KakaoTalkFriendProfile {
   /** Unique identifier for message transmission. */
   uuid: string;
   /** Member number of the friend, only exists for friends connected to the app. */
-  id?: number;
+  id?: number | null;
   /** Favorite status, not provided in chat room picker. */
-  favorite?: boolean;
+  favorite?: boolean | null;
+  /** Masked profile nickname. May be absent or null in the SDK response. */
   maskingProfileNickname?: string | null;
   /** Profile nickname. */
-  profileNickname?: string;
+  profileNickname?: string | null;
   /** Profile thumbnail image URL. */
-  profileThumbnailImage?: string;
+  profileThumbnailImage?: string | null;
 }
 ```
 

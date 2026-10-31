@@ -22,6 +22,7 @@ import com.kakao.sdk.user.model.AgeRange
 import com.kakao.sdk.user.model.BirthdayType
 import com.kakao.sdk.user.model.Gender
 import com.kakao.sdk.user.model.LoginUiMode
+import com.kakao.sdk.user.model.Scope
 import com.kakao.sdk.user.model.UserShippingAddresses
 import net.mjstudio.rnkakao.core.util.RNCKakaoResponseNotFoundException
 import net.mjstudio.rnkakao.core.util.RNCKakaoUnsupportedPlatformException
@@ -252,29 +253,13 @@ class RNCKakaoUserModule internal constructor(
     scopes: ReadableArray?,
     promise: Promise,
   ) = onMain {
-    UserApiClient.instance.scopes { scopeInfo, error ->
+    UserApiClient.instance.scopes(scopes = scopes?.filterIsInstance<String>()?.ifEmpty { null }) { scopeInfo, error ->
       if (error != null) {
         promise.rejectWith(error)
-      } else if (scopeInfo?.scopes == null) {
+      } else if (scopeInfo == null) {
         promise.rejectWith(RNCKakaoResponseNotFoundException("scopes"))
       } else {
-        promise.resolve(
-          argArr().also { arr ->
-            scopeInfo.scopes!!.forEach { scope ->
-              arr.pushMap(
-                argMap().also { map ->
-                  map.putString("id", scope.id)
-                  map.putString("displayName", scope.displayName)
-                  map.putString("type", scope.type.name)
-                  map.putBoolean("using", scope.using)
-                  map.putB("delegated", scope.delegated)
-                  map.putBoolean("agreed", scope.agreed)
-                  map.putB("revocable", scope.revocable)
-                },
-              )
-            }
-          },
-        )
+        promise.resolve(mapScopes(scopeInfo.scopes))
       }
     }
   }
@@ -292,7 +277,7 @@ class RNCKakaoUserModule internal constructor(
       } else if (scopeInfo == null) {
         promise.rejectWith(RNCKakaoResponseNotFoundException("scopeInfo"))
       } else {
-        promise.resolve(42)
+        promise.resolve(mapScopes(scopeInfo.scopes))
       }
     }
   }
@@ -321,6 +306,9 @@ class RNCKakaoUserModule internal constructor(
                 putBoolean("agreed", term.agreed)
                 putBoolean("required", term.required)
                 putBoolean("revocable", term.revocable)
+                term.referer?.let {
+                  putString("agreedBy", if (it.name == "KAUTH" || it.name == "KAPI") it.name else "unknown")
+                }
               }
             } ?: listOf(),
           ),
@@ -567,6 +555,21 @@ class RNCKakaoUserModule internal constructor(
         }
       }
     }
+
+  private fun mapScopes(scopes: List<Scope>?) =
+    argArr().pushMapList(
+      scopes.orEmpty().map { scope ->
+        argMap().apply {
+          putString("id", scope.id)
+          putString("displayName", scope.displayName)
+          putString("type", scope.type.name)
+          putBoolean("using", scope.using)
+          putB("delegated", scope.delegated)
+          putBoolean("agreed", scope.agreed)
+          putB("revocable", scope.revocable)
+        }
+      },
+    )
 
   private fun tokenCallback(promise: Promise): (OAuthToken?, Throwable?) -> Unit =
     { token, error ->

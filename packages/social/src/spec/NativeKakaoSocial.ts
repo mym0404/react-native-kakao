@@ -3,33 +3,34 @@ import { TurboModuleRegistry } from 'react-native';
 import type { UnsafeObject } from 'react-native/Libraries/Types/CodegenTypes';
 
 export interface KakaoTalkProfile {
+  id: number;
   /**
    * 카카오톡 닉네임
    *
    * 필요한 동의항목: 프로필 정보(닉네임/프로필 사진) 또는 닉네임
    */
-  nickname?: string;
+  nickname?: string | null;
   /**
    * 사용자가 카카오톡을 이용 중인 국가
    *
    * @deprecated
    * @link https://devtalk.kakao.com/t/api-change-notice-response-fields-of-the-retrieving-kakao-talk-kakao-story-api/115151
    */
-  countryISO?: string;
+  countryISO?: string | null;
   /**
    * 카카오톡 프로필 이미지 URL
    * 640px * 640px 크기, HTTPS만 지원
    *
    * 필요한 동의항목: 프로필 정보(닉네임/프로필 사진) 또는 프로필 사진
    */
-  profileImageUrl?: string;
+  profileImageUrl?: string | null;
   /**
    * 카카오톡 프로필 썸네일(Thumbnail) 이미지 URL
    * 110px * 110px 크기, HTTPS만 지원
    *
    * 필요한 동의항목: 프로필 정보(닉네임/프로필 사진) 또는 프로필 사진
    */
-  thumbnailUrl?: string;
+  thumbnailUrl?: string | null;
 }
 export interface KakaoTalkFriendSelectResult {
   totalCount: number;
@@ -42,18 +43,18 @@ export interface KakaoTalkFriendProfile {
    */
   uuid: string;
   /** 친구의 회원번호, 앱과 연결된 친구에게만 존재 */
-  id?: number;
+  id?: number | null;
   /** 즐겨찾기 추가 여부, 채팅방 피커에서는 미제공 */
-  favorite?: boolean;
+  favorite?: boolean | null;
   maskingProfileNickname?: string | null;
   /** 프로필 닉네임, 프로필 닉네임 동의 항목에 동의하지 않은 친구나 앱과 연결되지 않는 친구의 경우,
    * 닉네임을 마스킹 처리하여 제공(닉네임 원본을 받으려면 권한 및 displayAllProfile 설정 필요) */
-  profileNickname?: string;
+  profileNickname?: string | null;
   /**
    * 프로필 썸네일 이미지, 프로필 썸네일 이미지 동의 항목에 동의하지 않은 친구나 앱과 연결되지 않은 친구의 경우,
    * 프로필 이미지 미제공(프로필 이미지를 받으려면 권한 및 displayAllProfile 설정 필요)
    */
-  profileThumbnailImage?: string;
+  profileThumbnailImage?: string | null;
 }
 export interface KakaoTalkFriendSelectOptions {
   /** 친구 피커 테마 */
@@ -78,7 +79,9 @@ export interface KakaoTalkFriendSelectOptions {
 
 export interface KakaoTalkGetFriendsResult {
   totalCount: number;
-  favoriteCount?: number;
+  favoriteCount?: number | null;
+  beforeUrl?: string | null;
+  afterUrl?: string | null;
   friends: KakaoTalkFriend[];
 }
 /**
@@ -92,12 +95,12 @@ export interface KakaoTalkGetFriendsResult {
  * @property allowedMsg 메시지 수신이 허용되었는지 여부. 앱가입 친구의 경우는 feed msg 에 해당. 앱미가입친구는 invite msg 에 해당
  */
 export interface KakaoTalkFriend {
-  id?: number;
+  id?: number | null;
   uuid: string;
-  profileNickname: string;
-  profileThumbnailImage?: string;
-  favorite?: boolean;
-  allowedMsg?: boolean;
+  profileNickname?: string | null;
+  profileThumbnailImage?: string | null;
+  favorite?: boolean | null;
+  allowedMsg?: boolean | null;
 }
 export interface KakaoTalkGetFriendsOptions {
   offset?: number;

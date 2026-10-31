@@ -294,18 +294,8 @@ import RNCKakaoCore
       UserApi.shared.scopes(scopes: emptyArrayToNil(scopes)) { scopeInfo, error in
         if let error {
           RNCKakaoUtil.reject(reject, error)
-        } else if let scopes = scopeInfo?.scopes {
-          resolve(scopes.map { s in
-            [
-              "id": s.id,
-              "displayName": s.displayName,
-              "type": s.type.rawValue,
-              "using": s.using,
-              "delegated": s.delegated as Any,
-              "agreed": s.agreed,
-              "revocable": s.revocable as Any
-            ]
-          })
+        } else if let scopeInfo {
+          resolve(self.mapScopes(scopeInfo.scopes))
         } else {
           RNCKakaoUtil.reject(reject, RNCKakaoError.responseNotFound(name: "scopes"))
         }
@@ -322,8 +312,8 @@ import RNCKakaoCore
       UserApi.shared.revokeScopes(scopes: scopes) { info, error in
         if let error {
           RNCKakaoUtil.reject(reject, error)
-        } else if info != nil {
-          resolve(42)
+        } else if let info {
+          resolve(self.mapScopes(info.scopes))
         } else {
           RNCKakaoUtil.reject(reject, RNCKakaoError.responseNotFound(name: "scopeInfo"))
         }
@@ -351,6 +341,9 @@ import RNCKakaoCore
             ]
             if let agreedAt = term.agreedAt {
               response["agreedAt"] = agreedAt.timeIntervalSince1970
+            }
+            if let referer = term.referer {
+              response["agreedBy"] = referer.rawValue
             }
             return response
           })
@@ -545,6 +538,20 @@ import RNCKakaoCore
           RNCKakaoUtil.reject(reject, RNCKakaoError.responseNotFound(name: "accessTokenInfo"))
         }
       }
+    }
+  }
+
+  private func mapScopes(_ scopes: [Scope]?) -> [[String: Any]] {
+    (scopes ?? []).map { scope in
+      [
+        "id": scope.id,
+        "displayName": scope.displayName,
+        "type": scope.type.rawValue,
+        "using": scope.using,
+        "delegated": scope.delegated as Any,
+        "agreed": scope.agreed,
+        "revocable": scope.revocable as Any
+      ]
     }
   }
 

@@ -41,10 +41,13 @@ export type KakaoServiceTerms = {
   agreed: boolean;
   required: boolean;
   revocable: boolean;
+  agreedBy?: 'KAUTH' | 'KAPI' | 'unknown';
 };
 ```
 
 `agreedAt`이 있으면 초 단위 Unix 타임스탬프입니다. `app_service_terms`로 조회한 약관도 같은 타입으로 반환하며, 각 약관의 `agreed`로 동의 여부를 확인할 수 있습니다.
+
+`agreedBy`는 약관에 동의한 경로입니다. `KAUTH`는 카카오싱크 간편가입 동의 화면, `KAPI`는 그 밖의 경로를 뜻합니다. SDK가 인식하지 못한 값은 `unknown`으로 반환하고, 응답에 동의 경로가 없으면 이 필드를 생략합니다.
 
 ## 약관 동의 철회
 
