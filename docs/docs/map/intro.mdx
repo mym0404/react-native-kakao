@@ -480,6 +480,33 @@ const dim = await map.current?.getDimScreenStatus();
 
 `getDimScreenStatus().capabilities`에서 route 포함, 모델 강조 방향, 애니메이션과 상태 getter 지원 여부를 확인해요. iOS는 `mapAndRoute`와 dim z-order를 지원하지 않아요. Android는 dim 설정과 애니메이터 실행 상태 getter가 없어 관련 상태가 `null`일 수 있어요.
 
+## 지도 유틸리티
+
+`executeUtilityCommand()`는 POI 카테고리, 탭 간격, 카메라 애니메이션, 지도 활성·표시 상태, 실제 viewport, 버전, 좌표계 변환, 글꼴 등록과 캐시를 다뤄요. `getCapabilities` 결과에 있는 기능만 호출해요.
+
+```tsx
+const utility = await map.current?.executeUtilityCommand({ type: 'getCapabilities' });
+await map.current?.executeUtilityCommand({
+  type: 'setCameraAnimationEnabled',
+  enabled: false,
+});
+const viewport = await map.current?.executeUtilityCommand({ type: 'getViewport' });
+const converted = await map.current?.executeUtilityCommand({
+  type: 'convertCoordinate',
+  from: 'wgs84',
+  to: 'wtm',
+  coordinate: { x: 127.108678, y: 37.402001 },
+});
+```
+
+`getViewport`는 양쪽 플랫폼에서 SDK의 현재 `{ x, y, width, height }`를 논리 화면 단위로 읽어요. `setViewport`는 Android만 지원해요. 카메라 애니메이션 활성화는 양쪽에서 바꿀 수 있지만, 현재 활성화 값은 iOS의 `getState`에서만 읽을 수 있어요. Android에서는 getter가 없는 설정을 요청값으로 채워 넣지 않아요. setter Promise는 SDK에 명령을 전달했다는 뜻이며 실제 상태 readback이 아니에요.
+
+Android에서는 `requestPoiState()`가 SDK의 비동기 응답을 기다린 뒤 POI의 `visible`, `clickable`, `scale`, `language`를 반환해요. 3초 안에 응답하지 않으면 `ERR_KAKAO_MAP_POI_STATE_TIMEOUT`으로 거절해요. iOS SDK에는 같은 비동기 조회가 없어요.
+
+Android의 `registerFont`는 앱의 컴파일된 `res/font` 리소스를 지도 SDK에 등록해요. `resourceName`은 소문자로 시작하고 소문자·숫자·밑줄만 포함해야 하며, 선택적인 `name`으로 SDK 등록 이름을 지정할 수 있어요. iOS SDK는 이 등록 방식을 지원하지 않아요.
+
+WGS84에서 `x`는 경도, `y`는 위도예요. WTM·WCong·Kakao 좌표는 SDK 좌표계 단위이며 화면 배율을 적용하지 않아요. iOS는 Kakao 좌표계와 memory/view-info cache, Android는 engine version을 추가로 지원해요.
+
 ## 오류와 플랫폼 범위
 
 ref 명령은 지도 준비 전에 대기하지 않고 거절돼요. Promise 오류의 `code`, `message`와 `onError`를 처리해요.
@@ -508,6 +535,10 @@ ref 명령은 지도 준비 전에 대기하지 않고 거절돼요. Promise 오
 | `ERR_KAKAO_MAP_GUI_NOT_FOUND`                | 참조한 인포윈도우·위젯·애니메이션 ID가 없음         |
 | `ERR_KAKAO_MAP_DIM_INVALID_ARGUMENT`         | 잘못된 dim cover·강조 도형·애니메이션 입력          |
 | `ERR_KAKAO_MAP_UNSUPPORTED_PLATFORM_FEATURE` | 현재 플랫폼 SDK에 없는 네이티브 기능                                  |
+| `ERR_KAKAO_MAP_COORDINATE_CONVERSION_FAILED` | SDK 좌표 변환 결과를 만들 수 없음                   |
+| `ERR_KAKAO_MAP_VERSION_UNAVAILABLE`          | 요청한 SDK 또는 엔진 버전 정보를 읽을 수 없음       |
+| `ERR_KAKAO_MAP_POI_STATE_TIMEOUT`            | Android POI 상태 응답이 3초 안에 오지 않음          |
+| `ERR_KAKAO_MAP_FONT_RESOURCE_NOT_FOUND`      | Android 컴파일 글꼴 리소스를 찾을 수 없음           |
 
 SDK 오류는 SDK의 코드와 메시지를 유지해요. 지도 인증 오류는 초기화 Promise가 아니라 `onError`로 전달돼요. 인증 실패 후 자동 재시도는 하지 않아요. 키·앱 등록 설정이나 네트워크 문제를 해결한 다음 뷰를 다시 마운트해요. 앱 키 자체를 변경해야 한다면 앱 프로세스를 다시 시작해요.
 

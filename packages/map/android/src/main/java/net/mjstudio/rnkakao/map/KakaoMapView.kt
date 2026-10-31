@@ -70,6 +70,7 @@ class KakaoMapView(
   private var routes: MapRoutes? = null
   private var gui: MapGui? = null
   private var dimScreen: MapDimScreen? = null
+  private var utilities: MapUtilities? = null
   private var cameraCommands: MapCameraCommands? = null
   private var imageLoader: MapImageLoader? = null
   private var pendingLabels: MapLabelSceneRecord? = null
@@ -459,7 +460,12 @@ class KakaoMapView(
   }
 
   fun clearCache() {
-    requireMap().clearAllCache()
+    requireUtilities().command(mapOf("type" to "clearCache", "kind" to "all"))
+  }
+
+  internal fun requireUtilities(): MapUtilities {
+    val readyMap = requireMap()
+    return utilities ?: MapUtilities(readyMap, context).also { utilities = it }
   }
 
   fun executeCameraCommand(
@@ -682,6 +688,8 @@ class KakaoMapView(
   private fun releaseMapObjects() {
     labelGeneration++
     routeGeneration++
+    utilities?.dispose()
+    utilities = null
     cameraCommands?.dispose()
     cameraCommands = null
     val manager = labels
