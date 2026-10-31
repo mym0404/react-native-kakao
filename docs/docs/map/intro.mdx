@@ -442,6 +442,28 @@ await map.current?.executeRouteCommand({
 
 두 플랫폼의 네이티브 경로 애니메이터는 반복 횟수 `1`만 지원해요. Android SDK는 고유한 도형·경로 스타일과 애니메이터 등록을 지도 엔진이 끝날 때까지 유지해요. 같은 정의는 모듈이 재사용하지만, 계속 새로운 정의를 만들면 엔진 수명 동안 등록 수가 늘 수 있어요.
 
+## GUI
+
+`applyGui()`는 인포윈도우와 화면 고정 위젯의 트리를 적용해요. 레이아웃·이미지·텍스트는 두 플랫폼에서 사용할 수 있고, 버튼·animated image·인포윈도우 drop 애니메이션은 iOS 전용이에요.
+
+```tsx
+await map.current?.applyGui({
+  infoWindows: [
+    {
+      id: 'info',
+      position: { latitude: 37.402001, longitude: 127.108678 },
+      body: { type: 'text', id: 'title', text: '판교', textSize: 14, color: '#111827FF' },
+    },
+  ],
+});
+
+const gui = await map.current?.getGuiStatus();
+```
+
+`getGuiStatus().capabilities`를 확인한 뒤 `startGuiAnimation`, `controlAnimatedImage`와 플랫폼 전용 컴포넌트를 사용해요. Android는 클릭 가능한 임의 컴포넌트를 지원하지만, iOS의 컴포넌트 탭은 button에서 발생해요. iOS는 인포윈도우 auto-move 시간을 지정할 수 없어요. 이미지·글꼴·테두리·패딩·화면 오프셋과 drop 높이는 논리 단위, 회전은 도, 시간은 정수 밀리초예요.
+
+KakaoMapsSDK 2.12.19를 사용하는 iOS Simulator에서는 버튼의 기본 이미지와 탭 이벤트를 확인했지만, 누르는 동안 `pressedSource` 이미지로 전환되는 모습은 확인하지 못했어요. 이 제한은 button을 인포윈도우 본문으로 직접 사용하거나 이미지의 자식으로 구성한 경우에 모두 관찰됐어요. `button: true`를 눌림 이미지의 표시 보장으로 해석하면 안 돼요.
+
 ## 오류와 플랫폼 범위
 
 ref 명령은 지도 준비 전에 대기하지 않고 거절돼요. Promise 오류의 `code`, `message`와 `onError`를 처리해요.
@@ -466,6 +488,8 @@ ref 명령은 지도 준비 전에 대기하지 않고 거절돼요. Promise 오
 | `ERR_KAKAO_MAP_ROUTE_INVALID_ARGUMENT`       | 잘못된 경로 장면·segment·progress 입력              |
 | `ERR_KAKAO_MAP_ROUTE_NOT_FOUND`              | 참조한 경로 또는 애니메이션 ID가 없음               |
 | `ERR_KAKAO_MAP_ROUTE_UNSUPPORTED`            | 현재 SDK가 해당 경로 기능을 지원하지 않음           |
+| `ERR_KAKAO_MAP_GUI_INVALID_ARGUMENT`         | 잘못된 GUI 트리·크기·색상 입력                      |
+| `ERR_KAKAO_MAP_GUI_NOT_FOUND`                | 참조한 인포윈도우·위젯·애니메이션 ID가 없음         |
 | `ERR_KAKAO_MAP_UNSUPPORTED_PLATFORM_FEATURE` | 현재 플랫폼 SDK에 없는 네이티브 기능                                  |
 
 SDK 오류는 SDK의 코드와 메시지를 유지해요. 지도 인증 오류는 초기화 Promise가 아니라 `onError`로 전달돼요. 인증 실패 후 자동 재시도는 하지 않아요. 키·앱 등록 설정이나 네트워크 문제를 해결한 다음 뷰를 다시 마운트해요. 앱 키 자체를 변경해야 한다면 앱 프로세스를 다시 시작해요.

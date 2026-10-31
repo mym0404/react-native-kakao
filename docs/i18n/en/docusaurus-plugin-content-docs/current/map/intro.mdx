@@ -442,6 +442,28 @@ Route widths, strokes, and pattern distances use logical units; durations use in
 
 Native route animators on both platforms accept only a repeat count of `1`. The Android SDK keeps unique shape/route style and animator registrations until the map engine ends. The module reuses an identical definition, but continuously creating distinct definitions can grow the registry for that engine lifetime.
 
+## GUI
+
+`applyGui()` installs info-window and screen-fixed widget trees. Layout, image, and text nodes work on both platforms. Buttons, animated images, and info-window drop animations are iOS-only.
+
+```tsx
+await map.current?.applyGui({
+  infoWindows: [
+    {
+      id: 'info',
+      position: { latitude: 37.402001, longitude: 127.108678 },
+      body: { type: 'text', id: 'title', text: 'Pangyo', textSize: 14, color: '#111827FF' },
+    },
+  ],
+});
+
+const gui = await map.current?.getGuiStatus();
+```
+
+Check `getGuiStatus().capabilities` before using `startGuiAnimation`, `controlAnimatedImage`, or platform-specific nodes. Android supports taps on arbitrary clickable components; iOS component taps come from buttons. iOS does not support an info-window auto-move duration. Images, fonts, strokes, padding, screen offsets, and drop height use logical units; rotation uses degrees; durations use integer milliseconds.
+
+On the iOS Simulator with KakaoMapsSDK 2.12.19, the normal button image and tap events were verified, but the transition to `pressedSource` during a held press was not observed. This limitation occurred with a button used directly as the info-window body and as an image child. A `button: true` capability does not guarantee the pressed-image visual.
+
 ## Errors and platform support
 
 Ref commands reject before readiness instead of being queued. Handle Promise `code` and `message` fields and `onError` events.
@@ -466,6 +488,8 @@ Ref commands reject before readiness instead of being queued. Handle Promise `co
 | `ERR_KAKAO_MAP_ROUTE_INVALID_ARGUMENT`       | Invalid route scene, segment, or progress input                     |
 | `ERR_KAKAO_MAP_ROUTE_NOT_FOUND`              | A referenced route or animation ID is missing                       |
 | `ERR_KAKAO_MAP_ROUTE_UNSUPPORTED`            | The SDK does not support the requested route feature                |
+| `ERR_KAKAO_MAP_GUI_INVALID_ARGUMENT`         | Invalid GUI tree, dimension, or color input                         |
+| `ERR_KAKAO_MAP_GUI_NOT_FOUND`                | A referenced info-window, widget, or animation ID is missing        |
 | `ERR_KAKAO_MAP_UNSUPPORTED_PLATFORM_FEATURE` | Native feature absent from the current platform SDK     |
 
 SDK errors preserve their original code and message. Authentication failures are delivered through `onError`, not the initialization Promise. No automatic retry is performed: fix the app registration or network issue and remount the view to retry. Restart the app process if the native app key must change.

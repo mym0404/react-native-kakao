@@ -12,6 +12,8 @@ import {
   type LabelCommand,
   type LabelScene,
   type MapGesture,
+  type MapGuiCapabilities,
+  type MapGuiScene,
   type MapOptions,
   type MapOverlay,
   type RouteCapabilities,
@@ -22,6 +24,7 @@ import {
 } from '@react-native-kakao/map';
 
 import { CAMERA_FIXTURES } from '../map/camera-fixtures';
+import { guiFixtureScenes } from '../map/gui-fixtures';
 import {
   androidCompetitionExceptionsLabelCapabilityFixture,
   androidNoneTransformLabelCapabilityFixture,
@@ -73,6 +76,8 @@ const sections = [
   'shape-motion',
   'routes',
   'route-motion',
+  'gui',
+  'gui-motion',
 ] as const;
 
 const overlays: MapOverlay[] = ['roadviewLine', 'hillShading', 'bicycleRoad', 'hybrid'];
@@ -108,6 +113,7 @@ export default function MapFeaturesPage() {
     useState<AdvancedCameraCapabilities>();
 
   const [routeCapabilities, setRouteCapabilities] = useState<RouteCapabilities>();
+  const [guiCapabilities, setGuiCapabilities] = useState<MapGuiCapabilities>();
   const [result, setResult] = useState('Waiting for map');
   const [event, setEvent] = useState('No event');
   useEffect(() => {
@@ -560,6 +566,157 @@ export default function MapFeaturesPage() {
         });
       }
     }
+  } else if (section === 'gui' || section === 'gui-motion') {
+    actions.push({
+      id: 'gui-read-status',
+      run: () =>
+        execute(async () => {
+          const value = await requireMap().getGuiStatus();
+          setGuiCapabilities(value.capabilities);
+
+          return value;
+        }),
+    });
+
+    if (section === 'gui') {
+      actions.push(
+        {
+          id: 'gui-dispatch-apply-common',
+          run: () => applyGui(guiFixtureScenes.common),
+        },
+        {
+          id: 'gui-dispatch-pixel-box-32',
+          run: () => applyGui(guiFixtureScenes.pixelBox32),
+        },
+        { id: 'gui-dispatch-clear', run: () => applyGui({}) },
+        {
+          id: 'gui-dispatch-show-info',
+          run: () => execute(() => requireMap().showInfoWindow('fixture-info-window')),
+        },
+        {
+          id: 'gui-dispatch-show-info-auto',
+          run: () =>
+            execute(() =>
+              requireMap().showInfoWindow('fixture-info-window', {
+                autoMove: true,
+                duration: guiCapabilities?.autoMoveDuration ? 400 : undefined,
+              }),
+            ),
+        },
+        {
+          id: 'gui-dispatch-hide-info',
+          run: () => execute(() => requireMap().hideInfoWindow('fixture-info-window')),
+        },
+        {
+          id: 'gui-dispatch-show-widget',
+          run: () => execute(() => requireMap().showWidget('fixture-widget')),
+        },
+        {
+          id: 'gui-dispatch-hide-widget',
+          run: () => execute(() => requireMap().hideWidget('fixture-widget')),
+        },
+      );
+
+      if (guiCapabilities?.arbitraryComponentClicks) {
+        actions.push({
+          id: 'gui-dispatch-apply-clickable',
+          run: () => applyGui(guiFixtureScenes.androidClicks),
+        });
+      }
+
+      if (guiCapabilities?.button && guiCapabilities.animatedImage) {
+        actions.push(
+          {
+            id: 'gui-dispatch-apply-ios-button-widget',
+            run: () => applyGui(guiFixtureScenes.iosButtonWidget),
+          },
+          {
+            id: 'gui-dispatch-apply-ios-official-button-info',
+            run: () => applyGui(guiFixtureScenes.iosOfficialButtonInfo),
+          },
+          {
+            id: 'gui-dispatch-apply-ios-components',
+            run: () => applyGui(guiFixtureScenes.iosComponentsAndAnimation),
+          },
+        );
+      }
+
+      actions.push({
+        id: 'gui-explicit-test-ios-only-scene',
+        run: () => applyGui(guiFixtureScenes.iosComponentsAndAnimation),
+      });
+    } else {
+      actions.push(
+        {
+          id: 'gui-dispatch-apply-common',
+          run: () => applyGui(guiFixtureScenes.common),
+        },
+        {
+          id: 'gui-dispatch-pixel-box-32',
+          run: () => applyGui(guiFixtureScenes.pixelBox32),
+        },
+        {
+          id: 'gui-dispatch-move-info',
+          run: () =>
+            execute(() =>
+              requireMap().moveInfoWindow(
+                'fixture-info-window',
+                { latitude: 37.3947, longitude: 127.1132 },
+                { duration: 500 },
+              ),
+            ),
+        },
+        {
+          id: 'gui-dispatch-position-widget',
+          run: () =>
+            execute(() =>
+              requireMap().positionWidget('fixture-widget', {
+                gravity: 'bottomLeft',
+                x: 20,
+                y: 20,
+              }),
+            ),
+        },
+        {
+          id: 'gui-dispatch-rotate-widget',
+          run: () => execute(() => requireMap().rotateWidget('fixture-widget', 90)),
+        },
+      );
+
+      if (guiCapabilities?.infoWindowAnimation) {
+        actions.push(
+          {
+            id: 'gui-dispatch-apply-animation',
+            run: () => applyGui(guiFixtureScenes.iosComponentsAndAnimation),
+          },
+          {
+            id: 'gui-dispatch-animation-start',
+            run: () => execute(() => requireMap().startGuiAnimation('fixture-info-drop')),
+          },
+          {
+            id: 'gui-dispatch-animation-stop',
+            run: () => execute(() => requireMap().stopGuiAnimation('fixture-info-drop')),
+          },
+        );
+      }
+
+      if (guiCapabilities?.animatedImage) {
+        actions.push(
+          ...(['start', 'pause', 'resume', 'stop'] as const).map((action) => ({
+            id: `gui-dispatch-animated-image-${action}`,
+            run: () =>
+              execute(() =>
+                requireMap().controlAnimatedImage(
+                  'infoWindow',
+                  'fixture-ios-info',
+                  'fixture-ios-animated-image',
+                  action,
+                ),
+              ),
+          })),
+        );
+      }
+    }
   } else {
     actions.push(
       {
@@ -800,6 +957,7 @@ export default function MapFeaturesPage() {
           onRoutesChanged={(value) => recordEvent({ type: 'routes-changed', counts: value })}
           onRouteProgress={(value) => recordEvent({ type: 'route-progress', ...value })}
           onRouteAnimationStop={(value) => recordEvent({ type: 'route-animation-stop', ...value })}
+          onGuiEvent={(value) => recordEvent({ type: 'gui', event: value })}
         />
       ) : null}
     </View>
@@ -910,6 +1068,18 @@ export default function MapFeaturesPage() {
 
   function executeRouteCommand(command: RouteCommand) {
     execute(() => requireMap().executeRouteCommand(command));
+  }
+
+  function applyGui(scene: MapGuiScene) {
+    execute(async () => {
+      await requireMap().moveCamera({
+        ...regularLabelFixture.coordinate,
+        zoomLevel: 17,
+      });
+      await requireMap().applyGui(scene);
+
+      return 'GUI scene submitted';
+    });
   }
 
   function isSupportedLabelCommand(command: LabelCommand) {

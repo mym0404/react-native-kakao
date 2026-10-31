@@ -63,9 +63,11 @@ class KakaoMapView(
   private val onRoutesChanged by EventDispatcher()
   private val onRouteProgress by EventDispatcher()
   private val onRouteAnimationStop by EventDispatcher()
+  private val onGuiEvent by EventDispatcher()
   private var labels: MapLabels? = null
   private var shapes: MapShapes? = null
   private var routes: MapRoutes? = null
+  private var gui: MapGui? = null
   private var cameraCommands: MapCameraCommands? = null
   private var imageLoader: MapImageLoader? = null
   private var pendingLabels: MapLabelSceneRecord? = null
@@ -591,6 +593,18 @@ class KakaoMapView(
     return manager
   }
 
+  internal fun requireGui(): MapGui {
+    val readyMap = requireMap()
+    gui?.let { return it }
+    val viewReference = WeakReference(this)
+    val manager =
+      MapGui(readyMap, resources.displayMetrics.density, requireImageLoader()) { payload ->
+        viewReference.get()?.let { view -> if (!view.isDestroyed) view.onGuiEvent(payload) }
+      }
+    gui = manager
+    return manager
+  }
+
   private fun requireImageLoader(): MapImageLoader = imageLoader ?: MapImageLoader(appContext).also { imageLoader = it }
 
   private fun applyPendingRoutesIfReady() {
@@ -660,6 +674,13 @@ class KakaoMapView(
     labels = null
     try {
       manager?.dispose()
+    } catch (error: Exception) {
+      if (!isDestroyed) reportError(error)
+    }
+    val guiManager = gui
+    gui = null
+    try {
+      guiManager?.dispose()
     } catch (error: Exception) {
       if (!isDestroyed) reportError(error)
     }
