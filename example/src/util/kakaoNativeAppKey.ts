@@ -1,1 +1,1 @@
-export const kakaoNativeAppKey = 'fb975c77483d1edbe69467fca6bb2a6e';
+export const kakaoNativeAppKey = '5a9383961eadba5496cb4ff895e91a89';
