@@ -14,6 +14,14 @@ import type {
   LabelScene,
 } from './types-labels';
 import type {
+  RouteAnimationStopEvent,
+  RouteCommand,
+  RouteCommandResult,
+  RouteCounts,
+  RouteProgressEvent,
+  RouteScene,
+} from './types-routes';
+import type {
   ShapeAnimationStopEvent,
   ShapeCommand,
   ShapeCommandResult,
@@ -123,6 +131,7 @@ export type KakaoMapViewProps = ViewProps & {
   options?: MapOptions;
   labels?: LabelScene;
   shapes?: ShapeScene;
+  routes?: RouteScene;
   onMapReady?: () => void;
   onError?: (error: KakaoMapError) => void;
   onCameraMoveStart?: (event: CameraMoveEvent) => void;
@@ -146,6 +155,9 @@ export type KakaoMapViewProps = ViewProps & {
   onLabelsChanged?: (event: LabelRuntimeState) => void;
   onShapeAnimationStop?: (event: ShapeAnimationStopEvent) => void;
   onShapesChanged?: (event: ShapeCounts) => void;
+  onRoutesChanged?: (event: RouteCounts) => void;
+  onRouteProgress?: (event: RouteProgressEvent) => void;
+  onRouteAnimationStop?: (event: RouteAnimationStopEvent) => void;
   onCameraOperation?: (event: AdvancedCameraOperationEvent) => void;
 };
 
@@ -164,6 +176,8 @@ export type KakaoMapViewRef = {
   getLabelState: () => Promise<LabelRuntimeState>;
   applyShapes: (scene: ShapeScene) => Promise<ShapeCounts>;
   executeShapeCommand: (command: ShapeCommand) => Promise<ShapeCommandResult>;
+  applyRoutes: (scene: RouteScene) => Promise<RouteCounts>;
+  executeRouteCommand: (command: RouteCommand) => Promise<RouteCommandResult>;
   /** Android only: resolves with the SDK's asynchronous POI state response. */
   executeCameraCommand: (command: AdvancedCameraCommand) => Promise<AdvancedCameraCommandResult>;
 };
