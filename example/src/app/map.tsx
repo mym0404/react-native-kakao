@@ -7,6 +7,7 @@ import {
   KakaoMapView,
   type KakaoMapViewRef,
 } from '@react-native-kakao/map';
+import { Link } from 'expo-router';
 
 import { kakaoNativeAppKey } from '../util/kakaoNativeAppKey';
 
@@ -97,6 +98,9 @@ export default function MapPage() {
         {event || 'No event yet'}
       </Text>
       <View style={styles.actions}>
+        <Link href={'/map-features'} replace testID={'map-feature-lab'} style={styles.text}>
+          {'Feature lab'}
+        </Link>
         {actions.map(({ id, title, run }) => (
           <Pressable
             key={id}

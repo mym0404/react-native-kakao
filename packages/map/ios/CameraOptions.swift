@@ -4,7 +4,7 @@ import KakaoMapsSDK
 let invalidCameraArgument = "ERR_KAKAO_MAP_INVALID_ARGUMENT"
 let mapNotInitialized = "ERR_KAKAO_MAP_NOT_INITIALIZED"
 
-final class KakaoMapException: Exception {
+final class KakaoMapException: Exception, @unchecked Sendable {
   init(_ code: String, _ message: String) {
     super.init(name: "KakaoMapError", description: message, code: code)
   }

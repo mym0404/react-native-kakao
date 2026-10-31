@@ -93,7 +93,7 @@ The parent layout must give the map a width and height. Keep the Kakao logo unob
 
 ## Camera and events
 
-A camera requires `latitude`, `longitude`, and integer `zoomLevel`. Optional `tilt` and `rotation` are in degrees and default to zero. The SDK and map state determine the available zoom and tilt range. `rotation` is the counterclockwise camera angle from north; at 90 degrees, north points toward the right of the screen. `getCamera()` returns all five fields as applied by the SDK. On iOS, the center coordinate is calculated by converting the screen center to geographic coordinates, so it may differ slightly from the requested coordinate.
+A camera requires `latitude`, `longitude`, and integer `zoomLevel`. Optional `tilt` and `rotation` are in degrees and default to zero. The SDK and map state determine the available zoom and tilt range. `rotation` is the counterclockwise camera angle from north; at 90 degrees, north points toward the right of the screen. `getCamera()` returns all five fields as applied by the SDK. On iOS, the center coordinate is calculated from the content area's center after margins, so it may differ slightly from the requested coordinate.
 
 On first render, `camera` takes priority over `initialCamera`. Changes to `initialCamera` after the first props update are ignored. `camera` moves the map only when its field values change. Passing a new object with the same values or removing the prop does not move the map. A same-value rerender therefore preserves the position after a gesture or ref command. Before readiness, only the latest `camera` is retained.
 
@@ -109,35 +109,129 @@ const position = await map.current?.getCamera();
 
 `duration` is an integer from 0 to 2,147,483,647 milliseconds. Omit it or pass zero for an immediate move. `tilt` accepts 0–90 degrees, and returned `rotation` values are normalized to [0, 360).
 
-| Event               | Payload                                                                               |
-| ------------------- | ------------------------------------------------------------------------------------- |
-| `onMapReady`        | Authentication and view readiness. No arguments                                       |
-| `onError`           | `{ code, message }`                                                                   |
-| `onCameraMoveStart` | `{ reason: 'gesture' \| 'developer' }`                                                |
-| `onCameraIdle`      | `{ reason, camera }` with the actual stopped camera                                   |
-| `onMapClick`        | `{ latitude, longitude, x, y }`. Logical pixels relative to the map's top-left corner |
+`updateCamera()` changes position, zoom, or orientation while preserving the other camera values. `fit` frames the supplied coordinates within the current map margins.
+
+```tsx
+await map.current?.updateCamera({
+  type: 'position',
+  position: { latitude: 37.5665, longitude: 126.978 },
+});
+await map.current?.updateCamera({ type: 'zoom', zoomLevel: 18 });
+await map.current?.updateCamera({ type: 'orientation', rotation: 90, tilt: 30 }, { duration: 500 });
+await map.current?.updateCamera({
+  type: 'fit',
+  coordinates: [
+    { latitude: 37.5665, longitude: 126.978 },
+    { latitude: 37.402001, longitude: 127.108678 },
+  ],
+});
+```
+
+| Event                 | Payload                                                                               |
+| --------------------- | ------------------------------------------------------------------------------------- |
+| `onMapReady`          | Authentication and view readiness. No arguments                                       |
+| `onError`             | `{ code, message }`                                                                   |
+| `onCameraMoveStart`   | `{ reason: 'gesture' \| 'developer' }`                                                |
+| `onCameraIdle`        | `{ reason, camera }` with the actual stopped camera                                   |
+| `onMapClick`          | `{ latitude, longitude, x, y }`. Logical pixels relative to the map's top-left corner |
+| `onMapLongClick`      | `{ latitude, longitude }` for a terrain long press                                    |
+| `onTerrainClick`      | `{ latitude, longitude }` for a terrain tap on Android and iOS                        |
+| `onViewportClick`     | `{ latitude, longitude, x, y }` for a viewport tap; Android only                      |
+| `onVisibilityChanged` | `{ visible }` after native map visibility changes; Android only                       |
+| `onFocusChanged`      | `{ focused }` after native map focus changes; iOS only                                |
+| `onPoiClick`          | `{ id, layerId, latitude, longitude }`; POI ID and its map layer ID                   |
+| `onCompassClick`      | Compass tap; no arguments                                                             |
+| `onMapTypeChanged`    | `{ viewInfoName }` after an asynchronous map configuration change                     |
+| `onPaddingChanged`    | `{ top, right, bottom, left }` after margins change                                   |
+| `onViewportChanged`   | `{ x, y, width, height }` with the actual changed viewport on Android and iOS         |
 
 There is no continuous camera-change event. Rendering pauses when the app becomes inactive or the view detaches, resumes on return, and releases engine resources when unmounted.
+
+## Map settings and projection
+
+`options` applies the supplied fields and retains current SDK values for omitted fields. Before readiness, the latest value of each field is retained; afterward, only changed values are applied. `mapType` and `viewInfo` are mutually exclusive. Custom `viewInfo` and `customOverlays` are intended for separately licensed map data.
+
+```tsx
+<KakaoMapView
+  options={{
+    mapType: 'normal',
+    overlays: ['bicycleRoad'],
+    language: 'ko',
+    poi: { visible: true, clickable: true, scale: 'regular' },
+    buildingScale: 1,
+    padding: { top: 20, right: 20, bottom: 80, left: 20 },
+    zoomRange: { min: 6, max: 21 },
+    gestures: { pan: true, rotate: false },
+    compass: { visible: true, position: { gravity: 'topRight', x: 20, y: 20 } },
+    scaleBar: {
+      visible: true,
+      autoHide: true,
+      fade: { inDuration: 200, outDuration: 400, retentionDuration: 1000 },
+    },
+    logo: { gravity: 'bottomLeft', x: 12, y: 12 },
+  }}
+/>
+```
+
+`mapType` accepts `normal` and `skyview`. `overlays` accepts `roadviewLine`, `hillShading`, `bicycleRoad`, and `hybrid`. Select a language from `getMapInfo().supportedLanguages`. POI sizes are `small`, `regular`, `large`, and `xLarge`; building height scale ranges from 0 to 1. See `MapGesture` for individual gesture flags.
+
+Margins, widget offsets, and screen coordinates use logical pixels; scale-bar timings use integer milliseconds. The Kakao logo can be repositioned but cannot be hidden. Observe `onMapTypeChanged` and `onPaddingChanged` before querying asynchronously applied map configuration and margins.
+
+```tsx
+const info = await map.current?.getMapInfo();
+const coordinate = await map.current?.screenToCoordinate({ x: 100, y: 100 });
+const point = await map.current?.coordinateToScreen({ latitude: 37.402001, longitude: 127.108678 });
+await map.current?.clearCache();
+```
+
+`getMapInfo()` returns map type, zoom limits, margins, viewport size, language, and capabilities. Screen points must be inside the map area. The iOS SDK does not expose geographic-to-screen projection: `capabilities.coordinateToScreen` is `false`, and `coordinateToScreen()` rejects with `ERR_KAKAO_MAP_UNSUPPORTED_PLATFORM_FEATURE`. `clearCache()` clears SDK map caches; required tiles are fetched again.
+
+## Advanced camera commands
+
+`executeCameraCommand()` covers height-based movement, relative transforms, fitting, visibility checks, and reference-point locks beyond the basic camera API. Query capabilities first and use only supported fields.
+
+```tsx
+const result = await map.current?.executeCameraCommand({ type: 'getCapabilities' });
+
+await map.current?.executeCameraCommand({
+  type: 'moveToHeight',
+  camera: {
+    latitude: 37.402001,
+    longitude: 127.108678,
+    height: 1200,
+    tilt: 30,
+    rotation: 45,
+  },
+  animation: { duration: 500, autoElevation: true },
+  operationId: 'camera-1',
+});
+```
+
+When the platform supports actual completion callbacks, a command with `operationId` emits `{ operationId, status, camera? }` through `onCameraOperation`. A platform without this callback rejects the field instead of presenting dispatch as completion. `status: 'superseded'` means a newer camera operation replaced the previous one.
+
+`getState` returns actual camera height, zoom, tilt, and rotation. Angles use degrees; animation durations use integer milliseconds; `fit.padding` and `canShow.rect` use logical units. `height` is in the native map coordinate system and is not converted as screen dp or points.
 
 ## Errors and platform support
 
 Ref commands reject before readiness instead of being queued. Handle Promise `code` and `message` fields and `onError` events.
 
-| Code                                 | Meaning                               |
-| ------------------------------------ | ------------------------------------- |
-| `ERR_KAKAO_MAP_NOT_INITIALIZED`      | SDK has not been initialized          |
-| `ERR_KAKAO_MAP_NOT_READY`            | Command called before map readiness   |
-| `ERR_KAKAO_MAP_CAMERA_TIMEOUT` | Android camera query did not respond within three seconds |
-| `ERR_KAKAO_MAP_VIEW_DESTROYED`       | Access to an unmounted map            |
-| `ERR_KAKAO_MAP_ALREADY_INITIALIZED`  | Reinitialization with a different key |
-| `ERR_KAKAO_MAP_INVALID_ARGUMENT`     | Empty key, invalid camera, or duration      |
-| `ERR_KAKAO_MAP_VIEW_CREATION`        | Native map creation failed            |
-| `ERR_KAKAO_MAP_UNSUPPORTED_PLATFORM` | Map feature used on web               |
+| Code                                         | Meaning                                                             |
+| -------------------------------------------- | ------------------------------------------------------------------- |
+| `ERR_KAKAO_MAP_NOT_INITIALIZED`              | SDK has not been initialized                                        |
+| `ERR_KAKAO_MAP_NOT_READY`                    | Command called before map readiness                                 |
+| `ERR_KAKAO_MAP_CAMERA_TIMEOUT`               | Android camera query did not respond within three seconds           |
+| `ERR_KAKAO_MAP_VIEW_DESTROYED`               | Access to an unmounted map                                          |
+| `ERR_KAKAO_MAP_ALREADY_INITIALIZED`          | Reinitialization with a different key                               |
+| `ERR_KAKAO_MAP_INVALID_ARGUMENT`             | Empty key, invalid camera, or duration                              |
+| `ERR_KAKAO_MAP_VIEW_CREATION`                | Native map creation failed                                          |
+| `ERR_KAKAO_MAP_UNSUPPORTED_PLATFORM`         | Map feature used on web                                             |
+| `ERR_KAKAO_MAP_UNSUPPORTED_PLATFORM_FEATURE` | Native feature absent from the current platform SDK     |
 
 SDK errors preserve their original code and message. Authentication failures are delivered through `onError`, not the initialization Promise. No automatic retry is performed: fix the app registration or network issue and remount the view to retry. Restart the app process if the native app key must change.
 
 On Android, `getCamera()` waits for the renderer’s asynchronous response so it can read an in-progress movement. It rejects with `ERR_KAKAO_MAP_CAMERA_TIMEOUT` if no response arrives within three seconds, or `ERR_KAKAO_MAP_VIEW_DESTROYED` if the view is destroyed first.
 
-Web imports are safe, but initialization and rendering maps are unsupported. The Android SDK has no x86_64 binary; use an ARM emulator or device. Marker and shape APIs are not provided.
+
+Web imports are safe, but native map features are unsupported. The Android SDK has no x86_64 binary; use an ARM emulator or device.
 
 The SDK does not guarantee simultaneous rendering by multiple map engines. Display one map at a time; see [Kakao’s guidance on multiple engines](https://devtalk.kakao.com/t/v2-ios/131530/11).

@@ -22,11 +22,31 @@ public class KakaoMapModule: Module {
       }
     }.runOnQueue(.main)
     View(KakaoMapView.self) {
-      Events("onMapReady", "onError", "onCameraMoveStart", "onCameraIdle", "onMapClick")
+      Events(
+        "onMapReady",
+        "onError",
+        "onCameraMoveStart",
+        "onCameraIdle",
+        "onMapClick",
+        "onMapLongClick",
+        "onPoiClick",
+        "onCompassClick",
+        "onMapTypeChanged",
+        "onTerrainClick",
+        "onViewportClick",
+        "onVisibilityChanged",
+        "onFocusChanged",
+        "onPaddingChanged",
+        "onViewportChanged",
+        "onCameraOperation"
+      )
       Prop("initialCamera") { (view: KakaoMapView, camera: CameraOptions?) in
         view.pendingInitialCamera = camera
       }
       Prop("camera") { (view: KakaoMapView, camera: CameraOptions?) in view.camera = camera }
+      Prop("options") { (view: KakaoMapView, options: KakaoMapViewOptions?) in
+        view.queueOptions(options)
+      }
       OnViewDidUpdateProps { (view: KakaoMapView) in view.updateProps() }
       AsyncFunction("moveCamera") { (view: KakaoMapView, camera: CameraOptions, duration: Double) in
         try view.moveCamera(
@@ -35,6 +55,24 @@ public class KakaoMapModule: Module {
         )
       }
       AsyncFunction("getCamera") { (view: KakaoMapView) in try view.getCamera() }
+      AsyncFunction("updateCamera") {
+        (view: KakaoMapView, update: CameraUpdateOptions, duration: Double) in
+        try view.updateCamera(update, duration: duration)
+      }
+      AsyncFunction("getMapInfo") { (view: KakaoMapView) in try view.getMapInfo() }
+      AsyncFunction("screenToCoordinate") { (view: KakaoMapView, point: MapScreenPoint) in
+        try view.screenToCoordinate(point)
+      }
+      AsyncFunction("coordinateToScreen") { (_: KakaoMapView, _: MapCoordinate) in
+        throw KakaoMapException(
+          "ERR_KAKAO_MAP_UNSUPPORTED_PLATFORM_FEATURE",
+          "The Kakao Maps iOS SDK does not expose coordinate-to-screen projection."
+        )
+      }
+      AsyncFunction("clearCache") { (view: KakaoMapView) in try view.clearCache() }
+      AsyncFunction("executeCameraCommand") { (view: KakaoMapView, command: [String: Any]) in
+        try view.executeCameraCommand(command)
+      }
     }
   }
 }

@@ -42,7 +42,7 @@ class CameraOptions : Record {
         .setPosition(LatLng.from(latitude, longitude))
         .setZoomLevel(zoomLevel.toInt())
         .setTiltAngle(Math.toRadians(tilt))
-        .setRotationAngle(Math.toRadians(rotation % 360.0)),
+        .setRotationAngle(rotation.toNativeCameraRotation()),
     )
   }
 }
@@ -53,5 +53,9 @@ internal fun CameraPosition.toPayload() =
     "longitude" to position.longitude,
     "zoomLevel" to zoomLevel,
     "tilt" to Math.toDegrees(tiltAngle),
-    "rotation" to ((Math.toDegrees(rotationAngle) % 360.0 + 360.0) % 360.0),
+    "rotation" to Math.toDegrees(rotationAngle).normalizedCameraDegrees(),
   )
+
+internal fun Double.toNativeCameraRotation() = Math.toRadians(normalizedCameraDegrees())
+
+internal fun Double.normalizedCameraDegrees() = (this % 360.0 + 360.0) % 360.0
