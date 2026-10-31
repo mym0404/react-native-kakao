@@ -18,6 +18,7 @@ import type {
   ScreenPoint,
 } from './types';
 import type { AdvancedCameraOperationEvent } from './types-camera';
+import type { DimScreenEvent } from './types-dim';
 import type { MapGuiEvent } from './types-gui';
 import type { LabelAnimationEvent, LabelClickEvent, LabelRuntimeState } from './types-labels';
 import type { RouteAnimationStopEvent, RouteCounts, RouteProgressEvent } from './types-routes';
@@ -28,6 +29,7 @@ export type * from './types-labels';
 export type * from './types-shapes';
 export type * from './types-routes';
 export type * from './types-gui';
+export type * from './types-dim';
 export type * from './types-camera';
 
 export type {
@@ -78,6 +80,7 @@ const NativeView = requireNativeView<
     | 'onRouteProgress'
     | 'onRouteAnimationStop'
     | 'onGuiEvent'
+    | 'onDimScreenEvent'
     | 'onCameraOperation'
   > & {
     ref: Ref<NativeMapRef>;
@@ -105,6 +108,7 @@ const NativeView = requireNativeView<
     onRouteProgress?: (event: NativeSyntheticEvent<RouteProgressEvent>) => void;
     onRouteAnimationStop?: (event: NativeSyntheticEvent<RouteAnimationStopEvent>) => void;
     onGuiEvent?: (event: NativeSyntheticEvent<MapGuiEvent>) => void;
+    onDimScreenEvent?: (event: NativeSyntheticEvent<DimScreenEvent>) => void;
     onCameraOperation?: (event: NativeSyntheticEvent<AdvancedCameraOperationEvent>) => void;
   }
 >(moduleName);
@@ -156,6 +160,7 @@ export const KakaoMapView = forwardRef<KakaoMapViewRef, KakaoMapViewProps>(funct
     onRouteProgress,
     onRouteAnimationStop,
     onGuiEvent,
+    onDimScreenEvent,
     onCameraOperation,
     ...props
   },
@@ -243,6 +248,21 @@ export const KakaoMapView = forwardRef<KakaoMapViewRef, KakaoMapViewProps>(funct
       async getGuiStatus() {
         return getView().getGuiStatus();
       },
+      async applyDimScreen(options) {
+        await getView().applyDimScreen(options);
+      },
+      async setDimHighlightVisible(id, visible) {
+        await getView().setDimHighlightVisible(id, visible);
+      },
+      async startDimAnimation(id) {
+        await getView().startDimAnimation(id);
+      },
+      async stopDimAnimation(id) {
+        await getView().stopDimAnimation(id);
+      },
+      async getDimScreenStatus() {
+        return getView().getDimScreenStatus();
+      },
       async executeCameraCommand(command) {
         return getView().executeCameraCommand(command);
       },
@@ -278,6 +298,7 @@ export const KakaoMapView = forwardRef<KakaoMapViewRef, KakaoMapViewProps>(funct
       onRouteProgress={(event) => onRouteProgress?.(event.nativeEvent)}
       onRouteAnimationStop={(event) => onRouteAnimationStop?.(event.nativeEvent)}
       onGuiEvent={(event) => onGuiEvent?.(event.nativeEvent)}
+      onDimScreenEvent={(event) => onDimScreenEvent?.(event.nativeEvent)}
       onCameraOperation={(event) => onCameraOperation?.(event.nativeEvent)}
     />
   );
