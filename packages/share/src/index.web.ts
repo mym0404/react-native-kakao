@@ -37,8 +37,8 @@ declare const Kakao: {
         };
       };
     }>;
-    sendDefault: (args: any) => Promise<any>;
-    sendCustom: (args: any) => Promise<any>;
+    sendDefault: (args: any) => void;
+    sendCustom: (args: any) => void;
   };
   API: { request: (args: any) => Promise<any> };
 };

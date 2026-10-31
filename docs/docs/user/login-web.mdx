@@ -7,8 +7,10 @@ sidebar_position: 102
 웹 로그인은 리디렉션 URI로 페이지를 이동해야 하므로 추가 과정이 필요합니다.
 
 :::tip
-로그인 외의 API는 [카카오 로그인](/docs/user/login)에 설명된 API와 동일하게 사용할 수 있습니다.
+웹에서 지원하는 API는 네이티브와 같은 응답 필드와 타입을 사용합니다. `loginWithKakao`와 `refreshToken`은 웹에서 지원하지 않습니다.
 :::
+
+`setAccessTokenWeb`과 `issueAccessTokenWithCodeWeb`은 웹 전용 함수입니다. Android·iOS에서 호출하면 `setAccessTokenWeb`은 동기적으로 `Package-UnsupportedPlatform` 오류를 던지고, `issueAccessTokenWithCodeWeb`은 같은 오류 코드로 Promise를 거부합니다. 네이티브 로그인은 `login` 또는 `loginWithKakao`를 사용하며, 토큰 저장은 네이티브 SDK가 처리합니다.
 
 ## 로그인하기
 

@@ -61,6 +61,14 @@ When `scopes` are provided, login always uses a Kakao account.
 await login({ android: { requestCode: 20001 } });
 ```
 
+- `ios.launchMethod`: Choose `UniversalLink` or `CustomScheme` when switching to Kakao Talk on iOS. The default is `UniversalLink`. It does not apply when Kakao Talk is unavailable or account login is requested, and is ignored on Android and web.
+
+```tsx
+await login({ ios: { launchMethod: 'CustomScheme' } });
+```
+
+This controls how Kakao Talk opens. To change the callback URL used to return to your app, configure [`customScheme` during SDK initialization](/docs/core/initialize-sdk).
+
 - `channelPublicIds`: Pass KakaoTalk channel profile IDs as a `string[]` to select the channels shown on the login consent screen. Android, iOS, and web use the same option. Omit it or pass an empty array for the default login flow.
 
 This feature requires prior approval from Kakao and business channels connected to the app. Kakao displays at most two channels in the supplied order. It cannot request channel consent again from users who are already connected and registered. See [dynamic channel consent](https://developers.kakao.com/docs/ko/kakaologin/dynamic-channel) for the requirements.
@@ -124,11 +132,11 @@ The response includes the following:
 
 ## Logging Out
 
-You can log out using `logout()`.
+You can log out using `logout()`. Its `Promise<void>` resolves without a success value.
 
 ## Revoking Account Linkage
 
-Use `unlink()` to revoke account linkage.
+Use `unlink()` to revoke account linkage. Its `Promise<void>` resolves without a success value.
 
 ## Checking Current Login Status
 

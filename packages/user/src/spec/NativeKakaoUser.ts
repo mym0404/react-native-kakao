@@ -18,6 +18,7 @@ export interface Spec extends TurboModule {
     serviceTerms: string[],
     prompts: string[],
     useKakaoAccountLogin: boolean,
+    iosLaunchMethod: string,
     scopes?: string[],
     nonce?: string,
     loginHint?: string,

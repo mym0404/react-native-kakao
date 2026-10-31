@@ -52,6 +52,7 @@ class RNCKakaoUserModule internal constructor(
     serviceTerms: ReadableArray?,
     prompts: ReadableArray?,
     useKakaoAccountLogin: Boolean,
+    iosLaunchMethod: String,
     scopes: ReadableArray?,
     nonce: String?,
     loginHint: String?,
@@ -209,7 +210,7 @@ class RNCKakaoUserModule internal constructor(
         if (it != null) {
           promise.rejectWith(it)
         } else {
-          promise.resolve(42)
+          promise.resolve(null)
         }
       }
     }
@@ -221,7 +222,7 @@ class RNCKakaoUserModule internal constructor(
         if (it != null) {
           promise.rejectWith(it)
         } else {
-          promise.resolve(42)
+          promise.resolve(null)
         }
       }
     }

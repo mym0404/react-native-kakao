@@ -1,5 +1,5 @@
 import { is } from '@mj-studio/js-util';
-import { kAssert } from '@react-native-kakao/core';
+import { kAssert, kCreateWebError } from '@react-native-kakao/core';
 
 import Native from './spec/NativeKakaoUser';
 import { validateShippingAddressOptions } from './validateShippingAddressOptions';
@@ -24,6 +24,11 @@ export type KakaoCodeTokenOptions = {
 
 const minActivityRequestCode = -2147483648;
 const maxActivityRequestCode = 2147483647;
+
+export type KakaoTalkLaunchMethod = 'UniversalLink' | 'CustomScheme';
+
+const defaultTalkLaunchMethod: KakaoTalkLaunchMethod = 'UniversalLink';
+const webOnlyErrorCode = 'Package-UnsupportedPlatform';
 
 export interface KakaoScopeInfo {
   id: string;
@@ -126,6 +131,7 @@ export function login({
   loginHint,
   channelPublicIds,
   android,
+  ios,
 }: {
   serviceTerms?: string[];
   prompts?: ('Login' | 'Create' | 'Cert' | 'SelectAccount')[];
@@ -135,6 +141,7 @@ export function login({
   loginHint?: string;
   channelPublicIds?: string[];
   android?: { requestCode?: number };
+  ios?: { launchMethod?: KakaoTalkLaunchMethod };
   web?: {
     redirectUri: string;
     scope?: string[];
@@ -181,6 +188,7 @@ export function login({
     serviceTerms ?? [],
     prompts ?? [],
     useKakaoAccountLogin ?? false,
+    ios?.launchMethod ?? defaultTalkLaunchMethod,
     scopes ?? [],
     nonce,
     loginHint,
@@ -210,13 +218,13 @@ export function loginWithKakao({
   serviceTerms?: string[];
   ios?: {
     orientation?: 'auto' | 'portrait' | 'landscape';
-    launchMethod?: 'UniversalLink' | 'CustomScheme';
+    launchMethod?: KakaoTalkLaunchMethod;
   };
 } = {}): Promise<KakaoLoginToken> {
   return Native.loginWithKakao(
     uiMode,
     ios?.orientation ?? 'auto',
-    ios?.launchMethod ?? 'UniversalLink',
+    ios?.launchMethod ?? defaultTalkLaunchMethod,
     prompts ?? [],
     loginHint,
     nonce,
@@ -266,12 +274,12 @@ export function refreshToken({
   return Native.refreshToken(token, ios?.loggingEnabled ?? true);
 }
 
-export function logout() {
-  return Native.logout();
+export async function logout() {
+  await Native.logout();
 }
 
-export function unlink() {
-  return Native.unlink();
+export async function unlink() {
+  await Native.unlink();
 }
 
 export function isLogined() {
@@ -349,16 +357,22 @@ export function getAccessToken(): Promise<KakaoAccessTokenInfo> {
   return Native.getAccessToken();
 }
 
-export function updateProfile({
+export async function updateProfile({
   properties,
 }: {
   properties: Record<string, string>;
 }): Promise<void> {
-  return Native.updateProfile(properties);
+  await Native.updateProfile(properties);
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function setAccessTokenWeb(token: string) {}
+export function setAccessTokenWeb(token: string): void {
+  kCreateWebError({
+    code: webOnlyErrorCode,
+    message: '[setAccessTokenWeb] This API is only supported on web.',
+  });
+}
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function issueAccessTokenWithCodeWeb(params: {
   redirectUri: string;
@@ -374,7 +388,10 @@ export async function issueAccessTokenWithCodeWeb(params: {
   refreshTokenExpiresIn: number;
   scope?: string;
 }> {
-  return {} as any;
+  kCreateWebError({
+    code: webOnlyErrorCode,
+    message: '[issueAccessTokenWithCodeWeb] This API is only supported on web.',
+  });
 }
 
 const KakaoUser = {

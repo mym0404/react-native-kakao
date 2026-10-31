@@ -317,7 +317,7 @@ export interface Spec extends TurboModule {
     templateArgs: Readonly<{ [key: string]: string }>,
     serverCallbackArgs: Readonly<{ [key: string]: string }>,
     pickerSettings?: UnsafeObject,
-  ): Promise<any>;
+  ): Promise<KakaoMessageSendResult | null>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('RNCKakaoShare');

@@ -31,6 +31,7 @@ import RNCKakaoCore
     _ serviceTerms: [String],
     prompts: [String],
     useKakaoAccountLogin: Bool,
+    iosLaunchMethod: String,
     scopes: [String],
     nonce: String?,
     loginHint: String?,
@@ -83,6 +84,7 @@ import RNCKakaoCore
           }
         }
         UserApi.shared.loginWithKakaoTalk(
+          launchMethod: loginLaunchMethod(iosLaunchMethod),
           channelPublicIds: emptyArrayToNil(channelPublicIds),
           serviceTerms: emptyArrayToNil(serviceTerms),
           nonce: nonce,
@@ -128,7 +130,7 @@ import RNCKakaoCore
         ),
         loginProperties: LoginConfiguration(
           talk: LoginConfiguration
-            .Talk(launchMethod: launchMethod == "CustomScheme" ? .CustomScheme : .UniversalLink),
+            .Talk(launchMethod: loginLaunchMethod(launchMethod)),
           account: LoginConfiguration.Account(
             prompts: emptyArrayToNil(loginPrompts(prompts)),
             loginHint: loginHint
@@ -232,7 +234,7 @@ import RNCKakaoCore
         if let error {
           RNCKakaoUtil.reject(reject, error)
         } else {
-          resolve(42)
+          resolve(nil)
         }
       }
     }
@@ -553,6 +555,10 @@ import RNCKakaoCore
         "revocable": scope.revocable as Any
       ]
     }
+  }
+
+  private func loginLaunchMethod(_ value: String) -> LaunchMethod {
+    value == "CustomScheme" ? .CustomScheme : .UniversalLink
   }
 
   private func loginPrompts(_ prompts: [String]) -> [Prompt] {

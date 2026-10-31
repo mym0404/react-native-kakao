@@ -6,8 +6,8 @@ export function followChannel(channelPublicId: string): Promise<boolean> {
   return Native.followChannel(channelPublicId);
 }
 
-export function addChannel(channelPublicId: string): Promise<void> {
-  return Native.addChannel(channelPublicId);
+export async function addChannel(channelPublicId: string): Promise<void> {
+  await Native.addChannel(channelPublicId);
 }
 
 export function getAddChannelUrl(channelPublicId: string): Promise<string> {
@@ -18,8 +18,8 @@ export function openAddChannelUrl(channelPublicId: string): Promise<string> {
   return Native.openAddChannelUrl(channelPublicId);
 }
 
-export function chatChannel(channelPublicId: string): Promise<void> {
-  return Native.chatChannel(channelPublicId);
+export async function chatChannel(channelPublicId: string): Promise<void> {
+  await Native.chatChannel(channelPublicId);
 }
 
 export function getChatChannelUrl(channelPublicId: string): Promise<string> {
