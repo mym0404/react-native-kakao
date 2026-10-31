@@ -355,6 +355,48 @@ await map.current?.executeCameraCommand({
 
 `getState`는 높이·확대 단계·기울기·회전을 포함한 실제 카메라 상태를 반환해요. 각도는 도, 애니메이션 시간은 정수 밀리초, `fit.padding`과 `canShow.rect`는 논리 단위예요. `height`는 네이티브 지도 좌표계의 카메라 높이이므로 화면 dp나 points로 변환하지 않아요.
 
+## 도형
+
+`ShapeScene`은 완전한 장면 스냅샷이에요. ref 명령으로 현재 장면의 ID를 변경하거나 실제 상태와 개수를 조회해요. `applyShapes({})`를 호출하면 장면을 비워요.
+
+도형은 스타일, 레이어, 도형 순서로 참조해요. 다음 예시는 기준 좌표를 중심으로 지상 반지름 30미터인 원을 표시해요.
+
+```tsx
+import type { ShapeScene } from '@react-native-kakao/map';
+
+const circleScene = {
+  styleSets: [
+    {
+      type: 'polygon',
+      id: 'area-style',
+      styles: [{ levels: [{ level: 0, fillColor: '#22C55E66', strokeWidth: 2 }] }],
+    },
+  ],
+  layers: [{ id: 'areas' }],
+  shapes: [
+    {
+      id: 'circle',
+      layerId: 'areas',
+      styleSetId: 'area-style',
+      geometry: {
+        type: 'geographicCircle',
+        center: { latitude: 37.402001, longitude: 127.108678 },
+        radius: 30,
+      },
+    },
+  ],
+} satisfies ShapeScene;
+
+const counts = await map.current?.applyShapes(circleScene);
+const state = await map.current?.executeShapeCommand({ type: 'getState', id: 'circle' });
+```
+
+모델 `ShapePoint`의 `x`, `y`와 모델 primitive의 치수는 모델 공간의 미터예요. iOS SDK가 각도 좌표를 받는 지점은 모듈이 미터 값을 변환해요. 지리 primitive의 치수는 지상 미터예요. 같은 수치를 넣어도 두 형태의 지상 거리가 같다고 보장하지 않으며, iOS에서는 같은 값의 모델 원과 지리 원이 다른 크기로 표시될 수 있어요. 지상 거리를 지정하려면 `geographicCircle`·`geographicRectangle`을 사용해요. 스타일 폭·테두리와 wave 반경은 Android dp/iOS points인 논리 단위예요. orientation과 arc 각도는 도이며, arc는 정북 기준 시계 방향이에요. 시간은 정수 밀리초예요.
+
+`getCapabilities`에서 위치·방향·z-order 변경, 레이어 pass, wave 대상과 완료 이벤트 지원 여부를 확인해요. iOS는 모델 방향을 지원하지만 Android는 지원하지 않아요. Android는 지리 도형 위치와 z-order 변경을 지원하지만 해당 현재 값 getter가 없어 상태에 `null`을 반환할 수 있어요.
+
+모델 polygon에 연결한 `shareShapeTransform`은 위치 공유와 해제만 성공적으로 검증됐고, 공유 회전에는 렌더링 문제가 있어요. Android SDK 2.15.2의 ARM 에뮬레이터와 iOS SDK 2.12.19의 Simulator에서 소스 라벨을 90도로 애니메이션 회전하면 도형이 뷰포트 전체를 덮는 현상이 재현됐어요. Android에서는 모듈을 거치지 않는 SDK 직접 호출에서도 재현됐으며, 즉시 회전 setter를 사용하면 도형의 회전 자체가 전달되지 않았어요. 이 SDK 조합에서 모델 polygon의 공유 회전에 의존하지 마세요.
+
 ## 오류와 플랫폼 범위
 
 ref 명령은 지도 준비 전에 대기하지 않고 거절돼요. Promise 오류의 `code`, `message`와 `onError`를 처리해요.
@@ -373,6 +415,9 @@ ref 명령은 지도 준비 전에 대기하지 않고 거절돼요. Promise 오
 | `ERR_KAKAO_MAP_LABEL_NOT_FOUND`              | 참조한 라벨·레이어·스타일·배지·애니메이션 ID가 없음 |
 | `ERR_KAKAO_MAP_LABEL_UNSUPPORTED`            | 현재 플랫폼 SDK가 해당 라벨 기능을 지원하지 않음    |
 | `ERR_KAKAO_MAP_IMAGE_LOAD`                   | 라벨 이미지 다운로드 또는 디코딩 실패               |
+| `ERR_KAKAO_MAP_SHAPE_INVALID_ARGUMENT`       | 잘못된 도형 장면·geometry·style 입력                |
+| `ERR_KAKAO_MAP_SHAPE_NOT_FOUND`              | 참조한 도형 또는 애니메이션 ID가 없음               |
+| `ERR_KAKAO_MAP_SHAPE_UNSUPPORTED`            | 현재 SDK가 해당 도형 기능을 지원하지 않음           |
 | `ERR_KAKAO_MAP_UNSUPPORTED_PLATFORM_FEATURE` | 현재 플랫폼 SDK에 없는 네이티브 기능                                  |
 
 SDK 오류는 SDK의 코드와 메시지를 유지해요. 지도 인증 오류는 초기화 Promise가 아니라 `onError`로 전달돼요. 인증 실패 후 자동 재시도는 하지 않아요. 키·앱 등록 설정이나 네트워크 문제를 해결한 다음 뷰를 다시 마운트해요. 앱 키 자체를 변경해야 한다면 앱 프로세스를 다시 시작해요.

@@ -28,6 +28,7 @@ import java.lang.ref.WeakReference
 private const val CAMERA_REQUEST_TIMEOUT_MILLIS = 3_000L
 private const val CAMERA_TIMEOUT = "ERR_KAKAO_MAP_CAMERA_TIMEOUT"
 private const val CAMERA_SUPERSEDED = "ERR_KAKAO_MAP_CAMERA_SUPERSEDED"
+private const val SHAPE_INVALID_ARGUMENT = "ERR_KAKAO_MAP_SHAPE_INVALID_ARGUMENT"
 private const val VIEW_DESTROYED = "ERR_KAKAO_MAP_VIEW_DESTROYED"
 private const val VIEW_DESTROYED_MESSAGE = "The map view was destroyed."
 
@@ -56,10 +57,14 @@ class KakaoMapView(
   private val onLabelClick by EventDispatcher()
   private val onLabelAnimationStopped by EventDispatcher()
   private val onLabelsChanged by EventDispatcher()
+  private val onShapeAnimationStop by EventDispatcher()
+  private val onShapesChanged by EventDispatcher()
   private var labels: MapLabels? = null
+  private var shapes: MapShapes? = null
   private var cameraCommands: MapCameraCommands? = null
   private var imageLoader: MapImageLoader? = null
   private var pendingLabels: MapLabelSceneRecord? = null
+  private var pendingShapes: Map<String, Any?>? = null
   private var labelGeneration = 0L
   private var mapView: MapView? = null
   private var map: KakaoMap? = null
@@ -107,6 +112,7 @@ class KakaoMapView(
       }
       pendingOptions = null
     }
+    applyPendingShapesIfReady()
     applyPendingLabelsIfReady()
   }
 
@@ -116,6 +122,19 @@ class KakaoMapView(
       return
     }
     pendingLabels = scene ?: MapLabelSceneRecord()
+  }
+
+  fun queueShapes(scene: Map<String, Any?>?) {
+    if (scene == null && shapes == null) {
+      pendingShapes = null
+      return
+    }
+    try {
+      pendingShapes = normalizeShapeObject(scene ?: emptyMap<String, Any?>(), "shapes")
+    } catch (error: Exception) {
+      pendingShapes = null
+      if (!isDestroyed) reportError(error)
+    }
   }
 
   override fun onAttachedToWindow() {
@@ -272,6 +291,7 @@ class KakaoMapView(
           queuedOptions = null
           (camera ?: initialCamera)?.let { applyCameraProp(it) }
           lastCameraValues = camera?.values()
+          applyPendingShapesIfReady()
           applyPendingLabelsIfReady()
           onMapReady(emptyMap<String, Any>())
           if (!isAttachedToWindow || reactContext?.lifecycleState != LifecycleState.RESUMED) view.pause()
@@ -443,6 +463,34 @@ class KakaoMapView(
 
   fun getLabelState() = requireLabels().state()
 
+  fun applyShapes(scene: Map<String, Any?>): Map<String, Any> {
+    pendingShapes = null
+    val counts = requireShapes().apply(normalizeShapeObject(scene, "scene"))
+    if (!isDestroyed) onShapesChanged(counts)
+    return counts
+  }
+
+  fun executeShapeCommand(command: Map<String, Any?>): Map<String, Any?> = requireShapes().command(normalizeShapeObject(command, "command"))
+
+  private fun requireShapes(): MapShapes {
+    val readyMap = requireMap()
+    shapes?.let { return it }
+    val viewReference = WeakReference(this)
+    lateinit var manager: MapShapes
+    manager =
+      MapShapes(readyMap, resources.displayMetrics.density) { event, payload ->
+        viewReference.get()?.let { view ->
+          if (!view.isDestroyed && view.shapes === manager && event == "onShapeAnimationStop") {
+            (payload["animationId"] as? String)?.let { animationId ->
+              view.onShapeAnimationStop(mapOf("animationId" to animationId))
+            }
+          }
+        }
+      }
+    shapes = manager
+    return manager
+  }
+
   private fun requireLabels(): MapLabels {
     val readyMap = requireMap()
     labels?.let { return it }
@@ -458,6 +506,7 @@ class KakaoMapView(
         emitAnimationStopped = { event ->
           viewReference.get()?.let { view -> if (!view.isDestroyed) view.onLabelAnimationStopped(event) }
         },
+        resolvePolygon = { id -> viewReference.get()?.shapes?.resolvePolygon(id) },
         density = resources.displayMetrics.density,
       )
     labels = manager
@@ -498,6 +547,18 @@ class KakaoMapView(
     }
   }
 
+  private fun applyPendingShapesIfReady() {
+    if (map == null) return
+    val scene = pendingShapes ?: return
+    pendingShapes = null
+    try {
+      val counts = requireShapes().apply(scene)
+      if (!isDestroyed) onShapesChanged(counts)
+    } catch (error: Exception) {
+      reportError(error)
+    }
+  }
+
   private fun releaseMapObjects() {
     labelGeneration++
     cameraCommands?.dispose()
@@ -506,6 +567,13 @@ class KakaoMapView(
     labels = null
     try {
       manager?.dispose()
+    } catch (error: Exception) {
+      if (!isDestroyed) reportError(error)
+    }
+    val shapeManager = shapes
+    shapes = null
+    try {
+      shapeManager?.dispose()
     } catch (error: Exception) {
       if (!isDestroyed) reportError(error)
     }
@@ -979,6 +1047,7 @@ class KakaoMapView(
     map?.setOnLodLabelClickListener(null)
     map = null
     queuedOptions = null
+    pendingShapes = null
     activeOverlays.clear()
     activeCustomOverlays.clear()
     val view = mapView
@@ -995,3 +1064,43 @@ class KakaoMapView(
     val isAdvancedState: Boolean = false,
   )
 }
+
+private fun normalizeShapeObject(
+  value: Map<*, *>,
+  path: String,
+  errorCode: String = SHAPE_INVALID_ARGUMENT,
+): Map<String, Any?> =
+  value.entries.associate { (rawKey, rawValue) ->
+    val key = rawKey as? String ?: throw CodedException(errorCode, "$path must use string object keys.", null)
+    key to normalizeShapeValue(rawValue, "$path.$key", errorCode)
+  }
+
+private fun normalizeShapeValue(
+  value: Any?,
+  path: String,
+  errorCode: String,
+): Any? =
+  when (value) {
+    null, is String, is Boolean -> {
+      value
+    }
+
+    is Number -> {
+      if (!value.toDouble().isFinite()) {
+        throw CodedException(errorCode, "$path must be a finite JSON number.", null)
+      }
+      value
+    }
+
+    is Map<*, *> -> {
+      normalizeShapeObject(value, path, errorCode)
+    }
+
+    is List<*> -> {
+      value.mapIndexed { index, item -> normalizeShapeValue(item, "$path[$index]", errorCode) }
+    }
+
+    else -> {
+      throw CodedException(errorCode, "$path contains an unsupported JSON value.", null)
+    }
+  }

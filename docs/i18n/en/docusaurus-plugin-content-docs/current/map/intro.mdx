@@ -355,6 +355,48 @@ When the platform supports actual completion callbacks, a command with `operatio
 
 `getState` returns actual camera height, zoom, tilt, and rotation. Angles use degrees; animation durations use integer milliseconds; `fit.padding` and `canShow.rect` use logical units. `height` is in the native map coordinate system and is not converted as screen dp or points.
 
+## Shapes
+
+`ShapeScene` is a complete scene snapshot. Ref commands mutate IDs in the current scene or query actual state and counts. Call `applyShapes({})` to clear the scene.
+
+Shapes reference styles and layers. This example displays a circle with a 30-meter ground radius around its center coordinate.
+
+```tsx
+import type { ShapeScene } from '@react-native-kakao/map';
+
+const circleScene = {
+  styleSets: [
+    {
+      type: 'polygon',
+      id: 'area-style',
+      styles: [{ levels: [{ level: 0, fillColor: '#22C55E66', strokeWidth: 2 }] }],
+    },
+  ],
+  layers: [{ id: 'areas' }],
+  shapes: [
+    {
+      id: 'circle',
+      layerId: 'areas',
+      styleSetId: 'area-style',
+      geometry: {
+        type: 'geographicCircle',
+        center: { latitude: 37.402001, longitude: 127.108678 },
+        radius: 30,
+      },
+    },
+  ],
+} satisfies ShapeScene;
+
+const counts = await map.current?.applyShapes(circleScene);
+const state = await map.current?.executeShapeCommand({ type: 'getState', id: 'circle' });
+```
+
+Model `ShapePoint` x/y values and model primitive dimensions use model-space meters. The module converts meter-valued offsets where the iOS SDK expects angular model coordinates. Geographic primitive dimensions use ground meters. Equal numbers do not promise equal ground distances; iOS model and geographic circles may display at different sizes. Use `geographicCircle` or `geographicRectangle` to specify ground distances. Style widths, strokes, and wave radii use logical Android dp/iOS points. Orientations and arc angles use degrees; arcs are clockwise from north. Durations use integer milliseconds.
+
+Use `getCapabilities` to check position, orientation, z-order, layer-pass, wave-target, and completion-event support. iOS supports model orientation while Android does not. Android supports geographic position and z-order mutation, but its SDK has no corresponding current-value getters, so state may return `null` for those fields.
+
+For `shareShapeTransform` with a model polygon, shared movement and unlinking were verified, but shared rotation has a rendering limitation. Animating the source label to 90 degrees produced a viewport-filling polygon on the ARM Android emulator with SDK 2.15.2 and the iOS Simulator with SDK 2.12.19. Android reproduced the failure with direct SDK calls outside the module; its immediate rotation setter instead failed to propagate rotation to the polygon. Do not rely on model-polygon shared rotation with these SDK versions.
+
 ## Errors and platform support
 
 Ref commands reject before readiness instead of being queued. Handle Promise `code` and `message` fields and `onError` events.
@@ -373,6 +415,9 @@ Ref commands reject before readiness instead of being queued. Handle Promise `co
 | `ERR_KAKAO_MAP_LABEL_NOT_FOUND`              | A referenced label, layer, style, badge, or animation ID is missing |
 | `ERR_KAKAO_MAP_LABEL_UNSUPPORTED`            | The native SDK does not support the requested label feature         |
 | `ERR_KAKAO_MAP_IMAGE_LOAD`                   | A label image could not be downloaded or decoded                    |
+| `ERR_KAKAO_MAP_SHAPE_INVALID_ARGUMENT`       | Invalid shape scene, geometry, or style input                       |
+| `ERR_KAKAO_MAP_SHAPE_NOT_FOUND`              | A referenced shape or animation ID is missing                       |
+| `ERR_KAKAO_MAP_SHAPE_UNSUPPORTED`            | The SDK does not support the requested shape feature                |
 | `ERR_KAKAO_MAP_UNSUPPORTED_PLATFORM_FEATURE` | Native feature absent from the current platform SDK     |
 
 SDK errors preserve their original code and message. Authentication failures are delivered through `onError`, not the initialization Promise. No automatic retry is performed: fix the app registration or network issue and remount the view to retry. Restart the app process if the native app key must change.

@@ -43,12 +43,15 @@ class KakaoMapModule : Module() {
           "onLabelClick",
           "onLabelAnimationStopped",
           "onLabelsChanged",
+          "onShapeAnimationStop",
+          "onShapesChanged",
           "onCameraOperation",
         )
         Prop("initialCamera") { view: KakaoMapView, camera: CameraOptions? -> view.pendingInitialCamera = camera }
         Prop("camera") { view: KakaoMapView, camera: CameraOptions? -> view.camera = camera }
         Prop("options") { view: KakaoMapView, options: MapOptionsRecord? -> view.pendingOptions = options }
         Prop("labels") { view: KakaoMapView, scene: MapLabelSceneRecord? -> view.queueLabels(scene) }
+        Prop("shapes") { view: KakaoMapView, scene: Map<String, Any?>? -> view.queueShapes(scene) }
         OnViewDidUpdateProps { view: KakaoMapView -> view.updateProps() }
         AsyncFunction("moveCamera") { view: KakaoMapView, camera: CameraOptions, duration: Double -> view.moveCamera(camera, duration) }
         AsyncFunction("getCamera") { view: KakaoMapView, promise: Promise -> view.getCamera(promise) }
@@ -64,6 +67,11 @@ class KakaoMapModule : Module() {
         AsyncFunction("runLabelCommand") { view: KakaoMapView, command: MapLabelCommandRecord -> view.runLabelCommand(command) }
         AsyncFunction("getLabelCapabilities") { view: KakaoMapView -> view.getLabelCapabilities() }
         AsyncFunction("getLabelState") { view: KakaoMapView -> view.getLabelState() }
+        AsyncFunction("applyShapes") { view: KakaoMapView, scene: Map<String, Any?> -> view.applyShapes(scene) }
+          .runOnQueue(Queues.MAIN)
+        AsyncFunction("executeShapeCommand") { view: KakaoMapView, command: Map<String, Any?> ->
+          view.executeShapeCommand(command)
+        }.runOnQueue(Queues.MAIN)
         AsyncFunction(
           "executeCameraCommand",
         ) { view: KakaoMapView, command: Map<String, Any?>, promise: Promise -> view.executeCameraCommand(command, promise) }
