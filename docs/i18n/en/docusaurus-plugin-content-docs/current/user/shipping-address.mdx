@@ -14,7 +14,7 @@ Use `shippingAddresses()` to retrieve the user's shipping addresses. Android, iO
 This feature is only available in business apps that have obtained user consent for the `shipping_address` permission.
 :::
 
-The current SDK's `shippingAddresses()` uses the shipping address v1 API. Kakao will end v1 support on April 6, 2027; check the [official notice](https://devtalk.kakao.com/t/151885).
+`shippingAddresses()` uses the shipping address v1 API. On web, it calls the REST API directly with the current access token because JavaScript SDK 2.8.4 does not expose v1 requests. Query options and response shapes match Android and iOS. Kakao will end v1 support on April 6, 2027; check the [official notice](https://devtalk.kakao.com/t/151885).
 
 ### Query options
 
@@ -28,7 +28,7 @@ Omit options to use the SDK's default query. When `addressId` is provided, only 
 
 Fractional values, `NaN`, and infinity are rejected. `addressId` must be a JavaScript safe integer, `fromUpdatedAt` a non-negative safe integer, and `pageSize` an integer between 2 and 2147483647.
 
-The default address comes first, followed by addresses in descending modification order. Pass the previous page's last address `updatedAt` as `fromUpdatedAt` for the next page. The default address is included first regardless of the query time.
+The default address comes first, followed by addresses in descending modification order. Pass the previous page's last address `updatedAt` as `fromUpdatedAt` for the next page. Finish pagination when `shippingAddresses` is empty. A subsequent page can omit the default address.
 
 The response type is `Promise<KakaoShippingAddressResult>`.
 

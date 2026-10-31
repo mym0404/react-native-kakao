@@ -1,5 +1,6 @@
 package net.mjstudio.rnkakao.share
 
+import android.net.Uri
 import com.facebook.react.bridge.ReadableMap
 import com.kakao.sdk.template.model.Button
 import com.kakao.sdk.template.model.CalendarTemplate
@@ -41,9 +42,11 @@ object RNCKakaoShareTemplates {
     Link(
       webUrl = getString("webUrl"),
       mobileWebUrl = getString("mobileWebUrl"),
-      androidExecutionParams = getMap("androidExecutionParams")?.toStringMap(),
-      iosExecutionParams = getMap("iosExecutionParams")?.toStringMap(),
+      androidExecutionParams = getMap("androidExecutionParams")?.toExecutionParams(),
+      iosExecutionParams = getMap("iosExecutionParams")?.toExecutionParams(),
     )
+
+  private fun ReadableMap.toExecutionParams() = toStringMap().entries.associate { (key, value) -> Uri.encode(key) to Uri.encode(value) }
 
   private fun ReadableMap.toContent() =
     Content(

@@ -15,6 +15,16 @@ export interface KakaoLoginToken {
   refreshTokenExpiresIn: number;
   scopes: string[];
 }
+export type KakaoCodeTokenOptions = {
+  code: string;
+  codeVerifier?: string;
+  redirectUri?: string;
+  web?: { clientSecret?: string };
+};
+
+const minActivityRequestCode = -2147483648;
+const maxActivityRequestCode = 2147483647;
+
 export interface KakaoScopeInfo {
   id: string;
   agreed: boolean;
@@ -61,15 +71,20 @@ export interface KakaoShippingAddress {
 }
 export interface KakaoUser {
   id: number;
+  hasSignedUp?: boolean | null;
+  uuid?: string | null;
+  groupUserToken?: string | null;
   email: string;
   name?: string | null;
   nickname: string;
   profileImageUrl: string;
   thumbnailImageUrl: string;
+  isDefaultImage?: boolean | null;
   phoneNumber?: string | null;
   ageRange?: string | null;
   birthday?: string | null;
   birthdayType?: string | null;
+  isLeapMonth?: boolean | null;
   birthyear?: string | null;
   gender?: string | null;
   isEmailValid: boolean;
@@ -86,7 +101,12 @@ export interface KakaoUser {
   nameNeedsAgreement?: boolean;
   profileImageNeedsAgreement?: boolean;
   profileNicknameNeedsAgreement?: boolean;
+  legalName?: string | null;
+  legalNameNeedsAgreement?: boolean | null;
+  legalBirthDate?: string | null;
   legalBirthDateNeedsAgreement?: boolean;
+  legalGender?: 'female' | 'male' | null;
+  legalGenderNeedsAgreement?: boolean | null;
   connectedAt?: number;
   synchedAt?: number;
 }
@@ -101,12 +121,18 @@ export function login({
   useKakaoAccountLogin,
   scopes,
   nonce,
+  loginHint,
+  channelPublicIds,
+  android,
 }: {
   serviceTerms?: string[];
   prompts?: ('Login' | 'Create' | 'Cert' | 'SelectAccount')[];
   scopes?: string[];
   useKakaoAccountLogin?: boolean;
   nonce?: string;
+  loginHint?: string;
+  channelPublicIds?: string[];
+  android?: { requestCode?: number };
   web?: {
     redirectUri: string;
     scope?: string[];
@@ -118,14 +144,35 @@ export function login({
     nonce?: string;
   };
 } = {}): Promise<KakaoLoginToken> {
+  const requestCode = android?.requestCode;
+  kAssert(
+    requestCode == null ||
+      (Number.isInteger(requestCode) &&
+        requestCode >= minActivityRequestCode &&
+        requestCode <= maxActivityRequestCode),
+    `[login] android.requestCode must be an integer from ${minActivityRequestCode} to ${maxActivityRequestCode}`,
+  );
+
   kAssert(
     !useKakaoAccountLogin ? !is.notEmptyArray(prompts) && !is.notEmptyArray(scopes) : true,
     '[login] `prompts` and `scopes` cannot be passed if useKakaoAccountLogin is false.',
   );
 
   kAssert(
-    is.notEmptyArray(scopes) ? !is.notEmptyArray(prompts) && !is.notEmptyArray(serviceTerms) : true,
-    '[login] `scopes` cannot be passed with `prompts` or `serviceTerms`',
+    is.notEmptyArray(scopes)
+      ? !is.notEmptyArray(prompts) &&
+          !is.notEmptyArray(serviceTerms) &&
+          !is.notEmptyArray(channelPublicIds)
+      : true,
+    '[login] `scopes` cannot be passed with `prompts`, `serviceTerms`, or `channelPublicIds`',
+  );
+
+  kAssert(
+    loginHint == null ||
+      (!is.notEmptyArray(scopes) &&
+        !is.notEmptyArray(serviceTerms) &&
+        !is.notEmptyArray(channelPublicIds)),
+    '[login] `loginHint` cannot be passed with `scopes`, `serviceTerms`, or `channelPublicIds` on native platforms.',
   );
 
   return Native.login(
@@ -134,7 +181,87 @@ export function login({
     useKakaoAccountLogin ?? false,
     scopes ?? [],
     nonce,
+    loginHint,
+    channelPublicIds ?? [],
+    requestCode,
   );
+}
+
+export async function signup({ properties }: { properties?: Record<string, string> } = {}) {
+  await Native.signup(properties);
+}
+
+export function loginWithKakao({
+  uiMode = 'auto',
+  prompts,
+  loginHint,
+  nonce,
+  channelPublicIds,
+  serviceTerms,
+  ios,
+}: {
+  uiMode?: 'auto' | 'light' | 'dark';
+  prompts?: ('Login' | 'Create' | 'Cert' | 'SelectAccount')[];
+  loginHint?: string;
+  nonce?: string;
+  channelPublicIds?: string[];
+  serviceTerms?: string[];
+  ios?: {
+    orientation?: 'auto' | 'portrait' | 'landscape';
+    launchMethod?: 'UniversalLink' | 'CustomScheme';
+  };
+} = {}): Promise<KakaoLoginToken> {
+  return Native.loginWithKakao(
+    uiMode,
+    ios?.orientation ?? 'auto',
+    ios?.launchMethod ?? 'UniversalLink',
+    prompts ?? [],
+    loginHint,
+    nonce,
+    channelPublicIds ?? [],
+    serviceTerms ?? [],
+  );
+}
+
+export function refreshToken({
+  token,
+  ios,
+}: {
+  token?: KakaoLoginToken;
+  ios?: { loggingEnabled?: boolean };
+} = {}): Promise<KakaoLoginToken> {
+  kAssert(
+    ios?.loggingEnabled == null || typeof ios.loggingEnabled === 'boolean',
+    '[refreshToken] ios.loggingEnabled must be a boolean',
+  );
+
+  if (token !== undefined) {
+    kAssert(
+      token != null &&
+        is.string(token.accessToken) &&
+        token.accessToken.length > 0 &&
+        is.string(token.refreshToken) &&
+        token.refreshToken.length > 0,
+      '[refreshToken] token must contain non-empty accessToken and refreshToken strings',
+    );
+
+    kAssert(
+      [token.accessTokenExpiresAt, token.refreshTokenExpiresAt].every(
+        (value) => Number.isFinite(value) && !Number.isNaN(new Date(value * 1000).getTime()),
+      ) && [token.accessTokenExpiresIn, token.refreshTokenExpiresIn].every(Number.isFinite),
+      '[refreshToken] token expiry timestamps must be valid Unix seconds and lifetimes must be finite',
+    );
+
+    kAssert(
+      (token.tokenType == null || is.string(token.tokenType)) &&
+        (token.idToken == null || is.string(token.idToken)) &&
+        Array.isArray(token.scopes) &&
+        token.scopes.every((scope) => is.string(scope)),
+      '[refreshToken] tokenType and idToken must be strings when present, and scopes must be strings',
+    );
+  }
+
+  return Native.refreshToken(token, ios?.loggingEnabled ?? true);
 }
 
 export function logout() {
@@ -195,12 +322,32 @@ export function selectShippingAddress(): Promise<number> {
   return Native.selectShippingAddress();
 }
 
-export function me(): Promise<KakaoUser> {
-  return Native.me();
+export function me({
+  secureResource = true,
+}: { secureResource?: boolean } = {}): Promise<KakaoUser> {
+  return Native.me(secureResource);
+}
+
+export async function issueAccessTokenWithCode({
+  code,
+  codeVerifier,
+  redirectUri,
+}: KakaoCodeTokenOptions): Promise<KakaoLoginToken> {
+  kAssert(is.string(code) && code.length > 0, '[issueAccessTokenWithCode] code is required');
+
+  return Native.issueAccessTokenWithCode(code, codeVerifier, redirectUri);
 }
 
 export function getAccessToken(): Promise<KakaoAccessTokenInfo> {
   return Native.getAccessToken();
+}
+
+export function updateProfile({
+  properties,
+}: {
+  properties: Record<string, string>;
+}): Promise<void> {
+  return Native.updateProfile(properties);
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -210,6 +357,7 @@ export async function issueAccessTokenWithCodeWeb(params: {
   redirectUri: string;
   clientSecret?: string;
   code: string;
+  codeVerifier?: string;
 }): Promise<{
   tokenType: string;
   accessToken: string;
@@ -224,6 +372,10 @@ export async function issueAccessTokenWithCodeWeb(params: {
 
 const KakaoUser = {
   login,
+  loginWithKakao,
+  refreshToken,
+  issueAccessTokenWithCode,
+  signup,
   logout,
   unlink,
   isLogined,
@@ -236,6 +388,7 @@ const KakaoUser = {
   shippingAddresses,
   selectShippingAddress,
   me,
+  updateProfile,
   getAccessToken,
   setAccessTokenWeb,
   issueAccessTokenWithCodeWeb,

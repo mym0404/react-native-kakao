@@ -228,22 +228,95 @@ export type KakaoImageUploadResult = {
   };
 };
 
+export type KakaoMessageSendResult = {
+  successfulReceiverUuids: string[];
+  failureInfos: {
+    code: Int32;
+    msg: string;
+    receiverUuids: string[];
+  }[];
+};
+
+export type KakaoSharePickerSettings = {
+  type?: 'default' | 'friend' | 'chat';
+  limit?: number;
+};
+
+export type KakaoDefaultTemplateParams = (
+  | { templateType: 'feed'; template: KakaoFeedTemplate }
+  | { templateType: 'list'; template: KakaoListTemplate }
+  | { templateType: 'location'; template: KakaoLocationTemplate }
+  | { templateType: 'commerce'; template: KakaoCommerceTemplate }
+  | { templateType: 'text'; template: KakaoTextTemplate }
+  | { templateType: 'calendar'; template: KakaoCalendarTemplate }
+) & { serverCallbackArgs?: Readonly<Record<string, string>> };
+
+export type KakaoShareTemplateDiagnosticsParams = (
+  | KakaoDefaultTemplateParams
+  | {
+      templateType: 'custom';
+      templateId: Double;
+      templateArgs?: Readonly<Record<string, string>>;
+    }
+  | {
+      templateType: 'scrap';
+      requestUrl: string;
+      templateId?: Double;
+      templateArgs?: Readonly<Record<string, string>>;
+    }
+) & {
+  serverCallbackArgs?: Readonly<Record<string, string>>;
+  pickerSettings?: KakaoSharePickerSettings;
+};
+
+export type KakaoShareTemplateDiagnostics = {
+  warningMsg: Readonly<{ [key: string]: string }>;
+  argumentMsg: Readonly<{ [key: string]: string }>;
+};
+
 export interface Spec extends TurboModule {
+  isKakaoTalkSharingAvailable(): Promise<boolean>;
+  makeTemplateUrl(
+    templateType: string,
+    templateId: Double,
+    templateJson: UnsafeObject,
+    templateArgs: Readonly<{ [key: string]: string }>,
+    serverCallbackArgs: Readonly<{ [key: string]: string }>,
+  ): Promise<string>;
+  getTemplateDiagnostics(
+    templateType: string,
+    templateId: Double,
+    templateJson: UnsafeObject,
+    templateArgs: Readonly<{ [key: string]: string }>,
+    serverCallbackArgs: Readonly<{ [key: string]: string }>,
+    pickerSettings?: UnsafeObject,
+  ): Promise<KakaoShareTemplateDiagnostics>;
+  uploadImage(imageUri: string, secureResource: boolean): Promise<KakaoImageUploadResult>;
+  shareScrapTemplate(
+    requestUrl: string,
+    useWebBrowserIfKakaoTalkNotAvailable: boolean,
+    templateId?: Double,
+    templateArgs?: Readonly<{ [key: string]: string }>,
+    serverCallbackArgs?: Readonly<{ [key: string]: string }>,
+    pickerSettings?: UnsafeObject,
+  ): Promise<void>;
+
   scrapImage(imageUrl: string, secureResource: boolean): Promise<KakaoImageUploadResult>;
   shareOrSendMeOrSendFriendOrWhatever(
     /* share, send-me, send-friend */
     sendType: string,
-    /* custom, feed, list, location, commerce, text, calendar */
+    /* custom, scrap, feed, list, location, commerce, text, calendar */
     templateType: string,
-    /* only for custom */
+    /* only for custom or scrap (-1 uses the default scrap template) */
     templateId: Double,
-    /* only for default templates */
+    /* default template fields or { requestUrl } for scrap */
     templateJson: UnsafeObject,
     /* only for pass friend uuid directly */
     receiverUuids: ReadonlyArray<string>,
     useWebBrowserIfKakaoTalkNotAvailable: boolean,
     templateArgs: Readonly<{ [key: string]: string }>,
     serverCallbackArgs: Readonly<{ [key: string]: string }>,
+    pickerSettings?: UnsafeObject,
   ): Promise<any>;
 }
 

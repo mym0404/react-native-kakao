@@ -17,17 +17,63 @@ RCT_EXPORT_METHOD(isKakaoTalkLoginAvailable : (RCTPromiseResolveBlock)
                       resolve reject : (RCTPromiseRejectBlock)reject) {
   [[self manager] isKakaoTalkLoginAvailable:resolve reject:reject];
 }
-RCT_EXPORT_METHOD(login : (NSArray*)serviceTerms prompts : (NSArray*)
-                      prompts useKakaoAccountLogin : (BOOL)useKakaoAccountLogin scopes : (NSArray*)
-                          scopes nonce : (NSString*)nonce resolve : (RCTPromiseResolveBlock)
-                              resolve reject : (RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(
+    login : (NSArray*)serviceTerms prompts : (NSArray*)prompts useKakaoAccountLogin : (BOOL)
+        useKakaoAccountLogin scopes : (NSArray*)scopes nonce : (NSString*)
+            nonce loginHint : (NSString*)loginHint channelPublicIds : (NSArray*)
+                channelPublicIds androidRequestCode : (NSNumber*)androidRequestCode resolve : (
+                    RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
   [[self manager] login:serviceTerms
                    prompts:prompts
       useKakaoAccountLogin:useKakaoAccountLogin
                     scopes:scopes
                      nonce:nonce
+                 loginHint:loginHint
+          channelPublicIds:channelPublicIds
                    resolve:resolve
                     reject:reject];
+}
+
+RCT_EXPORT_METHOD(signup : (NSDictionary*)properties resolve : (RCTPromiseResolveBlock)
+                      resolve reject : (RCTPromiseRejectBlock)reject) {
+  [[self manager] signup:properties resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(loginWithKakao : (NSString*)uiMode orientation : (NSString*)
+                      orientation launchMethod : (NSString*)launchMethod prompts : (NSArray*)
+                          prompts loginHint : (NSString*)loginHint nonce : (NSString*)
+                              nonce channelPublicIds : (NSArray*)channelPublicIds serviceTerms : (
+                                  NSArray*)serviceTerms resolve : (RCTPromiseResolveBlock)
+                                  resolve reject : (RCTPromiseRejectBlock)reject) {
+  [[self manager] loginWithKakao:uiMode
+                     orientation:orientation
+                    launchMethod:launchMethod
+                         prompts:prompts
+                       loginHint:loginHint
+                           nonce:nonce
+                channelPublicIds:channelPublicIds
+                    serviceTerms:serviceTerms
+                         resolve:resolve
+                          reject:reject];
+}
+
+RCT_EXPORT_METHOD(issueAccessTokenWithCode : (NSString*)code codeVerifier : (
+    NSString*)codeVerifier redirectUri : (NSString*)redirectUri resolve : (RCTPromiseResolveBlock)
+                      resolve reject : (RCTPromiseRejectBlock)reject) {
+  [[self manager] issueAccessTokenWithCode:code
+                              codeVerifier:codeVerifier
+                               redirectUri:redirectUri
+                                   resolve:resolve
+                                    reject:reject];
+}
+
+RCT_EXPORT_METHOD(refreshToken : (NSDictionary*)token iosLoggingEnabled : (NSNumber*)
+                      iosLoggingEnabled resolve : (RCTPromiseResolveBlock)
+                          resolve reject : (RCTPromiseRejectBlock)reject) {
+  [[self manager] refreshToken:token
+                loggingEnabled:iosLoggingEnabled
+                       resolve:resolve
+                        reject:reject];
 }
 
 RCT_EXPORT_METHOD(logout : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
@@ -78,8 +124,14 @@ RCT_EXPORT_METHOD(revokeServiceTerms : (NSArray*)tags resolve : (RCTPromiseResol
   [[self manager] revokeServiceTerms:tags resolve:resolve reject:reject];
 }
 
-RCT_EXPORT_METHOD(me : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
-  [[self manager] me:resolve reject:reject];
+RCT_EXPORT_METHOD(updateProfile : (NSDictionary*)properties resolve : (RCTPromiseResolveBlock)
+                      resolve reject : (RCTPromiseRejectBlock)reject) {
+  [[self manager] updateProfile:properties resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(me : (NSNumber*)secureResource resolve : (RCTPromiseResolveBlock)
+                      resolve reject : (RCTPromiseRejectBlock)reject) {
+  [[self manager] me:secureResource resolve:resolve reject:reject];
 }
 
 RCT_EXPORT_METHOD(selectShippingAddress : (RCTPromiseResolveBlock)

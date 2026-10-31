@@ -1,0 +1,32 @@
+---
+sidebar_position: 7
+---
+
+# Build Kakao Navi URLs
+
+`getNavigateUrl` and `getShareUrl` build Kakao Navi URLs with the Android and iOS SDKs. Initialize the SDK first. Neither a Kakao Navi installation nor login is required. These functions return a URL without opening an app or installation page.
+
+## Usage
+
+Navigation and destination sharing URLs accept the same parameters.
+
+```tsx
+import { getNavigateUrl, getShareUrl } from '@react-native-kakao/navi';
+
+const params = {
+  destination: { name: 'Gangnam Station', x: 127.02758, y: 37.49771 },
+  option: { coordType: 'WGS84' as const, routeInfo: false },
+  viaList: [{ name: 'Stop', x: 127.02, y: 37.5 }],
+};
+
+const navigationUrl = await getNavigateUrl(params);
+const sharingUrl = await getShareUrl(params);
+```
+
+Both functions return `Promise<string>`. Destination, options, and stops use the same format as [`navigateTo`](/docs/navi/navigate-destination). You may omit `option` and `viaList`. At most three stops are allowed; four or more reject with `Package-Assertion` before calling the SDK.
+
+The SDK always sets `routeInfo` to `true` for `getShareUrl`. `getNavigateUrl` preserves the supplied value. Android returns only the data URL from the SDK's Intent. To request app launch, use `navigateTo` or [`shareTo`](/docs/navi/share-destination).
+
+## Web support
+
+The Kakao JavaScript SDK has no URL builder, so both functions reject with `Package-UnsupportedPlatform` on web. Use `navigateTo` or `shareTo` to request Kakao Navi launch from mobile web.

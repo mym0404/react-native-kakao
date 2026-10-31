@@ -1,0 +1,162 @@
+---
+sidebar_position: 1
+---
+
+# Certification and electronic signatures
+
+Use `@react-native-kakao/cert` for Kakao certification login and abbreviated signatures. Certification login combines Kakao Login with an electronic signature using a Kakao certificate. An approved Kakao app and server integration are required.
+
+| Product | Function | Platforms |
+| --- | --- | --- |
+| `K2100` | Certification login through KakaoTalk or Kakao Account. | Android, iOS, web authorization redirect |
+| `K2220` | Certification login through KakaoTalk, followed by signatures during a session. | Android, iOS |
+| `K3220` | Signing through KakaoTalk, followed by signatures during a session. | Android, iOS |
+
+Your server issues settlement IDs, prepares and verifies signatures, and retrieves signer information. Keep server secrets out of the app. Follow the official [K2100](https://developers.kakao.com/docs/ko/kakao-certification/k2100), [K2220](https://developers.kakao.com/docs/ko/kakao-certification/k2220), and [K3220](https://developers.kakao.com/docs/ko/kakao-certification/k3220) integration guides.
+
+## Installation and callbacks
+
+Install the packages below and [initialize Core](/docs/core/initialize-sdk).
+
+```sh
+yarn add @react-native-kakao/core @react-native-kakao/user @react-native-kakao/cert
+```
+
+For Expo, enable certification callbacks in the Core plugin and regenerate the native projects.
+
+```json
+[
+  "@react-native-kakao/core",
+  {
+    "nativeAppKey": "NATIVE_APP_KEY",
+    "android": {
+      "authCodeHandlerActivity": true,
+      "certServiceHandlerActivity": true
+    },
+    "ios": {
+      "handleKakaoOpenUrl": true,
+      "handleKakaoCertOpenUrl": true
+    }
+  }
+]
+```
+
+Without Expo on Android, register `com.kakao.sdk.cert.CertServiceHandlerActivity` with `android:exported="true"` alongside the login callback. Add an intent filter with the `VIEW` action, `DEFAULT` and `BROWSABLE` categories, and the `kakaoNATIVE_APP_KEY://cert` URI.
+
+On iOS, retain the Kakao Login URL scheme and callback, and add `kakaotalk` to `LSApplicationQueriesSchemes`. Forward certification URLs from AppDelegate to the SDK. Insert this Swift handler before existing URL handling. In ObjC++, import `<RNCKakaoCert/RNCKakaoCertUtil.h>` and call the same two class methods.
+
+```swift
+import RNCKakaoCert
+
+if RNCKakaoCertUtil.isKakaoTalkSignReturnUrl(url) {
+  return RNCKakaoCertUtil.handleOpen(url)
+}
+```
+
+## Certification login
+
+For `K2100`, pass the settlement ID and signing data supplied by your server. Choose the KakaoTalk or Kakao Account method for the required authentication flow. Check KakaoTalk availability with `isKakaoTalkLoginAvailable()` from `@react-native-kakao/user`.
+
+```tsx
+import { certLoginWithKakaoAccount, certLoginWithKakaoTalk } from '@react-native-kakao/cert';
+
+const result = await certLoginWithKakaoTalk({
+  certType: 'K2100',
+  settleId,
+  signData,
+  identifyItems: ['ci', 'name'],
+});
+
+const accountResult = await certLoginWithKakaoAccount({
+  certType: 'K2100',
+  settleId,
+  signData,
+  loginHint,
+});
+```
+
+Both methods return `{ token, txId }`. The token uses the same `KakaoLoginToken` type as [regular login](/docs/user/login). Your server uses `txId` to verify the signature. For `K2220`, pass the server-prepared transaction ID to `certLoginWithKakaoTalk({ certType: 'K2220', txId })`. Kakao Account login supports `K2100` only.
+
+| Option | Behavior |
+| --- | --- |
+| `prompts` | Accepts `Login`, `Create`, and `SelectAccount`. The SDK adds its certification prompt. |
+| `identifyItems` | Requests signer information using `ci`, `name`, `birthday`, and `phone_number`. |
+| `nonce` | Random string used to verify the OpenID Connect ID token. |
+| `channelPublicIds`, `serviceTerms` | Channels and terms requested during KakaoTalk certification login. |
+| `ios.launchMethod` | Switches to KakaoTalk through `UniversalLink` or `CustomScheme`. Defaults to `UniversalLink`. |
+| `android.requestCode` | KakaoTalk certification login request code passed to the Android SDK. Accepts a 32-bit integer from `-2147483648` to `2147483647`; defaults to the SDK value when omitted. SDK `2.25.1` uses it only in diagnostic logs, without distinguishing result callbacks. |
+| `android.channelPublicIds`, `android.serviceTerms` | Kakao Account certification login options. The public iOS account SDK does not support them. |
+
+The pinned native SDKs expose only the four signer-information items listed above. Other items are excluded from the type.
+
+## Exchange a certification authorization code
+
+On iOS, `issueCertTokenWithCode()` exchanges a certification authorization code from a separate flow for `{ token, txId }` and stores the tokens in the SDK. It requires a certification code for an approved app. The result uses the same `KakaoCertTokenInfo` as certification login.
+
+```tsx
+import { issueCertTokenWithCode } from '@react-native-kakao/cert';
+
+const result = await issueCertTokenWithCode({
+  code: certificationAuthorizationCode,
+  codeVerifier,
+  redirectUri,
+});
+```
+
+`codeVerifier` is the PKCE verification value from that authorization request; pass the same value if PKCE was used. Omitting `redirectUri` uses the initialized iOS SDK's default URI. An explicit URI must match the authorization request. Android and web reject this API with `Package-UnsupportedPlatform`.
+
+For web, exchange certification authorization codes through REST on your service server. Use the returned `tx_id` to verify the signature on the server. Follow the [official K2100 guide](https://developers.kakao.com/docs/ko/kakao-certification/k2100) for the integration sequence.
+
+## Keys, sessions, and abbreviated signatures
+
+For `K2220` and `K3220`, the SDK stores a temporary key pair on the device. This example sends the `K2220` public key to your server, completes certification login, and retrieves the session. Implement `prepareOnServer()` and `verifyOnServer()` on your own server.
+
+```tsx
+import {
+  getPublicKey, certLoginWithKakaoTalk, fetchSessionInfo,
+  getSessionInfo, isValidSession, reducedSign, deleteKeyPair,
+} from '@react-native-kakao/cert';
+
+const certType = 'K2220';
+const publicKey = await getPublicKey({ certType });
+if (!publicKey) throw new Error('Public key unavailable');
+const { txId } = await prepareOnServer(publicKey);
+await certLoginWithKakaoTalk({ certType, txId });
+await verifyOnServer(txId);
+const session = await fetchSessionInfo({ certType, txId });
+
+if (await isValidSession({ certType })) {
+  const signature = await reducedSign({ certType, data });
+}
+
+const cachedSession = await getSessionInfo({ certType });
+await deleteKeyPair({ certType });
+```
+
+`getPublicKey()` retrieves or creates the public key and returns `undefined` when the SDK cannot provide one. Private keys stay inside the SDK. `getSessionInfo()` reads the stored session and returns `undefined` when none exists. `fetchSessionInfo()` retrieves a session from the server and stores it in the SDK. Sessions contain `{ userId?, sessionStartAt, sessionEndAt }`, with timestamps in Unix seconds.
+
+For `K3220`, check `isKakaoTalkSignAvailable()` and call `signWithKakaoTalk({ txId, targetAppKey? })`. Its response contains `{ txId, requestedAt?, requestExpiredAt?, signedAt? }`, with timestamps in Unix seconds. Then call `fetchSessionInfoByAppKey({ certType: 'K3220', txId, targetAppKey? })`. The remaining local key and session methods work as for `K2220`.
+
+Signing fails if a session is missing or expired. `deleteKeyPair()` deletes the selected product's key pair and session. Follow the official recovery sequence when the SDK reports an error.
+
+On iOS, `signWithKakaoTalk()` rejects a new request while another is pending. Wait for the first request to finish before calling it again.
+
+## Web certification login
+
+On web, `authorizeForCertWeb()` starts the `K2100` certification login redirect. Load the JavaScript SDK and [initialize Core for web](/docs/core/initialize-sdk).
+
+```tsx
+import { authorizeForCertWeb } from '@react-native-kakao/cert';
+
+await authorizeForCertWeb({
+  redirectUri,
+  settleId,
+  signData,
+  state,
+  identifyItems: ['ci'],
+});
+```
+
+The returned `Promise<void>` does not signal completed authentication or token issuance. Handle the authorization code and signature verification after the redirect. The wrapper converts `prompt`, `scope`, `serviceTerms`, and `identifyItems` arrays into comma-separated strings. It also accepts `throughTalk`, `throughSyncplugin`, `channelPublicId`, `deviceType`, `loginHint`, and `nonce`.
+
+On web, `isKakaoTalkSignAvailable()` returns `false`. Native certification login, keys, sessions, and abbreviated signatures reject with `Package-UnsupportedPlatform`. Calling `authorizeForCertWeb()` on Android or iOS rejects with the same code.

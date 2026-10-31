@@ -6,11 +6,14 @@ import { kRunWebAPI } from './util/kRunWebAPI';
 import type { KakaoCoreAPI } from './index';
 
 declare const Kakao: {
-  init: Function;
-  isInitialized: Function;
+  VERSION: string;
+  init: (appKey: string) => void;
+  isInitialized: () => boolean;
 };
 
 const KakaoCore: KakaoCoreAPI = {
+  getKakaoSDKInfo: () =>
+    kRunWebAPI(() => ({ version: Kakao.VERSION, isInitialized: Kakao.isInitialized() })),
   getKeyHashAndroid: async () => {
     return undefined;
   },
@@ -30,6 +33,6 @@ const KakaoCore: KakaoCoreAPI = {
   },
 };
 
-export const { getKeyHashAndroid, initializeKakaoSDK } = KakaoCore;
+export const { getKeyHashAndroid, initializeKakaoSDK, getKakaoSDKInfo } = KakaoCore;
 export default KakaoCore;
 export { kAssert, kCreateWebError, kGlobalStorage, kFetch, kFetchFormUrlEncoded, kRunWebAPI };

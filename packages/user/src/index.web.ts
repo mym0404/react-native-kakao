@@ -1,5 +1,12 @@
 import { camelCaseObject, filterNonNullishKeys, is } from '@mj-studio/js-util';
-import { kFetch, kFetchFormUrlEncoded, kGlobalStorage, kRunWebAPI } from '@react-native-kakao/core';
+import {
+  kAssert,
+  kCreateWebError,
+  kFetch,
+  kFetchFormUrlEncoded,
+  kGlobalStorage,
+  kRunWebAPI,
+} from '@react-native-kakao/core';
 
 import {
   type KakaoLoginToken,
@@ -11,6 +18,7 @@ import {
 import { validateShippingAddressOptions } from './validateShippingAddressOptions';
 
 declare const Kakao: {
+  isInitialized: () => boolean;
   Auth: {
     authorize: Function;
     logout: Function;
@@ -30,6 +38,21 @@ function isoToUnix(value?: string | number) {
 }
 
 const KakaoUser: KakaoUserAPI = {
+  loginWithKakao: () =>
+    kRunWebAPI(() => {
+      throw {
+        code: 'Package-UnsupportedPlatform',
+        message:
+          'loginWithKakao is supported on Android and iOS. Use login with web.redirectUri on web.',
+      };
+    }),
+  refreshToken: () =>
+    kRunWebAPI(() => {
+      throw {
+        code: 'Package-UnsupportedPlatform',
+        message: 'The Kakao JavaScript SDK does not support refreshToken.',
+      };
+    }),
   hasToken: () => kRunWebAPI(() => Kakao.Auth.getAccessToken() != null),
   getAccessToken: () =>
     kRunWebAPI(async () => {
@@ -42,7 +65,62 @@ const KakaoUser: KakaoUserAPI = {
         appId: app_id,
       };
     }),
-  issueAccessTokenWithCodeWeb: ({ clientSecret, code, redirectUri }) =>
+  issueAccessTokenWithCode: ({ code, codeVerifier, redirectUri, web }) =>
+    kRunWebAPI(async () => {
+      kAssert(
+        is.string(code) && code.length > 0 && is.string(redirectUri) && redirectUri.length > 0,
+        '[issueAccessTokenWithCode] code and redirectUri are required on web',
+      );
+
+      if (typeof Kakao === 'undefined' || !Kakao.isInitialized()) {
+        kCreateWebError({
+          code: 'Package-SDKNotInitialized',
+          message: 'Initialize the Kakao SDK before exchanging an authorization code.',
+        });
+      }
+
+      const token = await KakaoUser.issueAccessTokenWithCodeWeb({
+        code,
+        codeVerifier,
+        redirectUri: redirectUri!,
+        clientSecret: web?.clientSecret,
+      });
+
+      if (
+        !is.string(token.accessToken) ||
+        !token.accessToken ||
+        !is.string(token.refreshToken) ||
+        !token.refreshToken ||
+        !is.string(token.tokenType) ||
+        (token.idToken != null && !is.string(token.idToken)) ||
+        !Number.isFinite(token.expiresIn) ||
+        token.expiresIn < 0 ||
+        !Number.isFinite(token.refreshTokenExpiresIn) ||
+        token.refreshTokenExpiresIn < 0 ||
+        (token.scope != null && !is.string(token.scope))
+      ) {
+        kCreateWebError({
+          code: 'Package-APIResponseNotFound',
+          message: 'issueAccessTokenWithCode returned invalid token data.',
+        });
+      }
+
+      const issuedAt = Math.floor(Date.now() / 1000);
+      KakaoUser.setAccessTokenWeb(token.accessToken);
+
+      return {
+        accessToken: token.accessToken,
+        refreshToken: token.refreshToken,
+        tokenType: token.tokenType,
+        idToken: token.idToken,
+        accessTokenExpiresIn: token.expiresIn,
+        refreshTokenExpiresIn: token.refreshTokenExpiresIn,
+        accessTokenExpiresAt: issuedAt + token.expiresIn,
+        refreshTokenExpiresAt: issuedAt + token.refreshTokenExpiresIn,
+        scopes: token.scope?.split(' ').filter(Boolean) ?? [],
+      };
+    }),
+  issueAccessTokenWithCodeWeb: ({ clientSecret, code, codeVerifier, redirectUri }) =>
     kRunWebAPI(async () => {
       const res = await kFetchFormUrlEncoded<{
         token_type: string;
@@ -59,6 +137,7 @@ const KakaoUser: KakaoUserAPI = {
           client_id: kGlobalStorage.restApiKey,
           redirect_uri: redirectUri,
           code,
+          code_verifier: codeVerifier,
           client_secret: clientSecret,
         }),
       }).then((r) => r.body);
@@ -73,10 +152,12 @@ const KakaoUser: KakaoUserAPI = {
     kRunWebAPI(() => {
       const { loginHint, nonce, prompt, redirectUri, scope, state, throughTalk, serviceTerms } =
         params?.web ?? {};
+      const channelPublicIds = params?.channelPublicIds;
 
       return Kakao.Auth.authorize(
         filterNonNullishKeys({
-          loginHint,
+          loginHint: params?.loginHint ?? loginHint,
+          channelPublicId: channelPublicIds?.length ? channelPublicIds.join(',') : undefined,
           nonce: params?.nonce ?? nonce,
           prompt: (
             prompt ??
@@ -91,6 +172,13 @@ const KakaoUser: KakaoUserAPI = {
           throughTalk: throughTalk ?? (params?.useKakaoAccountLogin ? false : undefined),
         }),
       );
+    }),
+  signup: ({ properties } = {}) =>
+    kRunWebAPI(async () => {
+      await Kakao.API.request({
+        url: '/v1/user/signup',
+        data: filterNonNullishKeys({ properties }),
+      });
     }),
   logout: () =>
     kRunWebAPI(async () => {
@@ -226,15 +314,27 @@ const KakaoUser: KakaoUserAPI = {
         throw error;
       }
     }),
-  me: () =>
+  updateProfile: ({ properties }) =>
     kRunWebAPI(async () => {
-      const ret = camelCaseObject(await Kakao.API.request({ url: '/v2/user/me' })) as {
+      await Kakao.API.request({ url: '/v1/user/update_profile', data: { properties } });
+    }),
+  me: ({ secureResource = true } = {}) =>
+    kRunWebAPI(async () => {
+      const ret = camelCaseObject(
+        await Kakao.API.request({ url: '/v2/user/me', data: { secure_resource: secureResource } }),
+      ) as {
         id: number;
+        hasSignedUp?: boolean | null;
+        forPartner?: { uuid?: string };
+        groupUserToken?: string;
         connectedAt?: string;
         synchedAt?: string;
         kakaoAccount?: Partial<KakaoUserProfile> & {
           profile?: Partial<
-            Pick<KakaoUserProfile, 'nickname' | 'profileImageUrl' | 'thumbnailImageUrl'>
+            Pick<
+              KakaoUserProfile,
+              'nickname' | 'profileImageUrl' | 'thumbnailImageUrl' | 'isDefaultImage'
+            >
           >;
         };
         properties?: { nickname?: string; profileImage?: string; thumbnailImage?: string };
@@ -242,9 +342,21 @@ const KakaoUser: KakaoUserAPI = {
       const kakaoAccount = ret.kakaoAccount ?? {};
       const properties = ret.properties ?? {};
       const profile = kakaoAccount.profile ?? {};
+      const legalGender = kakaoAccount.legalGender;
 
       return {
         id: ret.id,
+        hasSignedUp: ret.hasSignedUp ?? null,
+        uuid: ret.forPartner?.uuid ?? null,
+        groupUserToken: ret.groupUserToken ?? null,
+        isDefaultImage: profile.isDefaultImage ?? null,
+        isLeapMonth: kakaoAccount.isLeapMonth ?? null,
+        legalName: kakaoAccount.legalName ?? null,
+        legalNameNeedsAgreement: kakaoAccount.legalNameNeedsAgreement ?? null,
+        legalBirthDate: kakaoAccount.legalBirthDate ?? null,
+        legalBirthDateNeedsAgreement: kakaoAccount.legalBirthDateNeedsAgreement,
+        legalGender: legalGender === 'female' || legalGender === 'male' ? legalGender : null,
+        legalGenderNeedsAgreement: kakaoAccount.legalGenderNeedsAgreement ?? null,
         email: kakaoAccount.email,
         name: kakaoAccount.name,
         nickname: profile.nickname ?? properties.nickname,
@@ -270,7 +382,6 @@ const KakaoUser: KakaoUserAPI = {
         nameNeedsAgreement: kakaoAccount.nameNeedsAgreement,
         profileImageNeedsAgreement: kakaoAccount.profileImageNeedsAgreement,
         profileNicknameNeedsAgreement: kakaoAccount.profileNicknameNeedsAgreement,
-        legalBirthDateNeedsAgreement: kakaoAccount.legalBirthDateNeedsAgreement,
         connectedAt: isoToUnix(ret.connectedAt),
         synchedAt: isoToUnix(ret.synchedAt),
       } as KakaoUserProfile;
@@ -278,12 +389,17 @@ const KakaoUser: KakaoUserAPI = {
 };
 
 export const {
+  loginWithKakao,
+  refreshToken,
+  issueAccessTokenWithCode,
   isKakaoTalkLoginAvailable,
   isLogined,
   hasToken,
   login,
+  signup,
   logout,
   me,
+  updateProfile,
   revokeScopes,
   scopes,
   serviceTerms,

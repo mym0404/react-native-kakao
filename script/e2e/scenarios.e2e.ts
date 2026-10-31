@@ -1,4 +1,4 @@
-import { describe, test } from '@e2e-dev/mobile';
+import { describe, type Device, test } from '@e2e-dev/mobile';
 import { expect, type Screen } from 'e2e';
 
 const screenTitle = 'screen-title';
@@ -6,24 +6,33 @@ const falseResult = 'success: false';
 const tokenError = 'error: TokenNotFound';
 let isInstalled = false;
 
-const findVisible = async (screen: Screen, id: string) => {
-  const target = screen.getByTestId(id, { visible: true });
-  for (let attempt = 0; attempt < 10; attempt++) {
-    if (await target.isVisible()) {
-      return target;
+const findVisible = async (device: Device, id: string) => {
+  const target = device.locator(`id=${id} visible=true`);
+  // Android also exposes an outer ScrollView; the innermost one owns page content.
+  const container = device.locator('role=ScrollView').last();
+  const scrollOptions = { momentum: 'slow', timeout: 60000 } as const;
+
+  try {
+    await container.scrollUntilVisible(target, { ...scrollOptions, direction: 'down' });
+  } catch (error) {
+    if (
+      error == null ||
+      typeof error !== 'object' ||
+      !('code' in error) ||
+      error.code !== 'LOCATOR_NOT_FOUND'
+    ) {
+      throw error;
     }
 
-    await screen.swipe({ direction: 'down' });
+    await container.scrollUntilVisible(target, { ...scrollOptions, direction: 'up' });
   }
-
-  await expect(target).toBeVisible();
 
   return target;
 };
 
-const openMenu = async (screen: Screen, menu: string) => {
-  await (await findVisible(screen, `menu-${menu.toLowerCase()}`)).tap();
-  await expect(screen.getByTestId(screenTitle)).toHaveText(menu);
+const openMenu = async (device: Device, menu: string) => {
+  await (await findVisible(device, `menu-${menu.toLowerCase()}`)).tap();
+  await expect(device.locator(`id=${screenTitle}`)).toHaveText(menu);
 };
 
 test.beforeEach(async ({ app, device, screen }) => {
@@ -36,53 +45,56 @@ test.beforeEach(async ({ app, device, screen }) => {
   await expect(screen.getByTestId(screenTitle)).toHaveText('Index');
 });
 
-describe('@react-native-kakao/share', () => {
-  test('screen loads', async ({ screen }) => {
-    await openMenu(screen, 'Share');
+describe('navigation', () => {
+  test('share and certification screens', async ({ app, device }) => {
+    for (const menu of ['Share', 'Cert']) {
+      await openMenu(device, menu);
+      await app.back();
+    }
   });
 });
 
 describe('@react-native-kakao/user', () => {
-  test('signed-out APIs', async ({ screen }) => {
-    await openMenu(screen, 'User');
+  test('signed-out APIs', async ({ device }) => {
+    await openMenu(device, 'User');
     for (const [action, expected] of [
       ['talk-available', falseResult],
       ['login-state', falseResult],
       ['user-profile', tokenError],
     ] as const) {
-      await (await findVisible(screen, `${action}-button`)).tap();
-      await expect(await findVisible(screen, `${action}-result`)).toHaveText(expected);
+      await (await findVisible(device, `${action}-button`)).tap();
+      await expect(await findVisible(device, `${action}-result`)).toHaveText(expected);
     }
   });
 });
 
 describe('@react-native-kakao/social', () => {
-  test('social token error', async ({ screen }) => {
-    await openMenu(screen, 'Social');
-    await (await findVisible(screen, 'talk-profile-button')).tap();
-    await expect(await findVisible(screen, 'talk-profile-result')).toHaveText(tokenError);
+  test('social token error', async ({ device }) => {
+    await openMenu(device, 'Social');
+    await (await findVisible(device, 'talk-profile-button')).tap();
+    await expect(await findVisible(device, 'talk-profile-result')).toHaveText(tokenError);
   });
 });
 
 describe('@react-native-kakao/channel', () => {
-  test('channel URLs', async ({ screen }) => {
-    await openMenu(screen, 'Channel');
-    await (await findVisible(screen, 'channel-add-url-button')).tap();
-    await expect(await findVisible(screen, 'channel-add-url-result')).toHaveText(
+  test('channel URLs', async ({ device }) => {
+    await openMenu(device, 'Channel');
+    await (await findVisible(device, 'channel-add-url-button')).tap();
+    await expect(await findVisible(device, 'channel-add-url-result')).toHaveText(
       /^success: "https:\/\/pf\.kakao\.com\/_hJhxbj\/friend(?:\?[^"\s]*)?"$/,
     );
 
-    await (await findVisible(screen, 'channel-chat-url-button')).tap();
-    await expect(await findVisible(screen, 'channel-chat-url-result')).toHaveText(
+    await (await findVisible(device, 'channel-chat-url-button')).tap();
+    await expect(await findVisible(device, 'channel-chat-url-result')).toHaveText(
       /^success: "https:\/\/pf\.kakao\.com\/_hJhxbj\/chat(?:\?[^"\s]*)?"$/,
     );
   });
 });
 
 describe('@react-native-kakao/navi', () => {
-  test('navi unavailable', async ({ screen }) => {
-    await openMenu(screen, 'Navi');
-    await (await findVisible(screen, 'navi-share-button')).tap();
+  test('navi unavailable', async ({ device, screen }) => {
+    await openMenu(device, 'Navi');
+    await (await findVisible(device, 'navi-share-button')).tap();
     await expect(screen.getByTestId('navi-share-result')).toHaveText(falseResult);
     await expect(screen.getByTestId(screenTitle)).toHaveText('Navi');
   });
@@ -98,8 +110,8 @@ if (process.env.KAKAO_E2E_SKIP_MAP !== '1') {
     const angleTolerance = 0.1;
     const developerIdle = /^\d+\|idle: developer$/;
 
-    const openMap = async (screen: Screen) => {
-      await openMenu(screen, 'Map');
+    const openMap = async (device: Device, screen: Screen) => {
+      await openMenu(device, 'Map');
       await expect(screen.getByTestId('map-status')).toHaveText('ready');
       await expect(screen.getByTestId(mapId)).toBeVisible();
     };
@@ -140,8 +152,8 @@ if (process.env.KAKAO_E2E_SKIP_MAP !== '1') {
       }
     };
 
-    test('camera commands and props', async ({ screen }) => {
-      await openMap(screen);
+    test('camera commands and props', async ({ device, screen }) => {
+      await openMap(device, screen);
       expectCamera(await camera(screen), seoul);
 
       const event = screen.getByTestId(eventId);
@@ -163,7 +175,7 @@ if (process.env.KAKAO_E2E_SKIP_MAP !== '1') {
       device,
       screen,
     }) => {
-      await openMap(screen);
+      await openMap(device, screen);
 
       const event = screen.getByTestId(eventId);
       const beforeGesture = await event.textContent();
@@ -180,7 +192,7 @@ if (process.env.KAKAO_E2E_SKIP_MAP !== '1') {
       await expect(event).toHaveText(/^\d+\|click: /);
       await app.back();
       await expect(screen.getByTestId(screenTitle)).toHaveText('Index');
-      await openMap(screen);
+      await openMap(device, screen);
       expectCamera(await camera(screen), seoul);
     });
   });

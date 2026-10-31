@@ -51,6 +51,8 @@ On the web platform, you must pass the `web` object.
 
 Common `scopes`, `serviceTerms`, `prompts`, and `nonce` options are forwarded on web. `SelectAccount` maps to `select_account`; `useKakaoAccountLogin: true` disables login through KakaoTalk unless `web.throughTalk` overrides it.
 
+`loginHint` prefills the ID field on the Kakao Account login screen. The common `loginHint` takes precedence over `web.loginHint`.
+
 `web.scope`, `web.serviceTerms`, and `web.prompt` take precedence over their common equivalents. The common `nonce` takes precedence over `web.nonce`.
 
 ```tsx

@@ -1,5 +1,6 @@
 import type { TurboModule } from 'react-native';
 import { TurboModuleRegistry } from 'react-native';
+import type { UnsafeObject } from 'react-native/Libraries/Types/CodegenTypes';
 
 import type {
   KakaoAccessTokenInfo,
@@ -19,7 +20,27 @@ export interface Spec extends TurboModule {
     useKakaoAccountLogin: boolean,
     scopes?: string[],
     nonce?: string,
+    loginHint?: string,
+    channelPublicIds?: string[],
+    androidRequestCode?: number,
   ): Promise<KakaoLoginToken>;
+  loginWithKakao(
+    uiMode: string,
+    orientation: string,
+    launchMethod: string,
+    prompts: string[],
+    loginHint?: string,
+    nonce?: string,
+    channelPublicIds?: string[],
+    serviceTerms?: string[],
+  ): Promise<KakaoLoginToken>;
+  issueAccessTokenWithCode(
+    code: string,
+    codeVerifier?: string,
+    redirectUri?: string,
+  ): Promise<KakaoLoginToken>;
+  refreshToken(token?: UnsafeObject, iosLoggingEnabled?: boolean): Promise<KakaoLoginToken>;
+  signup(properties?: UnsafeObject): Promise<void>;
   logout(): Promise<void>;
   unlink(): Promise<void>;
   isLogined(): Promise<boolean>;
@@ -34,7 +55,8 @@ export interface Spec extends TurboModule {
     pageSize?: number,
   ): Promise<KakaoShippingAddressResult>;
   selectShippingAddress(): Promise<number>;
-  me(): Promise<KakaoUser>;
+  me(secureResource?: boolean): Promise<KakaoUser>;
+  updateProfile(properties: UnsafeObject): Promise<void>;
   getAccessToken(): Promise<KakaoAccessTokenInfo>;
 }
 

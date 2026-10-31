@@ -4,7 +4,7 @@ import { AndroidConfig, withAndroidManifest } from 'expo/config-plugins';
 import type { KakaoAndroidConfig } from './type';
 
 const withAndroid: ConfigPlugin<{
-  nativeAppKey: string;
+  scheme: string;
   android: KakaoAndroidConfig;
 }> = (
   config,
@@ -14,8 +14,9 @@ const withAndroid: ConfigPlugin<{
       forwardKakaoLinkIntentFilterToMainActivity,
       followChannelHandlerActivity,
       shippingAddressHandlerActivity,
+      certServiceHandlerActivity,
     },
-    nativeAppKey,
+    scheme,
   },
 ) => {
   config = withAndroidManifest(config, (config) => {
@@ -66,7 +67,7 @@ const withAndroid: ConfigPlugin<{
                 {
                   $: {
                     'android:host': 'oauth',
-                    'android:scheme': `kakao${nativeAppKey}`,
+                    'android:scheme': scheme,
                   },
                 },
               ],
@@ -103,7 +104,7 @@ const withAndroid: ConfigPlugin<{
                 {
                   $: {
                     'android:host': 'channel',
-                    'android:scheme': `kakao${nativeAppKey}`,
+                    'android:scheme': scheme,
                   },
                 },
               ],
@@ -130,13 +131,31 @@ const withAndroid: ConfigPlugin<{
                 { $: { 'android:name': 'android.intent.category.DEFAULT' } },
                 { $: { 'android:name': 'android.intent.category.BROWSABLE' } },
               ],
-              data: [
-                { $: { 'android:host': 'address', 'android:scheme': `kakao${nativeAppKey}` } },
-              ],
+              data: [{ $: { 'android:host': 'address', 'android:scheme': scheme } }],
             },
           ],
         },
         activityName: name,
+      });
+    }
+
+    if (certServiceHandlerActivity) {
+      const name = 'com.kakao.sdk.cert.CertServiceHandlerActivity';
+      injectActivity({
+        activityName: name,
+        activity: {
+          '$': { 'android:name': name, 'android:exported': 'true' },
+          'intent-filter': [
+            {
+              action: [{ $: { 'android:name': 'android.intent.action.VIEW' } }],
+              category: [
+                { $: { 'android:name': 'android.intent.category.DEFAULT' } },
+                { $: { 'android:name': 'android.intent.category.BROWSABLE' } },
+              ],
+              data: [{ $: { 'android:host': 'cert', 'android:scheme': scheme } }],
+            },
+          ],
+        },
       });
     }
 
@@ -145,9 +164,7 @@ const withAndroid: ConfigPlugin<{
         !mainActivity['intent-filter'] ||
         !mainActivity['intent-filter']?.some((f) =>
           f.data?.some(
-            (d) =>
-              d.$?.['android:host'] === 'kakaolink' &&
-              d.$?.['android:scheme'] === `kakao${nativeAppKey}`,
+            (d) => d.$?.['android:host'] === 'kakaolink' && d.$?.['android:scheme'] === scheme,
           ),
         )
       ) {
@@ -169,7 +186,7 @@ const withAndroid: ConfigPlugin<{
               {
                 $: {
                   'android:host': 'kakaolink',
-                  'android:scheme': `kakao${nativeAppKey}`,
+                  'android:scheme': scheme,
                 },
               },
             ],

@@ -10,9 +10,11 @@ sidebar_position: 101
 
 ![image](https://raw.githubusercontent.com/mym0404/image-archive/master/202404271643817.webp)
 
-## Usage
+## 사용법 {#usage}
 
 `login()` 함수를 호출하면 바로 로그인을 시작합니다.
+
+Android와 iOS에서 사용자가 로그인 방식을 직접 선택하게 하려면 [로그인 방식 선택 화면](./login-selector.mdx)을 사용합니다.
 
 ```tsx
 import { login } from '@react-native-kakao/user';
@@ -57,6 +59,32 @@ login()
 
 - `useKakaoAccountLogin`: 항상 카카오톡이 아닌 카카오 계정으로 로그인을 시도합니다.
 
+- `android.requestCode`: Android SDK에 전달할 카카오톡 로그인 요청 코드예요. `-2147483648`부터 `2147483647`까지의 32비트 정수를 받아요. 생략하면 카카오 SDK의 기본 코드를 사용해요. 현재 Android SDK `2.25.1`은 이 값을 진단 로그에만 사용하며, 결과 콜백을 구분하지 않아요. 카카오계정 로그인과 추가 동의에는 적용하지 않으며, iOS와 웹에서도 사용하지 않아요.
+
+```tsx
+await login({ android: { requestCode: 20001 } });
+```
+
+- `channelPublicIds`: 로그인 동의 화면에 보여줄 카카오톡 채널 프로필 ID를 `string[]`으로 지정합니다. Android·iOS·웹에서 같은 옵션을 사용하며, 생략하거나 빈 배열을 전달하면 기본 로그인으로 동작합니다.
+
+카카오와 사용 협의를 마친 제휴 앱에서만 사용할 수 있습니다. 앱에 연결된 비즈니스 채널을 지정해야 하며, 전달한 순서대로 최대 2개를 표시합니다. 이미 앱에 연결하고 가입한 사용자에게 채널 추가 동의를 다시 요청하는 용도로는 사용할 수 없습니다. 자세한 조건은 [채널 선택해 동의 요청](https://developers.kakao.com/docs/ko/kakaologin/dynamic-channel)을 참고하세요.
+
+`['_Abcdef', '_Ghijkl']`처럼 ID 목록을 전달합니다. 웹에서는 SDK의 `channelPublicId` 문자열로 변환하므로, 앱에서 쉼표로 합칠 필요가 없습니다. 웹 로그인에는 `web.redirectUri`도 필요합니다.
+
+- `loginHint`: 카카오계정 로그인 화면의 ID 입력란에 미리 채울 이메일, 전화번호 또는 카카오메일 ID입니다. Android, iOS, 웹에서 사용할 수 있습니다. 카카오톡으로 바로 로그인하거나 브라우저에 로그인한 상태라면 ID 입력 화면이 생략될 수 있습니다.
+
+ID 입력 화면을 표시하려면 다음과 같이 카카오계정 로그인을 요청합니다. 이 값은 입력란만 채우며, 해당 계정이 존재하는지는 확인하지 않습니다.
+
+```tsx
+login({
+  useKakaoAccountLogin: true,
+  prompts: ['Login'],
+  loginHint: 'user@example.com',
+});
+```
+
+웹에서는 [웹 로그인](/docs/user/login-web)에 따라 `web.redirectUri`도 전달합니다. `loginHint`와 `web.loginHint`를 함께 전달하면 `loginHint`를 우선합니다.
+
 - `nonce`: ID 토큰 재생 공격을 방지하기 위한 검증 값입니다. 전달한 값이 발급되는 ID 토큰의 `nonce` claim에 포함되어 반환됩니다.
 
 자세한 내용은 [공식 문서](https://developers.kakao.com/docs/latest/ko/kakaologin/utilize#parameter-for-security)를 참고하세요.
@@ -73,9 +101,11 @@ OpenID Connect를 활성화한 앱에서만 의미가 있습니다.
 
 Native SDK의 카카오톡 로그인에는 `prompts`와 `scopes`를 전달할 수 없습니다.
 
-- `scopes`가 전달된다면 `serviceTerms`와 `prompts`를 전달할 수 없습니다.
+- `scopes`가 전달된다면 `serviceTerms`, `prompts`, `channelPublicIds`를 전달할 수 없습니다.
 
 Native SDK에서 추가 동의를 받을 때는 `serviceTerms`와 `prompts`를 함께 전달할 수 없습니다.
+
+- Android와 iOS에서는 `loginHint`를 `scopes`, `serviceTerms`, `channelPublicIds`와 함께 전달할 수 없습니다. iOS SDK가 이 조합을 제공하지 않으므로 네이티브 플랫폼에서는 호출 전에 에러를 던집니다. 웹의 로그인 힌트는 이 제한을 적용하지 않습니다.
 
 
 :::
@@ -115,3 +145,7 @@ Native SDK에서 추가 동의를 받을 때는 `serviceTerms`와 `prompts`를 �
 ## 카카오톡이 사용 가능한지 확인하기
 
 `isKakaoTalkLoginAvailable()`로 확인할 수 있습니다. 반환값은 `Promise<boolean>`입니다.
+
+## 수동 연결 앱에서 가입 완료하기
+
+로그인 시 앱 자동 연결을 비활성화했다면, 서비스 가입 절차를 마친 뒤 [`signup()`](./signup.mdx)을 호출해 사용자를 앱에 연결합니다. 자동 연결을 사용하는 일반 앱에서는 호출하지 않습니다.

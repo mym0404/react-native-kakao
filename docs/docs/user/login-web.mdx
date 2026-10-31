@@ -51,6 +51,8 @@ useEffect(() => {
 
 웹에서도 공통 옵션인 `scopes`, `serviceTerms`, `prompts`, `nonce`를 전달합니다. `SelectAccount`는 `select_account`로 변환합니다. `useKakaoAccountLogin: true`이면 카카오톡을 통한 로그인을 사용하지 않지만, `web.throughTalk`을 지정하면 그 값을 우선합니다.
 
+`loginHint`는 카카오계정 로그인 화면의 ID 입력란에 미리 채울 값입니다. `loginHint`와 `web.loginHint`를 함께 전달하면 공통 옵션인 `loginHint`를 우선합니다.
+
 `web.scope`, `web.serviceTerms`, `web.prompt`는 각각 대응하는 공통 옵션보다 우선합니다. `nonce`는 공통 옵션을 `web.nonce`보다 우선합니다.
 
 ```tsx

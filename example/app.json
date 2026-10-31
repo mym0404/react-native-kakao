@@ -57,11 +57,13 @@
             "authCodeHandlerActivity": true,
             "followChannelHandlerActivity": true,
             "shippingAddressHandlerActivity": true,
-            "forwardKakaoLinkIntentFilterToMainActivity": true
+            "forwardKakaoLinkIntentFilterToMainActivity": true,
+            "certServiceHandlerActivity": true
           },
           "ios": {
             "handleKakaoOpenUrl": true,
-            "naviApplicationQuerySchemes": true
+            "naviApplicationQuerySchemes": true,
+            "handleKakaoCertOpenUrl": true
           }
         }
       ],

@@ -1,7 +1,7 @@
 {
   "name": "@react-native-kakao/core",
   "description": "React Native Kakao Core SDK",
-  "version": "3.0.0",
+  "version": "3.1.0-next.1",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
   "types": "lib/typescript/src/index.d.ts",
@@ -113,19 +113,25 @@
       "user": "2.29.0",
       "navi": "2.29.0",
       "friend": "2.29.0",
-      "talk": "2.29.0"
+      "talk": "2.29.0",
+      "cert": "2.29.0"
     },
     "android": {
       "minSdk": 23,
       "targetSdk": 33,
       "compileSdk": 33,
       "ndk": "21.4.7075529",
-      "core": "2.25.0",
-      "share": "2.25.0",
-      "user": "2.25.0",
-      "navi": "2.25.0",
-      "friend": "2.25.0",
-      "talk": "2.25.0"
+      "core": "2.25.1",
+      "share": "2.25.1",
+      "user": "2.25.1",
+      "navi": "2.25.1",
+      "friend": "2.25.1",
+      "talk": "2.25.1",
+      "cert": "2.25.1"
+    },
+    "partnership": {
+      "android": "1.0.0",
+      "iosRevision": "83917aaf996e5d4072e73b681507228fbd967d42"
     }
   },
   "dependencies": {
