@@ -11,7 +11,7 @@ import TabItem from '@theme/TabItem';
 
 ## 공통 패키지 설치
 
-이 프로젝트는 모노레포로 구성되며 모든 패키지는 `@react-native-kakao/core` 패키지에 의존합니다.
+카카오 서비스 패키지는 `@react-native-kakao/core`에 의존해요. 독립적인 Expo Module인 [`map` 패키지](/docs/map/intro)는 Core 없이 설치해요.
 
 아래 명령으로 설치할 수 있습니다.
 
@@ -33,5 +33,4 @@ import TabItem from '@theme/TabItem';
   </TabItem>
 </Tabs>
 
-다른 패키지는 `core` 패키지를 peer dependency로 선언하므로 `@react-native-kakao/core`를 항상
-함께 설치해야 합니다.
+`user`, `share`, `social`, `channel`, `navi`는 `core`를 peer dependency로 선언하므로 `@react-native-kakao/core`를 함께 설치해요.

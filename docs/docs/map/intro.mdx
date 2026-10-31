@@ -1,0 +1,143 @@
+---
+sidebar_position: 1
+---
+
+# 카카오 지도
+
+`@react-native-kakao/map`은 Android와 iOS에서 카카오 지도를 표시하고 카메라를 제어하는 Expo Module이에요. `Core` 패키지 없이 사용할 수 있어요.
+
+## 설치와 앱 등록
+
+Expo 52 이상, React Native 0.76 이상과 New Architecture가 필요해요. Android SDK 2.15.2와 iOS SDK 2.12.19를 사용해요. Expo Go에는 포함되지 않으므로 네이티브 앱을 빌드해야 해요. 일반 React Native 앱은 먼저 [Expo Modules를 설치](https://docs.expo.dev/bare/installing-expo-modules/)해요.
+
+[카카오 개발자 콘솔](https://developers.kakao.com/console/app)에서 앱의 네이티브 앱 키를 확인하고 카카오맵을 활성화해요. Android 패키지명과 서명 키 해시, iOS 번들 ID를 등록해요. [Android 등록 안내](https://apis.map.kakao.com/android_v2/docs/getting-started/)와 [iOS 등록 안내](https://apis.map.kakao.com/ios_v2/docs/getting-started/basics/02_auth/)에서 플랫폼별 요구 사항을 확인할 수 있어요.
+
+```sh
+npx expo install @react-native-kakao/map expo-build-properties
+```
+
+Android 앱이 Kakao SDK를 다운로드할 수 있도록 `app.json`에 Maven 저장소를 추가해요. 기존 `expo-build-properties` 설정이 있으면 같은 항목에 합쳐요.
+
+```json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "extraMavenRepos": ["https://devrepo.kakao.com/nexus/repository/kakaomap-releases/"]
+          }
+        }
+      ]
+    ]
+  }
+}
+```
+
+Expo 52에서 Kotlin 1.9.24와 Compose Compiler 1.5.15의 버전 불일치가 발생하면 위 `android` 설정에 `"kotlinVersion": "1.9.25"`를 추가해요. 최신 Expo에는 해당 버전을 강제하지 않아요.
+
+```sh
+npx expo prebuild
+npx expo run:android
+# 또는
+npx expo run:ios
+```
+
+Expo 자동 등록이 네이티브 모듈을 연결해요. 별도 지도 config plugin이나 Core 초기화는 필요하지 않아요. 네이티브 프로젝트를 직접 관리한다면 Android 프로젝트의 공통 Maven 저장소에 위 URL을 추가하고, iOS에서 `pod install`을 실행해요.
+
+## 지도 표시
+
+초기화를 기다린 다음 지도를 마운트해요. 초기화 Promise는 SDK에 키를 전달했다는 뜻이고, 지도 인증과 뷰 준비는 `onMapReady`에서 확인해요. 같은 키로 반복 초기화할 수 있지만 다른 키로 변경할 수는 없어요.
+
+```tsx
+import { useEffect, useRef, useState } from 'react';
+import { Text } from 'react-native';
+import { initializeKakaoMapSDK, KakaoMapView, type KakaoMapViewRef } from '@react-native-kakao/map';
+
+export function MapScreen() {
+  const map = useRef<KakaoMapViewRef>(null);
+  const [initialized, setInitialized] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    let active = true;
+    initializeKakaoMapSDK('YOUR_NATIVE_APP_KEY').then(
+      () => {
+        if (active) setInitialized(true);
+      },
+      (error: Error) => {
+        if (active) setError(error.message);
+      },
+    );
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  if (error) return <Text>{error}</Text>;
+  if (!initialized) return null;
+  return (
+    <KakaoMapView
+      ref={map}
+      style={{ flex: 1 }}
+      initialCamera={{ latitude: 37.402001, longitude: 127.108678, zoomLevel: 15 }}
+      onMapReady={() => console.log('Map ready')}
+      onError={({ code, message }) => setError(`${code}: ${message}`)}
+    />
+  );
+}
+```
+
+지도에 너비와 높이가 생기도록 부모 레이아웃을 설정해요. Kakao 로고를 다른 뷰로 가리지 않아요.
+
+## 카메라와 이벤트
+
+카메라에는 `latitude`, `longitude`, 정수 `zoomLevel`이 필요해요. `tilt`와 `rotation`은 도 단위이며 생략하면 0이에요. 확대 단계와 기울기의 실제 표현 범위는 SDK와 지도 상태의 영향을 받아요. `rotation`은 정북 기준 카메라의 반시계 방향 회전각이에요. 90도에서는 북쪽이 화면 오른쪽을 향해요. `getCamera()`는 적용된 다섯 필드를 모두 반환해요. iOS의 중심 좌표는 화면 중심을 지리 좌표로 변환해 구하므로 요청한 좌표와 작은 오차가 생길 수 있어요.
+
+최초에는 `camera`가 `initialCamera`보다 우선해요. `initialCamera`는 처음 속성을 받은 뒤 변경해도 적용하지 않아요. `camera`는 값이 바뀔 때만 이동하고, 같은 값의 새 객체를 전달하거나 속성을 제거해도 이동하지 않아요. 따라서 제스처나 ref로 이동한 뒤 동일 값으로 재렌더링해도 위치가 유지돼요. 준비 전에는 최신 `camera`만 보관해요.
+
+지도 준비 후 ref를 호출할 수 있어요. 아래 Promise는 이동 명령을 전달하면 완료돼요. 애니메이션이 끝났는지는 `onCameraIdle`로 확인해요.
+
+```tsx
+await map.current?.moveCamera(
+  { latitude: 37.5665, longitude: 126.978, zoomLevel: 16, tilt: 30, rotation: 90 },
+  { duration: 500 },
+);
+const position = await map.current?.getCamera();
+```
+
+`duration`은 0부터 2,147,483,647까지의 정수 밀리초이며 생략하거나 0이면 즉시 이동해요. `tilt`는 0~90도를 받고, 반환되는 `rotation`은 0 이상 360 미만이에요.
+
+| 이벤트              | 전달 값                                                                   |
+| ------------------- | ------------------------------------------------------------------------- |
+| `onMapReady`        | 지도 인증과 뷰 준비 완료. 인자 없음                                       |
+| `onError`           | `{ code, message }`                                                       |
+| `onCameraMoveStart` | `{ reason: 'gesture' \| 'developer' }`                                    |
+| `onCameraIdle`      | `{ reason, camera }`. 이동이 멈춘 실제 카메라                             |
+| `onMapClick`        | `{ latitude, longitude, x, y }`. `x`, `y`는 지도 좌측 상단 기준 논리 픽셀 |
+
+연속 카메라 변경 이벤트는 제공하지 않아요. 앱 비활성화와 화면 분리 시 렌더링을 멈추고, 복귀하면 재개해요. 마운트 해제 시 엔진을 해제해요.
+
+## 오류와 플랫폼 범위
+
+ref 명령은 지도 준비 전에 대기하지 않고 거절돼요. Promise 오류의 `code`, `message`와 `onError`를 처리해요.
+
+| 코드                                 | 의미                       |
+| ------------------------------------ | -------------------------- |
+| `ERR_KAKAO_MAP_NOT_INITIALIZED`      | SDK를 초기화하지 않음      |
+| `ERR_KAKAO_MAP_NOT_READY`            | 지도 준비 전 명령 호출     |
+| `ERR_KAKAO_MAP_CAMERA_TIMEOUT` | Android 카메라 조회 응답이 3초 안에 오지 않음 |
+| `ERR_KAKAO_MAP_VIEW_DESTROYED`       | 해제된 지도 접근           |
+| `ERR_KAKAO_MAP_ALREADY_INITIALIZED`  | 다른 키로 재초기화 시도    |
+| `ERR_KAKAO_MAP_INVALID_ARGUMENT`     | 빈 앱 키·잘못된 카메라·이동 시간 |
+| `ERR_KAKAO_MAP_VIEW_CREATION`        | 네이티브 지도 생성 실패    |
+| `ERR_KAKAO_MAP_UNSUPPORTED_PLATFORM` | 웹에서 지도 기능 사용      |
+
+SDK 오류는 SDK의 코드와 메시지를 유지해요. 지도 인증 오류는 초기화 Promise가 아니라 `onError`로 전달돼요. 인증 실패 후 자동 재시도는 하지 않아요. 키·앱 등록 설정이나 네트워크 문제를 해결한 다음 뷰를 다시 마운트해요. 앱 키 자체를 변경해야 한다면 앱 프로세스를 다시 시작해요.
+
+Android의 `getCamera()`는 렌더러의 비동기 응답을 받아 이동 중인 위치를 조회해요. 3초 안에 응답하지 않으면 `ERR_KAKAO_MAP_CAMERA_TIMEOUT`으로 거절하고, 응답 전에 뷰가 해제되면 `ERR_KAKAO_MAP_VIEW_DESTROYED`로 거절해요.
+
+웹에서 패키지를 import할 수 있지만 초기화나 지도 렌더링은 지원하지 않아요. Android 지도 SDK에는 x86_64 바이너리가 없으므로 ARM 에뮬레이터나 실기기를 사용해요. 마커와 도형 API는 제공하지 않아요.
+
+SDK는 여러 지도 엔진의 동시 렌더링을 보장하지 않아요. 한 번에 하나의 지도를 표시하는 구성을 사용해요. 자세한 내용은 [카카오의 다중 엔진 안내](https://devtalk.kakao.com/t/v2-ios/131530/11)를 확인해요.

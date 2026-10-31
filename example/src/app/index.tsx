@@ -73,6 +73,13 @@ export default function Page() {
               );
           }}
         />
+        {Platform.OS !== 'web' ? (
+          <Link testID={'menu-map'} href={'/map'} asChild>
+            <Pressable>
+              <Txt textDecorationLine={'underline'}>{'@react-native-kakao/map'}</Txt>
+            </Pressable>
+          </Link>
+        ) : null}
         {(['user', 'share', 'navi', 'social', 'channel', 'cert'] as const).map((module) => (
           <Link key={module} testID={`menu-${module}`} href={`/${module}`} asChild>
             <Pressable>

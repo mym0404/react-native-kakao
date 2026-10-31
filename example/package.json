@@ -25,6 +25,7 @@
     "@react-native-kakao/cert": "workspace:*",
     "@react-native-kakao/channel": "workspace:*",
     "@react-native-kakao/core": "workspace:*",
+    "@react-native-kakao/map": "workspace:*",
     "@react-native-kakao/navi": "workspace:*",
     "@react-native-kakao/share": "workspace:*",
     "@react-native-kakao/social": "workspace:*",

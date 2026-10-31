@@ -1,0 +1,64 @@
+{
+  "name": "@react-native-kakao/map",
+  "version": "3.0.0",
+  "description": "Kakao Maps for Android and iOS using Expo Modules",
+  "main": "lib/commonjs/index",
+  "module": "lib/module/index",
+  "types": "lib/typescript/src/index.d.ts",
+  "react-native": "src/index",
+  "source": "src/index",
+  "files": [
+    "src",
+    "lib",
+    "android",
+    "ios",
+    "*.podspec",
+    "expo-module.config.json",
+    "!android/build",
+    "!ios/build"
+  ],
+  "author": "MJ Studio <mym0404@gmail.com> (https://github.com/mym0404)",
+  "homepage": "https://rnkakao.mjstudio.net",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mym0404/react-native-kakao.git",
+    "directory": "packages/map"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "scripts": {
+    "prepack": "bob build && node ../../script/remove-web-declaration-files.ts .",
+    "clean": "del-cli lib android/build ios/build"
+  },
+  "peerDependencies": {
+    "expo": ">=52.0.0",
+    "react": "*",
+    "react-native": ">=0.76.0"
+  },
+  "devDependencies": {
+    "@types/react": "catalog:",
+    "del-cli": "catalog:",
+    "expo": "catalog:",
+    "react": "catalog:",
+    "react-native": "catalog:",
+    "react-native-builder-bob": "catalog:",
+    "typescript": "catalog:"
+  },
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      "commonjs",
+      "module",
+      [
+        "typescript",
+        {
+          "project": "tsconfig.build.json"
+        }
+      ]
+    ]
+  }
+}
