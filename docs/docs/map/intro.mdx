@@ -186,6 +186,150 @@ await map.current?.clearCache();
 
 `getMapInfo()`는 지도 종류·확대 범위·여백·영역 크기·언어와 지원 기능을 반환해요. 화면 좌표는 지도 영역 안에 있어야 해요. iOS SDK는 지리 좌표를 화면 좌표로 바꾸는 API를 제공하지 않으므로 `capabilities.coordinateToScreen`이 `false`이고 `coordinateToScreen()`을 호출하면 `ERR_KAKAO_MAP_UNSUPPORTED_PLATFORM_FEATURE`로 거절해요. `clearCache()`는 SDK의 지도 캐시를 지우며 이후 필요한 타일을 다시 받아요.
 
+## 라벨과 마커
+
+`labels`는 지도 위의 마커, 대량 표시에 적합한 LOD 라벨, 경로를 따르는 텍스트를 하나의 `LabelScene`으로 관리해요. 스타일과 레이어를 먼저 정의하고, 각 라벨이 해당 ID를 참조하도록 구성해요.
+
+### 텍스트 라벨 표시
+
+처음에는 이미지 없이 텍스트 스타일과 일반 라벨 하나로 시작할 수 있어요. `clickable`은 레이어와 라벨 양쪽에서 활성화해야 클릭 이벤트를 받아요.
+
+```tsx
+import { KakaoMapView, type LabelScene } from '@react-native-kakao/map';
+
+const placeLabels = {
+  styles: [
+    {
+      id: 'place-text',
+      levels: [
+        {
+          level: 0,
+          textLines: [
+            {
+              fontSize: 14,
+              color: '#111827FF',
+              strokeColor: '#FFFFFFFF',
+              strokeWidth: 2,
+            },
+          ],
+        },
+      ],
+    },
+  ],
+  layers: [{ id: 'places', zOrder: 1000, clickable: true }],
+  labels: [
+    {
+      id: 'seoul-city-hall',
+      layerId: 'places',
+      styleId: 'place-text',
+      coordinate: { latitude: 37.5665, longitude: 126.978 },
+      text: [{ value: '서울시청', styleIndex: 0 }],
+      clickable: true,
+    },
+  ],
+} satisfies LabelScene;
+
+<KakaoMapView
+  labels={placeLabels}
+  onLabelClick={({ id, layerId, kind, coordinate }) => {
+    console.log(id, layerId, kind, coordinate);
+  }}
+/>;
+```
+
+`styles`의 `levels`는 확대 단계별 표현을 정의해요. 일반 라벨은 `layers`와 `labels`, 대량 표시에 적합한 LOD 라벨은 `lodLayers`와 `lodLabels`, 경로 텍스트는 `pathTextStyles`와 `pathLabels`를 사용해요. 한 장면 안의 모든 ID는 비어 있지 않고 종류별로 중복되지 않아야 하며, 스타일·레이어 참조도 같은 장면 안에 존재해야 해요.
+
+### 아이콘 URI와 표시 단위
+
+아이콘을 추가할 때는 React Native 정적 에셋을 URI로 해석한 뒤 `MapImageSource`에 전달해요. `file:`, `http:`, `https:` URI도 사용할 수 있어요.
+
+```tsx
+import { Image } from 'react-native';
+import type { LabelStyle } from '@react-native-kakao/map';
+
+const pin = Image.resolveAssetSource(require('./pin.png'));
+
+const pinStyle = {
+  id: 'place-pin',
+  levels: [
+    {
+      level: 0,
+      image: { uri: pin.uri, width: 32, height: 40 },
+      anchor: { x: 0.5, y: 1 },
+    },
+  ],
+} satisfies LabelStyle;
+```
+
+이미지 크기, 글꼴 크기, 선 두께, 여백과 배지·픽셀 오프셋은 Android에서 dp, iOS에서 points인 논리 단위예요. 단, `movePath.cornerRadius`와 `movePath.jumpThreshold`는 SDK 공식 문서에 단위가 없어서 변환하지 않고 raw 숫자로 전달해요. 이 두 값은 화면·이미지·스타일의 논리 단위 규칙을 적용하지 않아요. 각도는 도, 시간은 정수 밀리초로 전달해요. 색상은 `#RRGGBB` 또는 `#RRGGBBAA` 형식이에요. 이미지 다운로드나 디코딩이 실패하면 장면을 적용하지 않고 `ERR_KAKAO_MAP_IMAGE_LOAD`를 전달해요.
+
+SDK가 정수 픽셀만 받는 글꼴 크기·테두리·자간은 배율을 적용한 뒤 가장 가까운 정수 픽셀로 반올림해요. `lineSpacing`은 길이가 아닌 행간 배율로, `1`은 100%, `2`는 200%이며 기본값은 `1`이에요.
+
+Android 자간은 변환 후 최소 `-2`픽셀이어야 해요. 더 작은 값은 [SDK 텍스트 스타일](https://apis.map.kakao.com/android_v2/reference/com/kakao/vectormap/label/LabelTextStyle.html)이 적용하지 않으므로 오류로 거절해요.
+
+레이어의 `zOrder`를 생략하면 두 플랫폼 모두 `1000`을 사용해요. 값이 클수록 같은 종류의 라벨 레이어에서 위에 그려져요. SDK 내부 레이어와 충돌하지 않도록 다음 사용자 범위만 사용해요.
+
+| `zOrder` 범위 | 용도                |
+| ------------- | ------------------- |
+| `1000~1999`   | 사용자 라벨         |
+| `3000~3999`   | 사용자 라벨         |
+| `5000` 이상   | 사용자 라벨         |
+| 나머지 범위   | 지도 엔진 예약 영역 |
+
+### 스냅샷 교체와 런타임 명령
+
+`LabelScene`은 부분 패치가 아니라 전체 스냅샷이에요. 새 `labels` 값을 적용하면 기존 애니메이션, 추적, 레이어, 라벨과 배지를 제거하고 새 장면으로 교체해요. 빈 장면 `labels={{}}`을 전달하거나 한 번 사용한 `labels` 속성을 제거하면 모든 사용자 라벨을 지워요. 이미지 로딩 중 더 새로운 장면을 전달하면 이전 적용을 취소하고 최신 스냅샷만 적용해요. 대체된 장면의 취소는 오류 이벤트를 발생시키지 않으며, 현재 장면의 입력·이미지 처리 실패는 `onError`로 전달돼요.
+
+지도가 준비된 뒤 `runLabelCommand()`로 현재 장면의 라벨을 바꿀 수 있어요. 명령은 장면을 교체하지 않으며 존재하는 안정적인 ID를 사용해요.
+
+```tsx
+await map.current?.runLabelCommand({
+  type: 'move',
+  id: 'seoul-city-hall',
+  coordinate: { latitude: 37.5657, longitude: 126.9769 },
+  duration: 400,
+});
+await map.current?.runLabelCommand({
+  type: 'show',
+  id: 'seoul-city-hall',
+  visible: false,
+});
+
+const capabilities = await map.current?.getLabelCapabilities();
+const state = await map.current?.getLabelState();
+```
+
+`LabelCommand`는 표시, 위치·경로 이동, 회전, 크기, 위치·변환 공유, 배지 표시, 애니메이션 시작·중지와 카메라 추적을 다뤄요. 플랫폼별로 지원하지 않는 명령은 자동으로 흉내 내지 않고 `ERR_KAKAO_MAP_LABEL_UNSUPPORTED`로 거절해요. 실행 전 `getLabelCapabilities()`에서 사용할 기능을 확인해요.
+
+| 이벤트                    | 전달 값                                                                   |
+| ------------------------- | ------------------------------------------------------------------------- |
+| `onLabelClick`            | `{ id, layerId, kind, coordinate }`. `kind`는 `label` 또는 `lodLabel`     |
+| `onLabelAnimationStopped` | `{ id, finished }`. 자연스럽게 끝나면 `true`, 명시적으로 중지하면 `false` |
+| `onLabelsChanged`         | 장면 적용 후의 `LabelRuntimeState`                                        |
+
+`getLabelState()`는 SDK에 실제로 남아 있는 라벨의 ID·종류·표시 상태와 현재 장면에서 실행할 수 있는 애니메이션 정의 ID를 반환해요. `onLabelsChanged`는 장면을 SDK에 전달한 직후 조회한 상태이며 렌더링 완료를 뜻하지 않아요. SDK의 표시 상태는 다음 프레임에서 바뀔 수 있으므로 이후 상태가 필요하면 다시 조회해요.
+
+`tracking.source`가 `native`인 iOS는 SDK의 실제 추적 상태를 읽어요. Android SDK는 추적 상태 getter를 제공하지 않으므로 `source: 'managed'`와 함께 이 모듈이 요청한 추적 상태를 반환해요. 관리 상태를 SDK에서 다시 읽은 값으로 해석하면 안 돼요. `removeAtStop`으로 대상이 제거된 애니메이션은 다시 시작할 수 없으며 장면을 새로 적용해야 해요.
+
+주요 플랫폼 차이는 기능 플래그로도 확인할 수 있어요.
+
+| 기능                         | Android         | iOS                            |
+| ---------------------------- | --------------- | ------------------------------ |
+| 경로 텍스트 구현             | `polylineLabel` | `waveText`                     |
+| 경로 텍스트 `rank`           | 미지원          | 지원                           |
+| 등록한 경로 스타일 변경·제거 | 지원            | 미지원                         |
+| LOD 라벨 `autoMove`          | 미지원          | 지원                           |
+| 자동 이동 시간 지정          | 지원            | 미지원                         |
+| 직접 크기 변경 명령          | 지원            | 미지원, 크기 애니메이션을 사용 |
+| 경쟁 예외 레이어             | 지원            | 미지원                         |
+| 추적 상태 출처               | 모듈 관리 상태  | SDK 실제 상태                  |
+
+두 플랫폼 모두 LOD 라벨의 위치 변경은 지원하지 않아요. `drop` 이외의 애니메이션은 `repeatCount`를 `1`로 사용해요. iOS는 등록한 경로 스타일 정의를 바꾸거나 제거할 수 없으므로 새 스타일 ID를 사용해야 해요. 정확한 현재 값은 설치된 네이티브 SDK에 맞춰 반환되는 `getLabelCapabilities()`를 기준으로 판단해요.
+
+일반 라벨의 `coordinate`는 두 플랫폼 모두 SDK에서 읽은 현재 좌표예요. iOS SDK는 LOD 라벨의 현재 좌표 getter를 제공하지 않으므로 `kind: 'lodLabel'`인 상태에서는 `coordinate`가 생략될 수 있어요.
+
+iOS에서도 위치·변환 공유를 해제한 라벨은 `move` 명령으로 독립적으로 이동할 수 있어요.
+
 ## 고급 카메라 명령
 
 `executeCameraCommand()`는 높이 기반 이동, 상대 변환, 영역 맞춤, 표시 가능 여부와 기준점 잠금처럼 기본 카메라 API보다 세밀한 기능을 다뤄요. 먼저 기능을 조회하고 지원되는 필드만 사용해요.
@@ -225,6 +369,10 @@ ref 명령은 지도 준비 전에 대기하지 않고 거절돼요. Promise 오
 | `ERR_KAKAO_MAP_INVALID_ARGUMENT`             | 빈 앱 키·잘못된 카메라·이동 시간                    |
 | `ERR_KAKAO_MAP_VIEW_CREATION`                | 네이티브 지도 생성 실패                             |
 | `ERR_KAKAO_MAP_UNSUPPORTED_PLATFORM`         | 웹에서 지도 기능 사용                               |
+| `ERR_KAKAO_MAP_LABEL_INVALID_ARGUMENT`       | 중복 ID, 잘못된 좌표·스타일·애니메이션 입력         |
+| `ERR_KAKAO_MAP_LABEL_NOT_FOUND`              | 참조한 라벨·레이어·스타일·배지·애니메이션 ID가 없음 |
+| `ERR_KAKAO_MAP_LABEL_UNSUPPORTED`            | 현재 플랫폼 SDK가 해당 라벨 기능을 지원하지 않음    |
+| `ERR_KAKAO_MAP_IMAGE_LOAD`                   | 라벨 이미지 다운로드 또는 디코딩 실패               |
 | `ERR_KAKAO_MAP_UNSUPPORTED_PLATFORM_FEATURE` | 현재 플랫폼 SDK에 없는 네이티브 기능                                  |
 
 SDK 오류는 SDK의 코드와 메시지를 유지해요. 지도 인증 오류는 초기화 Promise가 아니라 `onError`로 전달돼요. 인증 실패 후 자동 재시도는 하지 않아요. 키·앱 등록 설정이나 네트워크 문제를 해결한 다음 뷰를 다시 마운트해요. 앱 키 자체를 변경해야 한다면 앱 프로세스를 다시 시작해요.

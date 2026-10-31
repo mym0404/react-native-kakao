@@ -53,7 +53,14 @@ class KakaoMapView(
   private val onMapTypeChanged by EventDispatcher()
   private val onPaddingChanged by EventDispatcher()
   private val onViewportChanged by EventDispatcher()
+  private val onLabelClick by EventDispatcher()
+  private val onLabelAnimationStopped by EventDispatcher()
+  private val onLabelsChanged by EventDispatcher()
+  private var labels: MapLabels? = null
   private var cameraCommands: MapCameraCommands? = null
+  private var imageLoader: MapImageLoader? = null
+  private var pendingLabels: MapLabelSceneRecord? = null
+  private var labelGeneration = 0L
   private var mapView: MapView? = null
   private var map: KakaoMap? = null
   private var isDestroyed = false
@@ -100,6 +107,15 @@ class KakaoMapView(
       }
       pendingOptions = null
     }
+    applyPendingLabelsIfReady()
+  }
+
+  fun queueLabels(scene: MapLabelSceneRecord?) {
+    if (scene == null && labels == null) {
+      pendingLabels = null
+      return
+    }
+    pendingLabels = scene ?: MapLabelSceneRecord()
   }
 
   override fun onAttachedToWindow() {
@@ -256,6 +272,7 @@ class KakaoMapView(
           queuedOptions = null
           (camera ?: initialCamera)?.let { applyCameraProp(it) }
           lastCameraValues = camera?.values()
+          applyPendingLabelsIfReady()
           onMapReady(emptyMap<String, Any>())
           if (!isAttachedToWindow || reactContext?.lifecycleState != LifecycleState.RESUMED) view.pause()
         }
@@ -418,9 +435,87 @@ class KakaoMapView(
     return cameraCommands ?: MapCameraCommands(readyMap, resources.displayMetrics.density).also { cameraCommands = it }
   }
 
+  fun runLabelCommand(command: MapLabelCommandRecord) {
+    requireLabels().command(command)
+  }
+
+  fun getLabelCapabilities() = requireLabels().capabilities()
+
+  fun getLabelState() = requireLabels().state()
+
+  private fun requireLabels(): MapLabels {
+    val readyMap = requireMap()
+    labels?.let { return it }
+    val loader = requireImageLoader()
+    val viewReference = WeakReference(this)
+    val manager =
+      MapLabels(
+        readyMap,
+        loader,
+        emitClick = { event ->
+          viewReference.get()?.let { view -> if (!view.isDestroyed) view.onLabelClick(event) }
+        },
+        emitAnimationStopped = { event ->
+          viewReference.get()?.let { view -> if (!view.isDestroyed) view.onLabelAnimationStopped(event) }
+        },
+        density = resources.displayMetrics.density,
+      )
+    labels = manager
+    readyMap.setOnLabelClickListener { _, _, label ->
+      viewReference.get()?.labels?.handleLabelClick(label)
+      true
+    }
+    readyMap.setOnLodLabelClickListener { _, _, label ->
+      viewReference.get()?.labels?.handleLodLabelClick(label)
+      true
+    }
+    return manager
+  }
+
+  private fun requireImageLoader(): MapImageLoader = imageLoader ?: MapImageLoader(appContext).also { imageLoader = it }
+
+  private fun applyPendingLabelsIfReady() {
+    if (map == null) return
+    val scene = pendingLabels ?: return
+    pendingLabels = null
+    val previousGeneration = labelGeneration
+    val generation = ++labelGeneration
+    try {
+      val viewReference = WeakReference(this)
+      requireLabels().apply(scene) { result ->
+        viewReference.get()?.let { view ->
+          if (!view.isDestroyed && generation == view.labelGeneration) {
+            result.fold(
+              onSuccess = { view.labels?.let { view.onLabelsChanged(it.state()) } },
+              onFailure = { error -> view.reportError(error as? Exception ?: Exception(error)) },
+            )
+          }
+        }
+      }
+    } catch (error: Exception) {
+      if (labelGeneration == generation) labelGeneration = previousGeneration
+      reportError(error)
+    }
+  }
+
   private fun releaseMapObjects() {
+    labelGeneration++
     cameraCommands?.dispose()
     cameraCommands = null
+    val manager = labels
+    labels = null
+    try {
+      manager?.dispose()
+    } catch (error: Exception) {
+      if (!isDestroyed) reportError(error)
+    }
+    val loader = imageLoader
+    imageLoader = null
+    try {
+      loader?.dispose()
+    } catch (error: Exception) {
+      if (!isDestroyed) reportError(error)
+    }
   }
 
   private fun applyOptionsSafely(options: MapOptionsRecord) {
@@ -880,6 +975,8 @@ class KakaoMapView(
     map?.setOnMapViewInfoChangeListener(null)
     map?.setOnPaddingChangeListener(null)
     map?.setOnViewportChangeListener(null)
+    map?.setOnLabelClickListener(null)
+    map?.setOnLodLabelClickListener(null)
     map = null
     queuedOptions = null
     activeOverlays.clear()
