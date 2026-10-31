@@ -18,6 +18,7 @@ import type {
   ScreenPoint,
 } from './types';
 import type { AdvancedCameraOperationEvent } from './types-camera';
+import type { MapGuiEvent } from './types-gui';
 import type { LabelAnimationEvent, LabelClickEvent, LabelRuntimeState } from './types-labels';
 import type { RouteAnimationStopEvent, RouteCounts, RouteProgressEvent } from './types-routes';
 import type { ShapeAnimationStopEvent, ShapeCounts } from './types-shapes';
@@ -26,6 +27,7 @@ export type { MapImageSource } from './types-assets';
 export type * from './types-labels';
 export type * from './types-shapes';
 export type * from './types-routes';
+export type * from './types-gui';
 export type * from './types-camera';
 
 export type {
@@ -75,6 +77,7 @@ const NativeView = requireNativeView<
     | 'onRoutesChanged'
     | 'onRouteProgress'
     | 'onRouteAnimationStop'
+    | 'onGuiEvent'
     | 'onCameraOperation'
   > & {
     ref: Ref<NativeMapRef>;
@@ -101,11 +104,15 @@ const NativeView = requireNativeView<
     onRoutesChanged?: (event: NativeSyntheticEvent<RouteCounts>) => void;
     onRouteProgress?: (event: NativeSyntheticEvent<RouteProgressEvent>) => void;
     onRouteAnimationStop?: (event: NativeSyntheticEvent<RouteAnimationStopEvent>) => void;
+    onGuiEvent?: (event: NativeSyntheticEvent<MapGuiEvent>) => void;
     onCameraOperation?: (event: NativeSyntheticEvent<AdvancedCameraOperationEvent>) => void;
   }
 >(moduleName);
 
-type NativeMapRef = Omit<KakaoMapViewRef, 'moveCamera' | 'updateCamera'> & {
+type NativeMapRef = Omit<
+  KakaoMapViewRef,
+  'moveCamera' | 'updateCamera' | 'showInfoWindow' | 'moveInfoWindow'
+> & {
   moveCamera: (camera: NonNullable<KakaoMapViewProps['camera']>, duration: number) => Promise<void>;
   getCamera: () => Promise<CameraPosition>;
   updateCamera: (update: CameraUpdate, duration: number) => Promise<void>;
@@ -113,6 +120,8 @@ type NativeMapRef = Omit<KakaoMapViewRef, 'moveCamera' | 'updateCamera'> & {
   screenToCoordinate: (point: ScreenPoint) => Promise<Coordinate>;
   coordinateToScreen: (coordinate: Coordinate) => Promise<ScreenPoint>;
   clearCache: () => Promise<void>;
+  showInfoWindow: (id: string, autoMove: boolean, duration: number | null) => Promise<void>;
+  moveInfoWindow: (id: string, position: Coordinate, duration: number) => Promise<void>;
 };
 
 export function initializeKakaoMapSDK(nativeAppKey: string): Promise<void> {
@@ -146,6 +155,7 @@ export const KakaoMapView = forwardRef<KakaoMapViewRef, KakaoMapViewProps>(funct
     onRoutesChanged,
     onRouteProgress,
     onRouteAnimationStop,
+    onGuiEvent,
     onCameraOperation,
     ...props
   },
@@ -197,6 +207,42 @@ export const KakaoMapView = forwardRef<KakaoMapViewRef, KakaoMapViewProps>(funct
       async executeRouteCommand(command) {
         return getView().executeRouteCommand(command);
       },
+      async applyGui(scene) {
+        await getView().applyGui(scene);
+      },
+      async showInfoWindow(id, options) {
+        await getView().showInfoWindow(id, options?.autoMove ?? false, options?.duration ?? null);
+      },
+      async hideInfoWindow(id) {
+        await getView().hideInfoWindow(id);
+      },
+      async moveInfoWindow(id, position, options) {
+        await getView().moveInfoWindow(id, position, options?.duration ?? 0);
+      },
+      async showWidget(id) {
+        await getView().showWidget(id);
+      },
+      async hideWidget(id) {
+        await getView().hideWidget(id);
+      },
+      async positionWidget(id, position) {
+        await getView().positionWidget(id, position);
+      },
+      async rotateWidget(id, rotation) {
+        await getView().rotateWidget(id, rotation);
+      },
+      async startGuiAnimation(id) {
+        await getView().startGuiAnimation(id);
+      },
+      async stopGuiAnimation(id) {
+        await getView().stopGuiAnimation(id);
+      },
+      async controlAnimatedImage(ownerType, ownerId, componentId, action) {
+        await getView().controlAnimatedImage(ownerType, ownerId, componentId, action);
+      },
+      async getGuiStatus() {
+        return getView().getGuiStatus();
+      },
       async executeCameraCommand(command) {
         return getView().executeCameraCommand(command);
       },
@@ -231,6 +277,7 @@ export const KakaoMapView = forwardRef<KakaoMapViewRef, KakaoMapViewProps>(funct
       onRoutesChanged={(event) => onRoutesChanged?.(event.nativeEvent)}
       onRouteProgress={(event) => onRouteProgress?.(event.nativeEvent)}
       onRouteAnimationStop={(event) => onRouteAnimationStop?.(event.nativeEvent)}
+      onGuiEvent={(event) => onGuiEvent?.(event.nativeEvent)}
       onCameraOperation={(event) => onCameraOperation?.(event.nativeEvent)}
     />
   );
