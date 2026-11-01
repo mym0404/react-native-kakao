@@ -47,6 +47,7 @@ public class KakaoMapModule: Module {
         "onRouteProgress",
         "onRouteAnimationStop",
         "onGuiEvent",
+        "onDimScreenEvent",
         "onCameraOperation"
       )
       Prop("initialCamera") { (view: KakaoMapView, camera: CameraOptions?) in
@@ -174,6 +175,21 @@ public class KakaoMapModule: Module {
         )
       }
       AsyncFunction("getGuiStatus") { (view: KakaoMapView) in try view.requireGui().status() }
+      AsyncFunction("applyDimScreen") { (view: KakaoMapView, options: [String: Any]) in
+        try view.requireDimScreen().apply(options)
+      }
+      AsyncFunction("setDimHighlightVisible") { (view: KakaoMapView, id: String, visible: Bool) in
+        try view.requireDimScreen().setHighlightVisible(id: id, visible: visible)
+      }
+      AsyncFunction("startDimAnimation") { (view: KakaoMapView, id: String) in
+        try view.requireDimScreen().startAnimation(id: id)
+      }
+      AsyncFunction("stopDimAnimation") { (view: KakaoMapView, id: String) in
+        try view.requireDimScreen().stopAnimation(id: id)
+      }
+      AsyncFunction("getDimScreenStatus") { (view: KakaoMapView) in
+        try view.requireDimScreen().status()
+      }
       AsyncFunction("executeCameraCommand") { (view: KakaoMapView, command: [String: Any]) in
         try view.executeCameraCommand(command)
       }

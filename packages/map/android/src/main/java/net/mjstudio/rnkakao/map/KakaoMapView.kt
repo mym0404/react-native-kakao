@@ -64,10 +64,12 @@ class KakaoMapView(
   private val onRouteProgress by EventDispatcher()
   private val onRouteAnimationStop by EventDispatcher()
   private val onGuiEvent by EventDispatcher()
+  private val onDimScreenEvent by EventDispatcher()
   private var labels: MapLabels? = null
   private var shapes: MapShapes? = null
   private var routes: MapRoutes? = null
   private var gui: MapGui? = null
+  private var dimScreen: MapDimScreen? = null
   private var cameraCommands: MapCameraCommands? = null
   private var imageLoader: MapImageLoader? = null
   private var pendingLabels: MapLabelSceneRecord? = null
@@ -605,6 +607,18 @@ class KakaoMapView(
     return manager
   }
 
+  internal fun requireDimScreen(): MapDimScreen {
+    val readyMap = requireMap()
+    dimScreen?.let { return it }
+    val viewReference = WeakReference(this)
+    val manager =
+      MapDimScreen(readyMap, resources.displayMetrics.density) { payload ->
+        viewReference.get()?.let { view -> if (!view.isDestroyed) view.onDimScreenEvent(payload) }
+      }
+    dimScreen = manager
+    return manager
+  }
+
   private fun requireImageLoader(): MapImageLoader = imageLoader ?: MapImageLoader(appContext).also { imageLoader = it }
 
   private fun applyPendingRoutesIfReady() {
@@ -681,6 +695,13 @@ class KakaoMapView(
     gui = null
     try {
       guiManager?.dispose()
+    } catch (error: Exception) {
+      if (!isDestroyed) reportError(error)
+    }
+    val dimManager = dimScreen
+    dimScreen = null
+    try {
+      dimManager?.dispose()
     } catch (error: Exception) {
       if (!isDestroyed) reportError(error)
     }
