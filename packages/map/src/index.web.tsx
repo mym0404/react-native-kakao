@@ -2,6 +2,8 @@ import { forwardRef } from 'react';
 
 import type { KakaoMapViewProps, KakaoMapViewRef } from './types';
 
+export type { MapImageSource } from './types-assets';
+export type * from './types-labels';
 export type * from './types-camera';
 
 export type {

@@ -17,8 +17,15 @@ final class KakaoMapView: ExpoView, MapControllerDelegate, KakaoMapEventDelegate
   let onMapTypeChanged = EventDispatcher()
   let onPaddingChanged = EventDispatcher()
   let onViewportChanged = EventDispatcher()
+  let onLabelClick = EventDispatcher()
+  let onLabelAnimationStopped = EventDispatcher()
+  let onLabelsChanged = EventDispatcher()
   let onCameraOperation = EventDispatcher()
+  private var labels: MapLabels?
   private var cameraCommands: MapCameraCommands?
+  private var imageLoader: MapImageLoader?
+  private var pendingLabels: MapLabelSceneRecord?
+  private var labelGeneration = 0
   var pendingInitialCamera: CameraOptions?
   var camera: CameraOptions?
   private var initialCamera: CameraOptions?
@@ -68,6 +75,15 @@ final class KakaoMapView: ExpoView, MapControllerDelegate, KakaoMapEventDelegate
       lastCameraValues = camera?.values
     }
     applyPendingOptionsIfReady()
+    applyPendingLabelsIfReady()
+  }
+
+  func queueLabels(_ scene: MapLabelSceneRecord?) {
+    if scene == nil, labels == nil {
+      pendingLabels = nil
+      return
+    }
+    pendingLabels = scene ?? MapLabelSceneRecord()
   }
 
   func queueOptions(_ options: KakaoMapViewOptions?) {
@@ -179,6 +195,7 @@ final class KakaoMapView: ExpoView, MapControllerDelegate, KakaoMapEventDelegate
     }
     lastCameraValues = camera?.values
     applyPendingOptionsIfReady()
+    applyPendingLabelsIfReady()
     onMapReady([:])
   }
 
@@ -313,9 +330,91 @@ final class KakaoMapView: ExpoView, MapControllerDelegate, KakaoMapEventDelegate
     return try manager.command(command)
   }
 
+  func runLabelCommand(_ command: MapLabelCommandRecord) throws {
+    try requireLabels().command(command)
+  }
+
+  func getLabelCapabilities() throws -> [String: Any] {
+    try requireLabels().capabilities()
+  }
+
+  func getLabelState() throws -> [String: Any] {
+    try requireLabels().state()
+  }
+
+  private func requireLabels() throws -> MapLabels {
+    let map = try requireMap()
+    if let labels {
+      return labels
+    }
+    let loader = requireImageLoader()
+    let labels = MapLabels(
+      map: map,
+      imageLoader: loader,
+      emitClick: { [weak self] event in
+        guard let self, !isDestroyed else { return }
+        onLabelClick(event)
+      },
+      emitAnimationStopped: { [weak self] event in
+        guard let self, !isDestroyed else { return }
+        onLabelAnimationStopped(event)
+      }
+    )
+    self.labels = labels
+    return labels
+  }
+
+  private func requireImageLoader() -> MapImageLoader {
+    if let imageLoader {
+      return imageLoader
+    }
+    let loader = MapImageLoader(appContext: appContext)
+    imageLoader = loader
+    return loader
+  }
+
+  private func applyPendingLabelsIfReady() {
+    guard isReady, let scene = pendingLabels else { return }
+    pendingLabels = nil
+    let previousGeneration = labelGeneration
+    labelGeneration += 1
+    let generation = labelGeneration
+    do {
+      try requireLabels().apply(scene) { [weak self] result in
+        guard let self, !isDestroyed, generation == labelGeneration else { return }
+        switch result {
+        case .success:
+          if let labels {
+            onLabelsChanged(labels.state())
+          }
+        case let .failure(error):
+          reportLabelError(error)
+        }
+      }
+    } catch {
+      if labelGeneration == generation {
+        labelGeneration = previousGeneration
+      }
+      reportLabelError(error)
+    }
+  }
+
+  private func reportLabelError(_ error: Error) {
+    if let error = error as? Exception {
+      onError(["code": error.code, "message": error.reason])
+    } else {
+      onError(["code": "ERR_KAKAO_MAP_LABEL", "message": error.localizedDescription])
+    }
+  }
+
   private func releaseMapObjects() {
+    labelGeneration += 1
     cameraCommands?.dispose()
     cameraCommands = nil
+    labels?.dispose()
+    labels = nil
+    imageLoader?.dispose()
+    imageLoader = nil
   }
 
   private func applyPendingOptionsIfReady() {
@@ -649,6 +748,9 @@ final class KakaoMapView: ExpoView, MapControllerDelegate, KakaoMapEventDelegate
 
   func poiDidTapped(kakaoMap: KakaoMap, layerID: String, poiID: String, position: MapPoint) {
     guard !isDestroyed else { return }
+    if labels?.handlesPoiTap(layerId: layerID, id: poiID) == true {
+      return
+    }
     onPoiClick([
       "latitude": position.wgsCoord.latitude,
       "longitude": position.wgsCoord.longitude,

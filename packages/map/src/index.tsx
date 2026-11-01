@@ -18,7 +18,10 @@ import type {
   ScreenPoint,
 } from './types';
 import type { AdvancedCameraOperationEvent } from './types-camera';
+import type { LabelAnimationEvent, LabelClickEvent, LabelRuntimeState } from './types-labels';
 
+export type { MapImageSource } from './types-assets';
+export type * from './types-labels';
 export type * from './types-camera';
 
 export type {
@@ -60,6 +63,9 @@ const NativeView = requireNativeView<
     | 'onMapTypeChanged'
     | 'onPaddingChanged'
     | 'onViewportChanged'
+    | 'onLabelClick'
+    | 'onLabelAnimationStopped'
+    | 'onLabelsChanged'
     | 'onCameraOperation'
   > & {
     ref: Ref<NativeMapRef>;
@@ -78,6 +84,9 @@ const NativeView = requireNativeView<
     onMapTypeChanged?: (event: NativeSyntheticEvent<{ viewInfoName: string }>) => void;
     onPaddingChanged?: (event: NativeSyntheticEvent<MapPadding>) => void;
     onViewportChanged?: (event: NativeSyntheticEvent<MapViewport>) => void;
+    onLabelClick?: (event: NativeSyntheticEvent<LabelClickEvent>) => void;
+    onLabelAnimationStopped?: (event: NativeSyntheticEvent<LabelAnimationEvent>) => void;
+    onLabelsChanged?: (event: NativeSyntheticEvent<LabelRuntimeState>) => void;
     onCameraOperation?: (event: NativeSyntheticEvent<AdvancedCameraOperationEvent>) => void;
   }
 >(moduleName);
@@ -115,6 +124,9 @@ export const KakaoMapView = forwardRef<KakaoMapViewRef, KakaoMapViewProps>(funct
     onMapTypeChanged,
     onPaddingChanged,
     onViewportChanged,
+    onLabelClick,
+    onLabelAnimationStopped,
+    onLabelsChanged,
     onCameraOperation,
     ...props
   },
@@ -145,6 +157,15 @@ export const KakaoMapView = forwardRef<KakaoMapViewRef, KakaoMapViewProps>(funct
       async clearCache() {
         await getView().clearCache();
       },
+      async runLabelCommand(command) {
+        await getView().runLabelCommand(command);
+      },
+      async getLabelCapabilities() {
+        return getView().getLabelCapabilities();
+      },
+      async getLabelState() {
+        return getView().getLabelState();
+      },
       async executeCameraCommand(command) {
         return getView().executeCameraCommand(command);
       },
@@ -171,6 +192,9 @@ export const KakaoMapView = forwardRef<KakaoMapViewRef, KakaoMapViewProps>(funct
       onMapTypeChanged={(event) => onMapTypeChanged?.(event.nativeEvent)}
       onPaddingChanged={(event) => onPaddingChanged?.(event.nativeEvent)}
       onViewportChanged={(event) => onViewportChanged?.(event.nativeEvent)}
+      onLabelClick={(event) => onLabelClick?.(event.nativeEvent)}
+      onLabelAnimationStopped={(event) => onLabelAnimationStopped?.(event.nativeEvent)}
+      onLabelsChanged={(event) => onLabelsChanged?.(event.nativeEvent)}
       onCameraOperation={(event) => onCameraOperation?.(event.nativeEvent)}
     />
   );
