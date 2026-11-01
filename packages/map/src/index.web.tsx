@@ -5,6 +5,7 @@ import type { KakaoMapViewProps, KakaoMapViewRef } from './types';
 export type { MapImageSource } from './types-assets';
 export type * from './types-labels';
 export type * from './types-shapes';
+export type * from './types-routes';
 export type * from './types-camera';
 
 export type {

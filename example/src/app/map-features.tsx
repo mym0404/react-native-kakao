@@ -14,6 +14,9 @@ import {
   type MapGesture,
   type MapOptions,
   type MapOverlay,
+  type RouteCapabilities,
+  type RouteCommand,
+  type RouteScene,
   type ShapeCapabilities,
   type ShapeScene,
 } from '@react-native-kakao/map';
@@ -33,6 +36,13 @@ import {
   sharingTargetDestination,
   updatedPathTextFixtureScene,
 } from '../map/label-fixtures';
+import {
+  emptyRouteFixtureScene,
+  routeCapabilityCommands,
+  routeFixtureCommands,
+  routeFixtureReplacementScene,
+  routeFixtureScene,
+} from '../map/route-fixtures';
 import {
   isolatedShapeFixtureScenes,
   isolatedShapeFixtureZoomLevels,
@@ -61,6 +71,8 @@ const sections = [
   'label-errors',
   'shapes',
   'shape-motion',
+  'routes',
+  'route-motion',
 ] as const;
 
 const overlays: MapOverlay[] = ['roadviewLine', 'hillShading', 'bicycleRoad', 'hybrid'];
@@ -94,6 +106,8 @@ export default function MapFeaturesPage() {
 
   const [advancedCameraCapabilities, setAdvancedCameraCapabilities] =
     useState<AdvancedCameraCapabilities>();
+
+  const [routeCapabilities, setRouteCapabilities] = useState<RouteCapabilities>();
   const [result, setResult] = useState('Waiting for map');
   const [event, setEvent] = useState('No event');
   useEffect(() => {
@@ -435,6 +449,117 @@ export default function MapFeaturesPage() {
         );
       }
     }
+  } else if (section === 'routes' || section === 'route-motion') {
+    actions.push({
+      id: 'route-read-capabilities',
+      run: () =>
+        execute(async () => {
+          const value = await requireMap().executeRouteCommand(routeFixtureCommands.capabilities);
+
+          if (value.type === 'capabilities') {
+            setRouteCapabilities(value);
+          }
+
+          return value;
+        }),
+    });
+
+    actions.push(
+      { id: 'route-dispatch-apply', run: () => applyRoutes(routeFixtureScene) },
+      {
+        id: 'route-dispatch-remove',
+        run: () => executeRouteCommand(routeFixtureCommands.remove),
+      },
+      {
+        id: 'route-dispatch-replace-same-id',
+        run: () => applyRoutes(routeFixtureReplacementScene),
+      },
+      {
+        id: 'route-dispatch-clear',
+        run: () => applyRoutes(emptyRouteFixtureScene),
+      },
+    );
+
+    if (section === 'routes') {
+      actions.push(
+        {
+          id: 'route-read-counts',
+          run: () => executeRouteCommand(routeFixtureCommands.counts),
+        },
+        {
+          id: 'route-read-state',
+          run: () => executeRouteCommand(routeFixtureCommands.state),
+        },
+        {
+          id: 'route-dispatch-hide',
+          run: () => executeRouteCommand(routeFixtureCommands.hide),
+        },
+        {
+          id: 'route-dispatch-show',
+          run: () => executeRouteCommand(routeFixtureCommands.show),
+        },
+        {
+          id: 'route-dispatch-z-index',
+          run: () => executeRouteCommand(routeFixtureCommands.setZIndex),
+        },
+        {
+          id: 'route-dispatch-change-data',
+          run: () => executeRouteCommand(routeFixtureCommands.changeSegments),
+        },
+      );
+    } else {
+      actions.push(
+        {
+          id: 'route-dispatch-progress-immediate',
+          run: () => executeRouteCommand(routeFixtureCommands.setProgressImmediate),
+        },
+        {
+          id: 'route-dispatch-progress-long',
+          run: () => executeRouteCommand(routeFixtureCommands.setProgressLong),
+        },
+        {
+          id: 'route-dispatch-progress-superseding',
+          run: () => executeRouteCommand(routeFixtureCommands.setProgressSuperseding),
+        },
+        {
+          id: 'route-read-requested-progress',
+          run: () => executeRouteCommand(routeFixtureCommands.requestedProgress),
+        },
+        {
+          id: 'route-dispatch-animation-forward',
+          run: () => executeRouteCommand(routeFixtureCommands.startForwardFill),
+        },
+        {
+          id: 'route-dispatch-animation-backward',
+          run: () => executeRouteCommand(routeFixtureCommands.startBackwardClearAndReset),
+        },
+        {
+          id: 'route-dispatch-animation-stop',
+          run: () => executeRouteCommand(routeFixtureCommands.stopForwardFill),
+        },
+      );
+
+      if (routeCapabilities?.nativeProgressRead) {
+        actions.push({
+          id: 'route-read-native-progress',
+          run: () => executeRouteCommand(routeCapabilityCommands.androidNativeProgress),
+        });
+      }
+
+      if (routeCapabilities?.progressAtCoordinate) {
+        actions.push({
+          id: 'route-read-progress-at-coordinate',
+          run: () => executeRouteCommand(routeFixtureCommands.progressAtCoordinate),
+        });
+      }
+
+      if (routeCapabilities?.coordinateAtProgress) {
+        actions.push({
+          id: 'route-read-coordinate-at-progress',
+          run: () => executeRouteCommand(routeCapabilityCommands.androidCoordinateAtProgress),
+        });
+      }
+    }
   } else {
     actions.push(
       {
@@ -672,6 +797,9 @@ export default function MapFeaturesPage() {
           }
           onShapesChanged={(value) => recordEvent({ type: 'shapes-changed', counts: value })}
           onShapeAnimationStop={(value) => recordEvent({ type: 'shape-animation-stop', ...value })}
+          onRoutesChanged={(value) => recordEvent({ type: 'routes-changed', counts: value })}
+          onRouteProgress={(value) => recordEvent({ type: 'route-progress', ...value })}
+          onRouteAnimationStop={(value) => recordEvent({ type: 'route-animation-stop', ...value })}
         />
       ) : null}
     </View>
@@ -767,6 +895,21 @@ export default function MapFeaturesPage() {
 
       return requireMap().applyShapes(scene);
     });
+  }
+
+  function applyRoutes(scene: RouteScene) {
+    execute(async () => {
+      await requireMap().moveCamera({
+        ...regularLabelFixture.coordinate,
+        zoomLevel: 17,
+      });
+
+      return requireMap().applyRoutes(scene);
+    });
+  }
+
+  function executeRouteCommand(command: RouteCommand) {
+    execute(() => requireMap().executeRouteCommand(command));
   }
 
   function isSupportedLabelCommand(command: LabelCommand) {

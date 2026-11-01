@@ -43,6 +43,9 @@ public class KakaoMapModule: Module {
         "onLabelsChanged",
         "onShapeAnimationStop",
         "onShapesChanged",
+        "onRoutesChanged",
+        "onRouteProgress",
+        "onRouteAnimationStop",
         "onCameraOperation"
       )
       Prop("initialCamera") { (view: KakaoMapView, camera: CameraOptions?) in
@@ -58,6 +61,7 @@ public class KakaoMapModule: Module {
       Prop("shapes") { (view: KakaoMapView, scene: [String: Any]?) in
         view.queueShapes(scene)
       }
+      Prop("routes") { (view: KakaoMapView, scene: [String: Any]?) in view.queueRoutes(scene) }
       OnViewDidUpdateProps { (view: KakaoMapView) in view.updateProps() }
       AsyncFunction("moveCamera") { (view: KakaoMapView, camera: CameraOptions, duration: Double) in
         try view.moveCamera(
@@ -93,6 +97,12 @@ public class KakaoMapModule: Module {
       }
       AsyncFunction("executeShapeCommand") { (view: KakaoMapView, command: [String: Any]) in
         try view.executeShapeCommand(command)
+      }
+      AsyncFunction("applyRoutes") { (view: KakaoMapView, scene: [String: Any], promise: Promise) in
+        try view.applyRoutes(scene, promise: promise)
+      }
+      AsyncFunction("executeRouteCommand") { (view: KakaoMapView, command: [String: Any]) in
+        try view.executeRouteCommand(command)
       }
       AsyncFunction("executeCameraCommand") { (view: KakaoMapView, command: [String: Any]) in
         try view.executeCameraCommand(command)

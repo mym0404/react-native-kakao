@@ -22,14 +22,21 @@ final class KakaoMapView: ExpoView, MapControllerDelegate, KakaoMapEventDelegate
   let onLabelsChanged = EventDispatcher()
   let onShapeAnimationStop = EventDispatcher()
   let onShapesChanged = EventDispatcher()
+  let onRoutesChanged = EventDispatcher()
+  let onRouteProgress = EventDispatcher()
+  let onRouteAnimationStop = EventDispatcher()
   let onCameraOperation = EventDispatcher()
   private var labels: MapLabels?
   private var shapes: MapShapes?
+  private var routes: MapRoutes?
   private var cameraCommands: MapCameraCommands?
   private var imageLoader: MapImageLoader?
   private var pendingLabels: MapLabelSceneRecord?
   private var pendingShapes: [String: Any]?
   private var hasUsedShapes = false
+  private var pendingRoutes: [String: Any]?
+  private var hasUsedRoutes = false
+  private var routeGeneration = 0
   private var labelGeneration = 0
   var pendingInitialCamera: CameraOptions?
   var camera: CameraOptions?
@@ -81,6 +88,7 @@ final class KakaoMapView: ExpoView, MapControllerDelegate, KakaoMapEventDelegate
     }
     applyPendingOptionsIfReady()
     applyPendingShapesIfReady()
+    applyPendingRoutesIfReady()
     applyPendingLabelsIfReady()
   }
 
@@ -98,6 +106,14 @@ final class KakaoMapView: ExpoView, MapControllerDelegate, KakaoMapEventDelegate
       return
     }
     pendingLabels = scene ?? MapLabelSceneRecord()
+  }
+
+  func queueRoutes(_ scene: [String: Any]?) {
+    if scene == nil, !hasUsedRoutes {
+      return
+    }
+    hasUsedRoutes = true
+    pendingRoutes = scene ?? [:]
   }
 
   func queueOptions(_ options: KakaoMapViewOptions?) {
@@ -210,6 +226,7 @@ final class KakaoMapView: ExpoView, MapControllerDelegate, KakaoMapEventDelegate
     lastCameraValues = camera?.values
     applyPendingOptionsIfReady()
     applyPendingShapesIfReady()
+    applyPendingRoutesIfReady()
     applyPendingLabelsIfReady()
     onMapReady([:])
   }
@@ -411,6 +428,48 @@ final class KakaoMapView: ExpoView, MapControllerDelegate, KakaoMapEventDelegate
     return labels
   }
 
+  func applyRoutes(_ scene: [String: Any], promise: Promise) throws {
+    pendingRoutes = nil
+    hasUsedRoutes = true
+    routeGeneration += 1
+    let generation = routeGeneration
+    try requireRoutes().apply(scene) { [weak self] result in
+      switch result {
+      case let .success(counts):
+        if let self, !isDestroyed, generation == routeGeneration {
+          onRoutesChanged(counts)
+        }
+        promise.resolve(counts)
+      case let .failure(error):
+        promise.reject(error)
+      }
+    }
+  }
+
+  func executeRouteCommand(_ command: [String: Any]) throws -> [String: Any] {
+    try requireRoutes().command(command)
+  }
+
+  private func requireRoutes() throws -> MapRoutes {
+    let map = try requireMap()
+    if let routes {
+      return routes
+    }
+    let manager = MapRoutes(
+      map: map,
+      imageLoader: requireImageLoader()
+    ) { [weak self] event, payload in
+      guard let self, !isDestroyed else { return }
+      switch event {
+      case "onRouteProgress": onRouteProgress(payload)
+      case "onRouteAnimationStop": onRouteAnimationStop(payload)
+      default: break
+      }
+    }
+    routes = manager
+    return manager
+  }
+
   private func requireImageLoader() -> MapImageLoader {
     if let imageLoader {
       return imageLoader
@@ -418,6 +477,32 @@ final class KakaoMapView: ExpoView, MapControllerDelegate, KakaoMapEventDelegate
     let loader = MapImageLoader(appContext: appContext)
     imageLoader = loader
     return loader
+  }
+
+  private func applyPendingRoutesIfReady() {
+    guard isReady, let scene = pendingRoutes else { return }
+    pendingRoutes = nil
+    routeGeneration += 1
+    let generation = routeGeneration
+    do {
+      try requireRoutes().apply(scene) { [weak self] result in
+        guard let self, !isDestroyed, generation == routeGeneration else { return }
+        switch result {
+        case let .success(counts): onRoutesChanged(counts)
+        case let .failure(error): reportObjectError(error, fallbackCode: "ERR_KAKAO_MAP_ROUTE")
+        }
+      }
+    } catch {
+      reportObjectError(error, fallbackCode: "ERR_KAKAO_MAP_ROUTE")
+    }
+  }
+
+  private func reportObjectError(_ error: Error, fallbackCode: String) {
+    if let error = error as? Exception {
+      onError(["code": error.code, "message": error.reason])
+    } else {
+      onError(["code": fallbackCode, "message": error.localizedDescription])
+    }
   }
 
   private func applyPendingLabelsIfReady() {
@@ -474,10 +559,13 @@ final class KakaoMapView: ExpoView, MapControllerDelegate, KakaoMapEventDelegate
 
   private func releaseMapObjects() {
     labelGeneration += 1
+    routeGeneration += 1
     cameraCommands?.dispose()
     cameraCommands = nil
     labels?.dispose()
     labels = nil
+    routes?.dispose()
+    routes = nil
     shapes?.dispose()
     shapes = nil
     imageLoader?.dispose()
