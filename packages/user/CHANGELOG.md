@@ -1,5 +1,18 @@
 # Change Log
 
+## 3.1.0-next.2
+
+### Minor Changes
+
+- f466ffa: Expose the iOS Kakao Talk launch method for login and reject web-only token helpers on native platforms.
+- 23ca142: Expose consent revocation results, service-term consent sources, Talk profile IDs, friend pagination links, and masked picker nicknames. Forward Android scope filters, preserve nullable friend nicknames, and return iOS friend thumbnails as URL strings.
+- 845f1f2: Expose original user properties and property-key filters on Android, iOS, and web.
+
+### Patch Changes
+
+- f466ffa: Normalize APIs without success data to resolve without a value across platforms, while preserving friend-message results.
+- @react-native-kakao/core@3.1.0-next.2
+
 ## 3.1.0-next.1
 
 ### Minor Changes

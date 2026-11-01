@@ -1,5 +1,12 @@
 # Change Log
 
+## 3.1.0-next.2
+
+### Patch Changes
+
+- 109b2f3: Preserve optional boolean values when forwarding iOS navigation and web-install options to Swift.
+- @react-native-kakao/core@3.1.0-next.2
+
 ## 3.1.0-next.1
 
 ### Minor Changes

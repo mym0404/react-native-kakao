@@ -1,6 +1,6 @@
 {
   "name": "@react-native-kakao/map",
-  "version": "3.0.0",
+  "version": "3.1.0-next.2",
   "description": "Kakao Maps for Android and iOS using Expo Modules",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",

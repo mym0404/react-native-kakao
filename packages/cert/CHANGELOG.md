@@ -1,5 +1,17 @@
 # @react-native-kakao/cert
 
+## 3.1.0-next.2
+
+### Patch Changes
+
+- f466ffa: Normalize APIs without success data to resolve without a value across platforms, while preserving friend-message results.
+- Updated dependencies [f466ffa]
+- Updated dependencies [f466ffa]
+- Updated dependencies [23ca142]
+- Updated dependencies [845f1f2]
+  - @react-native-kakao/user@3.1.0-next.2
+  - @react-native-kakao/core@3.1.0-next.2
+
 ## 3.1.0-next.1
 
 ### Minor Changes
