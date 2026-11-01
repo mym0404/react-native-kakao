@@ -2,9 +2,10 @@ import { describe, type Device, test } from '@e2e-dev/mobile';
 import { expect, type Screen } from 'e2e';
 
 const screenTitle = 'screen-title';
+const indexTitle = 'Index';
 const falseResult = 'success: false';
 const tokenError = 'error: TokenNotFound';
-let isInstalled = false;
+let hasOpenedApp = false;
 
 const findVisible = async (device: Device, id: string) => {
   const target = device.locator(`id=${id} visible=true`);
@@ -36,13 +37,15 @@ const openMenu = async (device: Device, menu: string) => {
 };
 
 test.beforeEach(async ({ app, device, screen }) => {
-  if (!isInstalled) {
+  if (!hasOpenedApp) {
     await device.installApp();
-    isInstalled = true;
+    await app.open();
+    hasOpenedApp = true;
+  } else if ((await screen.getByTestId(screenTitle).textContent()) !== indexTitle) {
+    await app.back();
   }
 
-  await app.open();
-  await expect(screen.getByTestId(screenTitle)).toHaveText('Index');
+  await expect(screen.getByTestId(screenTitle)).toHaveText(indexTitle);
 });
 
 describe('navigation', () => {
@@ -191,7 +194,7 @@ if (process.env.KAKAO_E2E_SKIP_MAP !== '1') {
       await screen.getByTestId(mapId).tap();
       await expect(event).toHaveText(/^\d+\|click: /);
       await app.back();
-      await expect(screen.getByTestId(screenTitle)).toHaveText('Index');
+      await expect(screen.getByTestId(screenTitle)).toHaveText(indexTitle);
       await openMap(device, screen);
       expectCamera(await camera(screen), seoul);
     });
