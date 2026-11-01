@@ -544,6 +544,7 @@ SDK 오류는 SDK의 코드와 메시지를 유지해요. 지도 인증 오류�
 
 Android의 `getCamera()`는 렌더러의 비동기 응답을 받아 이동 중인 위치를 조회해요. 3초 안에 응답하지 않으면 `ERR_KAKAO_MAP_CAMERA_TIMEOUT`으로 거절하고, 응답 전에 뷰가 해제되면 `ERR_KAKAO_MAP_VIEW_DESTROYED`로 거절해요.
 
+도형·경로·GUI·dim·유틸리티는 잘못된 입력, 찾을 수 없는 ID, 취소·대체, 이미지 로딩과 플랫폼 미지원 상황을 도메인별 코드로 구분해요. 모든 ref Promise에서 `code`와 `message`를 함께 처리하고, capability가 `false`인 기능은 성공을 흉내 내지 않는다고 가정해요.
 
 웹에서 패키지를 import할 수 있지만 네이티브 지도 기능은 지원하지 않아요. Android 지도 SDK에는 x86_64 바이너리가 없으므로 ARM 에뮬레이터나 실기기를 사용해요.
 
