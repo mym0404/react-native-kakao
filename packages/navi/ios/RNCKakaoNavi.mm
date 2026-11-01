@@ -36,8 +36,8 @@ RCT_EXPORT_METHOD(navigateOrShareTo : (NSDictionary*)destination option : (NSDic
   [[self manager] navigateOrShareTo:destination
                                       option:option
                                      viaList:viaList
-      openWebInstallUrlIfNaviAppNotAvailable:openWebInstallUrlIfNaviAppNotAvailable
-                                     isShare:isShare
+      openWebInstallUrlIfNaviAppNotAvailable:[openWebInstallUrlIfNaviAppNotAvailable boolValue]
+                                     isShare:[isShare boolValue]
                                      resolve:resolve
                                       reject:reject];
 }
