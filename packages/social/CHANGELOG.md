@@ -1,5 +1,15 @@
 # Change Log
 
+## 3.1.0-next.2
+
+### Minor Changes
+
+- 23ca142: Expose consent revocation results, service-term consent sources, Talk profile IDs, friend pagination links, and masked picker nicknames. Forward Android scope filters, preserve nullable friend nicknames, and return iOS friend thumbnails as URL strings.
+
+### Patch Changes
+
+- @react-native-kakao/core@3.1.0-next.2
+
 ## 3.1.0-next.1
 
 ### Minor Changes

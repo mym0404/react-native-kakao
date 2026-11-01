@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 3.1.0-next.2
+
+### Patch Changes
+
+- f466ffa: Normalize APIs without success data to resolve without a value across platforms, while preserving friend-message results.
+- @react-native-kakao/core@3.1.0-next.2
+
 ## 3.1.0-next.1
 
 ### Minor Changes
