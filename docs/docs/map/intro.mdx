@@ -93,7 +93,7 @@ export function MapScreen() {
 
 ## 카메라와 이벤트
 
-카메라에는 `latitude`, `longitude`, 정수 `zoomLevel`이 필요해요. `tilt`와 `rotation`은 도 단위이며 생략하면 0이에요. 확대 단계와 기울기의 실제 표현 범위는 SDK와 지도 상태의 영향을 받아요. `rotation`은 정북 기준 카메라의 반시계 방향 회전각이에요. 90도에서는 북쪽이 화면 오른쪽을 향해요. `getCamera()`는 적용된 다섯 필드를 모두 반환해요. iOS의 중심 좌표는 화면 중심을 지리 좌표로 변환해 구하므로 요청한 좌표와 작은 오차가 생길 수 있어요.
+카메라에는 `latitude`, `longitude`, 정수 `zoomLevel`이 필요해요. `tilt`와 `rotation`은 도 단위이며 생략하면 0이에요. 확대 단계와 기울기의 실제 표현 범위는 SDK와 지도 상태의 영향을 받아요. `rotation`은 정북 기준 카메라의 반시계 방향 회전각이에요. 90도에서는 북쪽이 화면 오른쪽을 향해요. `getCamera()`는 적용된 다섯 필드를 모두 반환해요. iOS의 중심 좌표는 여백을 제외한 지도 영역의 중심을 지리 좌표로 변환해 구하므로 요청한 좌표와 작은 오차가 생길 수 있어요.
 
 최초에는 `camera`가 `initialCamera`보다 우선해요. `initialCamera`는 처음 속성을 받은 뒤 변경해도 적용하지 않아요. `camera`는 값이 바뀔 때만 이동하고, 같은 값의 새 객체를 전달하거나 속성을 제거해도 이동하지 않아요. 따라서 제스처나 ref로 이동한 뒤 동일 값으로 재렌더링해도 위치가 유지돼요. 준비 전에는 최신 `camera`만 보관해요.
 
@@ -109,35 +109,129 @@ const position = await map.current?.getCamera();
 
 `duration`은 0부터 2,147,483,647까지의 정수 밀리초이며 생략하거나 0이면 즉시 이동해요. `tilt`는 0~90도를 받고, 반환되는 `rotation`은 0 이상 360 미만이에요.
 
-| 이벤트              | 전달 값                                                                   |
-| ------------------- | ------------------------------------------------------------------------- |
-| `onMapReady`        | 지도 인증과 뷰 준비 완료. 인자 없음                                       |
-| `onError`           | `{ code, message }`                                                       |
-| `onCameraMoveStart` | `{ reason: 'gesture' \| 'developer' }`                                    |
-| `onCameraIdle`      | `{ reason, camera }`. 이동이 멈춘 실제 카메라                             |
-| `onMapClick`        | `{ latitude, longitude, x, y }`. `x`, `y`는 지도 좌측 상단 기준 논리 픽셀 |
+`updateCamera()`는 나머지 카메라 값을 유지하면서 위치, 확대 단계 또는 회전·기울기를 바꿔요. `fit`은 전달한 좌표들을 현재 지도 여백 안에 표시하도록 카메라를 맞춰요.
+
+```tsx
+await map.current?.updateCamera({
+  type: 'position',
+  position: { latitude: 37.5665, longitude: 126.978 },
+});
+await map.current?.updateCamera({ type: 'zoom', zoomLevel: 18 });
+await map.current?.updateCamera({ type: 'orientation', rotation: 90, tilt: 30 }, { duration: 500 });
+await map.current?.updateCamera({
+  type: 'fit',
+  coordinates: [
+    { latitude: 37.5665, longitude: 126.978 },
+    { latitude: 37.402001, longitude: 127.108678 },
+  ],
+});
+```
+
+| 이벤트                | 전달 값                                                                   |
+| --------------------- | ------------------------------------------------------------------------- |
+| `onMapReady`          | 지도 인증과 뷰 준비 완료. 인자 없음                                       |
+| `onError`             | `{ code, message }`                                                       |
+| `onCameraMoveStart`   | `{ reason: 'gesture' \| 'developer' }`                                    |
+| `onCameraIdle`        | `{ reason, camera }`. 이동이 멈춘 실제 카메라                             |
+| `onMapClick`          | `{ latitude, longitude, x, y }`. `x`, `y`는 지도 좌측 상단 기준 논리 픽셀 |
+| `onMapLongClick`      | `{ latitude, longitude }`. 지도 지형을 길게 누른 위치                     |
+| `onTerrainClick`      | `{ latitude, longitude }`. 지형 클릭. Android와 iOS                       |
+| `onViewportClick`     | `{ latitude, longitude, x, y }`. viewport 클릭. Android 전용              |
+| `onVisibilityChanged` | `{ visible }`. 네이티브 지도 표시 상태 변경. Android 전용                 |
+| `onFocusChanged`      | `{ focused }`. 네이티브 지도 focus 변경. iOS 전용                         |
+| `onPoiClick`          | `{ id, layerId, latitude, longitude }`. POI ID와 해당 지도 레이어 ID      |
+| `onCompassClick`      | 컴퍼스 클릭. 인자 없음                                                    |
+| `onMapTypeChanged`    | `{ viewInfoName }`. 비동기 지도 구성 변경 완료                            |
+| `onPaddingChanged`    | `{ top, right, bottom, left }`. 변경된 지도 여백                          |
+| `onViewportChanged`   | `{ x, y, width, height }`. 변경된 실제 viewport. Android와 iOS            |
 
 연속 카메라 변경 이벤트는 제공하지 않아요. 앱 비활성화와 화면 분리 시 렌더링을 멈추고, 복귀하면 재개해요. 마운트 해제 시 엔진을 해제해요.
+
+## 지도 설정과 좌표 변환
+
+`options`는 전달한 필드를 적용해요. 생략한 필드는 SDK의 현재 값을 유지해요. 준비 전에는 필드별 최신 값을 보관하고, 준비 후에는 변경된 값만 적용해요. `mapType`과 `viewInfo`는 함께 전달할 수 없어요. `viewInfo`와 `customOverlays`는 별도 이용 협의가 필요한 지도 데이터에 사용해요.
+
+```tsx
+<KakaoMapView
+  options={{
+    mapType: 'normal',
+    overlays: ['bicycleRoad'],
+    language: 'ko',
+    poi: { visible: true, clickable: true, scale: 'regular' },
+    buildingScale: 1,
+    padding: { top: 20, right: 20, bottom: 80, left: 20 },
+    zoomRange: { min: 6, max: 21 },
+    gestures: { pan: true, rotate: false },
+    compass: { visible: true, position: { gravity: 'topRight', x: 20, y: 20 } },
+    scaleBar: {
+      visible: true,
+      autoHide: true,
+      fade: { inDuration: 200, outDuration: 400, retentionDuration: 1000 },
+    },
+    logo: { gravity: 'bottomLeft', x: 12, y: 12 },
+  }}
+/>
+```
+
+`mapType`은 `normal`과 `skyview`, `overlays`는 `roadviewLine`, `hillShading`, `bicycleRoad`, `hybrid`를 지원해요. 언어는 `getMapInfo().supportedLanguages`에 포함된 값을 사용해요. POI 크기는 `small`, `regular`, `large`, `xLarge`이고, 건물 높이 비율은 0~1이에요. 제스처별 설정은 `MapGesture` 타입에서 확인할 수 있어요.
+
+여백·위젯 위치·화면 좌표는 논리 픽셀, 축척 표시의 시간은 정수 밀리초예요. 로고 위치는 바꿀 수 있지만 숨길 수는 없어요. 비동기로 적용되는 지도 구성과 여백은 각각 `onMapTypeChanged`, `onPaddingChanged`에서 완료를 확인해요.
+
+```tsx
+const info = await map.current?.getMapInfo();
+const coordinate = await map.current?.screenToCoordinate({ x: 100, y: 100 });
+const point = await map.current?.coordinateToScreen({ latitude: 37.402001, longitude: 127.108678 });
+await map.current?.clearCache();
+```
+
+`getMapInfo()`는 지도 종류·확대 범위·여백·영역 크기·언어와 지원 기능을 반환해요. 화면 좌표는 지도 영역 안에 있어야 해요. iOS SDK는 지리 좌표를 화면 좌표로 바꾸는 API를 제공하지 않으므로 `capabilities.coordinateToScreen`이 `false`이고 `coordinateToScreen()`을 호출하면 `ERR_KAKAO_MAP_UNSUPPORTED_PLATFORM_FEATURE`로 거절해요. `clearCache()`는 SDK의 지도 캐시를 지우며 이후 필요한 타일을 다시 받아요.
+
+## 고급 카메라 명령
+
+`executeCameraCommand()`는 높이 기반 이동, 상대 변환, 영역 맞춤, 표시 가능 여부와 기준점 잠금처럼 기본 카메라 API보다 세밀한 기능을 다뤄요. 먼저 기능을 조회하고 지원되는 필드만 사용해요.
+
+```tsx
+const result = await map.current?.executeCameraCommand({ type: 'getCapabilities' });
+
+await map.current?.executeCameraCommand({
+  type: 'moveToHeight',
+  camera: {
+    latitude: 37.402001,
+    longitude: 127.108678,
+    height: 1200,
+    tilt: 30,
+    rotation: 45,
+  },
+  animation: { duration: 500, autoElevation: true },
+  operationId: 'camera-1',
+});
+```
+
+`operationId`를 지정한 명령은 플랫폼이 실제 완료 콜백을 지원할 때 `onCameraOperation`으로 `{ operationId, status, camera? }`를 전달해요. 지원하지 않는 플랫폼은 dispatch를 완료로 꾸미지 않고 해당 필드를 거절해요. `status: 'superseded'`는 더 새로운 카메라 동작이 기존 작업을 대체했다는 뜻이에요.
+
+`getState`는 높이·확대 단계·기울기·회전을 포함한 실제 카메라 상태를 반환해요. 각도는 도, 애니메이션 시간은 정수 밀리초, `fit.padding`과 `canShow.rect`는 논리 단위예요. `height`는 네이티브 지도 좌표계의 카메라 높이이므로 화면 dp나 points로 변환하지 않아요.
 
 ## 오류와 플랫폼 범위
 
 ref 명령은 지도 준비 전에 대기하지 않고 거절돼요. Promise 오류의 `code`, `message`와 `onError`를 처리해요.
 
-| 코드                                 | 의미                       |
-| ------------------------------------ | -------------------------- |
-| `ERR_KAKAO_MAP_NOT_INITIALIZED`      | SDK를 초기화하지 않음      |
-| `ERR_KAKAO_MAP_NOT_READY`            | 지도 준비 전 명령 호출     |
-| `ERR_KAKAO_MAP_CAMERA_TIMEOUT` | Android 카메라 조회 응답이 3초 안에 오지 않음 |
-| `ERR_KAKAO_MAP_VIEW_DESTROYED`       | 해제된 지도 접근           |
-| `ERR_KAKAO_MAP_ALREADY_INITIALIZED`  | 다른 키로 재초기화 시도    |
-| `ERR_KAKAO_MAP_INVALID_ARGUMENT`     | 빈 앱 키·잘못된 카메라·이동 시간 |
-| `ERR_KAKAO_MAP_VIEW_CREATION`        | 네이티브 지도 생성 실패    |
-| `ERR_KAKAO_MAP_UNSUPPORTED_PLATFORM` | 웹에서 지도 기능 사용      |
+| 코드                                         | 의미                                                |
+| -------------------------------------------- | --------------------------------------------------- |
+| `ERR_KAKAO_MAP_NOT_INITIALIZED`              | SDK를 초기화하지 않음                               |
+| `ERR_KAKAO_MAP_NOT_READY`                    | 지도 준비 전 명령 호출                              |
+| `ERR_KAKAO_MAP_CAMERA_TIMEOUT`               | Android 카메라 조회 응답이 3초 안에 오지 않음       |
+| `ERR_KAKAO_MAP_VIEW_DESTROYED`               | 해제된 지도 접근                                    |
+| `ERR_KAKAO_MAP_ALREADY_INITIALIZED`          | 다른 키로 재초기화 시도                             |
+| `ERR_KAKAO_MAP_INVALID_ARGUMENT`             | 빈 앱 키·잘못된 카메라·이동 시간                    |
+| `ERR_KAKAO_MAP_VIEW_CREATION`                | 네이티브 지도 생성 실패                             |
+| `ERR_KAKAO_MAP_UNSUPPORTED_PLATFORM`         | 웹에서 지도 기능 사용                               |
+| `ERR_KAKAO_MAP_UNSUPPORTED_PLATFORM_FEATURE` | 현재 플랫폼 SDK에 없는 네이티브 기능                                  |
 
 SDK 오류는 SDK의 코드와 메시지를 유지해요. 지도 인증 오류는 초기화 Promise가 아니라 `onError`로 전달돼요. 인증 실패 후 자동 재시도는 하지 않아요. 키·앱 등록 설정이나 네트워크 문제를 해결한 다음 뷰를 다시 마운트해요. 앱 키 자체를 변경해야 한다면 앱 프로세스를 다시 시작해요.
 
 Android의 `getCamera()`는 렌더러의 비동기 응답을 받아 이동 중인 위치를 조회해요. 3초 안에 응답하지 않으면 `ERR_KAKAO_MAP_CAMERA_TIMEOUT`으로 거절하고, 응답 전에 뷰가 해제되면 `ERR_KAKAO_MAP_VIEW_DESTROYED`로 거절해요.
 
-웹에서 패키지를 import할 수 있지만 초기화나 지도 렌더링은 지원하지 않아요. Android 지도 SDK에는 x86_64 바이너리가 없으므로 ARM 에뮬레이터나 실기기를 사용해요. 마커와 도형 API는 제공하지 않아요.
+
+웹에서 패키지를 import할 수 있지만 네이티브 지도 기능은 지원하지 않아요. Android 지도 SDK에는 x86_64 바이너리가 없으므로 ARM 에뮬레이터나 실기기를 사용해요.
 
 SDK는 여러 지도 엔진의 동시 렌더링을 보장하지 않아요. 한 번에 하나의 지도를 표시하는 구성을 사용해요. 자세한 내용은 [카카오의 다중 엔진 안내](https://devtalk.kakao.com/t/v2-ios/131530/11)를 확인해요.

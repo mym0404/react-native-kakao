@@ -24,12 +24,42 @@ class KakaoMapModule : Module() {
         }
       }.runOnQueue(Queues.MAIN)
       View(KakaoMapView::class) {
-        Events("onMapReady", "onError", "onCameraMoveStart", "onCameraIdle", "onMapClick")
+        Events(
+          "onMapReady",
+          "onError",
+          "onCameraMoveStart",
+          "onCameraIdle",
+          "onMapClick",
+          "onMapLongClick",
+          "onTerrainClick",
+          "onViewportClick",
+          "onVisibilityChanged",
+          "onFocusChanged",
+          "onPoiClick",
+          "onCompassClick",
+          "onMapTypeChanged",
+          "onPaddingChanged",
+          "onViewportChanged",
+          "onCameraOperation",
+        )
         Prop("initialCamera") { view: KakaoMapView, camera: CameraOptions? -> view.pendingInitialCamera = camera }
         Prop("camera") { view: KakaoMapView, camera: CameraOptions? -> view.camera = camera }
+        Prop("options") { view: KakaoMapView, options: MapOptionsRecord? -> view.pendingOptions = options }
         OnViewDidUpdateProps { view: KakaoMapView -> view.updateProps() }
         AsyncFunction("moveCamera") { view: KakaoMapView, camera: CameraOptions, duration: Double -> view.moveCamera(camera, duration) }
         AsyncFunction("getCamera") { view: KakaoMapView, promise: Promise -> view.getCamera(promise) }
+        AsyncFunction("updateCamera") { view: KakaoMapView, update: CameraUpdateRecord, duration: Double, promise: Promise ->
+          view.updateCamera(update, duration, promise)
+        }
+        AsyncFunction("getMapInfo") { view: KakaoMapView -> view.getMapInfo() }
+        AsyncFunction("screenToCoordinate") { view: KakaoMapView, point: ScreenPointRecord -> view.screenToCoordinate(point) }
+        AsyncFunction("coordinateToScreen") { view: KakaoMapView, coordinate: CoordinateRecord ->
+          view.coordinateToScreen(coordinate)
+        }
+        AsyncFunction("clearCache") { view: KakaoMapView -> view.clearCache() }
+        AsyncFunction(
+          "executeCameraCommand",
+        ) { view: KakaoMapView, command: Map<String, Any?>, promise: Promise -> view.executeCameraCommand(command, promise) }
         OnViewDestroys { view: KakaoMapView -> view.destroy() }
       }
     }

@@ -2,14 +2,28 @@ import { forwardRef } from 'react';
 
 import type { KakaoMapViewProps, KakaoMapViewRef } from './types';
 
+export type * from './types-camera';
+
 export type {
   CameraOptions,
+  CameraUpdate,
   CameraPosition,
   CameraMoveEvent,
+  Coordinate,
   KakaoMapError,
   KakaoMapViewProps,
   KakaoMapViewRef,
   MapClickEvent,
+  MapGesture,
+  MapInfo,
+  MapOptions,
+  MapOverlay,
+  MapPadding,
+  MapType,
+  MapWidgetPosition,
+  MapViewport,
+  PoiClickEvent,
+  ScreenPoint,
 } from './types';
 
 const unsupported = () =>
