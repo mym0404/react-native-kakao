@@ -46,6 +46,7 @@ public class KakaoMapModule: Module {
         "onRoutesChanged",
         "onRouteProgress",
         "onRouteAnimationStop",
+        "onGuiEvent",
         "onCameraOperation"
       )
       Prop("initialCamera") { (view: KakaoMapView, camera: CameraOptions?) in
@@ -104,6 +105,75 @@ public class KakaoMapModule: Module {
       AsyncFunction("executeRouteCommand") { (view: KakaoMapView, command: [String: Any]) in
         try view.executeRouteCommand(command)
       }
+      AsyncFunction("applyGui") { (
+        view: KakaoMapView,
+        scene: MapGuiSceneRecord,
+        promise: Promise
+      ) in
+        try view.requireGui().apply(scene) { error in
+          if let error {
+            promise.reject(error)
+          } else {
+            promise.resolve()
+          }
+        }
+      }
+      AsyncFunction("showInfoWindow") { (
+        view: KakaoMapView,
+        id: String,
+        autoMove: Bool,
+        duration: Double?
+      ) in
+        try view.requireGui().showInfoWindow(id: id, autoMove: autoMove, duration: duration)
+      }
+      AsyncFunction("hideInfoWindow") { (view: KakaoMapView, id: String) in
+        try view.requireGui().hideInfoWindow(id: id)
+      }
+      AsyncFunction("moveInfoWindow") { (
+        view: KakaoMapView,
+        id: String,
+        position: MapGuiCoordinateRecord,
+        duration: Double
+      ) in
+        try view.requireGui().moveInfoWindow(id: id, position: position, duration: duration)
+      }
+      AsyncFunction("showWidget") { (view: KakaoMapView, id: String) in
+        try view.requireGui().showWidget(id: id)
+      }
+      AsyncFunction("hideWidget") { (view: KakaoMapView, id: String) in
+        try view.requireGui().hideWidget(id: id)
+      }
+      AsyncFunction("positionWidget") { (
+        view: KakaoMapView,
+        id: String,
+        position: MapGuiWidgetPositionRecord
+      ) in
+        try view.requireGui().positionWidget(id: id, position: position)
+      }
+      AsyncFunction("rotateWidget") { (view: KakaoMapView, id: String, rotation: Double) in
+        try view.requireGui().rotateWidget(id: id, rotation: rotation)
+      }
+      AsyncFunction("startGuiAnimation") { (view: KakaoMapView, id: String) in
+        try view.requireGui().startAnimation(id: id)
+      }
+      AsyncFunction("stopGuiAnimation") { (view: KakaoMapView, id: String) in
+        try view.requireGui().stopAnimation(id: id)
+      }
+      AsyncFunction("controlAnimatedImage") { (
+        view: KakaoMapView,
+        ownerType: String,
+        ownerId: String,
+        componentId: String,
+        action: String
+      ) in
+        try view.requireGui().controlAnimatedImage(
+          ownerType: ownerType,
+          ownerId: ownerId,
+          componentId: componentId,
+          action: action
+        )
+      }
+      AsyncFunction("getGuiStatus") { (view: KakaoMapView) in try view.requireGui().status() }
       AsyncFunction("executeCameraCommand") { (view: KakaoMapView, command: [String: Any]) in
         try view.executeCameraCommand(command)
       }

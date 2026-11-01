@@ -6,6 +6,14 @@ import type {
   AdvancedCameraOperationEvent,
 } from './types-camera';
 import type {
+  AnimatedImageAction,
+  MapGuiEvent,
+  MapGuiScene,
+  MapGuiStatus,
+  MoveInfoWindowOptions,
+  ShowInfoWindowOptions,
+} from './types-gui';
+import type {
   LabelAnimationEvent,
   LabelCapabilities,
   LabelClickEvent,
@@ -158,6 +166,7 @@ export type KakaoMapViewProps = ViewProps & {
   onRoutesChanged?: (event: RouteCounts) => void;
   onRouteProgress?: (event: RouteProgressEvent) => void;
   onRouteAnimationStop?: (event: RouteAnimationStopEvent) => void;
+  onGuiEvent?: (event: MapGuiEvent) => void;
   onCameraOperation?: (event: AdvancedCameraOperationEvent) => void;
 };
 
@@ -178,6 +187,27 @@ export type KakaoMapViewRef = {
   executeShapeCommand: (command: ShapeCommand) => Promise<ShapeCommandResult>;
   applyRoutes: (scene: RouteScene) => Promise<RouteCounts>;
   executeRouteCommand: (command: RouteCommand) => Promise<RouteCommandResult>;
+  applyGui: (scene: MapGuiScene) => Promise<void>;
+  showInfoWindow: (id: string, options?: ShowInfoWindowOptions) => Promise<void>;
+  hideInfoWindow: (id: string) => Promise<void>;
+  moveInfoWindow: (
+    id: string,
+    position: Coordinate,
+    options?: MoveInfoWindowOptions,
+  ) => Promise<void>;
+  showWidget: (id: string) => Promise<void>;
+  hideWidget: (id: string) => Promise<void>;
+  positionWidget: (id: string, position: MapWidgetPosition) => Promise<void>;
+  rotateWidget: (id: string, rotation: number) => Promise<void>;
+  startGuiAnimation: (id: string) => Promise<void>;
+  stopGuiAnimation: (id: string) => Promise<void>;
+  controlAnimatedImage: (
+    ownerType: 'infoWindow' | 'widget',
+    ownerId: string,
+    componentId: string,
+    action: AnimatedImageAction,
+  ) => Promise<void>;
+  getGuiStatus: () => Promise<MapGuiStatus>;
   /** Android only: resolves with the SDK's asynchronous POI state response. */
   executeCameraCommand: (command: AdvancedCameraCommand) => Promise<AdvancedCameraCommandResult>;
 };
