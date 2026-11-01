@@ -544,6 +544,7 @@ SDK errors preserve their original code and message. Authentication failures are
 
 On Android, `getCamera()` waits for the renderer’s asynchronous response so it can read an in-progress movement. It rejects with `ERR_KAKAO_MAP_CAMERA_TIMEOUT` if no response arrives within three seconds, or `ERR_KAKAO_MAP_VIEW_DESTROYED` if the view is destroyed first.
 
+Shapes, routes, GUI, dim screen, and utilities use domain-specific codes for invalid input, missing IDs, cancellation/supersession, image loading, and unsupported platform features. Handle both `code` and `message` on every ref Promise, and assume a capability set to `false` is rejected rather than simulated.
 
 Web imports are safe, but native map features are unsupported. The Android SDK has no x86_64 binary; use an ARM emulator or device.
 

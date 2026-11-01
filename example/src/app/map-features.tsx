@@ -90,9 +90,7 @@ const sections = [
   'dim',
   'utilities',
 ] as const;
-
 const overlays: MapOverlay[] = ['roadviewLine', 'hillShading', 'bicycleRoad', 'hybrid'];
-
 const gestures: MapGesture[] = [
   'doubleTapZoomIn',
   'twoFingerTapZoomOut',
@@ -117,12 +115,9 @@ export default function MapFeaturesPage() {
   const [options, setOptions] = useState<MapOptions>({});
   const [labels, setLabels] = useState<LabelScene>();
   const [labelCapabilities, setLabelCapabilities] = useState<LabelCapabilities>();
-
   const [shapeCapabilities, setShapeCapabilities] = useState<ShapeCapabilities>();
-
   const [advancedCameraCapabilities, setAdvancedCameraCapabilities] =
     useState<AdvancedCameraCapabilities>();
-
   const [routeCapabilities, setRouteCapabilities] = useState<RouteCapabilities>();
   const [guiCapabilities, setGuiCapabilities] = useState<MapGuiCapabilities>();
   const [dimStatus, setDimStatus] = useState<DimScreenStatus>();
@@ -130,6 +125,7 @@ export default function MapFeaturesPage() {
   const [viewportBeforeInset, setViewportBeforeInset] = useState<MapViewport>();
   const [result, setResult] = useState('Waiting for map');
   const [event, setEvent] = useState('No event');
+
   useEffect(() => {
     if (Platform.OS === 'web') {
       return;
@@ -158,22 +154,12 @@ export default function MapFeaturesPage() {
     return <Text>{'Maps support Android and iOS only.'}</Text>;
   }
 
-  const actions: {
-    id: string;
-    run: () => void;
-  }[] = [];
-
+  const actions: { id: string; run: () => void }[] = [];
   if (section === 'camera') {
-    const updates: {
-      id: string;
-      update: CameraUpdate;
-    }[] = [
+    const updates: { id: string; update: CameraUpdate }[] = [
       { id: 'position', update: { type: 'position', position: seoul } },
       { id: 'zoom', update: { type: 'zoom', zoomLevel: 18 } },
-      {
-        id: 'orientation',
-        update: { type: 'orientation', rotation: 90, tilt: 45 },
-      },
+      { id: 'orientation', update: { type: 'orientation', rotation: 90, tilt: 45 } },
       {
         id: 'fit',
         update: {
@@ -184,6 +170,28 @@ export default function MapFeaturesPage() {
     ];
 
     actions.push(
+      {
+        id: 'load-combined-objects',
+        run: () =>
+          execute(async () => {
+            const view = requireMap();
+            await view.moveCamera({ ...regularLabelFixture.coordinate, zoomLevel: 17 });
+            setLabels(labelFixtureScenes.regular);
+
+            const shapes = await view.applyShapes(shapeFixtureScenes.complete);
+            const routes = await view.applyRoutes(routeFixtureScene);
+            await view.applyGui(guiFixtureScenes.common);
+            await view.applyDimScreen(dimFixtureScenes.geographicWithHole);
+
+            return {
+              shapes,
+              routes,
+              gui: await view.getGuiStatus(),
+              dim: await view.getDimScreenStatus(),
+              labels: await view.getLabelState(),
+            };
+          }),
+      },
       ...updates.map(({ id, update }) => ({
         id,
         run: () => execute(() => requireMap().updateCamera(update)),
@@ -198,20 +206,11 @@ export default function MapFeaturesPage() {
             ),
           ),
       },
-      {
-        id: 'reset-camera',
-        run: () => execute(() => requireMap().moveCamera(pangyo)),
-      },
+      { id: 'reset-camera', run: () => execute(() => requireMap().moveCamera(pangyo)) },
       ...[0, 90].map((rotation) => ({
         id: `flat-rotation-${rotation}`,
         run: () =>
-          execute(() =>
-            requireMap().updateCamera({
-              type: 'orientation',
-              rotation,
-              tilt: 0,
-            }),
-          ),
+          execute(() => requireMap().updateCamera({ type: 'orientation', rotation, tilt: 0 })),
       })),
     );
   } else if (section === 'advanced-camera') {
@@ -254,14 +253,8 @@ export default function MapFeaturesPage() {
         run: () => patch({ poi: { scale } }),
       })),
       ...[false, true].flatMap((value) => [
-        {
-          id: `poi-visible-${value}`,
-          run: () => patch({ poi: { visible: value } }),
-        },
-        {
-          id: `poi-clickable-${value}`,
-          run: () => patch({ poi: { clickable: value } }),
-        },
+        { id: `poi-visible-${value}`, run: () => patch({ poi: { visible: value } }) },
+        { id: `poi-clickable-${value}`, run: () => patch({ poi: { clickable: value } }) },
       ]),
       ...[0, 0.1, 1].map((buildingScale) => ({
         id: `building-${buildingScale}`,
@@ -287,32 +280,17 @@ export default function MapFeaturesPage() {
         id: 'no-padding',
         run: () => patch({ padding: { top: 0, right: 0, bottom: 0, left: 0 } }),
       },
-      {
-        id: 'zoom-range',
-        run: () => patch({ zoomRange: { min: 12, max: 18 } }),
-      },
-      {
-        id: 'reset-zoom-range',
-        run: () => patch({ zoomRange: { min: 6, max: 21 } }),
-      },
+      { id: 'zoom-range', run: () => patch({ zoomRange: { min: 12, max: 18 } }) },
+      { id: 'reset-zoom-range', run: () => patch({ zoomRange: { min: 6, max: 21 } }) },
       ...[false, true].flatMap((visible) => [
-        {
-          id: `compass-${visible}`,
-          run: () => patch({ compass: { visible } }),
-        },
-        {
-          id: `scale-${visible}`,
-          run: () => patch({ scaleBar: { visible, autoHide: false } }),
-        },
+        { id: `compass-${visible}`, run: () => patch({ compass: { visible } }) },
+        { id: `scale-${visible}`, run: () => patch({ scaleBar: { visible, autoHide: false } }) },
       ]),
       {
         id: 'widget-positions',
         run: () =>
           patch({
-            compass: {
-              visible: true,
-              position: { gravity: 'topRight', x: 24, y: 24 },
-            },
+            compass: { visible: true, position: { gravity: 'topRight', x: 24, y: 24 } },
             scaleBar: {
               visible: true,
               autoHide: false,
@@ -328,11 +306,7 @@ export default function MapFeaturesPage() {
             scaleBar: {
               visible: true,
               autoHide: true,
-              fade: {
-                inDuration: 200,
-                outDuration: 400,
-                retentionDuration: 1000,
-              },
+              fade: { inDuration: 200, outDuration: 400, retentionDuration: 1000 },
             },
           }),
       },
@@ -362,10 +336,7 @@ export default function MapFeaturesPage() {
             return requireMap().coordinateToScreen(camera);
           }),
       },
-      {
-        id: 'clear-cache',
-        run: () => execute(() => requireMap().clearCache()),
-      },
+      { id: 'clear-cache', run: () => execute(() => requireMap().clearCache()) },
       {
         id: 'screen-up-bearing',
         run: () =>
@@ -392,10 +363,7 @@ export default function MapFeaturesPage() {
         id: 'shape-capabilities',
         run: () =>
           execute(async () => {
-            const value = await requireMap().executeShapeCommand({
-              type: 'getCapabilities',
-            });
-
+            const value = await requireMap().executeShapeCommand({ type: 'getCapabilities' });
             if (value.type === 'capabilities') {
               setShapeCapabilities(value);
             }
@@ -403,10 +371,7 @@ export default function MapFeaturesPage() {
             return value;
           }),
       },
-      {
-        id: 'shapes-complete',
-        run: () => applyShapes(shapeFixtureScenes.complete),
-      },
+      { id: 'shapes-complete', run: () => applyShapes(shapeFixtureScenes.complete) },
       { id: 'shapes-clear', run: () => applyShapes(shapeFixtureScenes.empty) },
       ...Object.entries(isolatedShapeFixtureScenes).map(([id, scene]) => ({
         id: `shape-scene-${id}`,
@@ -475,7 +440,6 @@ export default function MapFeaturesPage() {
       run: () =>
         execute(async () => {
           const value = await requireMap().executeRouteCommand(routeFixtureCommands.capabilities);
-
           if (value.type === 'capabilities') {
             setRouteCapabilities(value);
           }
@@ -486,38 +450,20 @@ export default function MapFeaturesPage() {
 
     actions.push(
       { id: 'route-dispatch-apply', run: () => applyRoutes(routeFixtureScene) },
-      {
-        id: 'route-dispatch-remove',
-        run: () => executeRouteCommand(routeFixtureCommands.remove),
-      },
+      { id: 'route-dispatch-remove', run: () => executeRouteCommand(routeFixtureCommands.remove) },
       {
         id: 'route-dispatch-replace-same-id',
         run: () => applyRoutes(routeFixtureReplacementScene),
       },
-      {
-        id: 'route-dispatch-clear',
-        run: () => applyRoutes(emptyRouteFixtureScene),
-      },
+      { id: 'route-dispatch-clear', run: () => applyRoutes(emptyRouteFixtureScene) },
     );
 
     if (section === 'routes') {
       actions.push(
-        {
-          id: 'route-read-counts',
-          run: () => executeRouteCommand(routeFixtureCommands.counts),
-        },
-        {
-          id: 'route-read-state',
-          run: () => executeRouteCommand(routeFixtureCommands.state),
-        },
-        {
-          id: 'route-dispatch-hide',
-          run: () => executeRouteCommand(routeFixtureCommands.hide),
-        },
-        {
-          id: 'route-dispatch-show',
-          run: () => executeRouteCommand(routeFixtureCommands.show),
-        },
+        { id: 'route-read-counts', run: () => executeRouteCommand(routeFixtureCommands.counts) },
+        { id: 'route-read-state', run: () => executeRouteCommand(routeFixtureCommands.state) },
+        { id: 'route-dispatch-hide', run: () => executeRouteCommand(routeFixtureCommands.hide) },
+        { id: 'route-dispatch-show', run: () => executeRouteCommand(routeFixtureCommands.show) },
         {
           id: 'route-dispatch-z-index',
           run: () => executeRouteCommand(routeFixtureCommands.setZIndex),
@@ -594,14 +540,8 @@ export default function MapFeaturesPage() {
 
     if (section === 'gui') {
       actions.push(
-        {
-          id: 'gui-dispatch-apply-common',
-          run: () => applyGui(guiFixtureScenes.common),
-        },
-        {
-          id: 'gui-dispatch-pixel-box-32',
-          run: () => applyGui(guiFixtureScenes.pixelBox32),
-        },
+        { id: 'gui-dispatch-apply-common', run: () => applyGui(guiFixtureScenes.common) },
+        { id: 'gui-dispatch-pixel-box-32', run: () => applyGui(guiFixtureScenes.pixelBox32) },
         { id: 'gui-dispatch-clear', run: () => applyGui({}) },
         {
           id: 'gui-dispatch-show-info',
@@ -661,14 +601,8 @@ export default function MapFeaturesPage() {
       });
     } else {
       actions.push(
-        {
-          id: 'gui-dispatch-apply-common',
-          run: () => applyGui(guiFixtureScenes.common),
-        },
-        {
-          id: 'gui-dispatch-pixel-box-32',
-          run: () => applyGui(guiFixtureScenes.pixelBox32),
-        },
+        { id: 'gui-dispatch-apply-common', run: () => applyGui(guiFixtureScenes.common) },
+        { id: 'gui-dispatch-pixel-box-32', run: () => applyGui(guiFixtureScenes.pixelBox32) },
         {
           id: 'gui-dispatch-move-info',
           run: () =>
@@ -757,10 +691,7 @@ export default function MapFeaturesPage() {
         run: () =>
           execute(() => requireMap().setDimHighlightVisible('fixture-geographic-highlight', true)),
       },
-      {
-        id: 'dim-dispatch-clear',
-        run: () => applyDimScreen(dimFixtureScenes.disabled),
-      },
+      { id: 'dim-dispatch-clear', run: () => applyDimScreen(dimFixtureScenes.disabled) },
     );
 
     if (dimStatus?.capabilities.modelHighlights) {
@@ -829,10 +760,7 @@ export default function MapFeaturesPage() {
     const fontResourceName = androidFontFixture.resourceName;
     if (utilityCapabilities?.fontRegistration && fontResourceName) {
       actions.push(
-        {
-          id: 'utility-font-baseline',
-          run: () => applyLabels(androidFontFixture.baseline),
-        },
+        { id: 'utility-font-baseline', run: () => applyLabels(androidFontFixture.baseline) },
         {
           id: 'utility-register-font',
           run: () =>
@@ -842,10 +770,7 @@ export default function MapFeaturesPage() {
               name: androidFontFixture.family,
             }),
         },
-        {
-          id: 'utility-font-registered',
-          run: () => applyLabels(androidFontFixture.registered),
-        },
+        { id: 'utility-font-registered', run: () => applyLabels(androidFontFixture.registered) },
       );
     }
 
@@ -853,11 +778,7 @@ export default function MapFeaturesPage() {
       actions.push(
         ...[false, true].map((enabled) => ({
           id: `utility-camera-animation-${enabled}`,
-          run: () =>
-            executeUtilityCommand({
-              type: 'setCameraAnimationEnabled',
-              enabled,
-            }),
+          run: () => executeUtilityCommand({ type: 'setCameraAnimationEnabled', enabled }),
         })),
       );
     }
@@ -917,10 +838,7 @@ export default function MapFeaturesPage() {
           id: 'utility-inset-viewport',
           run: () =>
             execute(async () => {
-              const result = await requireMap().executeUtilityCommand({
-                type: 'getViewport',
-              });
-
+              const result = await requireMap().executeUtilityCommand({ type: 'getViewport' });
               if (result.type !== 'viewport') {
                 throw new Error('Expected SDK viewport readback.');
               }
@@ -951,11 +869,7 @@ export default function MapFeaturesPage() {
             [false, true].map((visible) => ({
               id: `utility-dispatch-${category}-visible-${visible}`,
               run: () =>
-                executeUtilityCommand({
-                  type: 'setPoiCategoryVisible',
-                  category,
-                  visible,
-                }),
+                executeUtilityCommand({ type: 'setPoiCategoryVisible', category, visible }),
             })),
           ),
       );
@@ -1071,10 +985,7 @@ export default function MapFeaturesPage() {
             return value;
           }),
       },
-      {
-        id: 'label-state',
-        run: () => execute(() => requireMap().getLabelState()),
-      },
+      { id: 'label-state', run: () => execute(() => requireMap().getLabelState()) },
       { id: 'clear-labels', run: () => setLabels({}) },
     );
 
@@ -1087,14 +998,8 @@ export default function MapFeaturesPage() {
       );
     } else if (section === 'label-motion') {
       actions.push(
-        {
-          id: 'load-regular',
-          run: () => applyLabels(labelFixtureScenes.regular),
-        },
-        {
-          id: 'load-sharing',
-          run: () => applyLabels(labelFixtureScenes.sharingAndTracking),
-        },
+        { id: 'load-regular', run: () => applyLabels(labelFixtureScenes.regular) },
+        { id: 'load-sharing', run: () => applyLabels(labelFixtureScenes.sharingAndTracking) },
         {
           id: 'load-sharing-shape',
           run: () => applyShapes(sharingShapeFixtureScene),
@@ -1103,10 +1008,7 @@ export default function MapFeaturesPage() {
           id: 'sharing-shape-state',
           run: () =>
             execute(() =>
-              requireMap().executeShapeCommand({
-                type: 'getState',
-                id: modelPolygonFixtureId,
-              }),
+              requireMap().executeShapeCommand({ type: 'getState', id: modelPolygonFixtureId }),
             ),
         },
         ...Object.entries(sharingLabelIds).map(([owner, id]) => ({
@@ -1186,10 +1088,7 @@ export default function MapFeaturesPage() {
       );
     } else if (section === 'label-errors') {
       actions.push(
-        {
-          id: 'error-control',
-          run: () => applyLabels(labelFixtureScenes.pixelBox),
-        },
+        { id: 'error-control', run: () => applyLabels(labelFixtureScenes.pixelBox) },
         ...Object.entries(labelErrorFixtureScenes).map(([id, scene]) => ({
           id: `label-error-${id}`,
           run: () => setLabels(scene),
@@ -1201,10 +1100,7 @@ export default function MapFeaturesPage() {
       );
     } else {
       actions.push(
-        {
-          id: 'load-animations',
-          run: () => applyLabels(labelFixtureScenes.animations),
-        },
+        { id: 'load-animations', run: () => applyLabels(labelFixtureScenes.animations) },
         ...labelFixtureActions.animations.flatMap((command) =>
           command.type === 'startAnimation' || command.type === 'stopAnimation'
             ? [
@@ -1305,6 +1201,7 @@ export default function MapFeaturesPage() {
       ) : null}
     </View>
   );
+
   function requireMap() {
     if (!map.current) {
       throw new Error('The map is not mounted.');
@@ -1377,10 +1274,7 @@ export default function MapFeaturesPage() {
 
   function applyLabels(scene: LabelScene) {
     execute(async () => {
-      await requireMap().moveCamera({
-        ...regularLabelFixture.coordinate,
-        zoomLevel: 17,
-      });
+      await requireMap().moveCamera({ ...regularLabelFixture.coordinate, zoomLevel: 17 });
       setLabels(scene);
 
       return 'Label scene submitted';
@@ -1389,10 +1283,7 @@ export default function MapFeaturesPage() {
 
   function applyShapes(scene: ShapeScene, zoomLevel = 17) {
     execute(async () => {
-      await requireMap().moveCamera({
-        ...regularLabelFixture.coordinate,
-        zoomLevel,
-      });
+      await requireMap().moveCamera({ ...regularLabelFixture.coordinate, zoomLevel });
 
       return requireMap().applyShapes(scene);
     });
@@ -1400,10 +1291,7 @@ export default function MapFeaturesPage() {
 
   function applyRoutes(scene: RouteScene) {
     execute(async () => {
-      await requireMap().moveCamera({
-        ...regularLabelFixture.coordinate,
-        zoomLevel: 17,
-      });
+      await requireMap().moveCamera({ ...regularLabelFixture.coordinate, zoomLevel: 17 });
 
       return requireMap().applyRoutes(scene);
     });
@@ -1419,10 +1307,7 @@ export default function MapFeaturesPage() {
 
   function applyGui(scene: MapGuiScene) {
     execute(async () => {
-      await requireMap().moveCamera({
-        ...regularLabelFixture.coordinate,
-        zoomLevel: 17,
-      });
+      await requireMap().moveCamera({ ...regularLabelFixture.coordinate, zoomLevel: 17 });
       await requireMap().applyGui(scene);
 
       return 'GUI scene submitted';
@@ -1431,10 +1316,7 @@ export default function MapFeaturesPage() {
 
   function applyDimScreen(value: DimScreenOptions) {
     execute(async () => {
-      await requireMap().moveCamera({
-        ...regularLabelFixture.coordinate,
-        zoomLevel: 17,
-      });
+      await requireMap().moveCamera({ ...regularLabelFixture.coordinate, zoomLevel: 17 });
       await requireMap().applyDimScreen(value);
 
       return 'Dim-screen options submitted';
@@ -1459,7 +1341,6 @@ export default function MapFeaturesPage() {
       setResult(`${id}|${JSON.stringify((await action()) ?? 'dispatched')}`);
     } catch (error) {
       const code = error instanceof Error && 'code' in error ? String(error.code) : 'unknown';
-
       setResult(`${id}|error: ${code} ${error instanceof Error ? error.message : String(error)}`);
     }
   }
