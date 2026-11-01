@@ -33,6 +33,7 @@ final class KakaoMapView: ExpoView, MapControllerDelegate, KakaoMapEventDelegate
   private var routes: MapRoutes?
   private var gui: MapGui?
   private var dimScreen: MapDimScreen?
+  private var utilities: MapUtilities?
   private var cameraCommands: MapCameraCommands?
   private var imageLoader: MapImageLoader?
   private var pendingLabels: MapLabelSceneRecord?
@@ -344,13 +345,20 @@ final class KakaoMapView: ExpoView, MapControllerDelegate, KakaoMapEventDelegate
   }
 
   func clearCache() throws {
-    _ = try requireMap()
+    _ = try requireUtilities().command(["type": "clearCache", "kind": "all"])
+  }
+
+  func requireUtilities() throws -> MapUtilities {
+    let map = try requireMap()
+    if let utilities {
+      return utilities
+    }
     guard let controller else {
       throw KakaoMapException("ERR_KAKAO_MAP_NOT_READY", "The map controller is unavailable.")
     }
-    controller.clearMemoryCache("kakao-map")
-    controller.clearDiskCache()
-    controller.clearViewInfoCaches()
+    let manager = MapUtilities(map: map, controller: controller)
+    utilities = manager
+    return manager
   }
 
   func executeCameraCommand(_ command: [String: Any]) throws -> [String: Any] {
@@ -590,6 +598,8 @@ final class KakaoMapView: ExpoView, MapControllerDelegate, KakaoMapEventDelegate
   private func releaseMapObjects() {
     labelGeneration += 1
     routeGeneration += 1
+    utilities?.dispose()
+    utilities = nil
     cameraCommands?.dispose()
     cameraCommands = nil
     labels?.dispose()

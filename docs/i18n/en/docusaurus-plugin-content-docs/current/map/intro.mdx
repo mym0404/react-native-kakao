@@ -480,6 +480,33 @@ const dim = await map.current?.getDimScreenStatus();
 
 Use `getDimScreenStatus().capabilities` to check route coverage, model-highlight orientation, animation, and state-getter support. iOS does not support `mapAndRoute` or dim z-order. Android has no getters for dim configuration or animator running state, so those status fields may be `null`.
 
+## Map utilities
+
+`executeUtilityCommand()` covers POI categories, tap interval, camera animation, map enabled/visible state, the actual viewport, versions, coordinate conversion, font registration, and caches. Call only capabilities returned by `getCapabilities`.
+
+```tsx
+const utility = await map.current?.executeUtilityCommand({ type: 'getCapabilities' });
+await map.current?.executeUtilityCommand({
+  type: 'setCameraAnimationEnabled',
+  enabled: false,
+});
+const viewport = await map.current?.executeUtilityCommand({ type: 'getViewport' });
+const converted = await map.current?.executeUtilityCommand({
+  type: 'convertCoordinate',
+  from: 'wgs84',
+  to: 'wtm',
+  coordinate: { x: 127.108678, y: 37.402001 },
+});
+```
+
+`getViewport` reads the SDK's current `{ x, y, width, height }` in logical screen units on both platforms. Only Android supports `setViewport`. Both platforms can change the camera-animation switch, but only iOS exposes its current value through `getState`. Android omits settings without native getters instead of echoing requested values. A setter Promise confirms SDK dispatch, not native state readback.
+
+On Android, `requestPoiState()` waits for the SDK's asynchronous response and returns POI `visible`, `clickable`, `scale`, and `language` values. It rejects with `ERR_KAKAO_MAP_POI_STATE_TIMEOUT` if no response arrives within three seconds. The iOS SDK has no equivalent asynchronous query.
+
+Android `registerFont` registers an app's compiled `res/font` resource with the map SDK. `resourceName` must start with a lowercase letter and contain only lowercase letters, numbers, and underscores; the optional `name` supplies the SDK registration name. The iOS SDK does not support this registration path.
+
+For WGS84, `x` is longitude and `y` is latitude. WTM, WCong, and Kakao values remain in their SDK coordinate-system units and are not display-scaled. iOS additionally supports the Kakao coordinate system and memory/view-info caches; Android additionally exposes the engine version.
+
 ## Errors and platform support
 
 Ref commands reject before readiness instead of being queued. Handle Promise `code` and `message` fields and `onError` events.
@@ -508,6 +535,10 @@ Ref commands reject before readiness instead of being queued. Handle Promise `co
 | `ERR_KAKAO_MAP_GUI_NOT_FOUND`                | A referenced info-window, widget, or animation ID is missing        |
 | `ERR_KAKAO_MAP_DIM_INVALID_ARGUMENT`         | Invalid dim cover, highlight, or animation input                    |
 | `ERR_KAKAO_MAP_UNSUPPORTED_PLATFORM_FEATURE` | Native feature absent from the current platform SDK     |
+| `ERR_KAKAO_MAP_COORDINATE_CONVERSION_FAILED` | The SDK could not produce a coordinate conversion result            |
+| `ERR_KAKAO_MAP_VERSION_UNAVAILABLE`          | Requested SDK or engine version metadata is unavailable             |
+| `ERR_KAKAO_MAP_POI_STATE_TIMEOUT`            | Android POI-state response did not arrive within three seconds      |
+| `ERR_KAKAO_MAP_FONT_RESOURCE_NOT_FOUND`      | Android compiled font resource could not be found                   |
 
 SDK errors preserve their original code and message. Authentication failures are delivered through `onError`, not the initialization Promise. No automatic retry is performed: fix the app registration or network issue and remount the view to retry. Restart the app process if the native app key must change.
 

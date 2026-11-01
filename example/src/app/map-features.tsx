@@ -18,6 +18,9 @@ import {
   type MapGuiScene,
   type MapOptions,
   type MapOverlay,
+  type MapUtilityCapabilities,
+  type MapUtilityCommand,
+  type MapViewport,
   type RouteCapabilities,
   type RouteCommand,
   type RouteScene,
@@ -30,6 +33,7 @@ import { dimFixtureScenes } from '../map/dim-fixtures';
 import { guiFixtureScenes } from '../map/gui-fixtures';
 import {
   androidCompetitionExceptionsLabelCapabilityFixture,
+  androidFontFixture,
   androidNoneTransformLabelCapabilityFixture,
   iosLodAutoMoveLabelCapabilityFixture,
   iosPathRankLabelCapabilityFixture,
@@ -58,10 +62,12 @@ import {
   shapeFixtureScenes,
   sharingShapeFixtureScene,
 } from '../map/shape-fixtures';
+import { utilityFixtureCategories, utilityFixtureCommands } from '../map/utility-fixtures';
 import { kakaoNativeAppKey } from '../util/kakaoNativeAppKey';
 
 const pangyo = { latitude: 37.402001, longitude: 127.108678, zoomLevel: 17 };
 const seoul = { latitude: 37.5665, longitude: 126.978 };
+const viewportInset = 20;
 const sections = [
   'camera',
   'advanced-camera',
@@ -82,6 +88,7 @@ const sections = [
   'gui',
   'gui-motion',
   'dim',
+  'utilities',
 ] as const;
 
 const overlays: MapOverlay[] = ['roadviewLine', 'hillShading', 'bicycleRoad', 'hybrid'];
@@ -119,6 +126,8 @@ export default function MapFeaturesPage() {
   const [routeCapabilities, setRouteCapabilities] = useState<RouteCapabilities>();
   const [guiCapabilities, setGuiCapabilities] = useState<MapGuiCapabilities>();
   const [dimStatus, setDimStatus] = useState<DimScreenStatus>();
+  const [utilityCapabilities, setUtilityCapabilities] = useState<MapUtilityCapabilities>();
+  const [viewportBeforeInset, setViewportBeforeInset] = useState<MapViewport>();
   const [result, setResult] = useState('Waiting for map');
   const [event, setEvent] = useState('No event');
   useEffect(() => {
@@ -787,6 +796,269 @@ export default function MapFeaturesPage() {
         },
       );
     }
+  } else if (section === 'utilities') {
+    actions.push(
+      {
+        id: 'utility-read-capabilities',
+        run: () =>
+          execute(async () => {
+            const value = await requireMap().executeUtilityCommand(
+              utilityFixtureCommands.capabilities,
+            );
+
+            if (value.type === 'capabilities') {
+              setUtilityCapabilities(value);
+            }
+
+            return value;
+          }),
+      },
+      {
+        id: 'utility-read-state',
+        run: () => executeUtilityCommand(utilityFixtureCommands.state),
+      },
+    );
+
+    if (utilityCapabilities?.poi.stateRequest) {
+      actions.push({
+        id: 'utility-read-committed-poi',
+        run: () => execute(() => requireMap().requestPoiState()),
+      });
+    }
+
+    const fontResourceName = androidFontFixture.resourceName;
+    if (utilityCapabilities?.fontRegistration && fontResourceName) {
+      actions.push(
+        {
+          id: 'utility-font-baseline',
+          run: () => applyLabels(androidFontFixture.baseline),
+        },
+        {
+          id: 'utility-register-font',
+          run: () =>
+            executeUtilityCommand({
+              type: 'registerFont',
+              resourceName: fontResourceName,
+              name: androidFontFixture.family,
+            }),
+        },
+        {
+          id: 'utility-font-registered',
+          run: () => applyLabels(androidFontFixture.registered),
+        },
+      );
+    }
+
+    if (utilityCapabilities?.settings.cameraAnimationEnabled) {
+      actions.push(
+        ...[false, true].map((enabled) => ({
+          id: `utility-camera-animation-${enabled}`,
+          run: () =>
+            executeUtilityCommand({
+              type: 'setCameraAnimationEnabled',
+              enabled,
+            }),
+        })),
+      );
+    }
+
+    if (utilityCapabilities?.settings.enabled) {
+      actions.push(
+        ...[false, true].map((enabled) => ({
+          id: `utility-enabled-${enabled}`,
+          run: () => executeUtilityCommand({ type: 'setEnabled', enabled }),
+        })),
+      );
+    }
+
+    if (utilityCapabilities?.settings.visible) {
+      actions.push(
+        ...[false, true].map((visible) => ({
+          id: `utility-visible-${visible}`,
+          run: () => executeUtilityCommand({ type: 'setVisible', visible }),
+        })),
+      );
+    }
+
+    if (utilityCapabilities?.settings.keepLevelOnResize) {
+      actions.push(
+        ...[false, true].map((enabled) => ({
+          id: `utility-keep-level-${enabled}`,
+          run: () => executeUtilityCommand({ type: 'setKeepLevelOnResize', enabled }),
+        })),
+      );
+    }
+
+    if (utilityCapabilities?.viewport.readable) {
+      actions.push({
+        id: 'utility-read-viewport',
+        run: () => executeUtilityCommand({ type: 'getViewport' }),
+      });
+    }
+
+    if (utilityCapabilities?.viewport.writable) {
+      if (viewportBeforeInset) {
+        const viewport = viewportBeforeInset;
+        actions.push({
+          id: 'utility-restore-viewport',
+          run: () =>
+            execute(async () => {
+              const value = await requireMap().executeUtilityCommand({
+                type: 'setViewport',
+                viewport,
+              });
+              setViewportBeforeInset(undefined);
+
+              return value;
+            }),
+        });
+      } else {
+        actions.push({
+          id: 'utility-inset-viewport',
+          run: () =>
+            execute(async () => {
+              const result = await requireMap().executeUtilityCommand({
+                type: 'getViewport',
+              });
+
+              if (result.type !== 'viewport') {
+                throw new Error('Expected SDK viewport readback.');
+              }
+
+              const viewport = result.viewport;
+              const value = await requireMap().executeUtilityCommand({
+                type: 'setViewport',
+                viewport: {
+                  x: viewport.x + viewportInset,
+                  y: viewport.y + viewportInset,
+                  width: viewport.width - viewportInset * 2,
+                  height: viewport.height - viewportInset * 2,
+                },
+              });
+              setViewportBeforeInset(viewport);
+
+              return value;
+            }),
+        });
+      }
+    }
+
+    if (utilityCapabilities?.poi.categoryVisibility) {
+      actions.push(
+        ...utilityFixtureCategories
+          .filter((category) => utilityCapabilities.poi.categories.includes(category))
+          .flatMap((category) =>
+            [false, true].map((visible) => ({
+              id: `utility-dispatch-${category}-visible-${visible}`,
+              run: () =>
+                executeUtilityCommand({
+                  type: 'setPoiCategoryVisible',
+                  category,
+                  visible,
+                }),
+            })),
+          ),
+      );
+    }
+
+    if (
+      utilityCapabilities?.poi.categoryMaxCount &&
+      utilityCapabilities.poi.categories.includes('place')
+    ) {
+      actions.push(
+        {
+          id: 'utility-dispatch-limit-places',
+          run: () => executeUtilityCommand(utilityFixtureCommands.limitPlaces),
+        },
+        {
+          id: 'utility-dispatch-reset-places',
+          run: () => executeUtilityCommand(utilityFixtureCommands.resetPlaces),
+        },
+      );
+    }
+
+    if (utilityCapabilities?.settings.tapInterval) {
+      actions.push({
+        id: 'utility-dispatch-tap-interval',
+        run: () => executeUtilityCommand(utilityFixtureCommands.setTapInterval),
+      });
+    }
+
+    if (utilityCapabilities?.settings.refresh) {
+      actions.push({
+        id: 'utility-dispatch-refresh',
+        run: () => executeUtilityCommand(utilityFixtureCommands.refresh),
+      });
+    }
+
+    if (utilityCapabilities?.versionComponents.includes('sdk')) {
+      actions.push({
+        id: 'utility-read-sdk-version',
+        run: () => executeUtilityCommand(utilityFixtureCommands.sdkVersion),
+      });
+    }
+
+    if (utilityCapabilities?.versionComponents.includes('engine')) {
+      actions.push({
+        id: 'utility-read-engine-version',
+        run: () => executeUtilityCommand(utilityFixtureCommands.engineVersion),
+      });
+    }
+
+    if (utilityCapabilities?.coordinateConversions.includes('wgs84:wtm')) {
+      actions.push({
+        id: 'utility-read-wgs84-to-wtm',
+        run: () => executeUtilityCommand(utilityFixtureCommands.wgs84ToWtm),
+      });
+    }
+
+    if (
+      utilityCapabilities?.coordinateConversions.includes('wgs84:wtm') &&
+      utilityCapabilities.coordinateConversions.includes('wtm:wgs84')
+    ) {
+      actions.push({
+        id: 'utility-read-coordinate-roundtrip',
+        run: () =>
+          execute(async () => {
+            const forward = await requireMap().executeUtilityCommand(
+              utilityFixtureCommands.wgs84ToWtm,
+            );
+
+            if (forward.type !== 'coordinate') {
+              throw new Error(`Expected coordinate result, received ${forward.type}.`);
+            }
+
+            const reverse = await requireMap().executeUtilityCommand({
+              type: 'convertCoordinate',
+              from: 'wtm',
+              to: 'wgs84',
+              coordinate: forward.coordinate,
+            });
+
+            if (reverse.type !== 'coordinate') {
+              throw new Error(`Expected coordinate result, received ${reverse.type}.`);
+            }
+
+            const original = utilityFixtureCommands.wgs84ToWtm.coordinate;
+
+            return {
+              forward,
+              reverse,
+              delta: {
+                x: reverse.coordinate.x - original.x,
+                y: reverse.coordinate.y - original.y,
+              },
+            };
+          }),
+      });
+    }
+
+    if (utilityCapabilities?.cacheKinds.includes('disk')) {
+      actions.push({
+        id: 'utility-dispatch-clear-disk-cache',
+        run: () => executeUtilityCommand(utilityFixtureCommands.clearDiskCache),
+      });
+    }
   } else {
     actions.push(
       {
@@ -1139,6 +1411,10 @@ export default function MapFeaturesPage() {
 
   function executeRouteCommand(command: RouteCommand) {
     execute(() => requireMap().executeRouteCommand(command));
+  }
+
+  function executeUtilityCommand(command: MapUtilityCommand) {
+    execute(() => requireMap().executeUtilityCommand(command));
   }
 
   function applyGui(scene: MapGuiScene) {

@@ -114,6 +114,10 @@ class KakaoMapModule : Module() {
         AsyncFunction("stopDimAnimation") { view: KakaoMapView, id: String -> view.requireDimScreen().stopAnimation(id) }
         AsyncFunction("getDimScreenStatus") { view: KakaoMapView -> view.requireDimScreen().status() }
         AsyncFunction(
+          "executeUtilityCommand",
+        ) { view: KakaoMapView, command: Map<String, Any?> -> view.requireUtilities().command(command) }
+        AsyncFunction("requestPoiState") { view: KakaoMapView, promise: Promise -> view.requireUtilities().requestPoiState(promise) }
+        AsyncFunction(
           "executeCameraCommand",
         ) { view: KakaoMapView, command: Map<String, Any?>, promise: Promise -> view.executeCameraCommand(command, promise) }
         OnViewDestroys { view: KakaoMapView -> view.destroy() }

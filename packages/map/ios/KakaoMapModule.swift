@@ -190,6 +190,12 @@ public class KakaoMapModule: Module {
       AsyncFunction("getDimScreenStatus") { (view: KakaoMapView) in
         try view.requireDimScreen().status()
       }
+      AsyncFunction("executeUtilityCommand") { (view: KakaoMapView, command: [String: Any]) in
+        try view.requireUtilities().command(command)
+      }
+      AsyncFunction("requestPoiState") { (view: KakaoMapView, promise: Promise) in
+        try view.requireUtilities().requestPoiState(promise)
+      }
       AsyncFunction("executeCameraCommand") { (view: KakaoMapView, command: [String: Any]) in
         try view.executeCameraCommand(command)
       }
