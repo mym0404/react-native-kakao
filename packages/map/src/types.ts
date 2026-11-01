@@ -13,6 +13,13 @@ import type {
   LabelRuntimeState,
   LabelScene,
 } from './types-labels';
+import type {
+  ShapeAnimationStopEvent,
+  ShapeCommand,
+  ShapeCommandResult,
+  ShapeCounts,
+  ShapeScene,
+} from './types-shapes';
 
 export type Coordinate = {
   latitude: number;
@@ -115,6 +122,7 @@ export type KakaoMapViewProps = ViewProps & {
   /** Applies the supplied fields; omitted fields retain their current SDK values. */
   options?: MapOptions;
   labels?: LabelScene;
+  shapes?: ShapeScene;
   onMapReady?: () => void;
   onError?: (error: KakaoMapError) => void;
   onCameraMoveStart?: (event: CameraMoveEvent) => void;
@@ -136,6 +144,8 @@ export type KakaoMapViewProps = ViewProps & {
   onLabelClick?: (event: LabelClickEvent) => void;
   onLabelAnimationStopped?: (event: LabelAnimationEvent) => void;
   onLabelsChanged?: (event: LabelRuntimeState) => void;
+  onShapeAnimationStop?: (event: ShapeAnimationStopEvent) => void;
+  onShapesChanged?: (event: ShapeCounts) => void;
   onCameraOperation?: (event: AdvancedCameraOperationEvent) => void;
 };
 
@@ -152,6 +162,8 @@ export type KakaoMapViewRef = {
   runLabelCommand: (command: LabelCommand) => Promise<void>;
   getLabelCapabilities: () => Promise<LabelCapabilities>;
   getLabelState: () => Promise<LabelRuntimeState>;
+  applyShapes: (scene: ShapeScene) => Promise<ShapeCounts>;
+  executeShapeCommand: (command: ShapeCommand) => Promise<ShapeCommandResult>;
   /** Android only: resolves with the SDK's asynchronous POI state response. */
   executeCameraCommand: (command: AdvancedCameraCommand) => Promise<AdvancedCameraCommandResult>;
 };

@@ -38,6 +38,7 @@ import com.kakao.vectormap.label.animation.ScaleAnimation
 import com.kakao.vectormap.label.animation.ScaleAnimations
 import com.kakao.vectormap.label.animation.TransformAnimation
 import com.kakao.vectormap.label.animation.TransformAnimations
+import com.kakao.vectormap.shape.Polygon
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
@@ -365,6 +366,7 @@ internal class MapLabels(
   private val imageLoader: MapImageLoader,
   private val emitClick: (Map<String, Any>) -> Unit,
   private val emitAnimationStopped: (Map<String, Any>) -> Unit,
+  private val resolvePolygon: (String) -> Polygon?,
   private val density: Float,
 ) {
   private data class ActiveAnimationRun(
@@ -474,6 +476,14 @@ internal class MapLabels(
 
       "shareTransform" -> {
         share(command, transform = true)
+      }
+
+      "shareShapeTransform" -> {
+        val isEnabled = command.enabled.required()
+        val source = label(command.sourceId ?: invalid("sourceId is required."))
+        val targetId = command.targetId ?: invalid("targetId is required.")
+        val target = resolvePolygon(targetId) ?: notFound("polygon", targetId)
+        if (isEnabled) source.addShareTransform(target) else source.removeShareTransform(target)
       }
 
       "setBadgeVisibility" -> {
@@ -604,6 +614,8 @@ internal class MapLabels(
       "lodAutoMove" to false,
       "autoMoveDuration" to true,
       "labelScaleCommand" to true,
+      "sharedShapeTransform" to true,
+      "sharedShapeTarget" to "polygon",
       "competitionExceptions" to true,
       "supportedTransforms" to
         listOf("none", "absoluteRotation", "default", "absoluteRotationKeepUpright", "absoluteRotationDecal", "decal"),

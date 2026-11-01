@@ -20,11 +20,16 @@ final class KakaoMapView: ExpoView, MapControllerDelegate, KakaoMapEventDelegate
   let onLabelClick = EventDispatcher()
   let onLabelAnimationStopped = EventDispatcher()
   let onLabelsChanged = EventDispatcher()
+  let onShapeAnimationStop = EventDispatcher()
+  let onShapesChanged = EventDispatcher()
   let onCameraOperation = EventDispatcher()
   private var labels: MapLabels?
+  private var shapes: MapShapes?
   private var cameraCommands: MapCameraCommands?
   private var imageLoader: MapImageLoader?
   private var pendingLabels: MapLabelSceneRecord?
+  private var pendingShapes: [String: Any]?
+  private var hasUsedShapes = false
   private var labelGeneration = 0
   var pendingInitialCamera: CameraOptions?
   var camera: CameraOptions?
@@ -75,7 +80,16 @@ final class KakaoMapView: ExpoView, MapControllerDelegate, KakaoMapEventDelegate
       lastCameraValues = camera?.values
     }
     applyPendingOptionsIfReady()
+    applyPendingShapesIfReady()
     applyPendingLabelsIfReady()
+  }
+
+  func queueShapes(_ scene: [String: Any]?) {
+    if scene == nil, !hasUsedShapes {
+      return
+    }
+    hasUsedShapes = true
+    pendingShapes = scene ?? [:]
   }
 
   func queueLabels(_ scene: MapLabelSceneRecord?) {
@@ -195,6 +209,7 @@ final class KakaoMapView: ExpoView, MapControllerDelegate, KakaoMapEventDelegate
     }
     lastCameraValues = camera?.values
     applyPendingOptionsIfReady()
+    applyPendingShapesIfReady()
     applyPendingLabelsIfReady()
     onMapReady([:])
   }
@@ -342,6 +357,35 @@ final class KakaoMapView: ExpoView, MapControllerDelegate, KakaoMapEventDelegate
     try requireLabels().state()
   }
 
+  func applyShapes(_ scene: [String: Any]) throws -> [String: Any] {
+    pendingShapes = nil
+    let counts = try requireShapes().apply(scene)
+    hasUsedShapes = true
+    if !isDestroyed {
+      onShapesChanged(counts)
+    }
+    return counts
+  }
+
+  func executeShapeCommand(_ command: [String: Any]) throws -> [String: Any] {
+    try requireShapes().command(command)
+  }
+
+  private func requireShapes() throws -> MapShapes {
+    let map = try requireMap()
+    if let shapes {
+      return shapes
+    }
+    let shapes = MapShapes(map: map) { [weak self] event, payload in
+      guard let self, !isDestroyed else { return }
+      if event == "onShapeAnimationStop" {
+        onShapeAnimationStop(payload)
+      }
+    }
+    self.shapes = shapes
+    return shapes
+  }
+
   private func requireLabels() throws -> MapLabels {
     let map = try requireMap()
     if let labels {
@@ -358,6 +402,9 @@ final class KakaoMapView: ExpoView, MapControllerDelegate, KakaoMapEventDelegate
       emitAnimationStopped: { [weak self] event in
         guard let self, !isDestroyed else { return }
         onLabelAnimationStopped(event)
+      },
+      resolveShape: { [weak self] id in
+        self?.shapes?.resolveShape(id)
       }
     )
     self.labels = labels
@@ -407,12 +454,32 @@ final class KakaoMapView: ExpoView, MapControllerDelegate, KakaoMapEventDelegate
     }
   }
 
+  private func applyPendingShapesIfReady() {
+    guard isReady, let scene = pendingShapes else { return }
+    pendingShapes = nil
+    do {
+      _ = try applyShapes(scene)
+    } catch {
+      reportShapeError(error)
+    }
+  }
+
+  private func reportShapeError(_ error: Error) {
+    if let error = error as? Exception {
+      onError(["code": error.code, "message": error.reason])
+    } else {
+      onError(["code": "ERR_KAKAO_MAP_SHAPE", "message": error.localizedDescription])
+    }
+  }
+
   private func releaseMapObjects() {
     labelGeneration += 1
     cameraCommands?.dispose()
     cameraCommands = nil
     labels?.dispose()
     labels = nil
+    shapes?.dispose()
+    shapes = nil
     imageLoader?.dispose()
     imageLoader = nil
   }

@@ -14,6 +14,8 @@ import {
   type MapGesture,
   type MapOptions,
   type MapOverlay,
+  type ShapeCapabilities,
+  type ShapeScene,
 } from '@react-native-kakao/map';
 
 import { CAMERA_FIXTURES } from '../map/camera-fixtures';
@@ -31,6 +33,15 @@ import {
   sharingTargetDestination,
   updatedPathTextFixtureScene,
 } from '../map/label-fixtures';
+import {
+  isolatedShapeFixtureScenes,
+  isolatedShapeFixtureZoomLevels,
+  modelPolygonFixtureId,
+  shapeCapabilityCommands,
+  shapeFixtureCommands,
+  shapeFixtureScenes,
+  sharingShapeFixtureScene,
+} from '../map/shape-fixtures';
 import { kakaoNativeAppKey } from '../util/kakaoNativeAppKey';
 
 const pangyo = { latitude: 37.402001, longitude: 127.108678, zoomLevel: 17 };
@@ -48,6 +59,8 @@ const sections = [
   'label-animations',
   'label-limits',
   'label-errors',
+  'shapes',
+  'shape-motion',
 ] as const;
 
 const overlays: MapOverlay[] = ['roadviewLine', 'hillShading', 'bicycleRoad', 'hybrid'];
@@ -76,6 +89,8 @@ export default function MapFeaturesPage() {
   const [options, setOptions] = useState<MapOptions>({});
   const [labels, setLabels] = useState<LabelScene>();
   const [labelCapabilities, setLabelCapabilities] = useState<LabelCapabilities>();
+
+  const [shapeCapabilities, setShapeCapabilities] = useState<ShapeCapabilities>();
 
   const [advancedCameraCapabilities, setAdvancedCameraCapabilities] =
     useState<AdvancedCameraCapabilities>();
@@ -337,6 +352,89 @@ export default function MapFeaturesPage() {
           }),
       },
     );
+  } else if (section === 'shapes' || section === 'shape-motion') {
+    actions.push(
+      {
+        id: 'shape-capabilities',
+        run: () =>
+          execute(async () => {
+            const value = await requireMap().executeShapeCommand({
+              type: 'getCapabilities',
+            });
+
+            if (value.type === 'capabilities') {
+              setShapeCapabilities(value);
+            }
+
+            return value;
+          }),
+      },
+      {
+        id: 'shapes-complete',
+        run: () => applyShapes(shapeFixtureScenes.complete),
+      },
+      { id: 'shapes-clear', run: () => applyShapes(shapeFixtureScenes.empty) },
+      ...Object.entries(isolatedShapeFixtureScenes).map(([id, scene]) => ({
+        id: `shape-scene-${id}`,
+        run: () => applyShapes(scene, isolatedShapeFixtureZoomLevels[id]),
+      })),
+      ...Object.entries(shapeFixtureCommands)
+        .filter(([id]) => id !== 'capabilities')
+        .map(([id, command]) => ({
+          id: `shape-${id}`,
+          run: () => execute(() => requireMap().executeShapeCommand(command)),
+        })),
+    );
+
+    if (section === 'shape-motion') {
+      const commands = [
+        ...(shapeCapabilities?.zIndexMutation
+          ? [shapeCapabilityCommands.androidZIndexMutation]
+          : []),
+        ...(shapeCapabilities?.modelOrientation
+          ? [shapeCapabilityCommands.iosModelOrientation]
+          : []),
+        ...(shapeCapabilities?.geographicPosition
+          ? [shapeCapabilityCommands.androidGeographicPosition]
+          : []),
+      ];
+
+      actions.push(
+        ...commands.map((command) => ({
+          id: `shape-${command.type}`,
+          run: () => execute(() => requireMap().executeShapeCommand(command)),
+        })),
+      );
+
+      if (shapeCapabilities?.geographicOrientation) {
+        actions.push({
+          id: 'shape-geographic-orientation',
+          run: () =>
+            execute(() =>
+              requireMap().executeShapeCommand(shapeCapabilityCommands.iosGeographicOrientation),
+            ),
+        });
+      }
+
+      if (shapeCapabilities?.waveTargets.includes('polyline')) {
+        actions.push(
+          {
+            id: 'shape-start-polyline-wave',
+            run: () =>
+              execute(() =>
+                requireMap().executeShapeCommand(shapeCapabilityCommands.startPolylineWave),
+              ),
+          },
+          {
+            id: 'shape-stop-polyline-wave',
+            run: () =>
+              execute(() =>
+                requireMap().executeShapeCommand(shapeCapabilityCommands.stopPolylineWave),
+              ),
+          },
+        );
+      }
+    }
   } else {
     actions.push(
       {
@@ -372,6 +470,20 @@ export default function MapFeaturesPage() {
         {
           id: 'load-sharing',
           run: () => applyLabels(labelFixtureScenes.sharingAndTracking),
+        },
+        {
+          id: 'load-sharing-shape',
+          run: () => applyShapes(sharingShapeFixtureScene),
+        },
+        {
+          id: 'sharing-shape-state',
+          run: () =>
+            execute(() =>
+              requireMap().executeShapeCommand({
+                type: 'getState',
+                id: modelPolygonFixtureId,
+              }),
+            ),
         },
         ...Object.entries(sharingLabelIds).map(([owner, id]) => ({
           id: `sharing-focus-${owner}`,
@@ -558,6 +670,8 @@ export default function MapFeaturesPage() {
           onLabelAnimationStopped={(value) =>
             recordEvent({ type: 'label-animation-stopped', ...value })
           }
+          onShapesChanged={(value) => recordEvent({ type: 'shapes-changed', counts: value })}
+          onShapeAnimationStop={(value) => recordEvent({ type: 'shape-animation-stop', ...value })}
         />
       ) : null}
     </View>
@@ -641,6 +755,17 @@ export default function MapFeaturesPage() {
       setLabels(scene);
 
       return 'Label scene submitted';
+    });
+  }
+
+  function applyShapes(scene: ShapeScene, zoomLevel = 17) {
+    execute(async () => {
+      await requireMap().moveCamera({
+        ...regularLabelFixture.coordinate,
+        zoomLevel,
+      });
+
+      return requireMap().applyShapes(scene);
     });
   }
 
