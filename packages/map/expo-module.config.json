@@ -1,5 +1,14 @@
 {
   "platforms": ["apple", "android"],
-  "apple": { "modules": ["KakaoMapModule"], "podspecPath": "RNCKakaoMap.podspec" },
-  "android": { "modules": ["net.mjstudio.rnkakao.map.KakaoMapModule"] }
+  "apple": {
+    "modules": ["KakaoMapModule", "KakaoRoadViewModule", "KakaoMapRoadViewModule"],
+    "podspecPath": "RNCKakaoMap.podspec"
+  },
+  "android": {
+    "modules": [
+      "net.mjstudio.rnkakao.map.KakaoMapModule",
+      "net.mjstudio.rnkakao.map.KakaoRoadViewModule",
+      "net.mjstudio.rnkakao.map.KakaoMapRoadViewModule"
+    ]
+  }
 }

@@ -50,6 +50,8 @@ class KakaoMapModule : Module() {
           "onRouteAnimationStop",
           "onGuiEvent",
           "onDimScreenEvent",
+          "onZoneEnter",
+          "onZoneLeave",
           "onCameraOperation",
         )
         Prop("initialCamera") { view: KakaoMapView, camera: CameraOptions? -> view.pendingInitialCamera = camera }
@@ -120,6 +122,13 @@ class KakaoMapModule : Module() {
         AsyncFunction(
           "executeCameraCommand",
         ) { view: KakaoMapView, command: Map<String, Any?>, promise: Promise -> view.executeCameraCommand(command, promise) }
+        AsyncFunction("setZoneCheckRectScale") { view: KakaoMapView, zoneType: String, level: Int, scale: ScreenPointRecord ->
+          view.requireZones().setCheckRectScale(zoneType, level, scale.x, scale.y)
+        }
+        AsyncFunction("showZoneDetail") { view: KakaoMapView, zoneType: String, zoneId: String, detailId: String ->
+          view.requireZones().showDetail(zoneType, zoneId, detailId)
+        }
+        AsyncFunction("hideZoneDetail") { view: KakaoMapView, zoneType: String -> view.requireZones().hideDetail(zoneType) }
         OnViewDestroys { view: KakaoMapView -> view.destroy() }
       }
     }

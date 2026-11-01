@@ -10,6 +10,8 @@ export type * from './types-gui';
 export type * from './types-dim';
 export type * from './types-utilities';
 export type * from './types-camera';
+export type * from './types-roadview';
+export { KakaoMapRoadView, KakaoRoadView } from './RoadView.web';
 
 export type {
   CameraOptions,

@@ -27,6 +27,8 @@ final class KakaoMapView: ExpoView, MapControllerDelegate, KakaoMapEventDelegate
   let onRouteAnimationStop = EventDispatcher()
   let onGuiEvent = EventDispatcher()
   let onDimScreenEvent = EventDispatcher()
+  let onZoneEnter = EventDispatcher()
+  let onZoneLeave = EventDispatcher()
   let onCameraOperation = EventDispatcher()
   private var labels: MapLabels?
   private var shapes: MapShapes?
@@ -34,7 +36,9 @@ final class KakaoMapView: ExpoView, MapControllerDelegate, KakaoMapEventDelegate
   private var gui: MapGui?
   private var dimScreen: MapDimScreen?
   private var utilities: MapUtilities?
+  private var zones: MapZones?
   private var cameraCommands: MapCameraCommands?
+  private var zoneGeneration = 0
   private var imageLoader: MapImageLoader?
   private var pendingLabels: MapLabelSceneRecord?
   private var pendingShapes: [String: Any]?
@@ -225,6 +229,9 @@ final class KakaoMapView: ExpoView, MapControllerDelegate, KakaoMapEventDelegate
   private func notifyReady() {
     guard !isDestroyed, !isReady, isAuthenticated, map != nil else { return }
     isReady = true
+    if let map {
+      _ = prepareZones(map)
+    }
     if let camera = camera ?? initialCamera {
       applyCameraProp(camera)
     }
@@ -372,6 +379,31 @@ final class KakaoMapView: ExpoView, MapControllerDelegate, KakaoMapEventDelegate
     }
     cameraCommands = manager
     return try manager.command(command)
+  }
+
+  func requireZones() throws -> MapZones {
+    try prepareZones(requireMap())
+  }
+
+  private func prepareZones(_ map: KakaoMap) -> MapZones {
+    if let zones {
+      return zones
+    }
+    zoneGeneration += 1
+    let generation = zoneGeneration
+    let manager = MapZones(
+      map: map,
+      onEnter: { [weak self] payload in
+        guard let self, !isDestroyed, generation == zoneGeneration else { return }
+        onZoneEnter(payload)
+      },
+      onLeave: { [weak self] payload in
+        guard let self, !isDestroyed, generation == zoneGeneration else { return }
+        onZoneLeave(payload)
+      }
+    )
+    zones = manager
+    return manager
   }
 
   func runLabelCommand(_ command: MapLabelCommandRecord) throws {
@@ -598,6 +630,9 @@ final class KakaoMapView: ExpoView, MapControllerDelegate, KakaoMapEventDelegate
   private func releaseMapObjects() {
     labelGeneration += 1
     routeGeneration += 1
+    zoneGeneration += 1
+    zones?.dispose()
+    zones = nil
     utilities?.dispose()
     utilities = nil
     cameraCommands?.dispose()

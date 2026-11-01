@@ -480,6 +480,35 @@ const dim = await map.current?.getDimScreenStatus();
 
 Use `getDimScreenStatus().capabilities` to check route coverage, model-highlight orientation, animation, and state-getter support. iOS does not support `mapAndRoute` or dim z-order. Android has no getters for dim configuration or animator running state, so those status fields may be `null`.
 
+## RoadView and Zones
+
+The RoadView and Zone APIs in this section are experimental bindings. Kakao states that [RoadView is not open in native app SDKs](https://devtalk.kakao.com/t/api/151363), [Android RoadView is unsupported](https://devtalk.kakao.com/t/android-sdk-v2-roadview/152208), and [Zone APIs are not offered for partnerships or external use](https://devtalk.kakao.com/t/zone-api/151737). The SDK guide’s separate-consultation wording does not establish a public application process or authorization.
+
+RoadView is a separate native view, not a map overlay. For Expo 52 compatibility, standalone `KakaoRoadView` and combined `KakaoMapRoadView` autolink as two independent Expo Modules. The combined component binds map/RoadView creation and linking to one engine. Calling `linkMap()` on the standalone component rejects with `ERR_KAKAO_MAP_UNSUPPORTED_PLATFORM_FEATURE`.
+
+```tsx
+import { useRef } from 'react';
+import { KakaoMapRoadView, type KakaoMapRoadViewRef } from '@react-native-kakao/map';
+
+const roadView = useRef<KakaoMapRoadViewRef>(null);
+
+<KakaoMapRoadView
+  ref={roadView}
+  style={{ flex: 1 }}
+  initialRequest={{ coordinate: { latitude: 37.402001, longitude: 127.108678 } }}
+  linked
+  onRoadViewReady={() => console.log('RoadView ready')}
+  onRoadViewResult={(result) => console.log(result.panoramaId)}
+  onRoadViewRequestFailed={(error) => console.error(error.code, error.message)}
+/>;
+```
+
+The Android bindings expose custom search ranges, directed coordinate markers, dated-capture movement, and `requestNext`. The iOS bindings expose `refresh` and focus events. Branch on `getInfo().capabilities`. Image and logo screen offsets use logical units, search ranges use meters, and pan, tilt, and direction angles use degrees.
+
+`KakaoMapView` emits real zone `zoneType`, `zoneId`, `detailId`, detail IDs, and links through `onZoneEnter` and `onZoneLeave`. Pass only IDs received from those events to `showZoneDetail()`, and close a detail with `hideZoneDetail(zoneType)`. The `setZoneCheckRectScale()` scale is a ratio.
+
+Successful RoadView rendering and Zone data behavior remain unverified. Ordinary map authentication, capability metadata, and Promise resolution do not prove visible rendering. Require actual events and visible output before reporting runtime success.
+
 ## Map utilities
 
 `executeUtilityCommand()` covers POI categories, tap interval, camera animation, map enabled/visible state, the actual viewport, versions, coordinate conversion, font registration, and caches. Call only capabilities returned by `getCapabilities`.
