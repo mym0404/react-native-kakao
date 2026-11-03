@@ -1,0 +1,55 @@
+---
+sidebar_position: 33
+---
+
+# 공유 URL 생성
+
+`makeDefaultTemplateUrl`, `makeCustomTemplateUrl`, `makeScrapTemplateUrl`은 Android·iOS SDK로 브라우저 공유 URL을 생성합니다. SDK를 먼저 초기화해야 하며, 카카오톡 설치나 로그인은 필요하지 않습니다. 세 함수 모두 `Promise<string>`을 반환하고 브라우저나 공유 화면을 열지 않습니다.
+
+## 사용법
+
+기본 템플릿은 `templateType`과 해당 형식의 `template`을 전달합니다.
+
+```tsx
+import {
+  makeDefaultTemplateUrl,
+  makeCustomTemplateUrl,
+  makeScrapTemplateUrl,
+} from '@react-native-kakao/share';
+
+const defaultUrl = await makeDefaultTemplateUrl({
+  templateType: 'text',
+  template: {
+    text: '공유할 내용',
+    link: { webUrl: 'https://example.com' },
+  },
+  serverCallbackArgs: { reference: 'example' },
+});
+
+const customUrl = await makeCustomTemplateUrl({
+  templateId: 12345,
+  templateArgs: { title: '공유할 제목' },
+});
+
+const scrapUrl = await makeScrapTemplateUrl({
+  requestUrl: 'https://example.com/article',
+});
+```
+
+| 함수 | 매개변수 |
+| --- | --- |
+| `makeDefaultTemplateUrl` | `templateType`: `feed`, `list`, `location`, `commerce`, `text`, `calendar` 중 하나. `template`: 해당 형식의 템플릿 객체 |
+| `makeCustomTemplateUrl` | `templateId`: 개발자 콘솔에 등록한 템플릿 ID. `templateArgs`: 템플릿에 넣을 문자열 값, 생략 가능 |
+| `makeScrapTemplateUrl` | `requestUrl`: 스크랩할 웹 페이지 URL. `templateId`: 사용자 정의 템플릿 ID, 생략하면 기본 스크랩 템플릿 사용. `templateArgs`: 템플릿에 넣을 문자열 값, 생략 가능 |
+
+세 함수 모두 선택적으로 `serverCallbackArgs`를 받습니다. 이 값은 카카오톡 공유 콜백으로 전달할 문자열 키·값입니다. 기존 공유 함수와 같은 템플릿 형식과 앱 실행 매개변수를 사용합니다.
+
+SDK의 URL 생성 API는 `pickerSettings`를 지원하지 않습니다. 브라우저 공유의 기본 대상 선택 화면을 사용합니다.
+
+## URL 생성과 공유 결과
+
+URL 생성은 카카오 서버의 템플릿 검증이나 메시지 발송을 수행하지 않습니다. 브라우저에서 URL을 열어 공유하려면 앱 설정과 템플릿이 유효해야 하며, 카카오 로그인이 필요할 수 있습니다. URL 생성 성공만으로 템플릿이 유효하거나 메시지가 발송됐다고 판단할 수 없습니다. 사용할 도메인과 템플릿은 [공유 설정](/docs/share/intro)을 확인합니다.
+
+## 웹 지원
+
+카카오 JavaScript SDK에는 URL 생성 API가 없으므로 웹에서는 세 함수 모두 `Package-UnsupportedPlatform` 오류로 거부합니다. 웹에서 공유 화면을 열려면 기존 `share*Template` 함수를 사용합니다.

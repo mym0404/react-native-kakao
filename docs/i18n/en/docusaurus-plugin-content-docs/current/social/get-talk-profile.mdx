@@ -4,8 +4,6 @@ sidebar_position: 2
 
 # Get My KakaoTalk Profile
 
-## Retrieve My KakaoTalk Profile
-
 [Official Documentation](https://developers.kakao.com/docs/latest/ko/kakaotalk-social/android#get-profile)
 
 :::info
@@ -26,34 +24,37 @@ It has the following type:
 
 ```tsx
 export interface KakaoTalkProfile {
+  id: number;
   /**
    * KakaoTalk nickname
    *
    * Required consent items: Profile information (nickname/profile picture) or nickname
    */
-  nickname?: string;
+  nickname?: string | null;
   /**
    * Country where the user is using KakaoTalk
    *
    * @deprecated
    * @link https://devtalk.kakao.com/t/api-change-notice-response-fields-of-the-retrieving-kakao-talk-kakao-story-api/115151
    */
-  countryISO?: string;
+  countryISO?: string | null;
   /**
    * KakaoTalk profile image URL
    * Size: 640px * 640px, HTTPS only
    *
    * Required consent items: Profile information (nickname/profile picture) or profile picture
    */
-  profileImageUrl?: string;
+  profileImageUrl?: string | null;
   /**
    * KakaoTalk profile thumbnail image URL
    * Size: 110px * 110px, HTTPS only
    *
    * Required consent items: Profile information (nickname/profile picture) or profile picture
    */
-  thumbnailUrl?: string;
+  thumbnailUrl?: string | null;
 }
 ```
 
 For the latest description of the response values, refer to the [Official Documentation](https://developers.kakao.com/docs/latest/ko/kakaotalk-social/rest-api#get-profile).
+
+`id` is the user's member number in the current app. Android, iOS, and web return it as a number.

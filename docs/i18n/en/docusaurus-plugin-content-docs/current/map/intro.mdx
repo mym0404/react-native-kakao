@@ -1,0 +1,551 @@
+---
+sidebar_position: 1
+---
+
+# Kakao Map
+
+`@react-native-kakao/map` displays native Kakao Maps and controls the camera on Android and iOS using Expo Modules. It does not depend on Core.
+
+## Installation and app registration
+
+Requires Expo 52+, React Native 0.76+, and the New Architecture. The package uses Android SDK 2.15.2 and iOS SDK 2.12.19. Build your native app; Expo Go does not include this module. For a bare React Native app, first [install Expo Modules](https://docs.expo.dev/bare/installing-expo-modules/).
+
+In the [Kakao developer console](https://developers.kakao.com/console/app), find your native app key and enable Kakao Maps. Register the Android package name and signing key hashes, and the iOS bundle ID. See the [Android setup](https://apis.map.kakao.com/android_v2/docs/getting-started/) and [iOS registration](https://apis.map.kakao.com/ios_v2/docs/getting-started/basics/02_auth/) requirements.
+
+```sh
+npx expo install @react-native-kakao/map expo-build-properties
+```
+
+Add Kakao's Maven repository to `app.json` so the Android app can resolve the SDK. Merge this into your existing `expo-build-properties` configuration if present.
+
+```json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "extraMavenRepos": ["https://devrepo.kakao.com/nexus/repository/kakaomap-releases/"]
+          }
+        }
+      ]
+    ]
+  }
+}
+```
+
+On Expo 52, if Kotlin 1.9.24 conflicts with Compose Compiler 1.5.15, add `"kotlinVersion": "1.9.25"` to the Android configuration above. Do not force this version on newer Expo SDKs.
+
+```sh
+npx expo prebuild
+npx expo run:android
+# Or
+npx expo run:ios
+```
+
+Expo autolinking registers the native module. No separate map config plugin or Core initialization is required. If you manage native projects directly, add the repository URL to the shared Android Maven repositories and run `pod install` on iOS.
+
+## Display a map
+
+Wait for SDK initialization before mounting a map. The initialization Promise confirms that the SDK received the key; `onMapReady` confirms authentication and view readiness. Repeated initialization with the same key is allowed. A different key is rejected.
+
+```tsx
+import { useEffect, useRef, useState } from 'react';
+import { Text } from 'react-native';
+import { initializeKakaoMapSDK, KakaoMapView, type KakaoMapViewRef } from '@react-native-kakao/map';
+
+export function MapScreen() {
+  const map = useRef<KakaoMapViewRef>(null);
+  const [initialized, setInitialized] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    let active = true;
+    initializeKakaoMapSDK('YOUR_NATIVE_APP_KEY').then(
+      () => {
+        if (active) setInitialized(true);
+      },
+      (error: Error) => {
+        if (active) setError(error.message);
+      },
+    );
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  if (error) return <Text>{error}</Text>;
+  if (!initialized) return null;
+  return (
+    <KakaoMapView
+      ref={map}
+      style={{ flex: 1 }}
+      initialCamera={{ latitude: 37.402001, longitude: 127.108678, zoomLevel: 15 }}
+      onMapReady={() => console.log('Map ready')}
+      onError={({ code, message }) => setError(`${code}: ${message}`)}
+    />
+  );
+}
+```
+
+The parent layout must give the map a width and height. Keep the Kakao logo unobstructed.
+
+## Camera and events
+
+A camera requires `latitude`, `longitude`, and integer `zoomLevel`. Optional `tilt` and `rotation` are in degrees and default to zero. The SDK and map state determine the available zoom and tilt range. `rotation` is the counterclockwise camera angle from north; at 90 degrees, north points toward the right of the screen. `getCamera()` returns all five fields as applied by the SDK. On iOS, the center coordinate is calculated from the content area's center after margins, so it may differ slightly from the requested coordinate.
+
+On first render, `camera` takes priority over `initialCamera`. Changes to `initialCamera` after the first props update are ignored. `camera` moves the map only when its field values change. Passing a new object with the same values or removing the prop does not move the map. A same-value rerender therefore preserves the position after a gesture or ref command. Before readiness, only the latest `camera` is retained.
+
+Call ref methods after the map is ready. The Promise below resolves when the command is dispatched. Use `onCameraIdle` to observe the end of movement.
+
+```tsx
+await map.current?.moveCamera(
+  { latitude: 37.5665, longitude: 126.978, zoomLevel: 16, tilt: 30, rotation: 90 },
+  { duration: 500 },
+);
+const position = await map.current?.getCamera();
+```
+
+`duration` is an integer from 0 to 2,147,483,647 milliseconds. Omit it or pass zero for an immediate move. `tilt` accepts 0–90 degrees, and returned `rotation` values are normalized to [0, 360).
+
+`updateCamera()` changes position, zoom, or orientation while preserving the other camera values. `fit` frames the supplied coordinates within the current map margins.
+
+```tsx
+await map.current?.updateCamera({
+  type: 'position',
+  position: { latitude: 37.5665, longitude: 126.978 },
+});
+await map.current?.updateCamera({ type: 'zoom', zoomLevel: 18 });
+await map.current?.updateCamera({ type: 'orientation', rotation: 90, tilt: 30 }, { duration: 500 });
+await map.current?.updateCamera({
+  type: 'fit',
+  coordinates: [
+    { latitude: 37.5665, longitude: 126.978 },
+    { latitude: 37.402001, longitude: 127.108678 },
+  ],
+});
+```
+
+| Event                 | Payload                                                                               |
+| --------------------- | ------------------------------------------------------------------------------------- |
+| `onMapReady`          | Authentication and view readiness. No arguments                                       |
+| `onError`             | `{ code, message }`                                                                   |
+| `onCameraMoveStart`   | `{ reason: 'gesture' \| 'developer' }`                                                |
+| `onCameraIdle`        | `{ reason, camera }` with the actual stopped camera                                   |
+| `onMapClick`          | `{ latitude, longitude, x, y }`. Logical pixels relative to the map's top-left corner |
+| `onMapLongClick`      | `{ latitude, longitude }` for a terrain long press                                    |
+| `onTerrainClick`      | `{ latitude, longitude }` for a terrain tap on Android and iOS                        |
+| `onViewportClick`     | `{ latitude, longitude, x, y }` for a viewport tap; Android only                      |
+| `onVisibilityChanged` | `{ visible }` after native map visibility changes; Android only                       |
+| `onFocusChanged`      | `{ focused }` after native map focus changes; iOS only                                |
+| `onPoiClick`          | `{ id, layerId, latitude, longitude }`; POI ID and its map layer ID                   |
+| `onCompassClick`      | Compass tap; no arguments                                                             |
+| `onMapTypeChanged`    | `{ viewInfoName }` after an asynchronous map configuration change                     |
+| `onPaddingChanged`    | `{ top, right, bottom, left }` after margins change                                   |
+| `onViewportChanged`   | `{ x, y, width, height }` with the actual changed viewport on Android and iOS         |
+
+There is no continuous camera-change event. Rendering pauses when the app becomes inactive or the view detaches, resumes on return, and releases engine resources when unmounted.
+
+## Map settings and projection
+
+`options` applies the supplied fields and retains current SDK values for omitted fields. Before readiness, the latest value of each field is retained; afterward, only changed values are applied. `mapType` and `viewInfo` are mutually exclusive. Custom `viewInfo` and `customOverlays` are intended for separately licensed map data.
+
+```tsx
+<KakaoMapView
+  options={{
+    mapType: 'normal',
+    overlays: ['bicycleRoad'],
+    language: 'ko',
+    poi: { visible: true, clickable: true, scale: 'regular' },
+    buildingScale: 1,
+    padding: { top: 20, right: 20, bottom: 80, left: 20 },
+    zoomRange: { min: 6, max: 21 },
+    gestures: { pan: true, rotate: false },
+    compass: { visible: true, position: { gravity: 'topRight', x: 20, y: 20 } },
+    scaleBar: {
+      visible: true,
+      autoHide: true,
+      fade: { inDuration: 200, outDuration: 400, retentionDuration: 1000 },
+    },
+    logo: { gravity: 'bottomLeft', x: 12, y: 12 },
+  }}
+/>
+```
+
+`mapType` accepts `normal` and `skyview`. `overlays` accepts `roadviewLine`, `hillShading`, `bicycleRoad`, and `hybrid`. Select a language from `getMapInfo().supportedLanguages`. POI sizes are `small`, `regular`, `large`, and `xLarge`; building height scale ranges from 0 to 1. See `MapGesture` for individual gesture flags.
+
+Margins, widget offsets, and screen coordinates use logical pixels; scale-bar timings use integer milliseconds. The Kakao logo can be repositioned but cannot be hidden. Observe `onMapTypeChanged` and `onPaddingChanged` before querying asynchronously applied map configuration and margins.
+
+```tsx
+const info = await map.current?.getMapInfo();
+const coordinate = await map.current?.screenToCoordinate({ x: 100, y: 100 });
+const point = await map.current?.coordinateToScreen({ latitude: 37.402001, longitude: 127.108678 });
+await map.current?.clearCache();
+```
+
+`getMapInfo()` returns map type, zoom limits, margins, viewport size, language, and capabilities. Screen points must be inside the map area. The iOS SDK does not expose geographic-to-screen projection: `capabilities.coordinateToScreen` is `false`, and `coordinateToScreen()` rejects with `ERR_KAKAO_MAP_UNSUPPORTED_PLATFORM_FEATURE`. `clearCache()` clears SDK map caches; required tiles are fetched again.
+
+## Labels and markers
+
+The `labels` prop manages markers, LOD labels for dense datasets, and text along a path as one `LabelScene`. Define styles and layers first, then reference their IDs from each label.
+
+### Display a text label
+
+You can start with one text style and one regular label, without an image. Enable `clickable` on both the layer and the label to receive click events.
+
+```tsx
+import { KakaoMapView, type LabelScene } from '@react-native-kakao/map';
+
+const placeLabels = {
+  styles: [
+    {
+      id: 'place-text',
+      levels: [
+        {
+          level: 0,
+          textLines: [
+            {
+              fontSize: 14,
+              color: '#111827FF',
+              strokeColor: '#FFFFFFFF',
+              strokeWidth: 2,
+            },
+          ],
+        },
+      ],
+    },
+  ],
+  layers: [{ id: 'places', zOrder: 1000, clickable: true }],
+  labels: [
+    {
+      id: 'seoul-city-hall',
+      layerId: 'places',
+      styleId: 'place-text',
+      coordinate: { latitude: 37.5665, longitude: 126.978 },
+      text: [{ value: 'Seoul City Hall', styleIndex: 0 }],
+      clickable: true,
+    },
+  ],
+} satisfies LabelScene;
+
+<KakaoMapView
+  labels={placeLabels}
+  onLabelClick={({ id, layerId, kind, coordinate }) => {
+    console.log(id, layerId, kind, coordinate);
+  }}
+/>;
+```
+
+Each style's `levels` define its appearance by map zoom level. Use `layers` and `labels` for regular labels, `lodLayers` and `lodLabels` for dense datasets, and `pathTextStyles` and `pathLabels` for text along a path. IDs must be non-empty and unique within each kind, and every style and layer reference must exist in the same scene.
+
+### Icon URIs and display units
+
+Resolve a React Native static asset to a URI before passing it as a `MapImageSource`. You can also use `file:`, `http:`, and `https:` URIs.
+
+```tsx
+import { Image } from 'react-native';
+import type { LabelStyle } from '@react-native-kakao/map';
+
+const pin = Image.resolveAssetSource(require('./pin.png'));
+
+const pinStyle = {
+  id: 'place-pin',
+  levels: [
+    {
+      level: 0,
+      image: { uri: pin.uri, width: 32, height: 40 },
+      anchor: { x: 0.5, y: 1 },
+    },
+  ],
+} satisfies LabelStyle;
+```
+
+Image and font sizes, stroke widths, padding, and badge and pixel offsets use logical units: dp on Android and points on iOS. The SDK documentation does not specify units for `movePath.cornerRadius` or `movePath.jumpThreshold`, so the wrapper passes these two raw numbers through without applying the screen/image/style logical-unit conversion. Angles use degrees, and durations use integer milliseconds. Colors use `#RRGGBB` or `#RRGGBBAA`. If an image cannot be downloaded or decoded, the scene is not applied and `ERR_KAKAO_MAP_IMAGE_LOAD` is reported.
+
+Font sizes, strokes, and character spacing are rounded to the nearest native pixel after scaling where the SDK requires integers. `lineSpacing` is a line-height multiplier: `1` means 100%, `2` means 200%, and the default is `1`.
+
+Android character spacing must resolve to at least `-2` native pixels. Smaller values reject because the [SDK text style](https://apis.map.kakao.com/android_v2/reference/com/kakao/vectormap/label/LabelTextStyle.html) would ignore them.
+
+Label layers default to `zOrder: 1000` on both platforms. A greater value draws above lower layers of the same label kind. Use only these user ranges to avoid conflicts with SDK-owned map layers.
+
+| `zOrder` range | Purpose             |
+| -------------- | ------------------- |
+| `1000–1999`    | User labels         |
+| `3000–3999`    | User labels         |
+| `5000` or more | User labels         |
+| Other ranges   | Reserved by the SDK |
+
+### Snapshot replacement and runtime commands
+
+A `LabelScene` is a complete snapshot, not a partial patch. Applying a new `labels` value removes existing animations, tracking, layers, labels, and badges before installing the new scene. Pass an empty scene with `labels={{}}`, or remove a previously used `labels` prop, to clear all user labels. If a newer scene arrives while images are loading, the previous apply is cancelled and only the latest snapshot is applied. Superseded scenes do not emit cancellation errors; input and image failures for the current scene reach `onError`.
+
+After the map is ready, use `runLabelCommand()` to modify a label in the current scene. Commands do not replace the scene and reference existing stable IDs.
+
+```tsx
+await map.current?.runLabelCommand({
+  type: 'move',
+  id: 'seoul-city-hall',
+  coordinate: { latitude: 37.5657, longitude: 126.9769 },
+  duration: 400,
+});
+await map.current?.runLabelCommand({
+  type: 'show',
+  id: 'seoul-city-hall',
+  visible: false,
+});
+
+const capabilities = await map.current?.getLabelCapabilities();
+const state = await map.current?.getLabelState();
+```
+
+`LabelCommand` covers visibility, point and path movement, rotation, scale, position and transform sharing, badge visibility, animation start and stop, and camera tracking. Unsupported commands reject with `ERR_KAKAO_MAP_LABEL_UNSUPPORTED` instead of simulating behavior. Check `getLabelCapabilities()` before using platform-dependent features.
+
+| Event                     | Payload                                                                            |
+| ------------------------- | ---------------------------------------------------------------------------------- |
+| `onLabelClick`            | `{ id, layerId, kind, coordinate }`; `kind` is `label` or `lodLabel`               |
+| `onLabelAnimationStopped` | `{ id, finished }`; `true` for natural completion and `false` for an explicit stop |
+| `onLabelsChanged`         | `LabelRuntimeState` after a scene is applied                                       |
+
+`getLabelState()` returns IDs, kinds, and visibility for labels that still exist in the native SDK, plus animation definition IDs available in the current scene. `onLabelsChanged` reads state immediately after submitting the scene to the SDK; it does not signal rendering completion. SDK visibility may change on a later frame, so query again when you need a later state.
+
+On iOS, `tracking.source: 'native'` means the current tracking state was read from the SDK. The Android SDK has no tracking-state getter, so it returns the state requested through this module with `source: 'managed'`. Do not interpret managed state as a value read back from the SDK. An animation whose targets were removed by `removeAtStop` cannot restart until the scene is applied again.
+
+The main platform differences are also available as capability flags.
+
+| Feature                                | Android         | iOS                                |
+| -------------------------------------- | --------------- | ---------------------------------- |
+| Path text implementation               | `polylineLabel` | `waveText`                         |
+| Path text `rank`                       | Unsupported     | Supported                          |
+| Update or remove registered path style | Supported       | Unsupported                        |
+| LOD label `autoMove`                   | Unsupported     | Supported                          |
+| Auto-move duration                     | Supported       | Unsupported                        |
+| Direct scale command                   | Supported       | Unsupported; use a scale animation |
+| Competition exception layers           | Supported       | Unsupported                        |
+| Tracking-state source                  | Module-managed  | Native SDK                         |
+
+Neither platform supports moving an LOD label. Use `repeatCount: 1` for every effect except `drop`. iOS cannot update or remove a registered path-style definition, so use a new style ID. Treat `getLabelCapabilities()` as the source of truth for the installed native SDK.
+
+The `coordinate` of a regular label is the current position read from the SDK on both platforms. The iOS SDK does not expose a current-coordinate getter for LOD labels, so state entries with `kind: 'lodLabel'` may omit `coordinate`.
+
+On iOS, labels can move independently with the `move` command after position or transform sharing is disabled.
+
+## Advanced camera commands
+
+`executeCameraCommand()` covers height-based movement, relative transforms, fitting, visibility checks, and reference-point locks beyond the basic camera API. Query capabilities first and use only supported fields.
+
+```tsx
+const result = await map.current?.executeCameraCommand({ type: 'getCapabilities' });
+
+await map.current?.executeCameraCommand({
+  type: 'moveToHeight',
+  camera: {
+    latitude: 37.402001,
+    longitude: 127.108678,
+    height: 1200,
+    tilt: 30,
+    rotation: 45,
+  },
+  animation: { duration: 500, autoElevation: true },
+  operationId: 'camera-1',
+});
+```
+
+When the platform supports actual completion callbacks, a command with `operationId` emits `{ operationId, status, camera? }` through `onCameraOperation`. A platform without this callback rejects the field instead of presenting dispatch as completion. `status: 'superseded'` means a newer camera operation replaced the previous one.
+
+`getState` returns actual camera height, zoom, tilt, and rotation. Angles use degrees; animation durations use integer milliseconds; `fit.padding` and `canShow.rect` use logical units. `height` is in the native map coordinate system and is not converted as screen dp or points.
+
+## Shapes and routes
+
+`ShapeScene` and `RouteScene` are complete scene snapshots. Ref commands mutate IDs in the current scene or query actual state and counts. Call `applyShapes({})` or `applyRoutes({})` to clear a scene.
+
+### Shapes
+
+Shapes reference styles and layers. This example displays a circle with a 30-meter ground radius around its center coordinate.
+
+```tsx
+import type { ShapeScene } from '@react-native-kakao/map';
+
+const circleScene = {
+  styleSets: [
+    {
+      type: 'polygon',
+      id: 'area-style',
+      styles: [{ levels: [{ level: 0, fillColor: '#22C55E66', strokeWidth: 2 }] }],
+    },
+  ],
+  layers: [{ id: 'areas' }],
+  shapes: [
+    {
+      id: 'circle',
+      layerId: 'areas',
+      styleSetId: 'area-style',
+      geometry: {
+        type: 'geographicCircle',
+        center: { latitude: 37.402001, longitude: 127.108678 },
+        radius: 30,
+      },
+    },
+  ],
+} satisfies ShapeScene;
+
+const counts = await map.current?.applyShapes(circleScene);
+const state = await map.current?.executeShapeCommand({ type: 'getState', id: 'circle' });
+```
+
+Model `ShapePoint` x/y values and model primitive dimensions use model-space meters. The module converts meter-valued offsets where the iOS SDK expects angular model coordinates. Geographic primitive dimensions use ground meters. Equal numbers do not promise equal ground distances; iOS model and geographic circles may display at different sizes. Use `geographicCircle` or `geographicRectangle` to specify ground distances. Style widths, strokes, and wave radii use logical Android dp/iOS points. Orientations and arc angles use degrees; arcs are clockwise from north. Durations use integer milliseconds.
+
+Use `getCapabilities` to check position, orientation, z-order, layer-pass, wave-target, and completion-event support. iOS supports model orientation while Android does not. Android supports geographic position and z-order mutation, but its SDK has no corresponding current-value getters, so state may return `null` for those fields.
+
+For `shareShapeTransform` with a model polygon, shared movement and unlinking were verified, but shared rotation has a rendering limitation. Animating the source label to 90 degrees produced a viewport-filling polygon on the ARM Android emulator with SDK 2.15.2 and the iOS Simulator with SDK 2.12.19. Android reproduced the failure with direct SDK calls outside the module; its immediate rotation setter instead failed to propagate rotation to the polygon. Do not rely on model-polygon shared rotation with these SDK versions.
+
+### Routes
+
+A route scene defines styles, layers, and routes together. `setProgress` changes displayed progress, while `getState` and `getCounts` query current native objects.
+
+```tsx
+await map.current?.applyRoutes({
+  styleSets: [
+    {
+      id: 'route-style',
+      styles: [{ levels: [{ level: 0, width: 8, color: '#2563EBFF' }] }],
+    },
+  ],
+  layers: [{ id: 'routes' }],
+  routes: [
+    {
+      id: 'route-1',
+      layerId: 'routes',
+      styleSetId: 'route-style',
+      segments: [
+        {
+          coordinates: [
+            { latitude: 37.402001, longitude: 127.108678 },
+            { latitude: 37.404, longitude: 127.112 },
+          ],
+        },
+      ],
+    },
+  ],
+});
+
+await map.current?.executeRouteCommand({
+  type: 'setProgress',
+  id: 'route-1',
+  progress: 0.5,
+  mode: 'fill',
+  duration: 400,
+});
+```
+
+Route widths, strokes, and pattern distances use logical units; durations use integer milliseconds. `onRouteProgress` is not an actual SDK progress measurement. It reports completion of the latest requested `setProgress` transition and always has `source: 'requested'`. A zero duration emits once immediately after native dispatch. The iOS SDK has no actual progress getter, so `getProgress` is unsupported there; `getRequestedProgress` returns the last requested value with an explicit source.
+
+Native route animators on both platforms accept only a repeat count of `1`. The Android SDK keeps unique shape/route style and animator registrations until the map engine ends. The module reuses an identical definition, but continuously creating distinct definitions can grow the registry for that engine lifetime.
+
+## GUI and dim screen
+
+`applyGui()` installs info-window and screen-fixed widget trees. Layout, image, and text nodes work on both platforms. Buttons, animated images, and info-window drop animations are iOS-only.
+
+```tsx
+await map.current?.applyGui({
+  infoWindows: [
+    {
+      id: 'info',
+      position: { latitude: 37.402001, longitude: 127.108678 },
+      body: { type: 'text', id: 'title', text: 'Pangyo', textSize: 14, color: '#111827FF' },
+    },
+  ],
+});
+
+const gui = await map.current?.getGuiStatus();
+```
+
+Check `getGuiStatus().capabilities` before using `startGuiAnimation`, `controlAnimatedImage`, or platform-specific nodes. Android supports taps on arbitrary clickable components; iOS component taps come from buttons. iOS does not support an info-window auto-move duration. Images, fonts, strokes, padding, screen offsets, and drop height use logical units; rotation uses degrees; durations use integer milliseconds.
+
+On the iOS Simulator with KakaoMapsSDK 2.12.19, the normal button image and tap events were verified, but the transition to `pressedSource` during a held press was not observed. This limitation occurred with a button used directly as the info-window body and as an image child. A `button: true` capability does not guarantee the pressed-image visual.
+
+`applyDimScreen()` covers the map with a translucent color while highlighting polygon regions. Highlights reuse Shape polygon geometry and style sets.
+
+```tsx
+await map.current?.applyDimScreen({
+  enabled: true,
+  color: '#11182799',
+  cover: 'mapAndLabel',
+  styleSets: [],
+  highlights: [],
+});
+
+const dim = await map.current?.getDimScreenStatus();
+```
+
+Use `getDimScreenStatus().capabilities` to check route coverage, model-highlight orientation, animation, and state-getter support. iOS does not support `mapAndRoute` or dim z-order. Android has no getters for dim configuration or animator running state, so those status fields may be `null`.
+
+## Map utilities
+
+`executeUtilityCommand()` covers POI categories, tap interval, camera animation, map enabled/visible state, the actual viewport, versions, coordinate conversion, font registration, and caches. Call only capabilities returned by `getCapabilities`.
+
+```tsx
+const utility = await map.current?.executeUtilityCommand({ type: 'getCapabilities' });
+await map.current?.executeUtilityCommand({
+  type: 'setCameraAnimationEnabled',
+  enabled: false,
+});
+const viewport = await map.current?.executeUtilityCommand({ type: 'getViewport' });
+const converted = await map.current?.executeUtilityCommand({
+  type: 'convertCoordinate',
+  from: 'wgs84',
+  to: 'wtm',
+  coordinate: { x: 127.108678, y: 37.402001 },
+});
+```
+
+`getViewport` reads the SDK's current `{ x, y, width, height }` in logical screen units on both platforms. Only Android supports `setViewport`. Both platforms can change the camera-animation switch, but only iOS exposes its current value through `getState`. Android omits settings without native getters instead of echoing requested values. A setter Promise confirms SDK dispatch, not native state readback.
+
+On Android, `requestPoiState()` waits for the SDK's asynchronous response and returns POI `visible`, `clickable`, `scale`, and `language` values. It rejects with `ERR_KAKAO_MAP_POI_STATE_TIMEOUT` if no response arrives within three seconds. The iOS SDK has no equivalent asynchronous query.
+
+Android `registerFont` registers an app's compiled `res/font` resource with the map SDK. `resourceName` must start with a lowercase letter and contain only lowercase letters, numbers, and underscores; the optional `name` supplies the SDK registration name. The iOS SDK does not support this registration path.
+
+For WGS84, `x` is longitude and `y` is latitude. WTM, WCong, and Kakao values remain in their SDK coordinate-system units and are not display-scaled. iOS additionally supports the Kakao coordinate system and memory/view-info caches; Android additionally exposes the engine version.
+
+## Errors and platform support
+
+Ref commands reject before readiness instead of being queued. Handle Promise `code` and `message` fields and `onError` events.
+
+| Code                                         | Meaning                                                             |
+| -------------------------------------------- | ------------------------------------------------------------------- |
+| `ERR_KAKAO_MAP_NOT_INITIALIZED`              | SDK has not been initialized                                        |
+| `ERR_KAKAO_MAP_NOT_READY`                    | Command called before map readiness                                 |
+| `ERR_KAKAO_MAP_CAMERA_TIMEOUT`               | Android camera query did not respond within three seconds           |
+| `ERR_KAKAO_MAP_VIEW_DESTROYED`               | Access to an unmounted map                                          |
+| `ERR_KAKAO_MAP_ALREADY_INITIALIZED`          | Reinitialization with a different key                               |
+| `ERR_KAKAO_MAP_INVALID_ARGUMENT`             | Empty key, invalid camera, or duration                              |
+| `ERR_KAKAO_MAP_VIEW_CREATION`                | Native map creation failed                                          |
+| `ERR_KAKAO_MAP_UNSUPPORTED_PLATFORM`         | Map feature used on web                                             |
+| `ERR_KAKAO_MAP_LABEL_INVALID_ARGUMENT`       | Duplicate IDs or invalid coordinates, styles, or animations         |
+| `ERR_KAKAO_MAP_LABEL_NOT_FOUND`              | A referenced label, layer, style, badge, or animation ID is missing |
+| `ERR_KAKAO_MAP_LABEL_UNSUPPORTED`            | The native SDK does not support the requested label feature         |
+| `ERR_KAKAO_MAP_IMAGE_LOAD`                   | A label image could not be downloaded or decoded                    |
+| `ERR_KAKAO_MAP_SHAPE_INVALID_ARGUMENT`       | Invalid shape scene, geometry, or style input                       |
+| `ERR_KAKAO_MAP_SHAPE_NOT_FOUND`              | A referenced shape or animation ID is missing                       |
+| `ERR_KAKAO_MAP_SHAPE_UNSUPPORTED`            | The SDK does not support the requested shape feature                |
+| `ERR_KAKAO_MAP_ROUTE_INVALID_ARGUMENT`       | Invalid route scene, segment, or progress input                     |
+| `ERR_KAKAO_MAP_ROUTE_NOT_FOUND`              | A referenced route or animation ID is missing                       |
+| `ERR_KAKAO_MAP_ROUTE_UNSUPPORTED`            | The SDK does not support the requested route feature                |
+| `ERR_KAKAO_MAP_GUI_INVALID_ARGUMENT`         | Invalid GUI tree, dimension, or color input                         |
+| `ERR_KAKAO_MAP_GUI_NOT_FOUND`                | A referenced info-window, widget, or animation ID is missing        |
+| `ERR_KAKAO_MAP_DIM_INVALID_ARGUMENT`         | Invalid dim cover, highlight, or animation input                    |
+| `ERR_KAKAO_MAP_UNSUPPORTED_PLATFORM_FEATURE` | Native feature absent from the current platform SDK     |
+| `ERR_KAKAO_MAP_COORDINATE_CONVERSION_FAILED` | The SDK could not produce a coordinate conversion result            |
+| `ERR_KAKAO_MAP_VERSION_UNAVAILABLE`          | Requested SDK or engine version metadata is unavailable             |
+| `ERR_KAKAO_MAP_POI_STATE_TIMEOUT`            | Android POI-state response did not arrive within three seconds      |
+| `ERR_KAKAO_MAP_FONT_RESOURCE_NOT_FOUND`      | Android compiled font resource could not be found                   |
+
+SDK errors preserve their original code and message. Authentication failures are delivered through `onError`, not the initialization Promise. No automatic retry is performed: fix the app registration or network issue and remount the view to retry. Restart the app process if the native app key must change.
+
+On Android, `getCamera()` waits for the renderer’s asynchronous response so it can read an in-progress movement. It rejects with `ERR_KAKAO_MAP_CAMERA_TIMEOUT` if no response arrives within three seconds, or `ERR_KAKAO_MAP_VIEW_DESTROYED` if the view is destroyed first.
+
+Shapes, routes, GUI, dim screen, and utilities use domain-specific codes for invalid input, missing IDs, cancellation/supersession, image loading, and unsupported platform features. Handle both `code` and `message` on every ref Promise, and assume a capability set to `false` is rejected rather than simulated.
+
+Web imports are safe, but native map features are unsupported. The Android SDK has no x86_64 binary; use an ARM emulator or device.
+
+The SDK does not guarantee simultaneous rendering by multiple map engines. Display one map at a time; see [Kakao’s guidance on multiple engines](https://devtalk.kakao.com/t/v2-ios/131530/11).

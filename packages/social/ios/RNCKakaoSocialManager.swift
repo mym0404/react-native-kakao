@@ -1,4 +1,5 @@
 import Foundation
+import KakaoPartnershipSDKSocial
 import KakaoSDKAuth
 import KakaoSDKFriend
 import KakaoSDKFriendCore
@@ -20,6 +21,7 @@ import RNCKakaoCore
           RNCKakaoUtil.reject(reject, error)
         } else if let profile {
           resolve([
+            "id": profile.id,
             "nickname": profile.nickname as Any,
             "countryISO": profile.countryISO as Any,
             "profileImageUrl": profile.profileImageUrl?.absoluteString as Any,
@@ -39,6 +41,41 @@ import RNCKakaoCore
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
+    selectPicker(
+      multiple,
+      mode: mode,
+      options: options,
+      forPartner: false,
+      resolve: resolve,
+      reject: reject
+    )
+  }
+
+  @objc public func selectPartnerFriends(
+    _ multiple: Bool,
+    mode: String,
+    options: [String: Any],
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    selectPicker(
+      multiple,
+      mode: mode,
+      options: options,
+      forPartner: true,
+      resolve: resolve,
+      reject: reject
+    )
+  }
+
+  private func selectPicker(
+    _ multiple: Bool,
+    mode: String,
+    options: [String: Any],
+    forPartner: Bool,
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
     onMain {
       let orientation: PickerOrientation = switch options["orientation"] {
       case let x as String where x == "landscape": .landscape
@@ -49,6 +86,7 @@ import RNCKakaoCore
         viewAppearance: .init(rawValue: options["viewAppearance"] as? String ?? "auto") ?? .auto,
         orientation: orientation,
         enableSearch: options["enableSearch"] as? Bool ?? true,
+        enableIndex: options["enableIndex"] as? Bool ?? true,
         showMyProfile: options["showMyProfile"] as? Bool ?? true,
         showFavorite: options["showFavorite"] as? Bool ?? true,
         showPickedFriend: options["showPickedFriend"] as? Bool ?? true,
@@ -71,8 +109,9 @@ import RNCKakaoCore
                 "uuid": $0.uuid,
                 "id": $0.id as Any,
                 "favorite": $0.favorite as Any,
+                "maskingProfileNickname": $0.maskingProfileNickname as Any,
                 "profileNickname": $0.profileNickname as Any,
-                "profileThumbnailImage": $0.profileThumbnailImage as Any
+                "profileThumbnailImage": $0.profileThumbnailImage?.absoluteString as Any
               ]
             } ?? []
           ])
@@ -80,11 +119,44 @@ import RNCKakaoCore
           RNCKakaoUtil.reject(reject, RNCKakaoError.responseNotFound(name: "users"))
         }
       }
-      PickerApi.shared.selectFriend(
-        params: params,
-        viewType: mode == "popup" ? .popup : .full,
-        completion: callback
-      )
+      let viewType: ViewType = mode == "popup" ? .popup : .full
+      if forPartner {
+        let partnerParams = PickerFriendRequestParams(
+          friendFilter: .init(rawValue: options["friendFilter"] as? String ?? "none") ?? .none,
+          countryCodeFilters: options["countryCodeFilters"] as? [String],
+          usingOsFilter: .init(rawValue: options["usingOsFilter"] as? String ?? "all") ?? .all,
+          viewAppearance: params.viewAppearance,
+          orientation: params.orientation,
+          enableSearch: params.enableSearch,
+          enableIndex: params.enableIndex,
+          showMyProfile: params.showMyProfile,
+          showFavorite: params.showFavorite,
+          disableSelectOptions: (options["disableSelectOptions"] as? [[String: Any]])?.map {
+            let reason: DisableSelectReason = switch $0["reason"] as? String {
+            case "msgBlocked": .msgBlocked
+            case "registered": .registered
+            case "unregistered": .unRegistered
+            case "notFriend": .notFriend
+            default: .custom
+            }
+            return DisableSelectOption(
+              reason: reason,
+              message: $0["message"] as? String,
+              uuids: $0["uuids"] as? [String]
+            )
+          },
+          displayAllProfile: options["displayAllProfile"] as? Bool ?? false,
+          showPickedFriend: params.showPickedFriend,
+          selectParams: params.selectParams
+        )
+        PickerApi.shared.selectFriend(
+          params: partnerParams,
+          viewType: viewType,
+          completion: callback
+        )
+      } else {
+        PickerApi.shared.selectFriend(params: params, viewType: viewType, completion: callback)
+      }
     }
   }
 
@@ -119,13 +191,15 @@ import RNCKakaoCore
             resolve([
               "totalCount": friends.totalCount,
               "favoriteCount": friends.favoriteCount as Any,
+              "beforeUrl": friends.beforeUrl?.absoluteString as Any,
+              "afterUrl": friends.afterUrl?.absoluteString as Any,
               "friends": items
                 .map {
                   [
                     "id": $0.id as Any,
                     "uuid": $0.uuid,
                     "profileNickname": $0.profileNickname as Any,
-                    "profileThumbnailImage": $0.profileThumbnailImage as Any,
+                    "profileThumbnailImage": $0.profileThumbnailImage?.absoluteString as Any,
                     "favorite": $0.favorite as Any,
                     "allowedMsg": $0.allowedMsg as Any
                   ]

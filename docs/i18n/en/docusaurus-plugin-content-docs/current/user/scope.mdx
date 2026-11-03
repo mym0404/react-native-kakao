@@ -14,6 +14,8 @@ For more details, refer to the [Official Documentation](https://developers.kakao
 
 Use `scopes(scopes?: string[])` to retrieve user consent items.
 
+Pass scope IDs to request only those items on Android, iOS, and web. Omit the argument or pass an empty array to request all items. A successful response without a list returns an empty array.
+
 The response type is `Promise<KakaoScopeInfo[]>`.
 
 ```tsx
@@ -21,9 +23,9 @@ export type KakaoScopeInfo = {
   id: string;
   agreed: boolean;
   displayName: string;
-  revocable?: boolean;
+  revocable?: boolean | null;
   using: boolean;
-  delegated?: boolean;
+  delegated?: boolean | null;
   type: string;
 };
 ```
@@ -31,7 +33,7 @@ export type KakaoScopeInfo = {
 ### Example
 
 ```tsx
-scopes()
+await scopes(['profile_nickname']);
 ```
 
 ## Revoke Consent
@@ -47,5 +49,15 @@ You can revoke user consent items using `revokeScopes(scopes: string[])`.
 ### Example
 
 ```tsx
-revokeScopes(['terms-of-services'])
+await revokeScopes(['account_email']);
 ```
+
+`revokeScopes()` returns `Promise<void>` and resolves to `undefined` after revocation. Use `revokeScopesWithResult()` when you need the consent items returned by the SDK immediately after revocation. Both functions change the user's actual consent state.
+
+```tsx
+import { revokeScopesWithResult } from '@react-native-kakao/user';
+
+const currentScopes = await revokeScopesWithResult(['account_email']);
+```
+
+It returns `Promise<KakaoScopeInfo[]>`, or an empty array when the response omits the list. Revoking the example's `account_email` requires its queried `revocable` value to be `true`. Both methods reject on authentication errors or scopes that cannot be revoked.

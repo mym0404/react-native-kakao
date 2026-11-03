@@ -1,7 +1,8 @@
 import { is } from '@mj-studio/js-util';
-import { kAssert } from '@react-native-kakao/core';
+import { kAssert, kCreateWebError } from '@react-native-kakao/core';
 
 import Native from './spec/NativeKakaoUser';
+import { validateShippingAddressOptions } from './validateShippingAddressOptions';
 
 export interface KakaoLoginToken {
   accessToken: string;
@@ -14,13 +15,28 @@ export interface KakaoLoginToken {
   refreshTokenExpiresIn: number;
   scopes: string[];
 }
+export type KakaoCodeTokenOptions = {
+  code: string;
+  codeVerifier?: string;
+  redirectUri?: string;
+  web?: { clientSecret?: string };
+};
+
+const minActivityRequestCode = -2147483648;
+const maxActivityRequestCode = 2147483647;
+
+export type KakaoTalkLaunchMethod = 'UniversalLink' | 'CustomScheme';
+
+const defaultTalkLaunchMethod: KakaoTalkLaunchMethod = 'UniversalLink';
+const webOnlyErrorCode = 'Package-UnsupportedPlatform';
+
 export interface KakaoScopeInfo {
   id: string;
   agreed: boolean;
   displayName: string;
-  revocable?: boolean;
+  revocable?: boolean | null;
   using: boolean;
-  delegated?: boolean;
+  delegated?: boolean | null;
   type: string;
 }
 export interface KakaoServiceTerms {
@@ -29,7 +45,12 @@ export interface KakaoServiceTerms {
   agreed: boolean;
   required: boolean;
   revocable: boolean;
+  agreedBy?: 'KAUTH' | 'KAPI' | 'unknown';
 }
+export type KakaoRevokedServiceTerms = {
+  tag: string;
+  agreed: boolean;
+};
 export interface KakaoAppServiceTerms {
   tag: string;
   createdAt: number;
@@ -56,34 +77,45 @@ export interface KakaoShippingAddress {
 }
 export interface KakaoUser {
   id: number;
-  email: string;
+  properties: Record<string, string>;
+  hasSignedUp?: boolean | null;
+  uuid?: string | null;
+  groupUserToken?: string | null;
+  email?: string | null;
   name?: string | null;
-  nickname: string;
-  profileImageUrl: string;
-  thumbnailImageUrl: string;
+  nickname?: string | null;
+  profileImageUrl?: string | null;
+  thumbnailImageUrl?: string | null;
+  isDefaultImage?: boolean | null;
   phoneNumber?: string | null;
   ageRange?: string | null;
   birthday?: string | null;
   birthdayType?: string | null;
+  isLeapMonth?: boolean | null;
   birthyear?: string | null;
   gender?: string | null;
-  isEmailValid: boolean;
-  isEmailVerified: boolean;
-  isKorean?: boolean;
-  ageRangeNeedsAgreement?: boolean;
-  birthdayNeedsAgreement?: boolean;
-  birthyearNeedsAgreement?: boolean;
-  emailNeedsAgreement?: boolean;
-  genderNeedsAgreement?: boolean;
-  isKoreanNeedsAgreement?: boolean;
-  phoneNumberNeedsAgreement?: boolean;
-  profileNeedsAgreement?: boolean;
-  nameNeedsAgreement?: boolean;
-  profileImageNeedsAgreement?: boolean;
-  profileNicknameNeedsAgreement?: boolean;
-  legalBirthDateNeedsAgreement?: boolean;
-  connectedAt?: number;
-  synchedAt?: number;
+  isEmailValid?: boolean | null;
+  isEmailVerified?: boolean | null;
+  isKorean?: boolean | null;
+  ageRangeNeedsAgreement?: boolean | null;
+  birthdayNeedsAgreement?: boolean | null;
+  birthyearNeedsAgreement?: boolean | null;
+  emailNeedsAgreement?: boolean | null;
+  genderNeedsAgreement?: boolean | null;
+  isKoreanNeedsAgreement?: boolean | null;
+  phoneNumberNeedsAgreement?: boolean | null;
+  profileNeedsAgreement?: boolean | null;
+  nameNeedsAgreement?: boolean | null;
+  profileImageNeedsAgreement?: boolean | null;
+  profileNicknameNeedsAgreement?: boolean | null;
+  legalName?: string | null;
+  legalNameNeedsAgreement?: boolean | null;
+  legalBirthDate?: string | null;
+  legalBirthDateNeedsAgreement?: boolean | null;
+  legalGender?: 'female' | 'male' | null;
+  legalGenderNeedsAgreement?: boolean | null;
+  connectedAt?: number | null;
+  synchedAt?: number | null;
 }
 export interface KakaoAccessTokenInfo {
   id?: number;
@@ -96,12 +128,20 @@ export function login({
   useKakaoAccountLogin,
   scopes,
   nonce,
+  loginHint,
+  channelPublicIds,
+  android,
+  ios,
 }: {
   serviceTerms?: string[];
   prompts?: ('Login' | 'Create' | 'Cert' | 'SelectAccount')[];
   scopes?: string[];
   useKakaoAccountLogin?: boolean;
   nonce?: string;
+  loginHint?: string;
+  channelPublicIds?: string[];
+  android?: { requestCode?: number };
+  ios?: { launchMethod?: KakaoTalkLaunchMethod };
   web?: {
     redirectUri: string;
     scope?: string[];
@@ -113,36 +153,140 @@ export function login({
     nonce?: string;
   };
 } = {}): Promise<KakaoLoginToken> {
+  const requestCode = android?.requestCode;
+  kAssert(
+    requestCode == null ||
+      (Number.isInteger(requestCode) &&
+        requestCode >= minActivityRequestCode &&
+        requestCode <= maxActivityRequestCode),
+    `[login] android.requestCode must be an integer from ${minActivityRequestCode} to ${maxActivityRequestCode}`,
+  );
+
   kAssert(
     !useKakaoAccountLogin ? !is.notEmptyArray(prompts) && !is.notEmptyArray(scopes) : true,
     '[login] `prompts` and `scopes` cannot be passed if useKakaoAccountLogin is false.',
   );
 
   kAssert(
-    is.notEmptyArray(scopes) ? !is.notEmptyArray(prompts) && !is.notEmptyArray(serviceTerms) : true,
-    '[login] `scopes` cannot be passed with `prompts` or `serviceTerms`',
+    is.notEmptyArray(scopes)
+      ? !is.notEmptyArray(prompts) &&
+          !is.notEmptyArray(serviceTerms) &&
+          !is.notEmptyArray(channelPublicIds)
+      : true,
+    '[login] `scopes` cannot be passed with `prompts`, `serviceTerms`, or `channelPublicIds`',
+  );
+
+  kAssert(
+    loginHint == null ||
+      (!is.notEmptyArray(scopes) &&
+        !is.notEmptyArray(serviceTerms) &&
+        !is.notEmptyArray(channelPublicIds)),
+    '[login] `loginHint` cannot be passed with `scopes`, `serviceTerms`, or `channelPublicIds` on native platforms.',
   );
 
   return Native.login(
     serviceTerms ?? [],
     prompts ?? [],
     useKakaoAccountLogin ?? false,
+    ios?.launchMethod ?? defaultTalkLaunchMethod,
     scopes ?? [],
     nonce,
+    loginHint,
+    channelPublicIds ?? [],
+    requestCode,
   );
 }
 
-export function logout() {
-  return Native.logout();
+export async function signup({ properties }: { properties?: Record<string, string> } = {}) {
+  await Native.signup(properties);
 }
 
-export function unlink() {
-  return Native.unlink();
+export function loginWithKakao({
+  uiMode = 'auto',
+  prompts,
+  loginHint,
+  nonce,
+  channelPublicIds,
+  serviceTerms,
+  ios,
+}: {
+  uiMode?: 'auto' | 'light' | 'dark';
+  prompts?: ('Login' | 'Create' | 'Cert' | 'SelectAccount')[];
+  loginHint?: string;
+  nonce?: string;
+  channelPublicIds?: string[];
+  serviceTerms?: string[];
+  ios?: {
+    orientation?: 'auto' | 'portrait' | 'landscape';
+    launchMethod?: KakaoTalkLaunchMethod;
+  };
+} = {}): Promise<KakaoLoginToken> {
+  return Native.loginWithKakao(
+    uiMode,
+    ios?.orientation ?? 'auto',
+    ios?.launchMethod ?? defaultTalkLaunchMethod,
+    prompts ?? [],
+    loginHint,
+    nonce,
+    channelPublicIds ?? [],
+    serviceTerms ?? [],
+  );
+}
+
+export function refreshToken({
+  token,
+  ios,
+}: {
+  token?: KakaoLoginToken;
+  ios?: { loggingEnabled?: boolean };
+} = {}): Promise<KakaoLoginToken> {
+  kAssert(
+    ios?.loggingEnabled == null || typeof ios.loggingEnabled === 'boolean',
+    '[refreshToken] ios.loggingEnabled must be a boolean',
+  );
+
+  if (token !== undefined) {
+    kAssert(
+      token != null &&
+        is.string(token.accessToken) &&
+        token.accessToken.length > 0 &&
+        is.string(token.refreshToken) &&
+        token.refreshToken.length > 0,
+      '[refreshToken] token must contain non-empty accessToken and refreshToken strings',
+    );
+
+    kAssert(
+      [token.accessTokenExpiresAt, token.refreshTokenExpiresAt].every(
+        (value) => Number.isFinite(value) && !Number.isNaN(new Date(value * 1000).getTime()),
+      ) && [token.accessTokenExpiresIn, token.refreshTokenExpiresIn].every(Number.isFinite),
+      '[refreshToken] token expiry timestamps must be valid Unix seconds and lifetimes must be finite',
+    );
+
+    kAssert(
+      (token.tokenType == null || is.string(token.tokenType)) &&
+        (token.idToken == null || is.string(token.idToken)) &&
+        Array.isArray(token.scopes) &&
+        token.scopes.every((scope) => is.string(scope)),
+      '[refreshToken] tokenType and idToken must be strings when present, and scopes must be strings',
+    );
+  }
+
+  return Native.refreshToken(token, ios?.loggingEnabled ?? true);
+}
+
+export async function logout() {
+  await Native.logout();
+}
+
+export async function unlink() {
+  await Native.unlink();
 }
 
 export function isLogined() {
   return Native.isLogined();
 }
+
+export const hasToken = Native.hasToken;
 
 export function isKakaoTalkLoginAvailable(): Promise<boolean> {
   return Native.isKakaoTalkLoginAvailable();
@@ -152,33 +296,89 @@ export function scopes(scopes?: string[]): Promise<KakaoScopeInfo[]> {
   return Native.scopes(scopes);
 }
 
-export function revokeScopes(scopes: string[]): Promise<void> {
+export async function revokeScopes(scopes: string[]): Promise<void> {
+  await Native.revokeScopes(scopes);
+}
+
+export function revokeScopesWithResult(scopes: string[]): Promise<KakaoScopeInfo[]> {
   return Native.revokeScopes(scopes);
 }
 
-export function serviceTerms(): Promise<KakaoServiceTerms[]> {
-  return Native.serviceTerms();
+export function serviceTerms({
+  result,
+  tags,
+}: {
+  result?: 'agreed_service_terms' | 'app_service_terms';
+  tags?: string[];
+} = {}): Promise<KakaoServiceTerms[]> {
+  return Native.serviceTerms(result, tags);
 }
 
-export function shippingAddresses(): Promise<KakaoShippingAddressResult> {
-  return Native.shippingAddresses();
+export async function shippingAddresses({
+  addressId,
+  fromUpdatedAt,
+  pageSize,
+}: {
+  addressId?: number;
+  fromUpdatedAt?: number;
+  pageSize?: number;
+} = {}): Promise<KakaoShippingAddressResult> {
+  validateShippingAddressOptions({ addressId, fromUpdatedAt, pageSize });
+
+  return Native.shippingAddresses(addressId, fromUpdatedAt, pageSize);
 }
 
-export function me(): Promise<KakaoUser> {
-  return Native.me();
+export function revokeServiceTerms(tags: string[]): Promise<KakaoRevokedServiceTerms[]> {
+  return Native.revokeServiceTerms(tags);
+}
+
+export function selectShippingAddress(): Promise<number> {
+  return Native.selectShippingAddress();
+}
+
+export function me({
+  propertyKeys,
+  secureResource = true,
+}: { propertyKeys?: string[]; secureResource?: boolean } = {}): Promise<KakaoUser> {
+  return Native.me(propertyKeys, secureResource);
+}
+
+export async function issueAccessTokenWithCode({
+  code,
+  codeVerifier,
+  redirectUri,
+}: KakaoCodeTokenOptions): Promise<KakaoLoginToken> {
+  kAssert(is.string(code) && code.length > 0, '[issueAccessTokenWithCode] code is required');
+
+  return Native.issueAccessTokenWithCode(code, codeVerifier, redirectUri);
 }
 
 export function getAccessToken(): Promise<KakaoAccessTokenInfo> {
   return Native.getAccessToken();
 }
 
+export async function updateProfile({
+  properties,
+}: {
+  properties: Record<string, string>;
+}): Promise<void> {
+  await Native.updateProfile(properties);
+}
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function setAccessTokenWeb(token: string) {}
+export function setAccessTokenWeb(token: string): void {
+  kCreateWebError({
+    code: webOnlyErrorCode,
+    message: '[setAccessTokenWeb] This API is only supported on web.',
+  });
+}
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function issueAccessTokenWithCodeWeb(params: {
   redirectUri: string;
   clientSecret?: string;
   code: string;
+  codeVerifier?: string;
 }): Promise<{
   tokenType: string;
   accessToken: string;
@@ -188,20 +388,32 @@ export async function issueAccessTokenWithCodeWeb(params: {
   refreshTokenExpiresIn: number;
   scope?: string;
 }> {
-  return {} as any;
+  kCreateWebError({
+    code: webOnlyErrorCode,
+    message: '[issueAccessTokenWithCodeWeb] This API is only supported on web.',
+  });
 }
 
 const KakaoUser = {
   login,
+  loginWithKakao,
+  refreshToken,
+  issueAccessTokenWithCode,
+  signup,
   logout,
   unlink,
   isLogined,
+  hasToken,
   isKakaoTalkLoginAvailable,
   scopes,
   revokeScopes,
+  revokeScopesWithResult,
   serviceTerms,
+  revokeServiceTerms,
   shippingAddresses,
+  selectShippingAddress,
   me,
+  updateProfile,
   getAccessToken,
   setAccessTokenWeb,
   issueAccessTokenWithCodeWeb,

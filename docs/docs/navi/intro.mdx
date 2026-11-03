@@ -16,8 +16,7 @@ import TabItem from '@theme/TabItem';
 
 `navi` 패키지로 카카오 내비게이션 기능을 사용할 수 있습니다.
 
-카카오내비는 서비스에서 내비게이션 기능을 사용할 수 있도록 SDK와 API를 제공합니다. 카카오내비 애플리케이션(이하 앱)을 실행해 내비게이션 기능을 사용하거나
-서비스 앱 안에서 내비게이션 및 경로 정보 활용 기능을 구현할 수 있습니다.
+카카오내비 앱을 열어 길 안내 또는 목적지 공유를 요청합니다.
 
 [공식 문서](https://developers.kakao.com/docs/latest/ko/kakaonavi/common)를 참고하세요.
 
@@ -40,3 +39,15 @@ import TabItem from '@theme/TabItem';
     ```
   </TabItem>
 </Tabs>
+
+## 카카오내비 설치 여부
+
+SDK를 초기화한 뒤 `isKakaoNaviInstalled()`로 카카오내비 앱 설치 여부를 조회합니다. 조회만 하며 앱이나 설치 페이지를 열지 않습니다.
+
+```tsx
+import { isKakaoNaviInstalled } from '@react-native-kakao/navi';
+
+const isInstalled = await isKakaoNaviInstalled();
+```
+
+Android는 카카오 SDK의 설치 확인 결과를 반환하고, iOS는 `kakaonavi-sdk` URL 스킴을 실행할 수 있는지 확인합니다. iOS에는 [카카오내비 설정](/docs/navi/intro-ios)의 앱 조회 스킴이 필요합니다. 웹은 설치 여부를 확인할 수 없어 `false`를 반환하며, 모바일 웹의 실행 요청은 `navigateTo`와 `shareTo`를 사용합니다.

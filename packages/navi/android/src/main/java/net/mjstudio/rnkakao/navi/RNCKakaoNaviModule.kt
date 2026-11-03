@@ -32,6 +32,32 @@ class RNCKakaoNaviModule internal constructor(
   context: ReactApplicationContext,
 ) : NativeKakaoNaviSpec(context) {
   @ReactMethod
+  override fun isKakaoNaviInstalled(promise: Promise) =
+    onMain {
+      promise.resolve(NaviClient.instance.isKakaoNaviInstalled(reactApplicationContext))
+    }
+
+  @ReactMethod
+  override fun makeNaviUrl(
+    destination: ReadableMap,
+    isShare: Boolean,
+    option: ReadableMap?,
+    viaList: ReadableArray?,
+    promise: Promise,
+  ) = onMain {
+    runCatching {
+      val stops = viaList?.filterIsReadableMap()?.map { it.toLocation() }
+      val intent =
+        if (isShare) {
+          NaviClient.instance.shareDestinationIntent(destination.toLocation(), option?.toOption(), stops)
+        } else {
+          NaviClient.instance.navigateIntent(destination.toLocation(), option?.toOption(), stops)
+        }
+      checkNotNull(intent.dataString) { "Failed to create Navi URL" }
+    }.onSuccess { promise.resolve(it) }.onFailure { promise.rejectWith(it) }
+  }
+
+  @ReactMethod
   override fun navigateOrShareTo(
     destination: ReadableMap,
     option: ReadableMap?,

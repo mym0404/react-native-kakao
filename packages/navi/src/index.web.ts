@@ -1,5 +1,5 @@
 import { filterNonNullishKeys } from '@mj-studio/js-util';
-import { kAssert } from '@react-native-kakao/core';
+import { kAssert, kCreateWebError } from '@react-native-kakao/core';
 
 import type { KakaoNaviAPI, KakaoNaviOption } from './index';
 
@@ -79,6 +79,9 @@ function getRpOption(v: KakaoNaviOption['rpOption']): number {
 }
 
 const KakaoNavi: KakaoNaviAPI = {
+  isKakaoNaviInstalled: async () => false,
+  getNavigateUrl: unsupportedUrlBuilder,
+  getShareUrl: unsupportedUrlBuilder,
   navigateTo: async ({ viaList, destination, option }) => {
     kAssert(
       viaList ? viaList.length <= 3 : true,
@@ -143,6 +146,13 @@ const KakaoNavi: KakaoNaviAPI = {
   },
 };
 
+async function unsupportedUrlBuilder(): Promise<never> {
+  kCreateWebError({
+    code: 'Package-UnsupportedPlatform',
+    message: 'The Kakao JavaScript SDK does not provide Navi URL builders.',
+  });
+}
+
 function isMobileBrowser() {
   return (
     /android|iphone|ipad|ipod/i.test(navigator.userAgent) ||
@@ -150,5 +160,5 @@ function isMobileBrowser() {
   );
 }
 
-export const { navigateTo, shareTo } = KakaoNavi;
+export const { isKakaoNaviInstalled, getNavigateUrl, getShareUrl, navigateTo, shareTo } = KakaoNavi;
 export default KakaoNavi;

@@ -7,7 +7,9 @@
       "@react-native-kakao/navi",
       "@react-native-kakao/share",
       "@react-native-kakao/social",
-      "@react-native-kakao/user"
+      "@react-native-kakao/user",
+      "@react-native-kakao/cert",
+      "@react-native-kakao/map"
     ]
   ],
   "access": "public",

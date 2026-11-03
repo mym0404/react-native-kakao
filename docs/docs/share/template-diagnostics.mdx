@@ -1,0 +1,59 @@
+---
+sidebar_position: 34
+---
+
+# 공유 템플릿 진단
+
+`getShareTemplateDiagnostics`는 카카오 서버가 반환하는 템플릿 경고와 사용자 인자 진단 결과를 조회합니다. 공유 화면을 열거나 메시지를 보내지 않습니다. SDK 초기화와 유효한 앱 설정이 필요하며, 카카오 로그인은 필요하지 않습니다.
+
+## 사용법
+
+기본 템플릿은 `templateType`과 해당 형식의 `template`을 전달합니다. 사용자 정의 템플릿과 웹 페이지 스크랩도 같은 함수로 진단합니다.
+
+```tsx
+import { getShareTemplateDiagnostics } from '@react-native-kakao/share';
+
+const diagnostics = await getShareTemplateDiagnostics({
+  templateType: 'text',
+  template: {
+    text: '공유할 내용',
+    link: { webUrl: 'https://example.com' },
+  },
+});
+
+const customDiagnostics = await getShareTemplateDiagnostics({
+  templateType: 'custom',
+  templateId: 12345,
+  templateArgs: { title: '공유할 제목' },
+});
+
+const scrapDiagnostics = await getShareTemplateDiagnostics({
+  templateType: 'scrap',
+  requestUrl: 'https://example.com/article',
+});
+```
+
+기본 템플릿 형식은 `feed`, `list`, `location`, `commerce`, `text`, `calendar`를 지원합니다. `custom`은 `templateId`가 필수이고 `templateArgs`는 생략할 수 있습니다. `scrap`은 `requestUrl`이 필수이며, 사용자 정의 템플릿을 사용하려면 `templateId`를 추가합니다. 스크랩의 `templateArgs`도 생략할 수 있습니다.
+
+모든 형식에서 선택적으로 `serverCallbackArgs`와 `pickerSettings`를 전달할 수 있습니다. `pickerSettings`의 `type`은 `default`, `friend`, `chat` 중 하나이고 `limit`은 1부터 10까지의 정수입니다. 진단에서는 이 설정을 SDK의 템플릿 검증에만 전달하며 대상 선택 화면을 열지 않습니다.
+
+## 결과와 오류
+
+반환값은 `Promise<KakaoShareTemplateDiagnostics>`입니다. SDK에서 값이 없으면 해당 객체는 `{}`가 됩니다.
+
+| 필드 | 형식 | 의미 |
+| --- | --- | --- |
+| `warningMsg` | `Readonly<Record<string, string>>` | 등록하지 않은 도메인 등으로 일부 콘텐츠가 동작하지 않을 수 있다는 템플릿 경고 |
+| `argumentMsg` | `Readonly<Record<string, string>>` | 사용자 정의 템플릿에 전달한 사용자 인자의 검증 결과 |
+
+경고가 있으면 해당 콘텐츠와 인자를 수정한 뒤 다시 진단합니다. 서버가 요청 자체를 거부하면 Promise도 거부되며, 기존 카카오 오류 형식을 사용합니다. 진단 성공은 메시지 전달이나 메시지 안의 링크 실행을 보장하지 않습니다.
+
+## 플랫폼 지원
+
+| 플랫폼 | 지원 조건 |
+| --- | --- |
+| Android | 카카오톡 설치 필요. 설치하지 않았으면 `Package-KakaoAppNotAvailable` 오류 반환 |
+| iOS | 카카오톡 설치 없이도 진단 가능 |
+| 웹 | JavaScript SDK가 진단 결과를 노출하지 않아 `Package-UnsupportedPlatform` 오류 반환 |
+
+Android SDK는 템플릿 검증 후 카카오톡 공유 Intent를 생성하므로 카카오톡 설치가 필요합니다. 패키지는 진단 호출에서 이 Intent나 iOS 공유 URL을 실행하지 않습니다. 브라우저 공유 URL만 필요하면 [공유 URL 생성](/docs/share/build-url)을 사용합니다.

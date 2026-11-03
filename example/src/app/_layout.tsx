@@ -11,6 +11,7 @@ import { StatusBar } from 'expo-status-bar';
 import { Box } from '../component/Box';
 import { Txt } from '../component/Txt';
 import AppTheme from '../design/AppTheme';
+import { kakaoNativeAppKey } from '../util/kakaoNativeAppKey';
 
 export default function RootLayout() {
   const { code } = useGlobalSearchParams<{ code?: string }>();
@@ -31,7 +32,7 @@ export default function RootLayout() {
   }, [code]);
 
   useMount(() => {
-    Core.initializeKakaoSDK('fb975c77483d1edbe69467fca6bb2a6e', {
+    Core.initializeKakaoSDK(kakaoNativeAppKey, {
       web: {
         javascriptKey: '7bd64215ea748be5c4a2bbcea40ebee9',
         restApiKey: '8b32d258f3f3fb553d86cfaa20964077',

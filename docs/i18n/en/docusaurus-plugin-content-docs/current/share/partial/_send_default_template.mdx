@@ -26,12 +26,15 @@ Use <Code>{`send${props.name[0].toUpperCase() + props.name.slice(1)}TemplateToFr
 export function send${props.name[0].toUpperCase() + props.name.slice(1)}TemplateToFriends(params: {
   template: Kakao${props.name[0].toUpperCase() + props.name.slice(1)}Template;
   receiverUuids: string[];
+  includeFailureInfo?: boolean;
 })
 `.trim()}
 </CodeBlock>
 
 - `template`: The template object.
 - `receiverUuids`: List of friend uuids to send the message to. You can obtain these from the [social](/docs/social/intro) package's [Select KakaoTalk Friends](/docs/social/select-talk-friends) or [Get KakaoTalk Friends](/docs/social/get-friends).
+
+Pass `includeFailureInfo: true` to receive successful UUIDs and failures grouped by error. Omit it to receive the successful UUID array. See [message results](/docs/share/message-results).
 
 :::info
 Refer to [Component Types](/docs/share/component-types) for detailed component types.

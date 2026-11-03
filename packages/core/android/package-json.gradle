@@ -23,6 +23,7 @@ Object corePkg, pkg
 try {
     corePkg = new JsonSlurper().parse(_corePkg)
     ext.RNCKakaoSdkVersions = corePkg.sdkVersions.android
+    ext.RNCKakaoSdkVersions.compileSdk = rootProject.findProperty('compileSdkVersion') ?: ext.RNCKakaoSdkVersions.compileSdk
     ext.RNCKakaoCorePkg = corePkg
 } catch (Exception ignored) {
     throw new GradleException(":${project.name} failed to parse ${fileName} found at ${_corePkg}.")

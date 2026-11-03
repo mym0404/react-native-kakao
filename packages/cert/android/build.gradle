@@ -1,0 +1,43 @@
+apply from: file('./../../core/android/package-json.gradle')
+def Versions = project.ext.RNCKakaoSdkVersions
+Project coreProject = project.ext.getWorkspaceProject("core")
+
+project.ext.applyPlugins()
+
+android {
+    namespace "net.mjstudio.rnkakao.cert"
+
+    compileSdkVersion Versions.compileSdk
+
+    defaultConfig {
+        minSdkVersion Versions.minSdk
+        targetSdkVersion Versions.targetSdk
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+
+    lintOptions {
+        disable "GradleCompatible"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+repositories {
+    mavenCentral()
+    google()
+}
+
+dependencies {
+    implementation "com.facebook.react:react-android"
+
+    api coreProject
+    implementation "com.kakao.sdk:v2-cert:${Versions.cert}"
+}

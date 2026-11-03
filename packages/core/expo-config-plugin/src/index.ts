@@ -7,21 +7,28 @@ import { withIos } from './withIos';
 
 const withKakao: ConfigPlugin<{
   nativeAppKey: string;
+  customScheme?: string;
   android?: KakaoAndroidConfig;
   ios?: KakaoIosConfig;
-}> = (config, { nativeAppKey, android, ios }) => {
+}> = (config, { nativeAppKey, customScheme, android, ios }) => {
   if (!nativeAppKey) {
     throw new Error(
       "[@react-native-kakao/core] 'nativeAppKey' missing in expo config plugin value",
     );
   }
 
+  if (customScheme != null && !/^[A-Za-z][A-Za-z0-9+.-]*$/.test(customScheme)) {
+    throw new Error("[@react-native-kakao/core] 'customScheme' must be a URL scheme without ://");
+  }
+
+  const scheme = customScheme ?? `kakao${nativeAppKey}`;
+
   if (android) {
-    config = withAndroid(config, { android, nativeAppKey });
+    config = withAndroid(config, { android, scheme });
   }
 
   if (ios) {
-    config = withIos(config, { ios, nativeAppKey });
+    config = withIos(config, { ios, scheme });
   }
 
   return config;

@@ -1,0 +1,59 @@
+---
+sidebar_position: 34
+---
+
+# Sharing template diagnostics
+
+`getShareTemplateDiagnostics` retrieves template warnings and argument diagnostics from Kakao's server without opening a sharing interface or sending a message. Initialize the SDK and configure a valid app first. Kakao login is not required.
+
+## Usage
+
+For a default template, pass `templateType` and its matching `template` object. The same function also supports custom templates and scraped web pages.
+
+```tsx
+import { getShareTemplateDiagnostics } from '@react-native-kakao/share';
+
+const diagnostics = await getShareTemplateDiagnostics({
+  templateType: 'text',
+  template: {
+    text: 'Content to share',
+    link: { webUrl: 'https://example.com' },
+  },
+});
+
+const customDiagnostics = await getShareTemplateDiagnostics({
+  templateType: 'custom',
+  templateId: 12345,
+  templateArgs: { title: 'Title to share' },
+});
+
+const scrapDiagnostics = await getShareTemplateDiagnostics({
+  templateType: 'scrap',
+  requestUrl: 'https://example.com/article',
+});
+```
+
+Supported default types are `feed`, `list`, `location`, `commerce`, `text`, and `calendar`. `custom` requires `templateId` and accepts optional `templateArgs`. `scrap` requires `requestUrl`; add `templateId` to use a custom template. Scrap `templateArgs` are also optional.
+
+All types accept optional `serverCallbackArgs` and `pickerSettings`. Picker `type` accepts `default`, `friend`, or `chat`; `limit` accepts integers from 1 to 10. Diagnostics pass these settings to the SDK's template validation without opening recipient selection.
+
+## Results and errors
+
+The return type is `Promise<KakaoShareTemplateDiagnostics>`. Missing SDK maps become `{}`.
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `warningMsg` | `Readonly<Record<string, string>>` | Template warnings about content that may not work, such as unregistered domains |
+| `argumentMsg` | `Readonly<Record<string, string>>` | Validation results for custom template arguments |
+
+Correct the affected content or arguments and check again if warnings are present. When the server rejects the request, the Promise rejects with the existing Kakao error format. Successful diagnostics do not confirm message delivery or execution of links within a message.
+
+## Platform support
+
+| Platform | Requirement |
+| --- | --- |
+| Android | KakaoTalk must be installed; otherwise rejects with `Package-KakaoAppNotAvailable` |
+| iOS | Can retrieve diagnostics without KakaoTalk installed |
+| Web | Rejects with `Package-UnsupportedPlatform` because the JavaScript SDK does not expose diagnostics |
+
+The Android SDK creates a KakaoTalk sharing Intent after template validation and requires KakaoTalk to be installed. Diagnostics do not execute that Intent or the iOS sharing URL. To construct only a browser sharing URL, use [sharing URL builders](/docs/share/build-url).

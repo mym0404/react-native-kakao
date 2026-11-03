@@ -4,8 +4,6 @@ sidebar_position: 4
 
 # Get KakaoTalk Friends
 
-## Get KakaoTalk Friends
-
 [Official Documentation](https://developers.kakao.com/docs/latest/ko/kakaotalk-social/android#get-friends)
 
 :::info
@@ -42,12 +40,12 @@ The types used are as follows:
  * @property allowedMsg Whether message reception is allowed. For app-joined friends, this corresponds to feed msg. For unjoined app friends, it corresponds to invite msg.
  */
 export interface KakaoTalkFriend {
-  id?: number;
+  id?: number | null;
   uuid: string;
-  profileNickname: string;
-  profileThumbnailImage?: string;
-  favorite?: boolean;
-  allowedMsg?: boolean;
+  profileNickname?: string | null;
+  profileThumbnailImage?: string | null;
+  favorite?: boolean | null;
+  allowedMsg?: boolean | null;
 }
 
 export interface KakaoTalkGetFriendsOptions {
@@ -57,3 +55,7 @@ export interface KakaoTalkGetFriendsOptions {
   friendOrder?: 'nickname' | 'age' | 'favorite';
 }
 ```
+
+The response includes the `friends` array and `totalCount`. `beforeUrl` and `afterUrl` contain Kakao's previous and next page URLs, or `null` when that page is absent. Their query parameters can help determine `offset` and `limit` for the next request.
+
+A friend's `profileNickname` can be absent or `null`. iOS friend thumbnails use the same URL string format as the other platforms.

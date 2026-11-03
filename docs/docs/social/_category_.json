@@ -1,8 +1,9 @@
 {
-  "label": "Package - Social",
+  "label": "Social 패키지",
   "position": 1003,
   "link": {
     "type": "generated-index",
-    "description": "Social 패키지 사용법"
+    "description": "Social 패키지 사용법",
+    "slug": "/category/package---social"
   }
 }

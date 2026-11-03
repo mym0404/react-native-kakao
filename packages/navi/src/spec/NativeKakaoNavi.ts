@@ -27,7 +27,20 @@ export interface KakaoNaviLocation {
   rpflag?: string;
 }
 
+export type KakaoNaviRouteParams = {
+  destination: KakaoNaviLocation;
+  option?: KakaoNaviOption;
+  viaList?: KakaoNaviLocation[];
+};
+
 export interface Spec extends TurboModule {
+  isKakaoNaviInstalled(): Promise<boolean>;
+  makeNaviUrl(
+    destination: UnsafeObject,
+    isShare: boolean,
+    option?: UnsafeObject,
+    viaList?: ReadonlyArray<UnsafeObject>,
+  ): Promise<string>;
   navigateOrShareTo(
     destination: UnsafeObject,
     option?: UnsafeObject,

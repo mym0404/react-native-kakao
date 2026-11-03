@@ -12,6 +12,8 @@ The API lets the user start a one-on-one chat with the service's KakaoTalk chann
 
 You can chat with a KakaoTalk channel using the `chatChannel` function.
 
+Its `Promise<void>` resolves without a success value. It does not return message delivery results.
+
 ```tsx
 export function chatChannel(channelPublicId: string): Promise<void>
 ```

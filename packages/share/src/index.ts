@@ -3,10 +3,15 @@ import type { Double, UnsafeObject } from 'react-native/Libraries/Types/CodegenT
 import type {
   KakaoCalendarTemplate,
   KakaoCommerceTemplate,
+  KakaoDefaultTemplateParams,
   KakaoFeedTemplate,
   KakaoImageUploadResult,
   KakaoListTemplate,
   KakaoLocationTemplate,
+  KakaoMessageSendResult,
+  KakaoSharePickerSettings,
+  KakaoShareTemplateDiagnostics,
+  KakaoShareTemplateDiagnosticsParams,
   KakaoTemplateButton,
   KakaoTemplateCommerce,
   KakaoTemplateContent,
@@ -18,6 +23,7 @@ import type {
 } from './spec/NativeKakaoShare';
 import Native from './spec/NativeKakaoShare';
 import { swapMobileExecutionParamsFieldValueIntoStringInIOS } from './util/swapMobileExecutionParamsFieldValueIntoStringInIOS';
+import { validateSharePickerSettings } from './validateSharePickerSettings';
 
 export type {
   KakaoTemplateSocial,
@@ -29,14 +35,41 @@ export type {
   KakaoTemplateCommerce,
   KakaoTemplateButton,
   KakaoLocationTemplate,
+  KakaoMessageSendResult,
+  KakaoSharePickerSettings,
+  KakaoShareTemplateDiagnostics,
+  KakaoShareTemplateDiagnosticsParams,
   KakaoListTemplate,
   KakaoFeedTemplate,
   KakaoCommerceTemplate,
   KakaoCalendarTemplate,
   KakaoImageUploadResult,
+  KakaoDefaultTemplateParams,
 };
 
+export function isKakaoTalkSharingAvailable(): Promise<boolean> {
+  return Native.isKakaoTalkSharingAvailable();
+}
+
+type ShareArgs = [
+  templateType: string,
+  templateId: Double,
+  templateJson: UnsafeObject,
+  receiverUuids: readonly string[],
+  useWebBrowserIfKakaoTalkNotAvailable: boolean,
+  templateArgs: Readonly<Record<string, string>>,
+  serverCallbackArgs: Readonly<Record<string, string>>,
+];
+
+function shareOrSendMeOrSendFriendOrWhatever<T extends boolean = false>(
+  sendType: 'send-friend',
+  ...args: [...ShareArgs, includeFailureInfo?: T]
+): Promise<KakaoFriendMessageResult<T>>;
 function shareOrSendMeOrSendFriendOrWhatever(
+  sendType: 'share' | 'send-me',
+  ...args: [...ShareArgs, includeFailureInfo?: undefined, pickerSettings?: KakaoSharePickerSettings]
+): Promise<void>;
+async function shareOrSendMeOrSendFriendOrWhatever(
   /* share, send-me, send-friend */
   sendType: string,
   /* custom, feed, list, location, commerce, text, calendar */
@@ -50,8 +83,10 @@ function shareOrSendMeOrSendFriendOrWhatever(
   useWebBrowserIfKakaoTalkNotAvailable: boolean,
   templateArgs: Readonly<{ [key: string]: string }>,
   serverCallbackArgs: Readonly<{ [key: string]: string }>,
-): Promise<any> {
-  return Native.shareOrSendMeOrSendFriendOrWhatever(
+  includeFailureInfo?: boolean,
+  pickerSettings?: KakaoSharePickerSettings,
+): Promise<void | string[] | KakaoMessageSendResult> {
+  const response = await Native.shareOrSendMeOrSendFriendOrWhatever(
     sendType,
     templateType,
     templateId,
@@ -60,12 +95,26 @@ function shareOrSendMeOrSendFriendOrWhatever(
     useWebBrowserIfKakaoTalkNotAvailable,
     templateArgs,
     serverCallbackArgs,
+    validateSharePickerSettings(pickerSettings),
   );
+
+  if (sendType === SendTypes.sendFriend) {
+    if (response == null) {
+      throw new Error('Native friend-message result is missing.');
+    }
+
+    return includeFailureInfo ? response : response.successfulReceiverUuids;
+  }
 }
 
-const SendTypes = { share: 'share', sendMe: 'send-me', sendFriend: 'send-friend' };
+export type KakaoFriendMessageResult<T extends boolean = false> = T extends true
+  ? KakaoMessageSendResult
+  : string[];
+
+const SendTypes = { share: 'share', sendMe: 'send-me', sendFriend: 'send-friend' } as const;
 const TemplateTypes = {
   custom: 'custom',
+  scrap: 'scrap',
   feed: 'feed',
   list: 'list',
   location: 'location',
@@ -73,17 +122,163 @@ const TemplateTypes = {
   text: 'text',
   calendar: 'calendar',
 };
+const DefaultScrapTemplateId = -1;
+
+export async function getShareTemplateDiagnostics(
+  params: KakaoShareTemplateDiagnosticsParams,
+): Promise<KakaoShareTemplateDiagnostics> {
+  const template =
+    'template' in params
+      ? params.template
+      : 'requestUrl' in params
+        ? { requestUrl: params.requestUrl }
+        : {};
+
+  return Native.getTemplateDiagnostics(
+    params.templateType,
+    'templateId' in params ? params.templateId ?? DefaultScrapTemplateId : DefaultScrapTemplateId,
+    swapMobileExecutionParamsFieldValueIntoStringInIOS(template),
+    'templateArgs' in params ? params.templateArgs ?? {} : {},
+    params.serverCallbackArgs ?? {},
+    validateSharePickerSettings(params.pickerSettings),
+  );
+}
+
+export async function makeDefaultTemplateUrl({
+  templateType,
+  template,
+  serverCallbackArgs = {},
+}: KakaoDefaultTemplateParams): Promise<string> {
+  return Native.makeTemplateUrl(
+    templateType,
+    DefaultScrapTemplateId,
+    swapMobileExecutionParamsFieldValueIntoStringInIOS(template),
+    {},
+    serverCallbackArgs,
+  );
+}
+
+export async function makeCustomTemplateUrl({
+  templateId,
+  templateArgs = {},
+  serverCallbackArgs = {},
+}: {
+  templateId: number;
+  templateArgs?: Record<string, string>;
+  serverCallbackArgs?: Record<string, string>;
+}): Promise<string> {
+  return Native.makeTemplateUrl(
+    TemplateTypes.custom,
+    templateId,
+    {},
+    templateArgs,
+    serverCallbackArgs,
+  );
+}
+
+export async function makeScrapTemplateUrl({
+  requestUrl,
+  templateId = DefaultScrapTemplateId,
+  templateArgs = {},
+  serverCallbackArgs = {},
+}: {
+  requestUrl: string;
+  templateId?: number;
+  templateArgs?: Record<string, string>;
+  serverCallbackArgs?: Record<string, string>;
+}): Promise<string> {
+  return Native.makeTemplateUrl(
+    TemplateTypes.scrap,
+    templateId,
+    { requestUrl },
+    templateArgs,
+    serverCallbackArgs,
+  );
+}
+
+export type KakaoScrapMessageParams = {
+  requestUrl: string;
+  templateId?: number;
+  templateArgs?: Record<string, string>;
+};
+
+export async function sendScrapTemplateToMe({
+  requestUrl,
+  templateId = DefaultScrapTemplateId,
+  templateArgs = {},
+}: KakaoScrapMessageParams) {
+  await Native.shareOrSendMeOrSendFriendOrWhatever(
+    SendTypes.sendMe,
+    TemplateTypes.scrap,
+    templateId,
+    { requestUrl },
+    [],
+    false,
+    templateArgs,
+    {},
+    undefined,
+  );
+}
+
+export function sendScrapTemplateToFriends<T extends boolean = false>({
+  requestUrl,
+  templateId = DefaultScrapTemplateId,
+  templateArgs = {},
+  receiverUuids,
+  includeFailureInfo,
+}: KakaoScrapMessageParams & { receiverUuids: string[]; includeFailureInfo?: T }): Promise<
+  KakaoFriendMessageResult<T>
+> {
+  return shareOrSendMeOrSendFriendOrWhatever(
+    SendTypes.sendFriend,
+    TemplateTypes.scrap,
+    templateId,
+    { requestUrl },
+    receiverUuids,
+    false,
+    templateArgs,
+    {},
+    includeFailureInfo,
+  );
+}
+
+export async function shareScrapTemplate({
+  requestUrl,
+  templateId,
+  templateArgs = {},
+  serverCallbackArgs = {},
+  pickerSettings,
+  useWebBrowserIfKakaoTalkNotAvailable = true,
+}: {
+  requestUrl: string;
+  templateId?: number;
+  templateArgs?: Record<string, string>;
+  serverCallbackArgs?: Record<string, string>;
+  pickerSettings?: KakaoSharePickerSettings;
+  useWebBrowserIfKakaoTalkNotAvailable?: boolean;
+}): Promise<void> {
+  await Native.shareScrapTemplate(
+    requestUrl,
+    useWebBrowserIfKakaoTalkNotAvailable,
+    templateId,
+    templateArgs,
+    serverCallbackArgs,
+    validateSharePickerSettings(pickerSettings),
+  );
+}
 
 export function shareCustomTemplate({
   templateId,
   useWebBrowserIfKakaoTalkNotAvailable = true,
   serverCallbackArgs = {},
+  pickerSettings,
   templateArgs = {},
 }: {
   templateId: number;
   useWebBrowserIfKakaoTalkNotAvailable?: boolean;
   templateArgs?: Record<string, string>;
   serverCallbackArgs?: Record<string, string>;
+  pickerSettings?: KakaoSharePickerSettings;
 }) {
   return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.share,
@@ -94,6 +289,8 @@ export function shareCustomTemplate({
     useWebBrowserIfKakaoTalkNotAvailable,
     templateArgs,
     serverCallbackArgs,
+    undefined,
+    pickerSettings,
   );
 }
 
@@ -116,15 +313,17 @@ export function sendCustomTemplateToMe({
   );
 }
 
-export function sendCustomTemplateToFriends({
+export function sendCustomTemplateToFriends<T extends boolean = false>({
   templateId,
   templateArgs = {},
   receiverUuids,
+  includeFailureInfo,
 }: {
   templateId: number;
   templateArgs?: Record<string, string>;
   receiverUuids: string[];
-}): Promise<string[]> {
+  includeFailureInfo?: T;
+}): Promise<KakaoFriendMessageResult<T>> {
   return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.sendFriend,
     TemplateTypes.custom,
@@ -134,6 +333,7 @@ export function sendCustomTemplateToFriends({
     false,
     templateArgs,
     {},
+    includeFailureInfo,
   );
 }
 
@@ -141,10 +341,12 @@ export function shareFeedTemplate({
   template,
   useWebBrowserIfKakaoTalkNotAvailable = true,
   serverCallbackArgs = {},
+  pickerSettings,
 }: {
   template: KakaoFeedTemplate;
   useWebBrowserIfKakaoTalkNotAvailable?: boolean;
   serverCallbackArgs?: Record<string, string>;
+  pickerSettings?: KakaoSharePickerSettings;
 }) {
   return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.share,
@@ -155,6 +357,8 @@ export function shareFeedTemplate({
     useWebBrowserIfKakaoTalkNotAvailable,
     {},
     serverCallbackArgs,
+    undefined,
+    pickerSettings,
   );
 }
 
@@ -171,13 +375,15 @@ export function sendFeedTemplateToMe({ template }: { template: KakaoFeedTemplate
   );
 }
 
-export function sendFeedTemplateToFriends({
+export function sendFeedTemplateToFriends<T extends boolean = false>({
   template,
   receiverUuids,
+  includeFailureInfo,
 }: {
   template: KakaoFeedTemplate;
   receiverUuids: string[];
-}): Promise<string[]> {
+  includeFailureInfo?: T;
+}): Promise<KakaoFriendMessageResult<T>> {
   return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.sendFriend,
     TemplateTypes.feed,
@@ -187,6 +393,7 @@ export function sendFeedTemplateToFriends({
     false,
     {},
     {},
+    includeFailureInfo,
   );
 }
 
@@ -194,10 +401,12 @@ export function shareListTemplate({
   template,
   useWebBrowserIfKakaoTalkNotAvailable = true,
   serverCallbackArgs = {},
+  pickerSettings,
 }: {
   template: KakaoListTemplate;
   useWebBrowserIfKakaoTalkNotAvailable?: boolean;
   serverCallbackArgs?: Record<string, string>;
+  pickerSettings?: KakaoSharePickerSettings;
 }) {
   return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.share,
@@ -208,6 +417,8 @@ export function shareListTemplate({
     useWebBrowserIfKakaoTalkNotAvailable,
     {},
     serverCallbackArgs,
+    undefined,
+    pickerSettings,
   );
 }
 
@@ -224,13 +435,15 @@ export function sendListTemplateToMe({ template }: { template: KakaoListTemplate
   );
 }
 
-export function sendListTemplateToFriends({
+export function sendListTemplateToFriends<T extends boolean = false>({
   template,
   receiverUuids,
+  includeFailureInfo,
 }: {
   template: KakaoListTemplate;
   receiverUuids: string[];
-}): Promise<string[]> {
+  includeFailureInfo?: T;
+}): Promise<KakaoFriendMessageResult<T>> {
   return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.sendFriend,
     TemplateTypes.list,
@@ -240,6 +453,7 @@ export function sendListTemplateToFriends({
     false,
     {},
     {},
+    includeFailureInfo,
   );
 }
 
@@ -247,10 +461,12 @@ export function shareLocationTemplate({
   template,
   useWebBrowserIfKakaoTalkNotAvailable = true,
   serverCallbackArgs = {},
+  pickerSettings,
 }: {
   template: KakaoLocationTemplate;
   useWebBrowserIfKakaoTalkNotAvailable?: boolean;
   serverCallbackArgs?: Record<string, string>;
+  pickerSettings?: KakaoSharePickerSettings;
 }) {
   return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.share,
@@ -261,6 +477,8 @@ export function shareLocationTemplate({
     useWebBrowserIfKakaoTalkNotAvailable,
     {},
     serverCallbackArgs,
+    undefined,
+    pickerSettings,
   );
 }
 
@@ -277,13 +495,15 @@ export function sendLocationTemplateToMe({ template }: { template: KakaoLocation
   );
 }
 
-export function sendLocationTemplateToFriends({
+export function sendLocationTemplateToFriends<T extends boolean = false>({
   template,
   receiverUuids,
+  includeFailureInfo,
 }: {
   template: KakaoLocationTemplate;
   receiverUuids: string[];
-}): Promise<string[]> {
+  includeFailureInfo?: T;
+}): Promise<KakaoFriendMessageResult<T>> {
   return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.sendFriend,
     TemplateTypes.location,
@@ -293,6 +513,7 @@ export function sendLocationTemplateToFriends({
     false,
     {},
     {},
+    includeFailureInfo,
   );
 }
 
@@ -300,10 +521,12 @@ export function shareCommerceTemplate({
   template,
   useWebBrowserIfKakaoTalkNotAvailable = true,
   serverCallbackArgs = {},
+  pickerSettings,
 }: {
   template: KakaoCommerceTemplate;
   useWebBrowserIfKakaoTalkNotAvailable?: boolean;
   serverCallbackArgs?: Record<string, string>;
+  pickerSettings?: KakaoSharePickerSettings;
 }) {
   return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.share,
@@ -314,6 +537,8 @@ export function shareCommerceTemplate({
     useWebBrowserIfKakaoTalkNotAvailable,
     {},
     serverCallbackArgs,
+    undefined,
+    pickerSettings,
   );
 }
 
@@ -330,13 +555,15 @@ export function sendCommerceTemplateToMe({ template }: { template: KakaoCommerce
   );
 }
 
-export function sendCommerceTemplateToFriends({
+export function sendCommerceTemplateToFriends<T extends boolean = false>({
   template,
   receiverUuids,
+  includeFailureInfo,
 }: {
   template: KakaoCommerceTemplate;
   receiverUuids: string[];
-}): Promise<string[]> {
+  includeFailureInfo?: T;
+}): Promise<KakaoFriendMessageResult<T>> {
   return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.sendFriend,
     TemplateTypes.commerce,
@@ -346,6 +573,7 @@ export function sendCommerceTemplateToFriends({
     false,
     {},
     {},
+    includeFailureInfo,
   );
 }
 
@@ -353,10 +581,12 @@ export function shareTextTemplate({
   template,
   useWebBrowserIfKakaoTalkNotAvailable = true,
   serverCallbackArgs = {},
+  pickerSettings,
 }: {
   template: KakaoTextTemplate;
   useWebBrowserIfKakaoTalkNotAvailable?: boolean;
   serverCallbackArgs?: Record<string, string>;
+  pickerSettings?: KakaoSharePickerSettings;
 }) {
   return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.share,
@@ -367,6 +597,8 @@ export function shareTextTemplate({
     useWebBrowserIfKakaoTalkNotAvailable,
     {},
     serverCallbackArgs,
+    undefined,
+    pickerSettings,
   );
 }
 
@@ -383,13 +615,15 @@ export function sendTextTemplateToMe({ template }: { template: KakaoTextTemplate
   );
 }
 
-export function sendTextTemplateToFriends({
+export function sendTextTemplateToFriends<T extends boolean = false>({
   template,
   receiverUuids,
+  includeFailureInfo,
 }: {
   template: KakaoTextTemplate;
   receiverUuids: string[];
-}): Promise<string[]> {
+  includeFailureInfo?: T;
+}): Promise<KakaoFriendMessageResult<T>> {
   return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.sendFriend,
     TemplateTypes.text,
@@ -399,6 +633,7 @@ export function sendTextTemplateToFriends({
     false,
     {},
     {},
+    includeFailureInfo,
   );
 }
 
@@ -406,10 +641,12 @@ export function shareCalendarTemplate({
   template,
   useWebBrowserIfKakaoTalkNotAvailable = true,
   serverCallbackArgs = {},
+  pickerSettings,
 }: {
   template: KakaoCalendarTemplate;
   useWebBrowserIfKakaoTalkNotAvailable?: boolean;
   serverCallbackArgs?: Record<string, string>;
+  pickerSettings?: KakaoSharePickerSettings;
 }) {
   return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.share,
@@ -420,6 +657,8 @@ export function shareCalendarTemplate({
     useWebBrowserIfKakaoTalkNotAvailable,
     {},
     serverCallbackArgs,
+    undefined,
+    pickerSettings,
   );
 }
 
@@ -436,13 +675,15 @@ export function sendCalendarTemplateToMe({ template }: { template: KakaoCalendar
   );
 }
 
-export function sendCalendarTemplateToFriends({
+export function sendCalendarTemplateToFriends<T extends boolean = false>({
   template,
   receiverUuids,
+  includeFailureInfo,
 }: {
   template: KakaoCalendarTemplate;
   receiverUuids: string[];
-}): Promise<string[]> {
+  includeFailureInfo?: T;
+}): Promise<KakaoFriendMessageResult<T>> {
   return shareOrSendMeOrSendFriendOrWhatever(
     SendTypes.sendFriend,
     TemplateTypes.calendar,
@@ -452,7 +693,18 @@ export function sendCalendarTemplateToFriends({
     false,
     {},
     {},
+    includeFailureInfo,
   );
+}
+
+export function uploadImage({
+  imageUri,
+  secureResource = true,
+}: {
+  imageUri: string;
+  secureResource?: boolean;
+}) {
+  return Native.uploadImage(imageUri, secureResource);
 }
 
 export function scrapImage({
@@ -466,6 +718,15 @@ export function scrapImage({
 }
 
 const KakaoShare = {
+  isKakaoTalkSharingAvailable,
+  getShareTemplateDiagnostics,
+  makeDefaultTemplateUrl,
+  makeCustomTemplateUrl,
+  makeScrapTemplateUrl,
+  uploadImage,
+  shareScrapTemplate,
+  sendScrapTemplateToMe,
+  sendScrapTemplateToFriends,
   scrapImage,
   shareCustomTemplate,
   sendCustomTemplateToMe,

@@ -1,0 +1,44 @@
+---
+sidebar_position: 109
+---
+
+# 배송지 선택
+
+`selectShippingAddress()`로 카카오 배송지 선택 화면을 열고 선택한 배송지 ID를 받을 수 있습니다. Android, iOS, 웹에서 `Promise<number>`를 반환합니다.
+
+[공식 문서](https://developers.kakao.com/docs/en/kakaologin/utilize#shipping-address-picker)
+
+사용자가 로그인한 상태여야 합니다. 앱이 `shipping_address` 동의항목을 사용할 수 있어야 하며 사용자도 해당 항목에 동의해야 합니다.
+
+Expo의 Android 앱에서는 core 설정 플러그인에서 배송지 선택 콜백을 활성화하고 prebuild를 다시 실행합니다.
+
+```json
+[
+  "@react-native-kakao/core",
+  {
+    "nativeAppKey": "{{native app key}}",
+    "android": {
+      "authCodeHandlerActivity": true,
+      "shippingAddressHandlerActivity": true
+    }
+  }
+]
+```
+
+Expo를 사용하지 않는 Android 앱에서는 `com.kakao.sdk.auth.AppsHandlerActivity`를 `android:exported="true"`로 등록하고, `kakao{NATIVE_APP_KEY}://address`를 처리할 수 있도록 BROWSABLE 카테고리가 있는 VIEW 인텐트 필터를 추가합니다. [Android 설정 문서](https://developers.kakao.com/docs/en/kakaologin/android#before-you-begin-custom-url-scheme)를 참고하세요.
+
+브라우저에서 배송지 선택 팝업을 열 수 있도록 버튼을 누르는 동작에서 함수를 직접 호출합니다.
+
+```tsx
+import { selectShippingAddress } from '@react-native-kakao/user';
+
+const onPress = async () => {
+  const addressId = await selectShippingAddress();
+
+  return addressId;
+};
+```
+
+이 함수는 배송지 ID만 반환하며 주소의 상세 정보는 조회하지 않습니다. 카카오의 v2 REST 배송지 조회 API는 `address_id`로 특정 배송지를 조회할 수 있습니다. 이 저장소에서 사용하는 카카오 SDK 버전은 해당 v2 API를 제공하지 않습니다.
+
+SDK 오류가 발생하거나 네이티브 선택 화면을 취소하면 `Promise`를 거부합니다. 예제에서 사용하는 JavaScript SDK 2.8.4에서는 결과 응답 없이 팝업을 직접 닫으면 `Promise`가 완료되지 않을 수 있으며, 이 모듈도 같은 SDK 동작을 따릅니다.

@@ -1,0 +1,46 @@
+---
+sidebar_position: 102
+---
+
+# Manual signup
+
+`signup()` connects a pending user to your app after Kakao login. It is available on Android, iOS, and web, and applies only to apps whose automatic connection on login has been disabled in consultation with Kakao.
+
+## Prerequisites
+
+In Kakao Developers, **Kakao Login > Automatic connection on login** must be disabled. If the setting is absent, the app uses automatic connection and does not need this API.
+
+Call `login()` first and complete your service signup flow before calling `signup()`. Kakao returns error `-102` if the user is already connected.
+
+A manual connection app must connect a pending user within 24 hours of login. Kakao classifies users who miss that deadline as incomplete signups and disconnects them.
+
+## Usage
+
+Call without arguments to connect the user without saving properties. The returned `Promise<void>` resolves on success.
+
+```tsx
+import { me, signup } from '@react-native-kakao/user';
+
+const user = await me();
+if (user.hasSignedUp === false) {
+  await signup();
+}
+```
+
+`me().hasSignedUp` is `false` while connection is pending and `true` after connection completes. It is `null` when Kakao omits the field; do not treat an absent value as a pending connection.
+
+## Save user properties
+
+Pass string keys and values in `properties` to save them during connection. Register the keys in Kakao Developers first.
+
+```tsx
+await signup({ properties: { membership: 'basic' } });
+```
+
+| Argument | Type | Required | Meaning |
+| --- | --- | --- | --- |
+| `properties` | `Record<string, string>` | No | User properties to save while connecting |
+
+Read `me().id` after connection if you need the user ID. A failed request rejects the returned `Promise`.
+
+See [Kakao's manual connection documentation](https://developers.kakao.com/docs/en/kakaologin/rest-api#signup) for requirements and errors.

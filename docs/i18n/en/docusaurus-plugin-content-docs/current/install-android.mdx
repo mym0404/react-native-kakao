@@ -72,7 +72,7 @@ Add internet permission to Android's `AndroidManifest.xml`.
 
 ## R8 Code Shrinking Rules
 
-When the app includes the Android library from `@react-native-kakao/core`, its consumer rules for Kakao SDK 2.25.0 and Retrofit are applied automatically. Apps using React Native autolinking can enable R8 code shrinking (`minifyEnabled true`) for release builds without adding Kakao-specific rules to their own `proguard-rules.pro`. Apps using `@react-native-kakao/user` receive the same rules when core is linked.
+When the app includes the Android library from `@react-native-kakao/core`, its consumer rules for Kakao SDK 2.25.1 and Retrofit are applied automatically. Apps using React Native autolinking can enable R8 code shrinking (`minifyEnabled true`) for release builds without adding Kakao-specific rules to their own `proguard-rules.pro`. Apps using `@react-native-kakao/user` receive the same rules when core is linked.
 
 If autolinking is disabled, include the core Android library as a Gradle dependency. For a separate integration that cannot include the core library, copy `node_modules/@react-native-kakao/core/android/consumer-rules.pro` from the installed package into the app's `proguard-rules.pro`.
 

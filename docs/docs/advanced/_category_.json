@@ -1,8 +1,9 @@
 {
-  "label": "Advanced",
+  "label": "고급 사용법",
   "position": 10000,
   "link": {
     "type": "generated-index",
-    "description": "더 자세한 내용"
+    "description": "더 자세한 내용",
+    "slug": "/category/advanced"
   }
 }

@@ -58,7 +58,7 @@ class RNCKakaoChannelModule internal constructor(
       if (error != null) {
         promise.rejectWith(error)
       } else {
-        promise.resolve(42)
+        promise.resolve(null)
       }
     }
   }
@@ -110,7 +110,7 @@ class RNCKakaoChannelModule internal constructor(
       if (error != null) {
         promise.rejectWith(error)
       } else {
-        promise.resolve(42)
+        promise.resolve(null)
       }
     }
   }

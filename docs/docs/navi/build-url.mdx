@@ -1,0 +1,32 @@
+---
+sidebar_position: 7
+---
+
+# 카카오내비 URL 생성
+
+`getNavigateUrl`과 `getShareUrl`은 Android·iOS SDK로 카카오내비 실행 URL을 생성합니다. SDK를 초기화한 뒤 호출하며, 카카오내비 설치나 로그인이 필요하지 않습니다. URL만 반환하고 앱이나 설치 페이지를 열지 않습니다.
+
+## 사용법
+
+길 안내 URL과 목적지 공유 URL은 같은 매개변수를 받습니다.
+
+```tsx
+import { getNavigateUrl, getShareUrl } from '@react-native-kakao/navi';
+
+const params = {
+  destination: { name: '강남역', x: 127.02758, y: 37.49771 },
+  option: { coordType: 'WGS84' as const, routeInfo: false },
+  viaList: [{ name: '경유지', x: 127.02, y: 37.5 }],
+};
+
+const navigationUrl = await getNavigateUrl(params);
+const sharingUrl = await getShareUrl(params);
+```
+
+두 함수는 `Promise<string>`을 반환합니다. 목적지·옵션·경유지 형식은 [`navigateTo`](/docs/navi/navigate-destination)의 형식과 같습니다. `option`과 `viaList`는 생략할 수 있고, 경유지는 최대 3개입니다. 4개 이상이면 SDK를 호출하기 전에 `Package-Assertion` 오류로 거부합니다.
+
+`getShareUrl`은 SDK 동작에 따라 `routeInfo`를 항상 `true`로 설정합니다. `getNavigateUrl`은 전달한 값을 유지합니다. Android에서는 SDK가 만든 Intent의 data URL만 반환합니다. 앱 실행을 요청하려면 `navigateTo` 또는 [`shareTo`](/docs/navi/share-destination)를 사용합니다.
+
+## 웹 지원
+
+카카오 JavaScript SDK에는 URL 생성 API가 없으므로 웹에서는 두 함수 모두 `Package-UnsupportedPlatform` 오류로 거부합니다. 모바일 웹에서 카카오내비 실행을 요청하려면 `navigateTo` 또는 `shareTo`를 사용합니다.

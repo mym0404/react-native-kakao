@@ -1,0 +1,54 @@
+---
+sidebar_position: 108
+---
+
+# 친구 메시지 발송 결과
+
+모든 `send*TemplateToFriends` 함수는 Android·iOS·웹에서 `includeFailureInfo: true`를 받으면 성공한 수신자와 수신자별 실패 정보를 함께 반환합니다. 옵션을 생략하거나 `false`를 전달하면 성공한 수신자의 UUID 배열을 반환합니다.
+
+이 옵션은 사용자 정의, 피드, 리스트, 위치, 커머스, 텍스트, 캘린더, 웹 페이지 스크랩 메시지에 적용됩니다. 발송 권한과 수신자 조건은 각 메시지 함수와 같습니다.
+
+## 상세 결과 조회
+
+메시지 발송 결과를 상세히 조회하려면 기존 발송 요청에 옵션을 추가합니다.
+
+```tsx
+import { sendTextTemplateToFriends } from '@react-native-kakao/share';
+
+const result = await sendTextTemplateToFriends({
+  receiverUuids,
+  template: {
+    text: '새 게시글을 확인해 보세요.',
+    link: { webUrl: 'https://your-registered-domain.example/article' },
+  },
+  includeFailureInfo: true,
+});
+
+console.log(result.successfulReceiverUuids);
+console.log(result.failureInfos);
+```
+
+`successfulReceiverUuids`는 발송에 성공한 수신자의 UUID 목록입니다. `failureInfos`는 오류별로 묶인 실패 수신자 목록입니다. 실패가 없으면 빈 배열이며, 실패 수신자만 다시 처리할 때 사용할 수 있습니다.
+
+```tsx
+export type KakaoMessageSendResult = {
+  successfulReceiverUuids: string[];
+  failureInfos: {
+    code: number;
+    msg: string;
+    receiverUuids: string[];
+  }[];
+};
+```
+
+| 필드 | 의미 |
+| --- | --- |
+| `code` | 카카오가 반환한 오류 코드입니다. |
+| `msg` | 카카오가 반환한 오류 설명입니다. |
+| `receiverUuids` | 해당 오류로 발송에 실패한 수신자의 UUID 목록입니다. |
+
+## 일부 수신자에게 실패한 경우
+
+카카오가 요청을 수락했더라도 일부 수신자에게는 발송하지 못할 수 있습니다. 이 경우 Promise는 성공 응답으로 처리되며 실패한 수신자는 `failureInfos`에 포함됩니다. 요청 전체가 거부되면 옵션 값과 관계없이 Promise가 거부됩니다. 자동으로 재발송하지 않습니다.
+
+수신자가 1명인 요청이 실패하면 카카오가 요청 오류로 응답할 수 있습니다. 자세한 조건과 오류 코드는 [공식 메시지 문서](https://developers.kakao.com/docs/ko/kakaotalk-message/rest-api)를 참고하세요.

@@ -7,8 +7,10 @@ sidebar_position: 102
 Web login requires extra steps because it redirects the user to another page using a redirect URI.
 
 :::tip
-All APIs except for login can be used similarly to those in [Kakao Login](/docs/user/login).
+Supported web APIs use the same response fields and types as native. `loginWithKakao` and `refreshToken` are not supported on web.
 :::
+
+`setAccessTokenWeb` and `issueAccessTokenWithCodeWeb` are web-only functions. On Android and iOS, `setAccessTokenWeb` throws synchronously and `issueAccessTokenWithCodeWeb` rejects its Promise with `Package-UnsupportedPlatform`. Use `login` or `loginWithKakao` for native login; the native SDK stores the tokens.
 
 ## Logging In
 
@@ -50,6 +52,8 @@ Calling the `login()` function redirects the user to the Kakao login page.
 On the web platform, you must pass the `web` object.
 
 Common `scopes`, `serviceTerms`, `prompts`, and `nonce` options are forwarded on web. `SelectAccount` maps to `select_account`; `useKakaoAccountLogin: true` disables login through KakaoTalk unless `web.throughTalk` overrides it.
+
+`loginHint` prefills the ID field on the Kakao Account login screen. The common `loginHint` takes precedence over `web.loginHint`.
 
 `web.scope`, `web.serviceTerms`, and `web.prompt` take precedence over their common equivalents. The common `nonce` takes precedence over `web.nonce`.
 

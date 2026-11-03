@@ -1,5 +1,60 @@
 # Change Log
 
+## 3.2.0
+
+### Minor Changes
+
+- dabddfa: Expose native navigation and destination-sharing URL builders without launching Kakao Navi.
+- 1efca29: Expose Kakao Talk sharing availability and Kakao Navi installation checks on Android and iOS, with explicit false results on web.
+
+### Patch Changes
+
+- 109b2f3: Preserve optional boolean values when forwarding iOS navigation and web-install options to Swift.
+- Updated dependencies [d5c5fb8]
+- Updated dependencies [3027207]
+- Updated dependencies [dfd32ca]
+- Updated dependencies [2b223bf]
+- Updated dependencies [20c253b]
+- Updated dependencies [67cd4e2]
+- Updated dependencies [d81f9b7]
+- Updated dependencies [3260517]
+  - @react-native-kakao/core@3.2.0
+
+## 3.1.0-next.2
+
+### Patch Changes
+
+- 109b2f3: Preserve optional boolean values when forwarding iOS navigation and web-install options to Swift.
+- @react-native-kakao/core@3.1.0-next.2
+
+## 3.1.0-next.1
+
+### Minor Changes
+
+- dabddfa: Expose native navigation and destination-sharing URL builders without launching Kakao Navi.
+- 1efca29: Expose Kakao Talk sharing availability and Kakao Navi installation checks on Android and iOS, with explicit false results on web.
+
+### Patch Changes
+
+- Updated dependencies [d5c5fb8]
+- Updated dependencies [3027207]
+- Updated dependencies [dfd32ca]
+- Updated dependencies [2b223bf]
+- Updated dependencies [67cd4e2]
+- Updated dependencies [d81f9b7]
+  - @react-native-kakao/core@3.1.0-next.1
+
+## 3.1.0-next.0
+
+### Patch Changes
+
+- 4772981: Use `reactApplicationContext.currentActivity` in the Android modules instead of the bare `currentActivity` getter, so they compile on React Native releases where `ReactContextBaseJavaModule` no longer exposes it to Kotlin subclasses.
+- 71700aa: Align web SDK options, response shapes, timestamps, and session errors with native APIs.
+- Updated dependencies [20c253b]
+- Updated dependencies [3260517]
+- Updated dependencies [71700aa]
+  - @react-native-kakao/core@3.1.0-next.0
+
 ## 3.1.0
 
 ### Patch Changes
@@ -8,6 +63,7 @@
 - 3afe0d3: Align web SDK options, response shapes, timestamps, and session errors with native APIs.
 - Updated dependencies [3afe0d3]
   - @react-native-kakao/core@3.1.0
+
 
 ## 3.0.0
 

@@ -1,0 +1,22 @@
+apply plugin: 'com.android.library'
+
+def expoModulesCorePlugin = new File(project(':expo-modules-core').projectDir, 'ExpoModulesCorePlugin.gradle')
+apply from: expoModulesCorePlugin
+applyKotlinExpoModulesCorePlugin()
+useCoreDependencies()
+useDefaultAndroidSdkVersions()
+
+group = 'net.mjstudio.rnkakao.map'
+version = '3.0.0'
+
+android {
+    namespace 'net.mjstudio.rnkakao.map'
+    defaultConfig {
+        consumerProguardFiles 'consumer-rules.pro'
+    }
+}
+
+dependencies {
+    implementation 'com.facebook.react:react-android'
+    implementation 'com.kakao.maps.open:android:2.15.2'
+}
