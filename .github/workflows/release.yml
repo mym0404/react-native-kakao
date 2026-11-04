@@ -167,6 +167,10 @@ jobs:
             jq -se --arg major "${RELEASE_BRANCH#v}" 'all(.[]; .version | test("^" + $major + "\\.[0-9]+\\.[0-9]+$"))' packages/*/package.json
           fi
 
+      - name: Verify npm trusted publishing for every package
+        if: steps.current.outputs.matches == 'true'
+        run: node script/release-packages.ts auth
+
       - name: Publish packages
         id: publish
         if: steps.current.outputs.matches == 'true'
@@ -176,6 +180,10 @@ jobs:
           script: yarn release
           create-github-releases: false
           push-git-tags: false
+
+      - name: Wait for every package to become available on npm
+        if: steps.current.outputs.matches == 'true' && steps.publish.outcome == 'success'
+        run: node script/release-packages.ts published
 
       - name: Create version tag and GitHub release
         if: steps.current.outputs.matches == 'true' && steps.publish.outcome == 'success'
