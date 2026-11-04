@@ -13,15 +13,14 @@
 <a href="https://rnkakao.mjstudio.net">Documentation(en, ko)</a>
 
 **React Native Kakao** is a collection of React Native modules connecting you to Kakao
-services; each module is a light-weight JavaScript layer connecting you to the native Kakao SDKs for
-iOS, Android and Web.
+services on Android, iOS, and web.
 
 ## Highlights
 
 - ❤️ **No version conflicts**
   - managed and consistent versions of native SDKs ensure there are no version conflicts.
 - 🍎 **Consistent logic for each platform**
-  - same JS code => same android, ios, web logics are ensured.
+  - shared JavaScript APIs across supported platforms, with platform-specific capabilities documented.
 - ⚡️ **Easy coding, Fast development**
   - all APIs are designed with the DX as the top priority.
 - 🎃 **Well typed**
@@ -29,7 +28,7 @@ iOS, Android and Web.
 - 📄 **Well documented**
   - full reference & installation documentation alongside detailed guides and FAQs
 - 🚀 **Wide supportability**
-  - Supports **Android, iOS, Web, and Expo**.
+  - Supports **Android, iOS, Web, and Expo**, depending on the module.
 - 🦋 **Robust error handling**
   - All SDK errors are forwarded to JS clearly, consistently for each platform.
 
@@ -55,7 +54,10 @@ See the [compatibility table](https://rnkakao.mjstudio.net/en/docs/intro#compati
 | [Social](https://rnkakao.mjstudio.net/docs/social/intro) | [![badge](https://img.shields.io/npm/dm/@react-native-kakao/social.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-kakao/social) | ✅ |
 | [Channel](https://rnkakao.mjstudio.net/docs/channel/intro) | [![badge](https://img.shields.io/npm/dm/@react-native-kakao/channel.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-kakao/channel) | ✅ |
 | [Navi](https://rnkakao.mjstudio.net/docs/navi/intro) | [![badge](https://img.shields.io/npm/dm/@react-native-kakao/navi.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-kakao/navi) | ✅ |
-| [Cert](https://rnkakao.mjstudio.net/docs/cert/intro) | Available with v3 | Pending release |
+| [Cert](https://rnkakao.mjstudio.net/docs/cert/intro) | [![badge](https://img.shields.io/npm/dm/@react-native-kakao/cert.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-kakao/cert) | ✅ |
+| [Map](https://rnkakao.mjstudio.net/docs/map/intro) | [![badge](https://img.shields.io/npm/dm/@react-native-kakao/map.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-kakao/map) | ✅ |
+
+Map uses Expo Modules and supports Android and iOS; web and Expo Go are not supported. Core is not required for Map. See the [Map guide](https://rnkakao.mjstudio.net/docs/map/intro) for installation requirements.
 
 ## Documentation
 
