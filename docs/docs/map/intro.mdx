@@ -480,6 +480,35 @@ const dim = await map.current?.getDimScreenStatus();
 
 `getDimScreenStatus().capabilities`에서 route 포함, 모델 강조 방향, 애니메이션과 상태 getter 지원 여부를 확인해요. iOS는 `mapAndRoute`와 dim z-order를 지원하지 않아요. Android는 dim 설정과 애니메이터 실행 상태 getter가 없어 관련 상태가 `null`일 수 있어요.
 
+## RoadView와 Zone
+
+이 절의 RoadView·Zone API는 실험적 바인딩이에요. 카카오는 [앱용 RoadView 미오픈](https://devtalk.kakao.com/t/api/151363), [Android RoadView 미지원](https://devtalk.kakao.com/t/android-sdk-v2-roadview/152208), [Zone API 제휴·외부 제공 미지원](https://devtalk.kakao.com/t/zone-api/151737)으로 안내하고 있어요. SDK 가이드의 “별도 협의 필요” 문구가 공개 신청 절차나 사용 승인을 뜻하지는 않아요.
+
+RoadView는 지도 위의 overlay가 아니라 별도 네이티브 뷰예요. Expo 52 호환을 위해 standalone `KakaoRoadView`와 지도 결합형 `KakaoMapRoadView`를 각각 독립 Expo Module로 자동 연결해요. 결합형은 하나의 엔진 안에서 지도와 RoadView를 만들고 연결하도록 구현돼요. standalone의 `linkMap()`은 `ERR_KAKAO_MAP_UNSUPPORTED_PLATFORM_FEATURE`로 거절해요.
+
+```tsx
+import { useRef } from 'react';
+import { KakaoMapRoadView, type KakaoMapRoadViewRef } from '@react-native-kakao/map';
+
+const roadView = useRef<KakaoMapRoadViewRef>(null);
+
+<KakaoMapRoadView
+  ref={roadView}
+  style={{ flex: 1 }}
+  initialRequest={{ coordinate: { latitude: 37.402001, longitude: 127.108678 } }}
+  linked
+  onRoadViewReady={() => console.log('RoadView ready')}
+  onRoadViewResult={(result) => console.log(result.panoramaId)}
+  onRoadViewRequestFailed={(error) => console.error(error.code, error.message)}
+/>;
+```
+
+Android 바인딩에는 custom search range, 방향 표시 coordinate marker, dated capture 이동과 `requestNext`가 있어요. iOS 바인딩에는 `refresh`와 focus event가 있어요. `getInfo().capabilities`를 기준으로 분기해요. 이미지·로고 화면 오프셋은 논리 단위, 검색 반경은 미터, pan·tilt·방향각은 도예요.
+
+`KakaoMapView`의 `onZoneEnter`와 `onZoneLeave`는 실제 zone의 `zoneType`, `zoneId`, `detailId`, 상세 ID와 링크를 전달해요. 받은 ID만 `showZoneDetail()`에 사용하고 `hideZoneDetail(zoneType)`으로 닫아요. `setZoneCheckRectScale()`의 scale은 비율이에요.
+
+RoadView 표시와 Zone 데이터 동작은 성공적으로 검증하지 못했어요. 일반 지도 인증, capability 값이나 메서드 Promise 완료는 화면 표시 성공을 증명하지 않아요. 실제 이벤트와 화면을 확인하지 않고 런타임 성공으로 판단하지 마세요.
+
 ## 지도 유틸리티
 
 `executeUtilityCommand()`는 POI 카테고리, 탭 간격, 카메라 애니메이션, 지도 활성·표시 상태, 실제 viewport, 버전, 좌표계 변환, 글꼴 등록과 캐시를 다뤄요. `getCapabilities` 결과에 있는 기능만 호출해요.

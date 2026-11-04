@@ -23,32 +23,13 @@ public class KakaoMapModule: Module {
     }.runOnQueue(.main)
     View(KakaoMapView.self) {
       Events(
-        "onMapReady",
-        "onError",
-        "onCameraMoveStart",
-        "onCameraIdle",
-        "onMapClick",
-        "onMapLongClick",
-        "onPoiClick",
-        "onCompassClick",
-        "onMapTypeChanged",
-        "onTerrainClick",
-        "onViewportClick",
-        "onVisibilityChanged",
-        "onFocusChanged",
-        "onPaddingChanged",
-        "onViewportChanged",
-        "onLabelClick",
-        "onLabelAnimationStopped",
-        "onLabelsChanged",
-        "onShapeAnimationStop",
-        "onShapesChanged",
-        "onRoutesChanged",
-        "onRouteProgress",
-        "onRouteAnimationStop",
-        "onGuiEvent",
-        "onDimScreenEvent",
-        "onCameraOperation"
+        "onMapReady", "onError", "onCameraMoveStart", "onCameraIdle", "onMapClick",
+        "onMapLongClick", "onPoiClick", "onCompassClick", "onMapTypeChanged",
+        "onTerrainClick", "onViewportClick", "onVisibilityChanged", "onFocusChanged",
+        "onPaddingChanged", "onViewportChanged", "onLabelClick", "onLabelAnimationStopped",
+        "onLabelsChanged", "onShapeAnimationStop", "onShapesChanged", "onRoutesChanged",
+        "onRouteProgress", "onRouteAnimationStop", "onGuiEvent", "onDimScreenEvent", "onZoneEnter",
+        "onZoneLeave", "onCameraOperation"
       )
       Prop("initialCamera") { (view: KakaoMapView, camera: CameraOptions?) in
         view.pendingInitialCamera = camera
@@ -198,6 +179,30 @@ public class KakaoMapModule: Module {
       }
       AsyncFunction("executeCameraCommand") { (view: KakaoMapView, command: [String: Any]) in
         try view.executeCameraCommand(command)
+      }
+      AsyncFunction("setZoneCheckRectScale") { (
+        view: KakaoMapView,
+        zoneType: String,
+        level: Int,
+        scale: MapScreenPoint
+      ) in
+        try view.requireZones().setCheckRectScale(
+          zoneType: zoneType,
+          level: level,
+          x: scale.x,
+          y: scale.y
+        )
+      }
+      AsyncFunction("showZoneDetail") { (
+        view: KakaoMapView,
+        zoneType: String,
+        zoneId: String,
+        detailId: String
+      ) in
+        try view.requireZones().showDetail(zoneType: zoneType, zoneId: zoneId, detailId: detailId)
+      }
+      AsyncFunction("hideZoneDetail") { (view: KakaoMapView, zoneType: String) in
+        try view.requireZones().hideDetail(zoneType: zoneType)
       }
     }
   }

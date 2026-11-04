@@ -65,6 +65,8 @@ class KakaoMapView(
   private val onRouteAnimationStop by EventDispatcher()
   private val onGuiEvent by EventDispatcher()
   private val onDimScreenEvent by EventDispatcher()
+  private val onZoneEnter by EventDispatcher()
+  private val onZoneLeave by EventDispatcher()
   private var labels: MapLabels? = null
   private var shapes: MapShapes? = null
   private var routes: MapRoutes? = null
@@ -72,6 +74,8 @@ class KakaoMapView(
   private var dimScreen: MapDimScreen? = null
   private var utilities: MapUtilities? = null
   private var cameraCommands: MapCameraCommands? = null
+  private var zones: MapZones? = null
+  private var zoneGeneration = 0L
   private var imageLoader: MapImageLoader? = null
   private var pendingLabels: MapLabelSceneRecord? = null
   private var pendingShapes: Map<String, Any?>? = null
@@ -210,6 +214,7 @@ class KakaoMapView(
         override fun onMapReady(readyMap: KakaoMap) {
           if (isDestroyed) return
           map = readyMap
+          prepareZones(readyMap)
           readyMap.setOnCameraMoveStartListener { _, gesture ->
             if (!isDestroyed) onCameraMoveStart(mapOf("reason" to reason(gesture)))
           }
@@ -486,6 +491,30 @@ class KakaoMapView(
     return cameraCommands ?: MapCameraCommands(readyMap, resources.displayMetrics.density).also { cameraCommands = it }
   }
 
+  fun requireZones(): MapZones = prepareZones(requireMap())
+
+  private fun prepareZones(readyMap: KakaoMap): MapZones {
+    zones?.let { return it }
+    val generation = ++zoneGeneration
+    val viewReference = WeakReference(this)
+    val manager =
+      MapZones(
+        readyMap,
+        onEnter = { payload ->
+          viewReference.get()?.let { view ->
+            if (!view.isDestroyed && generation == view.zoneGeneration) view.onZoneEnter(payload)
+          }
+        },
+        onLeave = { payload ->
+          viewReference.get()?.let { view ->
+            if (!view.isDestroyed && generation == view.zoneGeneration) view.onZoneLeave(payload)
+          }
+        },
+      )
+    zones = manager
+    return manager
+  }
+
   fun runLabelCommand(command: MapLabelCommandRecord) {
     requireLabels().command(command)
   }
@@ -688,6 +717,9 @@ class KakaoMapView(
   private fun releaseMapObjects() {
     labelGeneration++
     routeGeneration++
+    zoneGeneration++
+    zones?.dispose()
+    zones = null
     utilities?.dispose()
     utilities = null
     cameraCommands?.dispose()

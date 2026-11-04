@@ -4,7 +4,8 @@ Scope: `packages/map`. Read the root guide first. The service-module skeleton in
 
 - Own the public contract in `src/types.ts`; keep Swift, Kotlin, events, and ref methods aligned.
 - Use Expo Modules registration and native views. Do not add TurboModule specs, Codegen configuration, React packages, or ObjC++ bridges.
-- Keep one default view per Expo module for Expo 52.
+- Keep one default view per Expo module for Expo 52. The experimental standalone RoadView and linked map/RoadView host use separate registered modules.
+- Keep RoadView and Zone bindings isolated from ordinary map setup. Kakao does not currently offer these native features to external apps; API availability, compilation, and Promise completion do not establish runtime support.
 - Declare iOS event dispatchers on each concrete Expo view. Expo installs handlers by reflecting the concrete view's stored properties; inherited dispatchers are not installed.
 - Use Expo Promise, coded exceptions, and main-queue functions. Do not depend on `@react-native-kakao/core`.
 - Initialize the map SDK explicitly before mounting a view. Initialization does not mean authentication or map readiness.

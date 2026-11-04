@@ -22,6 +22,7 @@ import type {
   LabelRuntimeState,
   LabelScene,
 } from './types-labels';
+import type { MapZoneCommands, MapZoneEvent } from './types-roadview';
 import type {
   RouteAnimationStopEvent,
   RouteCommand,
@@ -170,10 +171,12 @@ export type KakaoMapViewProps = ViewProps & {
   onRouteAnimationStop?: (event: RouteAnimationStopEvent) => void;
   onGuiEvent?: (event: MapGuiEvent) => void;
   onDimScreenEvent?: (event: DimScreenEvent) => void;
+  onZoneEnter?: (event: MapZoneEvent) => void;
+  onZoneLeave?: (event: MapZoneEvent) => void;
   onCameraOperation?: (event: AdvancedCameraOperationEvent) => void;
 };
 
-export type KakaoMapViewRef = {
+export type KakaoMapViewRef = MapZoneCommands & {
   /** Resolves on command dispatch. Duration is milliseconds; omitted means immediate. */
   moveCamera: (camera: CameraOptions, options?: { duration?: number }) => Promise<void>;
   getCamera: () => Promise<CameraPosition>;
