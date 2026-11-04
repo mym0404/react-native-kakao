@@ -5,12 +5,13 @@ import { fs } from 'zx';
 const registry = 'https://registry.npmjs.org';
 const pollInterval = 15_000;
 const publishTimeout = 15 * 60_000;
+const authMode = 'auth';
 const mode = process.argv[2];
 
 type Package = { name: string; version: string; private?: boolean };
 
 async function main() {
-  if (mode !== 'auth' && mode !== 'published') {
+  if (mode !== authMode && mode !== 'published') {
     throw new Error('Usage: node script/release-packages.ts <auth|published>');
   }
 
@@ -23,7 +24,7 @@ async function main() {
     )
   ).filter((pkg) => !pkg.private);
 
-  if (mode === 'auth') {
+  if (mode === authMode) {
     const token = await getIDToken(`npm:${new URL(registry).host}`);
     const results = await Promise.allSettled(
       packages.map(async (pkg) => {
