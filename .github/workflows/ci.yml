@@ -243,6 +243,10 @@ jobs:
             xcodebuild -downloadPlatform iOS -buildVersion "${simulator_version}"
           fi
 
+      - name: Start iOS Simulator app
+        timeout-minutes: 2
+        run: open -g -a "$(xcode-select -p)/Applications/Simulator.app"
+
       - name: Setup
         uses: ./.github/actions/setup
 
