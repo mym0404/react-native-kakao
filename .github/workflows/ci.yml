@@ -243,10 +243,6 @@ jobs:
             xcodebuild -downloadPlatform iOS -buildVersion "${simulator_version}"
           fi
 
-      - name: Start iOS Simulator app
-        timeout-minutes: 2
-        run: open -g -a "$(xcode-select -p)/Applications/Simulator.app"
-
       - name: Setup
         uses: ./.github/actions/setup
 
@@ -326,9 +322,15 @@ jobs:
           device_id=$(xcrun simctl create "Kakao E2E" "iPhone 17 Pro" "com.apple.CoreSimulator.SimRuntime.iOS-${simulator_version//./-}")
           echo "E2E_IOS_DEVICE=$device_id" >> "$GITHUB_ENV"
 
+      - name: Start iOS Simulator app
+        timeout-minutes: 2
+        run: open -g -a "$(xcode-select -p)/Applications/Simulator.app" --args -CurrentDeviceUDID "$E2E_IOS_DEVICE"
+
       - name: Prepare iOS automation
         timeout-minutes: 12
-        run: yarn agent-device prepare ios-runner --platform ios --udid "$E2E_IOS_DEVICE" --session "${KAKAO_E2E_SESSION}-0" --timeout 600000 --debug
+        run: |
+          yarn agent-device prepare ios-runner --platform ios --udid "$E2E_IOS_DEVICE" --session "${KAKAO_E2E_SESSION}-0" --timeout 600000 --debug
+          xcrun simctl list devices booted
 
       - name: Verify example menus and signed-out APIs on iOS
         run: yarn e2e test ios --device "$E2E_IOS_DEVICE" --app "$E2E_IOS_APP" --output build/e2e/ios
