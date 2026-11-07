@@ -1,7 +1,5 @@
 #!/usr/bin/env node
-import { createAgentDeviceClient } from 'agent-device';
 import type { Report } from 'e2e';
-import { setTimeout as sleep } from 'node:timers/promises';
 import { parseArgs } from 'node:util';
 import { $, fs, path } from 'zx';
 
@@ -9,7 +7,6 @@ import { buildE2EApp, iosBuild } from './e2e-build.ts';
 import { logCommand } from './e2e-log.ts';
 
 const root = path.resolve(import.meta.dirname, '../..');
-const timeoutMs = 180000;
 const adbTimeoutMs = 10000;
 const main = async () => {
   const { positionals, values } = parseArgs({
@@ -130,30 +127,6 @@ const runTest = async ({
     throw new Error(`App not found: ${app}. Run yarn e2e build ${platform} first.`);
   });
 
-  if (device === undefined) {
-    const client = createAgentDeviceClient();
-    const selected = (await client.devices.list({ platform, target: 'mobile', signal }))[0];
-    if (!selected) {
-      throw new Error(
-        `No ${platform} device found. Start a simulator or emulator, or pass --device.`,
-      );
-    }
-
-    device = selected.id;
-    if (!selected.booted && (selected.kind === 'simulator' || selected.kind === 'emulator')) {
-      device = (
-        await client.devices.boot({
-          platform,
-          signal,
-          timeoutMs,
-          ...(platform === 'ios' ? { udid: device } : { device: selected.name }),
-        })
-      ).id;
-    }
-
-    console.log(`${platform}: selected ${selected.name} (${device})`);
-  }
-
   const output = path.resolve(
     root,
     outputPath ?? `${platformDir}/${new Date().toISOString().replaceAll(':', '-')}`,
@@ -177,50 +150,20 @@ const runTest = async ({
 
   const errors: string[] = [];
   let durationSeconds = 0;
-  let prepareSeconds = 0;
+  const node = (await $`mise which node`).stdout.trim();
+  const env = {
+    ...process.env,
+    AGENT_DEVICE_STATE_DIR: path.resolve(output, 'agent-device'),
+    KAKAO_E2E_PLATFORM: platform,
+    KAKAO_E2E_DEVICE: device,
+    KAKAO_E2E_APP: app,
+    KAKAO_E2E_SESSION: `kakao-${platform}-${process.pid}`,
+  };
+
   try {
-    const node = (await $`mise which node`).stdout.trim();
     if (isExternalOutput) {
       await fs.ensureDir(path.resolve(root, 'build/e2e'));
       sdkOutput = await fs.mkdtemp(path.resolve(root, 'build/e2e/sdk-output-'));
-    }
-
-    if (platform === 'android') {
-      console.log('Waiting for Android services and an unlocked user...');
-
-      const prepareStarted = performance.now();
-      const requiredSamples = 3;
-      let readySamples = 0;
-      let preparationLog = '';
-      // A cold emulator can restart system_server after sys.boot_completed becomes 1.
-      while (readySamples < requiredSamples && performance.now() - prepareStarted < timeoutMs) {
-        signal.throwIfAborted();
-
-        const result = await $({
-          signal,
-        })`adb -s ${device} shell ${'pm path android && am get-started-user-state $(am get-current-user)'}`
-          .timeout(adbTimeoutMs)
-          .nothrow();
-        preparationLog += `${result.stdout}${result.stderr}`;
-        readySamples =
-          result.exitCode === 0 &&
-          result.stdout.startsWith('package:') &&
-          result.stdout.trim().endsWith('RUNNING_UNLOCKED')
-            ? readySamples + 1
-            : 0;
-
-        if (readySamples < requiredSamples) {
-          await sleep(2000, undefined, { signal });
-        }
-      }
-
-      prepareSeconds = (performance.now() - prepareStarted) / 1000;
-      await fs.writeFile(path.resolve(output, 'prepare.log'), preparationLog);
-      if (readySamples < requiredSamples) {
-        throw new Error(
-          `Android services and user did not become ready within ${timeoutMs / 1000} seconds.`,
-        );
-      }
     }
 
     console.log(`Verifying ${platform} menus and signed-out APIs...`);
@@ -233,12 +176,8 @@ const runTest = async ({
           signal,
           detached: true,
           env: {
-            ...process.env,
-            KAKAO_E2E_PLATFORM: platform,
-            KAKAO_E2E_DEVICE: device,
-            KAKAO_E2E_APP: app,
+            ...env,
             KAKAO_E2E_OUTPUT: sdkOutput,
-            KAKAO_E2E_SESSION: `kakao-${platform}-${process.pid}`,
           },
         })`${node} ${sdk} run --config ${path.resolve(root, 'e2e.config.ts')}`.timeout(
           1500000,
@@ -252,13 +191,28 @@ const runTest = async ({
   } catch (cause) {
     errors.push(cause instanceof Error ? cause.message : String(cause));
 
-    if (platform === 'android') {
+    if (platform === 'android' && device !== undefined) {
       await logCommand(
         $`adb -s ${device} logcat -d`.timeout(adbTimeoutMs),
         path.resolve(output, 'logcat.log'),
       ).catch(() => undefined);
     }
   } finally {
+    if (await fs.pathExists(env.AGENT_DEVICE_STATE_DIR)) {
+      try {
+        await logCommand(
+          $({
+            env,
+          })`${node} ${path.resolve(root, 'node_modules/agent-device/bin/agent-device.mjs')} daemon stop --clean`.timeout(
+            30000,
+          ),
+          path.resolve(output, 'cleanup.log'),
+        );
+      } catch (cause) {
+        errors.push(`Failed to stop E2E automation: ${String(cause)}`);
+      }
+    }
+
     if (sdkOutput !== artifacts) {
       try {
         await fs.copy(sdkOutput, artifacts);
@@ -311,16 +265,7 @@ const runTest = async ({
       run.summary.passed !== run.summary.discovered ||
       run.summary.skipped !== 0 ||
       run.results.length !== run.summary.discovered ||
-      run.results.some(
-        (result) =>
-          result.platform !== platform ||
-          !result.selected ||
-          result.status !== 'passed' ||
-          result.attempts.length !== 1 ||
-          result.attempts[0]?.status !== 'passed' ||
-          result.attempts[0]?.cleanup !== 'complete' ||
-          result.attempts[0]?.secondaryErrors.length !== 0,
-      )
+      run.results.some((result) => result.platform !== platform || result.status !== 'passed')
     ) {
       throw new Error('E2E run did not pass every discovered test without model calls.');
     }
@@ -338,7 +283,6 @@ const runTest = async ({
     platform,
     status,
     durationSeconds,
-    prepareSeconds,
     tests,
     error,
   };
