@@ -57,6 +57,8 @@ See the [compatibility table](https://rnkakao.mjstudio.net/en/docs/intro#compati
 | [Cert](https://rnkakao.mjstudio.net/docs/cert/intro) | [![badge](https://img.shields.io/npm/dm/@react-native-kakao/cert.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-kakao/cert) | ✅ |
 | [Map](https://rnkakao.mjstudio.net/docs/map/intro) | [![badge](https://img.shields.io/npm/dm/@react-native-kakao/map.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-kakao/map) | ✅ |
 
+Cert requires Core and User, an approved Kakao app, and server integration. Certification login and signing are available on Android and iOS; web supports certification authorization redirects only.
+
 Map uses Expo Modules and supports Android and iOS; web and Expo Go are not supported. Core is not required for Map. See the [Map guide](https://rnkakao.mjstudio.net/docs/map/intro) for installation requirements.
 
 ## Documentation
