@@ -221,6 +221,7 @@ jobs:
     timeout-minutes: 45
     env:
       E2E_IOS_APP: build/e2e/ios-build/Build/Products/Release-iphonesimulator/KakaoExample.app
+      KAKAO_E2E_SESSION: kakao-ci-ios
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -321,9 +322,9 @@ jobs:
           device_id=$(xcrun simctl create "Kakao E2E" "iPhone 17 Pro" "com.apple.CoreSimulator.SimRuntime.iOS-${simulator_version//./-}")
           echo "E2E_IOS_DEVICE=$device_id" >> "$GITHUB_ENV"
 
-      - name: Boot E2E Simulator
+      - name: Prepare iOS automation
         timeout-minutes: 12
-        run: yarn agent-device boot --platform ios --udid "$E2E_IOS_DEVICE" --timeout 600000 --debug
+        run: yarn agent-device prepare ios-runner --platform ios --udid "$E2E_IOS_DEVICE" --session "${KAKAO_E2E_SESSION}-0" --timeout 600000 --debug
 
       - name: Verify example menus and signed-out APIs on iOS
         run: yarn e2e test ios --device "$E2E_IOS_DEVICE" --app "$E2E_IOS_APP" --output build/e2e/ios

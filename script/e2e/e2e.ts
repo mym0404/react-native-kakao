@@ -157,7 +157,7 @@ const runTest = async ({
     KAKAO_E2E_PLATFORM: platform,
     KAKAO_E2E_DEVICE: device,
     KAKAO_E2E_APP: app,
-    KAKAO_E2E_SESSION: `kakao-${platform}-${process.pid}`,
+    KAKAO_E2E_SESSION: process.env.KAKAO_E2E_SESSION ?? `kakao-${platform}-${process.pid}`,
   };
 
   try {
