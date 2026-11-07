@@ -65,6 +65,12 @@ Map uses Expo Modules and supports Android and iOS; web and Expo Go are not supp
 
 - [Quick Start](https://rnkakao.mjstudio.net)
 
+## Sponsors
+
+These are our really cool sponsors!
+
+<!-- sponsors --><a href="https://github.com/esc5221"><img src="https:&#x2F;&#x2F;github.com&#x2F;esc5221.png" width="80px" alt="esc5221" /></a>&nbsp;&nbsp;<a href="https://github.com/jun-jaehyuk-lee"><img src="https:&#x2F;&#x2F;github.com&#x2F;jun-jaehyuk-lee.png" width="80px" alt="jun-jaehyuk-lee" /></a>&nbsp;&nbsp;<a href="https://github.com/floydkim"><img src="https:&#x2F;&#x2F;github.com&#x2F;floydkim.png" width="80px" alt="floydkim" /></a>&nbsp;&nbsp;<a href="https://github.com/zeallat"><img src="https:&#x2F;&#x2F;github.com&#x2F;zeallat.png" width="80px" alt="zeallat" /></a>&nbsp;&nbsp;<a href="https://github.com/sarbogast"><img src="https:&#x2F;&#x2F;github.com&#x2F;sarbogast.png" width="80px" alt="sarbogast" /></a>&nbsp;&nbsp;<a href="https://github.com/RyuWoong"><img src="https:&#x2F;&#x2F;github.com&#x2F;RyuWoong.png" width="80px" alt="RyuWoong" /></a>&nbsp;&nbsp;<!-- sponsors -->
+
 ## Contributing
 
 - [Contributing](https://github.com/mym0404/react-native-kakao/blob/main/CONTRIBUTING.md)
