@@ -179,6 +179,11 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
+      - name: Start Android emulator display
+        run: |
+          start-stop-daemon --start --background --make-pidfile --pidfile "$RUNNER_TEMP/kakao-e2e-xvfb.pid" --exec /usr/bin/Xvfb -- :99 -screen 0 1280x1024x24 -nolisten tcp
+          echo 'DISPLAY=:99' >> "$GITHUB_ENV"
+
       - name: Verify example menus and signed-out APIs on Android
         uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
         env:
@@ -192,6 +197,10 @@ jobs:
           disable-animations: true
           emulator-options: -gpu software -noaudio -no-boot-anim -no-snapshot -camera-back none
           script: yarn e2e test android --device emulator-5554 --output build/e2e/android
+
+      - name: Stop Android emulator display
+        if: always()
+        run: start-stop-daemon --stop --oknodo --pidfile "$RUNNER_TEMP/kakao-e2e-xvfb.pid" --exec /usr/bin/Xvfb --retry TERM/5/KILL/5
 
       - name: Upload Android E2E evidence
         if: always()
@@ -304,13 +313,22 @@ jobs:
 
       - name: Create E2E Simulator
         run: |
+          echo "AGENT_DEVICE_STATE_DIR=$PWD/build/e2e/ios/agent-device" >> "$GITHUB_ENV"
           echo 'AGENT_DEVICE_XCUITEST_ARCHS=arm64' >> "$GITHUB_ENV"
           simulator_version=$(xcrun --sdk iphonesimulator --show-sdk-version)
           device_id=$(xcrun simctl create "Kakao E2E" "iPhone 17 Pro" "com.apple.CoreSimulator.SimRuntime.iOS-${simulator_version//./-}")
           echo "E2E_IOS_DEVICE=$device_id" >> "$GITHUB_ENV"
 
+      - name: Boot E2E Simulator
+        timeout-minutes: 12
+        run: yarn agent-device boot --platform ios --udid "$E2E_IOS_DEVICE" --timeout 600000 --debug
+
       - name: Verify example menus and signed-out APIs on iOS
         run: yarn e2e test ios --device "$E2E_IOS_DEVICE" --app "$E2E_IOS_APP" --output build/e2e/ios
+
+      - name: Stop iOS automation
+        if: always() && env.AGENT_DEVICE_STATE_DIR != ''
+        run: yarn agent-device daemon stop --clean
 
       - name: Upload iOS E2E evidence
         if: always()
