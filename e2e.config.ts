@@ -11,11 +11,12 @@ if (platform !== 'ios' && platform !== 'android') {
 
 const device = process.env.KAKAO_E2E_DEVICE;
 const output = process.env.KAKAO_E2E_OUTPUT;
-if (!device || !output) {
-  throw new Error('E2E device and output are required');
+if (!output) {
+  throw new Error('E2E output is required');
 }
 
 const startupTimeout = platform === 'ios' ? 360000 : 120000;
+const operationTimeout = 30000;
 
 export default {
   projectId: 'react-native-kakao',
@@ -23,12 +24,12 @@ export default {
   workers: 1,
   retries: 0,
   timeout: startupTimeout,
-  cleanupTimeout: 30000,
+  cleanupTimeout: operationTimeout,
   launchTimeout: startupTimeout,
-  actionTimeout: platform === 'ios' ? 60000 : 15000,
-  assertionTimeout: 15000,
+  actionTimeout: operationTimeout,
+  assertionTimeout: operationTimeout,
   cache: 'off',
-  trace: 'off',
+  trace: 'retain-on-failure',
   video: 'off',
   output: relative(import.meta.dirname, resolve(output)),
   reporters: ['list', 'junit', 'markdown'],
@@ -39,9 +40,6 @@ export default {
         platform,
         device,
         session: process.env.KAKAO_E2E_SESSION,
-        snapshot: 'full',
-        // Wait for iOS scroll deceleration before tapping newly visible controls.
-        transition: platform === 'ios' ? 2000 : 500,
       }),
       app: {
         appPath: process.env.KAKAO_E2E_APP,

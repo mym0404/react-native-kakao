@@ -179,20 +179,30 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
+      - name: Prepare Android emulator display
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libpulse0 libxcb-cursor0 libxkbcommon-x11-0
+          start-stop-daemon --start --background --make-pidfile --pidfile "$RUNNER_TEMP/kakao-e2e-xvfb.pid" --exec /usr/bin/Xvfb -- :99 -screen 0 1280x1024x24 -nolisten tcp
+          echo 'DISPLAY=:99' >> "$GITHUB_ENV"
+
       - name: Verify example menus and signed-out APIs on Android
         uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
         env:
           KAKAO_E2E_SKIP_MAP: '1'
         with:
-          api-level: '37.1'
-          target: google_apis_playstore_ps16k
+          api-level: '36'
+          target: google_apis
           arch: x86_64
           profile: medium_phone
           ram-size: 4096M
           disable-animations: true
-          # API 37's gralloc mapper requires both features for DMA readback.
-          emulator-options: -no-window -gpu software -feature GLDirectMem,HasSharedSlotsHostMemoryAllocator -noaudio -no-boot-anim -no-snapshot -camera-back none
+          emulator-options: -gpu software -noaudio -no-boot-anim -no-snapshot -camera-back none
           script: yarn e2e test android --device emulator-5554 --output build/e2e/android
+
+      - name: Stop Android emulator display
+        if: always()
+        run: start-stop-daemon --stop --oknodo --pidfile "$RUNNER_TEMP/kakao-e2e-xvfb.pid" --exec /usr/bin/Xvfb --retry TERM/5/KILL/5
 
       - name: Upload Android E2E evidence
         if: always()
@@ -211,6 +221,7 @@ jobs:
     timeout-minutes: 45
     env:
       E2E_IOS_APP: build/e2e/ios-build/Build/Products/Release-iphonesimulator/KakaoExample.app
+      KAKAO_E2E_SESSION: kakao-ci-ios
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -303,31 +314,30 @@ jobs:
           path: ${{ env.E2E_IOS_APP }}
           key: ${{ steps.ios-e2e-release-cache.outputs.cache-primary-key }}
 
-      - name: Boot E2E Simulator
+      - name: Create E2E Simulator
         run: |
-          echo "AGENT_DEVICE_STATE_DIR=$RUNNER_TEMP/kakao-e2e-agent" >> "$GITHUB_ENV"
+          echo "AGENT_DEVICE_STATE_DIR=$PWD/build/e2e/ios/agent-device" >> "$GITHUB_ENV"
           echo 'AGENT_DEVICE_XCUITEST_ARCHS=arm64' >> "$GITHUB_ENV"
           simulator_version=$(xcrun --sdk iphonesimulator --show-sdk-version)
           device_id=$(xcrun simctl create "Kakao E2E" "iPhone 17 Pro" "com.apple.CoreSimulator.SimRuntime.iOS-${simulator_version//./-}")
           echo "E2E_IOS_DEVICE=$device_id" >> "$GITHUB_ENV"
-          xcrun simctl boot "$device_id"
-          xcrun simctl bootstatus "$device_id" -b
 
-      - name: Install iOS app before E2E
-        timeout-minutes: 5
-        run: xcrun simctl install "$E2E_IOS_DEVICE" "$E2E_IOS_APP"
+      - name: Start iOS Simulator app
+        timeout-minutes: 2
+        run: open -g -a "$(xcode-select -p)/Applications/Simulator.app" --args -CurrentDeviceUDID "$E2E_IOS_DEVICE"
 
-      - name: Prepare iOS automation before E2E
+      - name: Prepare iOS automation
+        timeout-minutes: 12
         run: |
-          preparation_session=kakao-ci-prepare
-          startup_timeout_ms=600000
-          trap 'yarn agent-device close --session "$preparation_session" || true' EXIT
-          yarn agent-device prepare ios-runner --platform ios --udid "$E2E_IOS_DEVICE" --session "$preparation_session" --timeout "$startup_timeout_ms"
-          app_id=$(node -p "require('./example/app.json').expo.ios.bundleIdentifier")
-          yarn agent-device open "$app_id" --platform ios --udid "$E2E_IOS_DEVICE" --session "$preparation_session" --timeout "$startup_timeout_ms"
+          yarn agent-device prepare ios-runner --platform ios --udid "$E2E_IOS_DEVICE" --session "${KAKAO_E2E_SESSION}-0" --timeout 600000 --debug
+          xcrun simctl list devices booted
 
       - name: Verify example menus and signed-out APIs on iOS
         run: yarn e2e test ios --device "$E2E_IOS_DEVICE" --app "$E2E_IOS_APP" --output build/e2e/ios
+
+      - name: Stop iOS automation
+        if: always() && env.AGENT_DEVICE_STATE_DIR != ''
+        run: yarn agent-device daemon stop --clean
 
       - name: Upload iOS E2E evidence
         if: always()
@@ -345,9 +355,9 @@ jobs:
         with:
           name: e2e-ios-diagnostics
           path: |
-            ${{ runner.temp }}/kakao-e2e-agent/daemon.log
-            ${{ runner.temp }}/kakao-e2e-agent/sessions/**/*.log
-            ${{ runner.temp }}/kakao-e2e-agent/sessions/**/requests/*.ndjson
+            build/e2e/ios/agent-device/daemon.log
+            build/e2e/ios/agent-device/sessions/**/*.log
+            build/e2e/ios/agent-device/sessions/**/requests/*.ndjson
           retention-days: 14
           overwrite: true
           if-no-files-found: warn
