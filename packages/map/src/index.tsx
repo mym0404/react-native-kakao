@@ -21,6 +21,7 @@ import type { AdvancedCameraOperationEvent } from './types-camera';
 import type { DimScreenEvent } from './types-dim';
 import type { MapGuiEvent } from './types-gui';
 import type { LabelAnimationEvent, LabelClickEvent, LabelRuntimeState } from './types-labels';
+import type { MapZoneEvent } from './types-roadview';
 import type { RouteAnimationStopEvent, RouteCounts, RouteProgressEvent } from './types-routes';
 import type { ShapeAnimationStopEvent, ShapeCounts } from './types-shapes';
 
@@ -32,6 +33,8 @@ export type * from './types-gui';
 export type * from './types-dim';
 export type * from './types-utilities';
 export type * from './types-camera';
+export type * from './types-roadview';
+export { KakaoMapRoadView, KakaoRoadView } from './RoadView';
 
 export type {
   CameraOptions,
@@ -82,6 +85,8 @@ const NativeView = requireNativeView<
     | 'onRouteAnimationStop'
     | 'onGuiEvent'
     | 'onDimScreenEvent'
+    | 'onZoneEnter'
+    | 'onZoneLeave'
     | 'onCameraOperation'
   > & {
     ref: Ref<NativeMapRef>;
@@ -110,6 +115,8 @@ const NativeView = requireNativeView<
     onRouteAnimationStop?: (event: NativeSyntheticEvent<RouteAnimationStopEvent>) => void;
     onGuiEvent?: (event: NativeSyntheticEvent<MapGuiEvent>) => void;
     onDimScreenEvent?: (event: NativeSyntheticEvent<DimScreenEvent>) => void;
+    onZoneEnter?: (event: NativeSyntheticEvent<MapZoneEvent>) => void;
+    onZoneLeave?: (event: NativeSyntheticEvent<MapZoneEvent>) => void;
     onCameraOperation?: (event: NativeSyntheticEvent<AdvancedCameraOperationEvent>) => void;
   }
 >(moduleName);
@@ -162,6 +169,8 @@ export const KakaoMapView = forwardRef<KakaoMapViewRef, KakaoMapViewProps>(funct
     onRouteAnimationStop,
     onGuiEvent,
     onDimScreenEvent,
+    onZoneEnter,
+    onZoneLeave,
     onCameraOperation,
     ...props
   },
@@ -273,6 +282,15 @@ export const KakaoMapView = forwardRef<KakaoMapViewRef, KakaoMapViewProps>(funct
       async executeCameraCommand(command) {
         return getView().executeCameraCommand(command);
       },
+      async setZoneCheckRectScale(zoneType, level, scale) {
+        await getView().setZoneCheckRectScale(zoneType, level, scale);
+      },
+      async showZoneDetail(zoneType, zoneId, detailId) {
+        await getView().showZoneDetail(zoneType, zoneId, detailId);
+      },
+      async hideZoneDetail(zoneType) {
+        await getView().hideZoneDetail(zoneType);
+      },
     }),
     [],
   );
@@ -306,6 +324,8 @@ export const KakaoMapView = forwardRef<KakaoMapViewRef, KakaoMapViewProps>(funct
       onRouteAnimationStop={(event) => onRouteAnimationStop?.(event.nativeEvent)}
       onGuiEvent={(event) => onGuiEvent?.(event.nativeEvent)}
       onDimScreenEvent={(event) => onDimScreenEvent?.(event.nativeEvent)}
+      onZoneEnter={(event) => onZoneEnter?.(event.nativeEvent)}
+      onZoneLeave={(event) => onZoneLeave?.(event.nativeEvent)}
       onCameraOperation={(event) => onCameraOperation?.(event.nativeEvent)}
     />
   );

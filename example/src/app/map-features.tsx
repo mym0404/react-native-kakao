@@ -21,12 +21,14 @@ import {
   type MapUtilityCapabilities,
   type MapUtilityCommand,
   type MapViewport,
+  type MapZoneEvent,
   type RouteCapabilities,
   type RouteCommand,
   type RouteScene,
   type ShapeCapabilities,
   type ShapeScene,
 } from '@react-native-kakao/map';
+import { useRouter } from 'expo-router';
 
 import { CAMERA_FIXTURES } from '../map/camera-fixtures';
 import { dimFixtureScenes } from '../map/dim-fixtures';
@@ -89,6 +91,7 @@ const sections = [
   'gui-motion',
   'dim',
   'utilities',
+  'zones',
 ] as const;
 const overlays: MapOverlay[] = ['roadviewLine', 'hillShading', 'bicycleRoad', 'hybrid'];
 const gestures: MapGesture[] = [
@@ -104,6 +107,7 @@ const gestures: MapGesture[] = [
 ];
 
 export default function MapFeaturesPage() {
+  const router = useRouter();
   const map = useRef<KakaoMapViewRef>(null);
   const sequence = useRef(0);
   const eventHistory = useRef<object[]>([]);
@@ -122,6 +126,8 @@ export default function MapFeaturesPage() {
   const [guiCapabilities, setGuiCapabilities] = useState<MapGuiCapabilities>();
   const [dimStatus, setDimStatus] = useState<DimScreenStatus>();
   const [utilityCapabilities, setUtilityCapabilities] = useState<MapUtilityCapabilities>();
+  const [lastZoneEnter, setLastZoneEnter] = useState<MapZoneEvent>();
+  const [lastZoneLeave, setLastZoneLeave] = useState<MapZoneEvent>();
   const [viewportBeforeInset, setViewportBeforeInset] = useState<MapViewport>();
   const [result, setResult] = useState('Waiting for map');
   const [event, setEvent] = useState('No event');
@@ -313,6 +319,7 @@ export default function MapFeaturesPage() {
     );
   } else if (section === 'queries') {
     actions.push(
+      { id: 'roadview-lab', run: () => router.replace('/map-roadview') },
       { id: 'map-info', run: () => execute(() => requireMap().getMapInfo()) },
       { id: 'camera-info', run: () => execute(() => requireMap().getCamera()) },
       {
@@ -973,6 +980,45 @@ export default function MapFeaturesPage() {
         run: () => executeUtilityCommand(utilityFixtureCommands.clearDiskCache),
       });
     }
+  } else if (section === 'zones') {
+    if (lastZoneEnter) {
+      const zone = lastZoneEnter;
+      const detailId = zone.detailId || zone.details[0];
+      actions.push({
+        id: 'zone-read-last-enter',
+        run: () => execute(async () => zone),
+      });
+
+      if (zone.zoneType) {
+        actions.push({
+          id: 'zone-dispatch-check-rect-scale',
+          run: () =>
+            execute(() =>
+              requireMap().setZoneCheckRectScale(zone.zoneType, 16, { x: 1.2, y: 1.2 }),
+            ),
+        });
+
+        actions.push({
+          id: 'zone-dispatch-hide-detail',
+          run: () => execute(() => requireMap().hideZoneDetail(zone.zoneType)),
+        });
+      }
+
+      if (zone.zoneType && zone.zoneId && detailId) {
+        actions.push({
+          id: 'zone-dispatch-show-entered-detail',
+          run: () =>
+            execute(() => requireMap().showZoneDetail(zone.zoneType, zone.zoneId, detailId)),
+        });
+      }
+    }
+
+    if (lastZoneLeave) {
+      actions.push({
+        id: 'zone-read-last-leave',
+        run: () => execute(async () => lastZoneLeave),
+      });
+    }
   } else {
     actions.push(
       {
@@ -1197,6 +1243,14 @@ export default function MapFeaturesPage() {
           onRouteAnimationStop={(value) => recordEvent({ type: 'route-animation-stop', ...value })}
           onGuiEvent={(value) => recordEvent({ type: 'gui', event: value })}
           onDimScreenEvent={(value) => recordEvent({ type: 'dim', event: value })}
+          onZoneEnter={(value) => {
+            setLastZoneEnter(value);
+            recordEvent({ type: 'zone-enter', ...value });
+          }}
+          onZoneLeave={(value) => {
+            setLastZoneLeave(value);
+            recordEvent({ type: 'zone-leave', ...value });
+          }}
         />
       ) : null}
     </View>
