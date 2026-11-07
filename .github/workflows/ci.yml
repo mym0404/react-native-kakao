@@ -179,8 +179,10 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      - name: Start Android emulator display
+      - name: Prepare Android emulator display
         run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libpulse0 libxcb-cursor0 libxkbcommon-x11-0
           start-stop-daemon --start --background --make-pidfile --pidfile "$RUNNER_TEMP/kakao-e2e-xvfb.pid" --exec /usr/bin/Xvfb -- :99 -screen 0 1280x1024x24 -nolisten tcp
           echo 'DISPLAY=:99' >> "$GITHUB_ENV"
 
